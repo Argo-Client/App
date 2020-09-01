@@ -43,6 +43,9 @@ android {
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        manifestPlaceholders = [
+            'appAuthRedirectScheme':'m6loapp'
+        ]
     }
 
     buildTypes {

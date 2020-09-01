@@ -1,129 +1,25 @@
+library main;
+
 import 'package:flutter/material.dart';
+import 'package:intro_slider/intro_slider.dart';
+import 'package:after_layout/after_layout.dart';
+import 'package:intro_slider/slide_object.dart';
+import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+part 'introduction/introduction.dart';
+part 'introduction/slides.dart';
+part 'tabs/Agenda.dart';
+part 'tabs/Cijfers.dart';
+part 'drawer.dart';
 
-void main() {
-  runApp(MaterialApp(
-    title: 'Magistex',
-    theme: ThemeData(
-      primaryColor: Colors.blue,
-    ),
-    initialRoute: '/',
-    routes: {
-      '/': (context) => Agenda(),
-      '/cijfers': (context) => Cijfers(),
-    },
-  ));
-}
+void main() => runApp(new MyApp());
 
-class Agenda extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Scaffold is a layout for the major Material Components.
-    return Scaffold(
-      drawer: DefaultDrawer(),
-      appBar: AppBar(
-        title: Text('Agenda'),
-      ),
-      body: Center(
-        child: Text('Hier komt de agenda'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-}
-
-class Cijfers extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: DefaultDrawer(),
-      body: Center(
-        child: Text('Hier komen de cijfers'),
-      ),
-      appBar: AppBar(
-        title: Text('Cijfers'),
-      ),
-    );
-  }
-}
-
-class DefaultDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text('Name',
-                style: TextStyle(color: Colors.white, fontSize: 30)),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.event), Text(' Agenda')],
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, '/');
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.assignment), Text(' Huiswerk')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.check_circle), Text(' Afwezigheid')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.looks_6), Text(' Cijfers')],
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, '/cijfers');
-              // Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.email), Text(' Berichten')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.assignment_turned_in), Text(' Opdrachten')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.description), Text(' Leermiddelen')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
+    return new MaterialApp(
+      color: Colors.blue,
+      home: new Splash(),
     );
   }
 }

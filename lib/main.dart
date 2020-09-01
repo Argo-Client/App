@@ -1,74 +1,120 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    title: 'Magistex',
+    home: Agenda(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+void goToCijfers() {
+  MaterialApp(
+    title: 'Magistex',
+    home: Cijfers(),
+  );
+}
+
+class Agenda extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.green,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Magistex'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    // Scaffold is a layout for the major Material Components.
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      drawer: Drawer(
+        child: ListView(
           children: <Widget>[
-            Text(
-              '$_counter clicks',
-              style: Theme.of(context).textTheme.headline4,
+            DrawerHeader(
+              child: Text('Naam',
+                  style: TextStyle(color: Colors.white, fontSize: 30)),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.event), Text(' Agenda')],
+              ),
+              onTap: () {
+                // goToAgenda();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.assignment), Text(' Huiswerk')],
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.check_circle), Text(' Afwezigheid')],
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.looks_6), Text(' Cijfers')],
+              ),
+              onTap: () {
+                goToCijfers();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.email), Text(' Berichten')],
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [
+                  Icon(Icons.assignment_turned_in),
+                  Text(' Opdrachten')
+                ],
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Row(
+                children: [Icon(Icons.description), Text(' Leermiddelen')],
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
       ),
+      appBar: AppBar(
+        title: Text('Agenda'),
+      ),
+      body: Center(
+        child: Text('Hier komt de agenda'),
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+class Cijfers extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text('Hier komen de cijfers'),
       ),
     );
   }

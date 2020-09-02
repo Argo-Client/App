@@ -18,8 +18,8 @@ void main() async {
     theme: ThemeData(
       primaryColor: Colors.blue,
     ),
-    initialRoute: 'Agenda',
-    routes: {'Agenda': (context) => Agenda(), 'Cijfers': (context) => Cijfers(), "Introduction": (context) => Introduction()},
+    initialRoute: '/',
+    routes: {'/': (context) => Agenda(), 'Cijfers': (context) => Cijfers(), "Introduction": (context) => Introduction()},
   ));
 }
 

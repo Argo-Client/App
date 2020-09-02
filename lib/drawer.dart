@@ -19,7 +19,7 @@ class DefaultDrawer extends StatelessWidget {
             leading: Icon(Icons.event),
             title: Text('Agenda'),
             onTap: () {
-              Navigator.pushNamed(context, 'Agenda');
+              Navigator.pushNamed(context, '/');
             },
           ),
           ListTile(

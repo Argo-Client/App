@@ -1,36 +1,51 @@
 part of main;
 
-class IntroScreenState extends State<IntroScreen> {
+final _formKey = GlobalKey<FormState>();
+
+class Introduction extends StatelessWidget {
   final FlutterAppAuth appAuth = FlutterAppAuth();
-  @override
-  void initState() {
-    super.initState();
+  Function goToTab;
+  // List<String> schoolUrls;
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
+  String randomSchool() {
+    return schoolUrls[new Random().nextInt(schoolUrls.length)];
   }
 
-  void onDonePress() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Navigator.of(context).pushReplacement(
-      new MaterialPageRoute(
-        builder: (context) => new MaterialApp(
-          title: 'Magistex',
-          theme: ThemeData(
-            primaryColor: Colors.blue,
-          ),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => Agenda(),
-            '/cijfers': (context) => Cijfers(),
-          },
-        ),
-      ),
-    );
-    await prefs.setBool('seen', true);
+  void validateSchool(context) async {
+    print("Validating");
+    if (_formKey.currentState == null || _formKey.currentState.validate()) {
+      print("Logging in");
+      // final AuthorizationTokenResponse result = await appAuth.authorizeAndExchangeCode(AuthorizationTokenRequest(
+      //   "M6LOAPP",
+      //   'm6loapp://oauth2redirect',
+      //   discoveryUrl: ' https://accounts.magister.net/',
+      //   serviceConfiguration: AuthorizationServiceConfiguration(
+      //     'https://accounts.magister.net/connect/authorize',
+      //     'https://accounts.magister.net/connect/token',
+      //   ),
+      //   scopes: ["openid", "profile", "offline_access", "magister.mobile", "magister.ecs"],
+      // ));
+      // print(result);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('seen', true);
+      Navigator.pushNamed(context, 'Agenda');
+    } else {
+      this.goToTab(1);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new IntroSlider(
+    IntroSlider intro = new IntroSlider(
       isShowSkipBtn: false,
+      colorDot: Color.fromRGBO(255, 255, 255, .5),
+      refFuncGoToTab: (index) {
+        this.goToTab = index;
+      },
       slides: [
         new Slide(
           title: "Magistex",
@@ -41,16 +56,32 @@ class IntroScreenState extends State<IntroScreen> {
           title: "Kies uw school",
           widgetDescription: Column(
             children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.school),
-                  hintText: 'Zoek uw school',
-                  labelText: 'School',
+              Text("Hier moet de linknaam van je school in, hetzelfde als wat je gebruikt om magister te gebruiken op het internet. Bijvoorbeeld: " + randomSchool()),
+              Form(
+                key: _formKey,
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.school),
+                    hintText: 'Zoek uw school',
+                    labelText: 'School',
+                  ),
+                  autofocus: true,
+                  onChanged: (String value) {
+                    print(value);
+                  },
+                  validator: (value) {
+                    value = value.replaceAll(new RegExp(r'(http|https)://|.magister.net'), "").toLowerCase();
+                    print(value);
+                    if (value.isEmpty) {
+                      return "Vergeet niet je school in te vullen!";
+                    }
+                    if (!schoolUrls.contains(value)) {
+                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" + randomSchool();
+                    }
+                    return null;
+                  },
                 ),
-                onSaved: (String value) {
-                  print(value);
-                },
-              )
+              ),
             ],
           ),
           backgroundColor: Colors.amberAccent,
@@ -58,29 +89,20 @@ class IntroScreenState extends State<IntroScreen> {
         new Slide(
           title: "Login",
           widgetDescription: Center(
-            child: FlatButton(
+            child: RaisedButton(
               child: Text("Login"),
-              onPressed: () async {
-                final AuthorizationTokenResponse result = await appAuth.authorizeAndExchangeCode(
-                  AuthorizationTokenRequest(
-                    "m6loapp",
-                    'm6loapp://oauth2redirect',
-                    discoveryUrl: ' https://accounts.magister.net/',
-                    serviceConfiguration: AuthorizationServiceConfiguration(
-                      'https://accounts.magister.net/connect/authorize',
-                      'https://accounts.magister.net/connect/token',
-                    ),
-                    scopes: ["openid", "profile", "offline_access", "magister.mobile", "magister.ecs"],
-                  ),
-                );
-                print(result);
+              onPressed: () {
+                validateSchool(context);
               },
             ),
           ),
           backgroundColor: Colors.teal,
         ),
       ],
-      onDonePress: this.onDonePress,
+      onDonePress: () {
+        validateSchool(context);
+      },
     );
+    return intro;
   }
 }

@@ -18,7 +18,7 @@ class DefaultDrawer extends StatelessWidget {
               children: [Icon(Icons.event), Text(' Agenda')],
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/');
+              Navigator.pushNamed(context, 'Agenda');
             },
           ),
           ListTile(
@@ -42,7 +42,7 @@ class DefaultDrawer extends StatelessWidget {
               children: [Icon(Icons.looks_6), Text(' Cijfers')],
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/cijfers');
+              Navigator.pushNamed(context, 'Cijfers');
               // Navigator.pop(context);
             },
           ),
@@ -75,7 +75,7 @@ class DefaultDrawer extends StatelessWidget {
               children: [Icon(Icons.input), Text(' Open Introductie')],
             ),
             onTap: () {
-              Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
+              Navigator.pushNamed(context, 'Introduction');
             },
           )
         ],

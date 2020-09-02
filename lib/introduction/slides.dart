@@ -2,6 +2,16 @@ part of main;
 
 final _formKey = GlobalKey<FormState>();
 
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
+
+String randomSchool() {
+  return schoolUrls[new Random().nextInt(schoolUrls.length)].capitalize();
+}
+
 class Introduction extends StatelessWidget {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   Function goToTab;
@@ -10,10 +20,6 @@ class Introduction extends StatelessWidget {
   // void initState() {
   //   super.initState();
   // }
-
-  String randomSchool() {
-    return schoolUrls[new Random().nextInt(schoolUrls.length)];
-  }
 
   void validateSchool(context) async {
     print("Validating");
@@ -49,20 +55,21 @@ class Introduction extends StatelessWidget {
       slides: [
         new Slide(
           title: "Magistex",
-          description: "Een moderne magister app.\nStart snel op en is gebruiksvriendelijk",
+          description:
+              "Een moderne magister app.\nStart snel op en is gebruiksvriendelijk",
           backgroundColor: Colors.lightBlue,
         ),
         new Slide(
           title: "Kies uw school",
           widgetDescription: Column(
             children: [
-              Text("Hier moet de linknaam van je school in, hetzelfde als wat je gebruikt om magister te gebruiken op het internet. Bijvoorbeeld: " + randomSchool()),
+              Text("Bijv. " + randomSchool()),
               Form(
                 key: _formKey,
                 child: TextFormField(
                   decoration: const InputDecoration(
                     icon: Icon(Icons.school),
-                    hintText: 'Zoek uw school',
+                    hintText: "Zoek een school",
                     labelText: 'School',
                   ),
                   autofocus: true,
@@ -70,13 +77,17 @@ class Introduction extends StatelessWidget {
                     print(value);
                   },
                   validator: (value) {
-                    value = value.replaceAll(new RegExp(r'(http|https)://|.magister.net'), "").toLowerCase();
+                    value = value
+                        .replaceAll(
+                            new RegExp(r'(http|https)://|.magister.net'), "")
+                        .toLowerCase();
                     print(value);
                     if (value.isEmpty) {
                       return "Vergeet niet je school in te vullen!";
                     }
                     if (!schoolUrls.contains(value)) {
-                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" + randomSchool();
+                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" +
+                          randomSchool();
                     }
                     return null;
                   },
@@ -84,7 +95,7 @@ class Introduction extends StatelessWidget {
               ),
             ],
           ),
-          backgroundColor: Colors.amberAccent,
+          backgroundColor: Colors.redAccent,
         ),
         new Slide(
           title: "Login",

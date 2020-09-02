@@ -7,23 +7,31 @@ class DefaultDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Text('Name', style: TextStyle(color: Colors.white, fontSize: 30)),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+          UserAccountsDrawerHeader(
+            accountName: Text("Guus van Meerveld"),
+            accountEmail: Text("616258"),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Theme.of(context).backgroundColor,
+              child: Icon(Icons.person, size: 50),
             ),
           ),
           ListTile(
             title: Row(
-              children: [Icon(Icons.event), Text(' Agenda')],
+              children: [
+                Icon(Icons.event),
+                Text('      Agenda'),
+              ],
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/');
+              Navigator.pushReplacementNamed(context, 'Agenda');
             },
           ),
           ListTile(
             title: Row(
-              children: [Icon(Icons.assignment), Text(' Huiswerk')],
+              children: [
+                Icon(Icons.assignment),
+                Text('      Huiswerk'),
+              ],
             ),
             onTap: () {
               Navigator.pop(context);
@@ -31,24 +39,78 @@ class DefaultDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Row(
-              children: [Icon(Icons.check_circle), Text(' Afwezigheid')],
+              children: [
+                Icon(Icons.check_circle),
+                Text('      Afwezigheid'),
+              ],
             ),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            title: Row(
-              children: [Icon(Icons.looks_6), Text(' Cijfers')],
-            ),
+            leading: Icon(Icons.looks_6),
+            title: Text('Cijfers'),
             onTap: () {
-              Navigator.pushNamed(context, '/cijfers');
+              Navigator.pushReplacementNamed(context, 'Cijfers');
               // Navigator.pop(context);
             },
           ),
           ListTile(
+            leading: Icon(Icons.email),
+            title: Text('Berichten'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ExpansionTile(
+            leading: Icon(Icons.ac_unit),
+            title: Text("ELO"),
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.work),
+                title: Text(' Studiewijzer'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.assignment_turned_in),
+                title: Text('Opdrachten'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Icon(Icons.description),
+                    Text('      Leermiddelen'),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                title: Row(
+                  children: [
+                    Icon(Icons.folder),
+                    Text('      Bronnen'),
+                  ],
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          ListTile(
             title: Row(
-              children: [Icon(Icons.email), Text(' Berichten')],
+              children: [
+                Icon(Icons.person),
+                Text('      Mijn gegevens'),
+              ],
             ),
             onTap: () {
               Navigator.pop(context);
@@ -56,28 +118,15 @@ class DefaultDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Row(
-              children: [Icon(Icons.assignment_turned_in), Text(' Opdrachten')],
+              children: [
+                Icon(Icons.settings),
+                Text('      Instellingen'),
+              ],
             ),
             onTap: () {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.description), Text(' Leermiddelen')],
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Row(
-              children: [Icon(Icons.input), Text(' Open Introductie')],
-            ),
-            onTap: () {
-              Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
-            },
-          )
         ],
       ),
     );

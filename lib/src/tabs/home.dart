@@ -136,7 +136,7 @@ class _Home extends State<Home> {
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                Navigator.pushNamed(context, 'Introduction');
+                // Navigator.push(Introduction());
               },
             )
           ],

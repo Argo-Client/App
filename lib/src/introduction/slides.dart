@@ -9,7 +9,7 @@ extension StringExtension on String {
 }
 
 String randomSchool() {
-  return schoolUrls[new Random().nextInt(schoolUrls.length)].capitalize();
+  return schools[new Random().nextInt(schools.length)].capitalize();
 }
 
 class Introduction extends StatelessWidget {
@@ -85,7 +85,7 @@ class Introduction extends StatelessWidget {
                     if (value.isEmpty) {
                       return "Vergeet niet je school in te vullen!";
                     }
-                    if (!schoolUrls.contains(value)) {
+                    if (!schools.contains(value)) {
                       return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" +
                           randomSchool();
                     }

@@ -32,7 +32,7 @@ class Introduction extends StatelessWidget {
       // print(result);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('seen', true);
-      Navigator.pushNamed(context, 'Agenda');
+      Navigator.pushNamed(context, '/');
     } else {
       this.goToTab(1);
     }

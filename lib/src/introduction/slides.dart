@@ -25,6 +25,7 @@ class Introduction extends StatelessWidget {
     print("Validating");
     if (_formKey.currentState == null || _formKey.currentState.validate()) {
       print("Logging in");
+      // MagisterAuth("pantarijn.magister.net").fullLogin();
       // final AuthorizationTokenResponse result = await appAuth.authorizeAndExchangeCode(AuthorizationTokenRequest(
       //   "M6LOAPP",
       //   'm6loapp://oauth2redirect',
@@ -55,8 +56,7 @@ class Introduction extends StatelessWidget {
       slides: [
         new Slide(
           title: "Magistex",
-          description:
-              "Een moderne magister app.\nStart snel op en is gebruiksvriendelijk",
+          description: "Een moderne magister app.\nStart snel op en is gebruiksvriendelijk",
           backgroundColor: Colors.lightBlue,
         ),
         new Slide(
@@ -77,17 +77,13 @@ class Introduction extends StatelessWidget {
                     print(value);
                   },
                   validator: (value) {
-                    value = value
-                        .replaceAll(
-                            new RegExp(r'(http|https)://|.magister.net'), "")
-                        .toLowerCase();
+                    value = value.replaceAll(new RegExp(r'(http|https)://|.magister.net'), "").toLowerCase();
                     print(value);
                     if (value.isEmpty) {
                       return "Vergeet niet je school in te vullen!";
                     }
                     if (!schools.contains(value)) {
-                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" +
-                          randomSchool();
+                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" + randomSchool();
                     }
                     return null;
                   },

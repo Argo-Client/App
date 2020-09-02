@@ -9,6 +9,7 @@ class _Home extends State<Home> {
     // Huiswerk(),
     // Afwezigheid(),
     Cijfers(),
+    Instellingen(),
     // Berichten(),
   ];
 
@@ -36,7 +37,7 @@ class _Home extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Flutter App'),
+        title: Text('${_children[_currentIndex]}'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -129,14 +130,14 @@ class _Home extends State<Home> {
               leading: Icon(Icons.settings),
               title: Text('Instellingen'),
               onTap: () {
-                Navigator.pop(context);
+                changeIndex(2);
               },
             ),
             ListTile(
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                // Navigator.push(Introduction());
+                Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
               },
             )
           ],

@@ -16,34 +16,22 @@ class DefaultDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Row(
-              children: [
-                Icon(Icons.event),
-                Text('      Agenda'),
-              ],
-            ),
+            leading: Icon(Icons.event),
+            title: Text('Agenda'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, 'Agenda');
+              Navigator.pushNamed(context, 'Agenda');
             },
           ),
           ListTile(
-            title: Row(
-              children: [
-                Icon(Icons.assignment),
-                Text('      Huiswerk'),
-              ],
-            ),
+            leading: Icon(Icons.assignment),
+            title: Text('Huiswerk'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            title: Row(
-              children: [
-                Icon(Icons.check_circle),
-                Text('      Afwezigheid'),
-              ],
-            ),
+            leading: Icon(Icons.check_circle),
+            title: Text('Afwezigheid'),
             onTap: () {
               Navigator.pop(context);
             },
@@ -52,7 +40,7 @@ class DefaultDrawer extends StatelessWidget {
             leading: Icon(Icons.looks_6),
             title: Text('Cijfers'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, 'Cijfers');
+              Navigator.pushNamed(context, 'Cijfers');
               // Navigator.pop(context);
             },
           ),
@@ -69,7 +57,7 @@ class DefaultDrawer extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.work),
-                title: Text(' Studiewijzer'),
+                title: Text('Studiewijzer'),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -82,23 +70,15 @@ class DefaultDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                title: Row(
-                  children: [
-                    Icon(Icons.description),
-                    Text('      Leermiddelen'),
-                  ],
-                ),
+                leading: Icon(Icons.description),
+                title: Text('Leermiddelen'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: Row(
-                  children: [
-                    Icon(Icons.folder),
-                    Text('      Bronnen'),
-                  ],
-                ),
+                leading: Icon(Icons.folder),
+                title: Text('Bronnen'),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -106,27 +86,26 @@ class DefaultDrawer extends StatelessWidget {
             ],
           ),
           ListTile(
-            title: Row(
-              children: [
-                Icon(Icons.person),
-                Text('      Mijn gegevens'),
-              ],
-            ),
+            leading: Icon(Icons.person),
+            title: Text('Mijn gegevens'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            title: Row(
-              children: [
-                Icon(Icons.settings),
-                Text('      Instellingen'),
-              ],
-            ),
+            leading: Icon(Icons.settings),
+            title: Text('Instellingen'),
             onTap: () {
               Navigator.pop(context);
             },
           ),
+          ListTile(
+            leading: Icon(Icons.input),
+            title: Text('Open Introductie'),
+            onTap: () {
+              Navigator.pushNamed(context, 'Introduction');
+            },
+          )
         ],
       ),
     );

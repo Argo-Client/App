@@ -37,13 +37,11 @@ class DefaultDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.looks_6),
-            title: Text('Cijfers'),
-            onTap: () {
-              Navigator.pushNamed(context, 'Cijfers');
-              // Navigator.pop(context);
-            },
-          ),
+              leading: Icon(Icons.looks_6),
+              title: Text('Cijfers'),
+              onTap: () {
+                Navigator.pop(context);
+              }),
           ListTile(
             leading: Icon(Icons.email),
             title: Text('Berichten'),
@@ -52,7 +50,7 @@ class DefaultDrawer extends StatelessWidget {
             },
           ),
           ExpansionTile(
-            leading: Icon(Icons.ac_unit),
+            leading: Icon(Icons.folder),
             title: Text("ELO"),
             children: <Widget>[
               ListTile(
@@ -77,7 +75,7 @@ class DefaultDrawer extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.folder),
+                leading: Icon(Icons.folder_shared),
                 title: Text('Bronnen'),
                 onTap: () {
                   Navigator.pop(context);

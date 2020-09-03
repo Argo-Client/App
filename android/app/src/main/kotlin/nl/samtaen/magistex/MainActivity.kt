@@ -1,4 +1,4 @@
-package com.example.Magistex
+package nl.samtaen.magistex
 
 import io.flutter.embedding.android.FlutterActivity
 

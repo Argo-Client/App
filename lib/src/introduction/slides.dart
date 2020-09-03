@@ -21,28 +21,15 @@ class Introduction extends StatelessWidget {
   //   super.initState();
   // }
 
-  void validateSchool(context) async {
-    print("Validating");
-    if (_formKey.currentState == null || _formKey.currentState.validate()) {
-      print("Logging in");
-      // MagisterAuth("pantarijn.magister.net").fullLogin();
-      // final AuthorizationTokenResponse result = await appAuth.authorizeAndExchangeCode(AuthorizationTokenRequest(
-      //   "M6LOAPP",
-      //   'm6loapp://oauth2redirect',
-      //   discoveryUrl: ' https://accounts.magister.net/',
-      //   serviceConfiguration: AuthorizationServiceConfiguration(
-      //     'https://accounts.magister.net/connect/authorize',
-      //     'https://accounts.magister.net/connect/token',
-      //   ),
-      //   scopes: ["openid", "profile", "offline_access", "magister.mobile", "magister.ecs"],
-      // ));
-      // print(result);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('seen', true);
-      Navigator.pushNamed(context, '/');
-    } else {
-      this.goToTab(1);
+  void login(context) async {
+    print("Logging in");
+    if (magisterAuth.tokenSet is MagisterTokenSet && magisterAuth.tokenSet != null) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => App(),
+      ));
+      print(magisterAuth.tokenSet.accessToken);
     }
+    await magisterAuth.fullLogin(callback: () => login(context));
   }
 
   @override
@@ -60,54 +47,19 @@ class Introduction extends StatelessWidget {
           backgroundColor: Colors.lightBlue,
         ),
         new Slide(
-          title: "Kies uw school",
-          widgetDescription: Column(
-            children: [
-              Text("Bijv. " + randomSchool()),
-              Form(
-                key: _formKey,
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    icon: Icon(Icons.school),
-                    hintText: "Zoek een school",
-                    labelText: 'School',
-                  ),
-                  autofocus: true,
-                  onChanged: (String value) {
-                    print(value);
-                  },
-                  validator: (value) {
-                    value = value.replaceAll(new RegExp(r'(http|https)://|.magister.net'), "").toLowerCase();
-                    print(value);
-                    if (value.isEmpty) {
-                      return "Vergeet niet je school in te vullen!";
-                    }
-                    if (!schools.contains(value)) {
-                      return "Dit is niet de naam van een school, probeer bijvoorbeeld \n" + randomSchool();
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.redAccent,
-        ),
-        new Slide(
           title: "Login",
           widgetDescription: Center(
             child: RaisedButton(
-              child: Text("Login"),
-              onPressed: () {
-                validateSchool(context);
-              },
-            ),
+                child: Text("Login"),
+                onPressed: () {
+                  login(context);
+                }),
           ),
           backgroundColor: Colors.teal,
         ),
       ],
       onDonePress: () {
-        validateSchool(context);
+        login(context);
       },
     );
     return intro;

@@ -1,17 +1,23 @@
 library main;
 
-// import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'src/introduction/login.dart';
-part 'src/tabs/Instellingen.dart';
 part 'src/introduction/Introduction.dart';
-part 'src/tabs/home.dart';
+part 'src/layout.dart';
 part 'src/tabs/Agenda.dart';
 part 'src/tabs/Cijfers.dart';
+part 'src/tabs/Huiswerk.dart';
+part 'src/tabs/Afwezigheid.dart';
+part 'src/tabs/Berichten.dart';
+part 'src/tabs/Studiewijzer.dart';
+part 'src/tabs/Opdrachten.dart';
+part 'src/tabs/Leermiddelen.dart';
+part 'src/tabs/Bronnen.dart';
+part 'src/tabs/MijnGegevens.dart';
+part 'src/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
 void main() => runApp(App());
@@ -38,7 +44,5 @@ class App extends StatelessWidget {
 
 class Home extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _Home();
-  }
+  _Home createState() => _Home();
 }

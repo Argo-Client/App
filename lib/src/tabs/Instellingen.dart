@@ -24,7 +24,8 @@ class _Instellingen extends State<Instellingen> {
             value: darkThemeOpt,
             onChanged: (value) {
               setState(() => darkThemeOpt = value);
-              DynamicTheme.of(context).setBrightness(value ? Brightness.dark : Brightness.light);
+              DynamicTheme.of(context)
+                  .setBrightness(value ? Brightness.dark : Brightness.light);
             },
           ),
         ),

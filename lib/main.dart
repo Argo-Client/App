@@ -1,5 +1,7 @@
 library main;
 
+import 'package:flutter/rendering.dart';
+
 import 'src/data/schools.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -8,9 +10,18 @@ import 'package:intro_slider/slide_object.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'src/introduction/slides.dart';
-part 'src/tabs/home.dart';
+part 'src/layout.dart';
 part 'src/tabs/Agenda.dart';
 part 'src/tabs/Cijfers.dart';
+part 'src/tabs/Huiswerk.dart';
+part 'src/tabs/Afwezigheid.dart';
+part 'src/tabs/Berichten.dart';
+part 'src/tabs/Studiewijzer.dart';
+part 'src/tabs/Opdrachten.dart';
+part 'src/tabs/Leermiddelen.dart';
+part 'src/tabs/Bronnen.dart';
+part 'src/tabs/MijnGegevens.dart';
+part 'src/tabs/Instellingen.dart';
 
 void main() => runApp(App());
 
@@ -30,7 +41,5 @@ class App extends StatelessWidget {
 
 class Home extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _Home();
-  }
+  _Home createState() => _Home();
 }

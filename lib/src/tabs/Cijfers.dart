@@ -1,10 +1,15 @@
 part of main;
 
-class Cijfers extends StatelessWidget {
+class Cijfers extends StatefulWidget {
+  @override
+  _Cijfers createState() => _Cijfers();
+}
+
+class _Cijfers extends State<Cijfers> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Hier komt de cijfers'),
+      child: Text('Hier komt de Cijfers'),
     );
   }
 }

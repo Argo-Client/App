@@ -1,14 +1,11 @@
 part of main;
 
 class Instellingen extends StatefulWidget {
-  static const title = 'Settings';
-  static const androidIcon = Icon(Icons.settings);
-
   @override
-  _SettingsTabState createState() => _SettingsTabState();
+  _Instellingen createState() => _Instellingen();
 }
 
-class _SettingsTabState extends State<Instellingen> {
+class _Instellingen extends State<Instellingen> {
   Widget build(BuildContext context) {
     var darkThemeOpt = Theme.of(context).brightness == Brightness.dark;
     return ListView(

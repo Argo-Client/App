@@ -1,26 +1,11 @@
 part of main;
 
-final _formKey = GlobalKey<FormState>();
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
-  }
+class Introduction extends StatefulWidget {
+  @override
+  _Introduction createState() => _Introduction();
 }
 
-String randomSchool() {
-  return schools[new Random().nextInt(schools.length)].capitalize();
-}
-
-class Introduction extends StatelessWidget {
-  final FlutterAppAuth appAuth = FlutterAppAuth();
-  Function goToTab;
-  // List<String> schoolUrls;
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
+class _Introduction extends State<Introduction> {
   void login(context) async {
     print("Logging in");
     if (magisterAuth.tokenSet is MagisterTokenSet && magisterAuth.tokenSet != null) {
@@ -28,8 +13,9 @@ class Introduction extends StatelessWidget {
         builder: (context) => App(),
       ));
       print(magisterAuth.tokenSet.accessToken);
+    } else {
+      await magisterAuth.fullLogin(callback: () => login(context));
     }
-    await magisterAuth.fullLogin(callback: () => login(context));
   }
 
   @override
@@ -37,8 +23,9 @@ class Introduction extends StatelessWidget {
     IntroSlider intro = new IntroSlider(
       isShowSkipBtn: false,
       colorDot: Color.fromRGBO(255, 255, 255, .5),
-      refFuncGoToTab: (index) {
-        this.goToTab = index;
+      nameDoneBtn: "LOGIN",
+      onDonePress: () {
+        login(context);
       },
       slides: [
         new Slide(
@@ -58,9 +45,6 @@ class Introduction extends StatelessWidget {
           backgroundColor: Colors.teal,
         ),
       ],
-      onDonePress: () {
-        login(context);
-      },
     );
     return intro;
   }

@@ -25,9 +25,7 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     void runIntroduction() async {
       openedIntroduction = true;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool _seen = (prefs.getBool('seen') ?? false);
-      if (!_seen) {
+      if (magisterAuth.tokenSet is MagisterTokenSet && magisterAuth.tokenSet != null) {
         Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
       }
     }

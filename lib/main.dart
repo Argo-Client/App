@@ -9,6 +9,9 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
+import 'src/introduction/login.dart';
+part 'src/tabs/Instellingen.dart';
 part 'src/introduction/slides.dart';
 part 'src/layout.dart';
 part 'src/tabs/Agenda.dart';
@@ -23,19 +26,26 @@ part 'src/tabs/Bronnen.dart';
 part 'src/tabs/MijnGegevens.dart';
 part 'src/tabs/Instellingen.dart';
 
+MagisterAuth magisterAuth = new MagisterAuth();
 void main() => runApp(App());
 
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Magistex',
-      theme: ThemeData(
-          primaryColor: Colors.blue,
-          accentColor: Colors.blue,
-          brightness: Brightness.dark),
-      home: Home(),
-    );
+    return new DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => new ThemeData(
+              primaryColor: Colors.blue,
+              accentColor: Colors.blue,
+              brightness: brightness,
+            ),
+        themedWidgetBuilder: (context, theme) {
+          return MaterialApp(
+            title: 'Magistex',
+            theme: theme,
+            home: Home(),
+          );
+        });
   }
 }
 

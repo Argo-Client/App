@@ -33,7 +33,8 @@ class _Home extends State<Home> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool _seen = (prefs.getBool('seen') ?? false);
       if (!_seen) {
-        Introduction();
+        Navigator.of(context).pushReplacement(
+            new MaterialPageRoute(builder: (context) => new Introduction()));
       }
     }
 

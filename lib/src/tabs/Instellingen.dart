@@ -29,6 +29,30 @@ class _Instellingen extends State<Instellingen> {
             },
           ),
         ),
+        Divider(),
+        Padding(
+          padding: EdgeInsets.only(left: 15, top: 20),
+          child: Text(
+            "Account",
+            style: TextStyle(color: Colors.orange),
+          ),
+        ),
+        Divider(),
+        Padding(
+          padding: EdgeInsets.only(left: 15, top: 20),
+          child: Text(
+            "Meldingen",
+            style: TextStyle(color: Colors.orange),
+          ),
+        ),
+        Divider(),
+        Padding(
+          padding: EdgeInsets.only(left: 15, top: 20),
+          child: Text(
+            "Meldingen",
+            style: TextStyle(color: Colors.orange),
+          ),
+        ),
       ],
     );
   }

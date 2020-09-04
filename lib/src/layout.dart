@@ -30,8 +30,10 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     void runIntroduction() async {
       openedIntroduction = true;
-      if (magisterAuth.tokenSet is MagisterTokenSet && magisterAuth.tokenSet != null) {
-        Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
+      if (magisterAuth.tokenSet is MagisterTokenSet &&
+          magisterAuth.tokenSet != null) {
+        Navigator.of(context).pushReplacement(
+            new MaterialPageRoute(builder: (context) => new Introduction()));
       }
     }
 
@@ -48,8 +50,8 @@ class _Home extends State<Home> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text("Guus van Meerveld"),
-              accountEmail: Text("616258"),
+              accountName: Text("Test Leering"),
+              accountEmail: Text("Leerling Nummer"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Theme.of(context).backgroundColor,
                 child: Icon(Icons.person, size: 50),
@@ -153,7 +155,8 @@ class _Home extends State<Home> {
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (context) => new Introduction()));
+                Navigator.of(context).pushReplacement(new MaterialPageRoute(
+                    builder: (context) => new Introduction()));
               },
             )
           ],

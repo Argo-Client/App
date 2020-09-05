@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'src/introduction/login.dart';
+import 'src/Magister/login.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 part 'src/introduction/Introduction.dart';
 part 'src/layout.dart';
 part 'src/tabs/Agenda.dart';
@@ -20,7 +22,14 @@ part 'src/tabs/MijnGegevens.dart';
 part 'src/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
-void main() => runApp(App());
+Box userdata;
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox("magisterTokens");
+  await Hive.openBox("userdata");
+  userdata = Hive.box("userdata");
+  runApp(App());
+}
 
 class App extends StatelessWidget {
   @override
@@ -36,7 +45,7 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Magistex',
             theme: theme,
-            home: Home(),
+            home: userdata.containsKey("introduction") ? Home() : Introduction(),
           );
         });
   }

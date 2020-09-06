@@ -27,10 +27,8 @@ part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
-BuildContext mainContext;
 Box userdata;
 void main() async {
-  print(Colors.blue.value);
   await Hive.initFlutter();
   await Hive.openBox("userdata");
   userdata = Hive.box("userdata");
@@ -43,13 +41,10 @@ void main() async {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    mainContext = context;
     return MaterialApp(
       title: 'Magistex',
       theme: ThemeData(
-        brightness: userdata.get("darkMode", defaultValue: false)
-            ? Brightness.dark
-            : Brightness.light,
+        brightness: userdata.get("darkMode", defaultValue: false) ? Brightness.dark : Brightness.light,
         primaryColor: Color(userdata.get("primaryColor") ?? 4280391411),
         accentColor: Color(userdata.get("accentColor") ?? 4280391411),
       ),

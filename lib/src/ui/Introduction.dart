@@ -6,21 +6,22 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
+  void gotoApp(BuildContext context) {
+    userdata.put("introduction", true);
+    // Navigator.pushNamed(context, "/");
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    void gotoApp() {
-      userdata.put("introduction", true);
-      Navigator.pushNamed(context, '/');
-    }
-
     return MaterialApp(
-        title: "Introduction",
-        home: new IntroSlider(
+      home: Builder(
+        builder: (context) => new IntroSlider(
           isShowSkipBtn: false,
           colorDot: Color.fromRGBO(255, 255, 255, .5),
           nameDoneBtn: "LOGIN",
           onDonePress: () {
-            magisterAuth.checkThenLogin(gotoApp);
+            magisterAuth.checkThenLogin(() => gotoApp(context));
           },
           slides: [
             Slide(
@@ -34,12 +35,14 @@ class _Introduction extends State<Introduction> {
                 child: RaisedButton(
                     child: Text("Login"),
                     onPressed: () {
-                      magisterAuth.checkThenLogin(gotoApp);
+                      magisterAuth.checkThenLogin(() => gotoApp(context));
                     }),
               ),
               backgroundColor: Colors.teal,
             ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

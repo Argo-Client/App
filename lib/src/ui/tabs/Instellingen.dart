@@ -18,7 +18,6 @@ class _Instellingen extends State<Instellingen> {
               setState(() {
                 userdata.put("primaryColor", color.value);
                 userdata.put("accentColor", color.value);
-                print(userdata.get("primaryColor"));
               });
             },
           ),
@@ -124,8 +123,7 @@ class _Instellingen extends State<Instellingen> {
             ),
             ListTile(
               title: Text("Verander foto"),
-              subtitle:
-                  Text("Verander je foto als die niet zo goed gelukt is."),
+              subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
               trailing: CircleAvatar(
                 backgroundColor: Theme.of(context).backgroundColor,
                 child: Icon(Icons.person, size: 30),
@@ -143,9 +141,6 @@ class _Instellingen extends State<Instellingen> {
                 );
 
                 _icon = Icon(icon);
-                setState(() {});
-
-                debugPrint('Picked Icon:  $icon');
               },
             ),
             ListTile(
@@ -153,7 +148,7 @@ class _Instellingen extends State<Instellingen> {
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                runApp(Introduction());
+                Navigator.pushNamed(context, "Introduction");
               },
             ),
           ],

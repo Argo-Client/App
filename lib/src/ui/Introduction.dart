@@ -8,6 +8,7 @@ class Introduction extends StatefulWidget {
 class _Introduction extends State<Introduction> {
   void gotoApp(BuildContext context) {
     userdata.put("introduction", true);
+    ProfileInfo().refresh();
     // Navigator.pushNamed(context, "/");
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
   }

@@ -6,6 +6,7 @@ class MijnGegevens extends StatefulWidget {
 }
 
 class _MijnGegevens extends State<MijnGegevens> {
+  Map user = Hive.box("magisterData").toMap();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,8 +25,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: CircleAvatar(
                               radius: 50,
-                              backgroundColor:
-                                  Theme.of(context).backgroundColor,
+                              backgroundColor: Theme.of(context).backgroundColor,
                               child: Icon(Icons.person, size: 60),
                             ),
                           ),
@@ -35,7 +35,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            "Sam Taen",
+                            user["name"] + " " + (user["insertion"] != null ? user["insertion"] + " " : "") + user["lastname"],
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w300,
@@ -126,7 +126,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Officiële naam",
                       ),
                       subtitle: Text(
-                        "Zeer Officiële Naam",
+                        user["officialName"] + " " + (user["officialInsertion"] != null ? user["officialInsertion"] + " " : "") + user["officialLastname"],
                       ),
                     ),
                     Padding(
@@ -138,7 +138,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Geboortedatum",
                       ),
                       subtitle: Text(
-                        "1 jan 1970",
+                        user["birthdate"],
                       ),
                     ),
                     Padding(

@@ -4,11 +4,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'src/utils/magister/login.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'src/utils/magister/login.dart';
+import 'src/utils/magister/profileInfo.dart';
+
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/utils/buildDrawer.dart';
@@ -31,11 +34,13 @@ Box userdata;
 void main() async {
   await Hive.initFlutter();
   await Hive.openBox("userdata");
+  await Hive.openBox("magisterData");
+  await Hive.openBox("magisterTokens");
   userdata = Hive.box("userdata");
   runApp(App());
-  await Hive.openBox("magisterTokens");
   print("Userdata: " + userdata.toMap().toString());
   print("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
+  print("magisterData: " + Hive.box("magisterData").toMap().toString());
 }
 
 class App extends StatelessWidget {

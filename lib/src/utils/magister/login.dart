@@ -5,7 +5,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:uni_links/uni_links.dart';
@@ -25,7 +25,10 @@ class MagisterAuth {
     this.nonce = this.generateRandomBase64(32);
     this.state = this.generateRandomString(16);
     this.codeVerifier = generateRandomString(50);
-    this.codeChallenge = base64Url.encode(SHA256Digest().process(Uint8List.fromList(this.codeVerifier.codeUnits))).replaceAll('=', '');
+    this.codeChallenge = base64Url
+        .encode(SHA256Digest()
+            .process(Uint8List.fromList(this.codeVerifier.codeUnits)))
+        .replaceAll('=', '');
   }
 
   Future<void> checkThenLogin(Function cb) async {
@@ -46,7 +49,8 @@ class MagisterAuth {
 
   String generateRandomString(length) {
     var r = Random.secure();
-    var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var chars =
+        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     return Iterable.generate(50, (_) => chars[r.nextInt(chars.length)]).join();
   }
 
@@ -65,7 +69,8 @@ class MagisterAuth {
   }
 
   Future<MagisterTokenSet> getTokenSet() async {
-    List<int> bodyBytes = utf8.encode("code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier");
+    List<int> bodyBytes = utf8.encode(
+        "code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier");
 
     Response response = await post(
       tokenURL,
@@ -75,7 +80,8 @@ class MagisterAuth {
         "Host": "accounts.magister.net",
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Origin": "https://accounts.magister.net",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
+        "User-Agent":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
       },
       body: bodyBytes,
       encoding: Encoding.getByName("utf-8"),

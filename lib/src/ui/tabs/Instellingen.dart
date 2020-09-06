@@ -24,7 +24,10 @@ class _Instellingen extends State<Instellingen> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text("Close"),
+              child: Text(
+                "Sluit",
+                textScaleFactor: 1.25,
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -121,46 +124,38 @@ class _Instellingen extends State<Instellingen> {
             ),
             ListTile(
               title: Text("Verander foto"),
-              subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("Kies een optie"),
-                      content: DefaultTabController(
-                        length: 3,
-                        child: Scaffold(
-                          backgroundColor: Colors.transparent,
-                          appBar: TabBar(
-                            tabs: [
-                              Tab(icon: Icon(Icons.face)),
-                              Tab(icon: Icon(Icons.file_upload)),
-                              Tab(icon: Icon(Icons.person)),
-                            ],
-                          ),
-                          body: TabBarView(
-                            children: [
-                              Icon(Icons.directions_car),
-                              Icon(Icons.directions_transit),
-                              Icon(Icons.directions_bike),
-                            ],
-                          ),
-                        ),
-                      ),
-                      actions: <Widget>[
-                        FlatButton(
-                          child: Text("Close"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
+              subtitle:
+                  Text("Verander je foto als die niet zo goed gelukt is."),
+              trailing: CircleAvatar(
+                backgroundColor: Theme.of(context).backgroundColor,
+                child: Icon(Icons.person, size: 30),
+              ),
+              onTap: () async {
+                Icon _icon;
+                IconData icon = await FlutterIconPicker.showIconPicker(
+                  context,
+                  title: Text("Kies een icoontje"),
+                  closeChild: Text(
+                    'Sluit',
+                    textScaleFactor: 1.25,
+                  ),
+                  iconPackMode: IconPack.materialOutline,
                 );
+
+                _icon = Icon(icon);
+                setState(() {});
+
+                debugPrint('Picked Icon:  $icon');
               },
-            )
+            ),
+            ListTile(
+              selected: 12 == _currentIndex,
+              leading: Icon(Icons.input),
+              title: Text('Open Introductie'),
+              onTap: () {
+                runApp(Introduction());
+              },
+            ),
           ],
         );
       },

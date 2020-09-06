@@ -39,7 +39,8 @@ dependencies:
   flutter_iconpicker: ^2.1.5
   hive: ^1.4.4
   hive_flutter: ^0.3.1
-
+  outline_material_icons: ^0.1.1
+  flutter_colorpicker: ^0.3.4
 dev_dependencies:
   flutter_launcher_icons:
   flutter_test:

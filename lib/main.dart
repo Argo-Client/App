@@ -4,25 +4,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'src/Magister/login.dart';
+import 'src/utils/magister/login.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-part 'src/introduction/Introduction.dart';
+part 'src/ui/Introduction.dart';
+part 'src/utils/tabs.dart';
+part 'src/utils/buildDrawer.dart';
 part 'src/layout.dart';
-part 'src/tabs/Thuis.dart';
-part 'src/tabs/Agenda.dart';
-part 'src/tabs/Cijfers.dart';
-part 'src/tabs/Huiswerk.dart';
-part 'src/tabs/Afwezigheid.dart';
-part 'src/tabs/Berichten.dart';
-part 'src/tabs/Studiewijzer.dart';
-part 'src/tabs/Opdrachten.dart';
-part 'src/tabs/Leermiddelen.dart';
-part 'src/tabs/Bronnen.dart';
-part 'src/tabs/MijnGegevens.dart';
-part 'src/tabs/Instellingen.dart';
+part 'src/ui/tabs/Thuis.dart';
+part 'src/ui/tabs/Agenda.dart';
+part 'src/ui/tabs/Cijfers.dart';
+part 'src/ui/tabs/Huiswerk.dart';
+part 'src/ui/tabs/Afwezigheid.dart';
+part 'src/ui/tabs/Berichten.dart';
+part 'src/ui/tabs/Studiewijzer.dart';
+part 'src/ui/tabs/Opdrachten.dart';
+part 'src/ui/tabs/Leermiddelen.dart';
+part 'src/ui/tabs/Bronnen.dart';
+part 'src/ui/tabs/MijnGegevens.dart';
+part 'src/ui/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
 BuildContext mainContext;
@@ -45,7 +47,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Magistex',
       theme: ThemeData(
-        brightness: userdata.get("darkMode", defaultValue: false) ? Brightness.dark : Brightness.light,
+        brightness: userdata.get("darkMode", defaultValue: false)
+            ? Brightness.dark
+            : Brightness.light,
         primaryColor: Color(userdata.get("primaryColor") ?? 4280391411),
         accentColor: Color(userdata.get("accentColor") ?? 4280391411),
       ),

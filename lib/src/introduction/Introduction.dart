@@ -6,13 +6,13 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
-  void gotoApp() {
-    userdata.put("introduction", true);
-    runApp(App());
-  }
-
   @override
   Widget build(BuildContext context) {
+    void gotoApp() {
+      userdata.put("introduction", true);
+      Navigator.pushNamed(context, '/');
+    }
+
     return MaterialApp(
         title: "Introduction",
         home: new IntroSlider(

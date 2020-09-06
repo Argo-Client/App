@@ -29,6 +29,10 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    if (!userdata.containsKey("introduction")) {
+      print("Opening");
+      Timer(Duration(milliseconds: 1), () => Navigator.pushNamed(context, 'Introduction'));
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(_children[_currentIndex].toStringShort()),
@@ -151,7 +155,7 @@ class _Home extends State<Home> {
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                runApp(Introduction());
+                Navigator.pushNamed(context, 'Introduction');
               },
             )
           ],

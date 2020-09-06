@@ -1,5 +1,6 @@
 library main;
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -25,21 +26,22 @@ part 'src/tabs/MijnGegevens.dart';
 part 'src/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
+BuildContext mainContext;
 Box userdata;
-void main() async => {
-      FlutterError.onError = (FlutterErrorDetails details) {
-        FlutterError.dumpErrorToConsole(details);
-      },
-      runApp(App()),
-      await Hive.initFlutter(),
-      await Hive.openBox("magisterTokens"),
-      await Hive.openBox("userdata"),
-      userdata = Hive.box("userdata"),
-    };
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox("userdata");
+  userdata = Hive.box("userdata");
+  runApp(App());
+  await Hive.openBox("magisterTokens");
+  print("Userdata: " + userdata.toMap().toString());
+  print("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
+}
 
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    mainContext = context;
     return new DynamicTheme(
         defaultBrightness: Brightness.light,
         data: (brightness) => new ThemeData(
@@ -51,7 +53,12 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Magistex',
             theme: theme,
-            home: Home(),
+            initialRoute: "/",
+            routes: {
+              "/": (context) => Home(),
+              "Introduction": (context) => Introduction(),
+            },
+            // home: Home(),
           );
         });
   }

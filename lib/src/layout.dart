@@ -36,6 +36,7 @@ class _Home extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_children[_currentIndex].toStringShort()),
+        // backgroundColor: Color(userdata.get("primaryColor")),
       ),
       drawer: Drawer(
         child: ListView(

@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'package:dynamic_theme/dynamic_theme.dart';
 import 'src/Magister/login.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -29,6 +28,7 @@ MagisterAuth magisterAuth = new MagisterAuth();
 BuildContext mainContext;
 Box userdata;
 void main() async {
+  print(Colors.blue.value);
   await Hive.initFlutter();
   await Hive.openBox("userdata");
   userdata = Hive.box("userdata");
@@ -42,25 +42,20 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     mainContext = context;
-    return new DynamicTheme(
-        defaultBrightness: Brightness.light,
-        data: (brightness) => new ThemeData(
-              primaryColor: Colors.blue,
-              accentColor: Colors.blue,
-              brightness: brightness,
-            ),
-        themedWidgetBuilder: (context, theme) {
-          return MaterialApp(
-            title: 'Magistex',
-            theme: theme,
-            initialRoute: "/",
-            routes: {
-              "/": (context) => Home(),
-              "Introduction": (context) => Introduction(),
-            },
-            // home: Home(),
-          );
-        });
+    return MaterialApp(
+      title: 'Magistex',
+      theme: ThemeData(
+        brightness: userdata.get("darkMode", defaultValue: false) ? Brightness.dark : Brightness.light,
+        primaryColor: Color(userdata.get("primaryColor") ?? 4280391411),
+        accentColor: Color(userdata.get("accentColor") ?? 4280391411),
+      ),
+      initialRoute: "/",
+      routes: {
+        "/": (context) => Home(),
+        "Introduction": (context) => Introduction(),
+      },
+      // home: Home(),
+    );
   }
 }
 

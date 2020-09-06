@@ -9,7 +9,7 @@ class _Cijfers extends State<Cijfers> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Hier komt de Cijfers'),
+      child: null,
     );
   }
 }

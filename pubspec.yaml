@@ -39,6 +39,8 @@ dependencies:
   pointycastle: ^1.0.2
   http: ^0.12.2
   uni_links: ^0.4.0
+  flutter_colorpicker: ^0.3.4
+  flutter_iconpicker: ^2.1.5
 
 dev_dependencies:
   flutter_launcher_icons:

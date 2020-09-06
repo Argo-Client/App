@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'src/introduction/login.dart';
 part 'src/introduction/Introduction.dart';
 part 'src/layout.dart';
+part 'src/tabs/Thuis.dart';
 part 'src/tabs/Agenda.dart';
 part 'src/tabs/Cijfers.dart';
 part 'src/tabs/Huiswerk.dart';
@@ -20,7 +22,12 @@ part 'src/tabs/MijnGegevens.dart';
 part 'src/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
-void main() => runApp(App());
+void main() => {
+      FlutterError.onError = (FlutterErrorDetails details) {
+        FlutterError.dumpErrorToConsole(details);
+      },
+      runApp(App())
+    };
 
 class App extends StatelessWidget {
   @override

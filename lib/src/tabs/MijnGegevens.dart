@@ -8,9 +8,9 @@ class MijnGegevens extends StatefulWidget {
 class _MijnGegevens extends State<MijnGegevens> {
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new Center(
-        child: new RefreshIndicator(
+    return Container(
+      child: Center(
+        child: RefreshIndicator(
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -69,11 +69,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "N. Bot",
-                      ),
-                      subtitle: Text(
                         "Mentor(en)",
                       ),
+                      subtitle: Text(
+                        "V. Mentor",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -81,11 +81,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "616068",
-                      ),
-                      subtitle: Text(
                         "Stamnummer",
                       ),
+                      subtitle: Text(
+                        "123456",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -93,11 +93,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "NG",
-                      ),
-                      subtitle: Text(
                         "Profiel",
                       ),
+                      subtitle: Text(
+                        "NG",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -105,10 +105,10 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "A VWO 5e leerjaar",
+                        "Studie",
                       ),
                       subtitle: Text(
-                        "Studie",
+                        "A GYMNASIUM 6e leerjaar",
                       ),
                     ),
                     Divider(),
@@ -123,11 +123,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "Samuel David Taen",
-                      ),
-                      subtitle: Text(
                         "Officiële naam",
                       ),
+                      subtitle: Text(
+                        "Zeer Officiële Naam",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -135,11 +135,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "26 juli 2004",
-                      ),
-                      subtitle: Text(
                         "Geboortedatum",
                       ),
+                      subtitle: Text(
+                        "1 jan 1970",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -147,11 +147,11 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "-",
-                      ),
-                      subtitle: Text(
                         "Mobiele nummer",
                       ),
+                      subtitle: Text(
+                        "-",
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
@@ -159,10 +159,10 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "Broekemalaan 20\n6703 GM, Wageningen",
+                        "Adres",
                       ),
                       subtitle: Text(
-                        "Adres",
+                        "1234 AB Amsterdam",
                       ),
                     ),
                   ],

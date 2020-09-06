@@ -6,6 +6,7 @@ class _Home extends State<Home> {
   int _currentIndex = 0;
 
   final List<Widget> _children = [
+    Thuis(),
     Agenda(),
     Huiswerk(),
     Afwezigheid(),
@@ -42,9 +43,7 @@ class _Home extends State<Home> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_children[_currentIndex].toString()),
-      ),
+      appBar: _children[_currentIndex],
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -59,41 +58,49 @@ class _Home extends State<Home> {
             ),
             ListTile(
               selected: 0 == _currentIndex,
-              leading: Icon(Icons.event),
-              title: Text('Agenda'),
+              leading: Icon(Icons.home),
+              title: Text('Home'),
               onTap: () {
                 changeIndex(0);
               },
             ),
             ListTile(
               selected: 1 == _currentIndex,
-              leading: Icon(Icons.assignment),
-              title: Text('Huiswerk'),
+              leading: Icon(Icons.event),
+              title: Text('Agenda'),
               onTap: () {
                 changeIndex(1);
               },
             ),
             ListTile(
               selected: 2 == _currentIndex,
-              leading: Icon(Icons.check_circle),
-              title: Text('Afwezigheid'),
+              leading: Icon(Icons.assignment),
+              title: Text('Huiswerk'),
               onTap: () {
                 changeIndex(2);
               },
             ),
             ListTile(
-                selected: 3 == _currentIndex,
+              selected: 3 == _currentIndex,
+              leading: Icon(Icons.check_circle),
+              title: Text('Afwezigheid'),
+              onTap: () {
+                changeIndex(3);
+              },
+            ),
+            ListTile(
+                selected: 4 == _currentIndex,
                 leading: Icon(Icons.looks_6),
                 title: Text('Cijfers'),
                 onTap: () {
-                  changeIndex(3);
+                  changeIndex(4);
                 }),
             ListTile(
-              selected: 4 == _currentIndex,
+              selected: 5 == _currentIndex,
               leading: Icon(Icons.email),
               title: Text('Berichten'),
               onTap: () {
-                changeIndex(4);
+                changeIndex(5);
               },
             ),
             ExpansionTile(
@@ -101,57 +108,57 @@ class _Home extends State<Home> {
               title: Text("ELO"),
               children: <Widget>[
                 ListTile(
-                  selected: 5 == _currentIndex,
+                  selected: 6 == _currentIndex,
                   leading: Icon(Icons.work),
                   title: Text('Studiewijzer'),
-                  onTap: () {
-                    changeIndex(5);
-                  },
-                ),
-                ListTile(
-                  selected: 6 == _currentIndex,
-                  leading: Icon(Icons.assignment_turned_in),
-                  title: Text('Opdrachten'),
                   onTap: () {
                     changeIndex(6);
                   },
                 ),
                 ListTile(
                   selected: 7 == _currentIndex,
-                  leading: Icon(Icons.description),
-                  title: Text('Leermiddelen'),
+                  leading: Icon(Icons.assignment_turned_in),
+                  title: Text('Opdrachten'),
                   onTap: () {
                     changeIndex(7);
                   },
                 ),
                 ListTile(
-                  selected: 8 == _currentIndex,
+                  selected: 9 == _currentIndex,
+                  leading: Icon(Icons.description),
+                  title: Text('Leermiddelen'),
+                  onTap: () {
+                    changeIndex(9);
+                  },
+                ),
+                ListTile(
+                  selected: 9 == _currentIndex,
                   leading: Icon(Icons.folder_shared),
                   title: Text('Bronnen'),
                   onTap: () {
-                    changeIndex(8);
+                    changeIndex(9);
                   },
                 ),
               ],
             ),
             ListTile(
-              selected: 9 == _currentIndex,
+              selected: 10 == _currentIndex,
               leading: Icon(Icons.person),
               title: Text('Mijn gegevens'),
-              onTap: () {
-                changeIndex(9);
-              },
-            ),
-            ListTile(
-              selected: 10 == _currentIndex,
-              leading: Icon(Icons.settings),
-              title: Text('Instellingen'),
               onTap: () {
                 changeIndex(10);
               },
             ),
             ListTile(
               selected: 11 == _currentIndex,
+              leading: Icon(Icons.settings),
+              title: Text('Instellingen'),
+              onTap: () {
+                changeIndex(11);
+              },
+            ),
+            ListTile(
+              selected: 12 == _currentIndex,
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {

@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'src/Magister/login.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'src/introduction/login.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 part 'src/introduction/Introduction.dart';
 part 'src/layout.dart';
 part 'src/tabs/Thuis.dart';
@@ -22,11 +25,16 @@ part 'src/tabs/MijnGegevens.dart';
 part 'src/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
-void main() => {
+Box userdata;
+void main() async => {
       FlutterError.onError = (FlutterErrorDetails details) {
         FlutterError.dumpErrorToConsole(details);
       },
-      runApp(App())
+      runApp(App()),
+      await Hive.initFlutter(),
+      await Hive.openBox("magisterTokens"),
+      await Hive.openBox("userdata"),
+      userdata = Hive.box("userdata"),
     };
 
 class App extends StatelessWidget {

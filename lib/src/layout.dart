@@ -1,6 +1,6 @@
 part of main;
 
-bool openedIntroduction = false;
+bool hasRunRunIntro = true;
 
 class _Home extends State<Home> {
   int _currentIndex = 0;
@@ -29,21 +29,10 @@ class _Home extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    void runIntroduction() async {
-      openedIntroduction = true;
-      if (magisterAuth.tokenSet is MagisterTokenSet &&
-          magisterAuth.tokenSet != null) {
-        Navigator.of(context).pushReplacement(
-            new MaterialPageRoute(builder: (context) => new Introduction()));
-      }
-    }
-
-    if (!openedIntroduction) {
-      runIntroduction();
-    }
-
     return Scaffold(
-      appBar: _children[_currentIndex],
+      appBar: AppBar(
+        title: Text(_children[_currentIndex].toStringShort()),
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -162,8 +151,7 @@ class _Home extends State<Home> {
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {
-                Navigator.of(context).pushReplacement(new MaterialPageRoute(
-                    builder: (context) => new Introduction()));
+                runApp(Introduction());
               },
             )
           ],

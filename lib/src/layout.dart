@@ -1,7 +1,5 @@
 part of main;
 
-bool hasRunRunIntro = true;
-
 int _currentIndex = 0;
 
 class _Home extends State<Home> {
@@ -17,14 +15,13 @@ class _Home extends State<Home> {
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
         accountName: Text(Hive.box("magisterData").get("fullName", defaultValue: "Laden...")),
-        accountEmail: Text("Leerling Nummer"),
+        accountEmail: Text(Hive.box("magisterData").get("klasCode", defaultValue: "Laden...")),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
           child: Icon(Icons.person, size: 50),
         ),
       ),
     ];
-
     for (int i = 0; i < _children.length; i++) {
       if (_children[i]["divider"] ?? false) {
         _drawer.add(Divider());

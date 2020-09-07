@@ -1,6 +1,5 @@
 library main;
 
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -55,8 +54,8 @@ class App extends StatelessWidget {
       title: 'Magistex',
       theme: ThemeData(
         brightness: userdata.get("darkMode", defaultValue: false) ? Brightness.dark : Brightness.light,
-        primaryColor: Color(userdata.get("primaryColor") ?? 4280391411),
-        accentColor: Color(userdata.get("accentColor") ?? 4280391411),
+        primaryColor: Color(userdata.get("primaryColor") ?? Colors.blue.value),
+        accentColor: Color(userdata.get("accentColor") ?? Colors.orange.value),
       ),
       initialRoute: "/",
       routes: {

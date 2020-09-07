@@ -42,7 +42,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                             ),
                           ),
                           Text(
-                            user.get("klas", defaultValue: "Laden..."),
+                            user.get("klasCode", defaultValue: "Laden..."),
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.grey,
@@ -108,7 +108,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Studie",
                       ),
                       subtitle: Text(
-                        "A GYMNASIUM 6e leerjaar",
+                        user.get("klas", defaultValue: "Laden..."),
                       ),
                     ),
                     Divider(),
@@ -150,7 +150,19 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Mobiele nummer",
                       ),
                       subtitle: Text(
-                        "-",
+                        user.get("phone", defaultValue: "Laden..."),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: Divider(),
+                    ),
+                    ListTile(
+                      title: Text(
+                        "Email Adres",
+                      ),
+                      subtitle: Text(
+                        user.get("email", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(
@@ -162,7 +174,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Adres",
                       ),
                       subtitle: Text(
-                        "1234 AB Amsterdam",
+                        user.get("address", defaultValue: "Laden..."),
                       ),
                     ),
                   ],
@@ -170,13 +182,12 @@ class _MijnGegevens extends State<MijnGegevens> {
               ],
             ),
           ),
-          onRefresh: _refresh,
+          onRefresh: () async {
+            await Magister().refresh();
+            setState(() {});
+          },
         ),
       ),
     );
   }
-}
-
-Future<void> _refresh() async {
-  print('refreshing...');
 }

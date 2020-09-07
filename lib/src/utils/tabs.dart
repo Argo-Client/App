@@ -59,7 +59,7 @@ final List _children = [
     "divider": true,
   },
   {
-    "name": Text("Mijn gegevens"),
+    "name": Text("Mijn Gegevens"),
     "icon": Icon(Icons.person),
     "page": MijnGegevens(),
   },

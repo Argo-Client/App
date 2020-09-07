@@ -6,12 +6,13 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawer extends State<AppDrawer> {
+  Box user = Hive.box("magisterData");
   @override
   Widget build(BuildContext context) {
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
-        accountName: Text("Test Leering"),
-        accountEmail: Text("Leerling Nummer"),
+        accountName: Text(user.get("fullName", defaultValue: "Laden...")),
+        accountEmail: Text(user.get("klasCode", defaultValue: "Laden...")),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
           child: Icon(Icons.person, size: 50),

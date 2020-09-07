@@ -8,8 +8,14 @@ class Berichten extends StatefulWidget {
 class _Berichten extends State<Berichten> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Berichten'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Berichten"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("56 ongelezen berichten"),
+      ),
     );
   }
 }

@@ -8,8 +8,14 @@ class Opdrachten extends StatefulWidget {
 class _Opdrachten extends State<Opdrachten> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Opdrachten'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Opdrachten"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("63 opdrachten in te leveren voor het eind van deze week"),
+      ),
     );
   }
 }

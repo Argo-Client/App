@@ -8,8 +8,14 @@ class Leermiddelen extends StatefulWidget {
 class _Leermiddelen extends State<Leermiddelen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Leermiddelen'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Leermiddelen"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("3 online methodes beschikbaar"),
+      ),
     );
   }
 }

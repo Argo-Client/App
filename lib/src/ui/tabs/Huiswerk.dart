@@ -8,8 +8,14 @@ class Huiswerk extends StatefulWidget {
 class _Huiswerk extends State<Huiswerk> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de huiswerk'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Huiswerk"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("45 opdrachten voor de komende week"),
+      ),
     );
   }
 }

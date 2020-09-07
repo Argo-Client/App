@@ -37,121 +37,125 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: Hive.box("userdata").listenable(),
-      builder: (context, box, widget) {
-        return ListView(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 15, top: 20),
-              child: Text(
-                "Uiterlijk",
-                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+    return Scaffold(
+      appBar: AppBar(title: Text("Instellingen")),
+      drawer: AppDrawer(),
+      body: ValueListenableBuilder(
+        valueListenable: Hive.box("userdata").listenable(),
+        builder: (context, box, widget) {
+          return ListView(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 15, top: 20),
+                child: Text(
+                  "Uiterlijk",
+                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                ),
               ),
-            ),
-            ListTile(
-              title: Text('Donker thema'),
-              trailing: Switch.adaptive(
-                value: box.get('darkMode', defaultValue: false),
-                onChanged: (value) {
-                  setState(() {
-                    box.put("darkMode", value);
-                  });
+              ListTile(
+                title: Text('Donker thema'),
+                trailing: Switch.adaptive(
+                  value: box.get('darkMode', defaultValue: false),
+                  onChanged: (value) {
+                    setState(() {
+                      box.put("darkMode", value);
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Primaire kleur'),
+                subtitle: Text(
+                  '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                ),
+                onTap: () => _showColorPicker((color) => userdata.put("primaryColor", color.value)),
+                trailing: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).primaryColor,
+                    border: Border.all(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                title: Text('Secundaire kleur'),
+                subtitle: Text(
+                  '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                ),
+                onTap: () => _showColorPicker((color) => userdata.put("accentColor", color.value)),
+                trailing: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).accentColor,
+                    border: Border.all(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 15, top: 20),
+                child: Text(
+                  "Account",
+                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 15, top: 20),
+                child: Text(
+                  "Meldingen",
+                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 15, top: 20),
+                child: Text(
+                  "Overig",
+                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                ),
+              ),
+              ListTile(
+                title: Text("Verander foto"),
+                subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
+                trailing: CircleAvatar(
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  child: Icon(Icons.person, size: 30),
+                ),
+                onTap: () async {
+                  Icon _icon;
+                  IconData icon = await FlutterIconPicker.showIconPicker(
+                    context,
+                    title: Text("Kies een icoontje"),
+                    closeChild: Text(
+                      'Sluit',
+                      textScaleFactor: 1.25,
+                    ),
+                    iconPackMode: IconPack.materialOutline,
+                  );
+
+                  _icon = Icon(icon);
                 },
               ),
-            ),
-            ListTile(
-              title: Text('Primaire kleur'),
-              subtitle: Text(
-                '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+              ListTile(
+                leading: Icon(Icons.input),
+                title: Text('Open Introductie'),
+                onTap: () {
+                  Navigator.pushNamed(context, "Introduction");
+                },
               ),
-              onTap: () => _showColorPicker((color) => userdata.put("primaryColor", color.value)),
-              trailing: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).primaryColor,
-                  border: Border.all(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('Secundaire kleur'),
-              subtitle: Text(
-                '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-              ),
-              onTap: () => _showColorPicker((color) => userdata.put("accentColor", color.value)),
-              trailing: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).accentColor,
-                  border: Border.all(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(left: 15, top: 20),
-              child: Text(
-                "Account",
-                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(left: 15, top: 20),
-              child: Text(
-                "Meldingen",
-                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(left: 15, top: 20),
-              child: Text(
-                "Overig",
-                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
-              ),
-            ),
-            ListTile(
-              title: Text("Verander foto"),
-              subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
-              trailing: CircleAvatar(
-                backgroundColor: Theme.of(context).backgroundColor,
-                child: Icon(Icons.person, size: 30),
-              ),
-              onTap: () async {
-                Icon _icon;
-                IconData icon = await FlutterIconPicker.showIconPicker(
-                  context,
-                  title: Text("Kies een icoontje"),
-                  closeChild: Text(
-                    'Sluit',
-                    textScaleFactor: 1.25,
-                  ),
-                  iconPackMode: IconPack.materialOutline,
-                );
-
-                _icon = Icon(icon);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.input),
-              title: Text('Open Introductie'),
-              onTap: () {
-                Navigator.pushNamed(context, "Introduction");
-              },
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 }

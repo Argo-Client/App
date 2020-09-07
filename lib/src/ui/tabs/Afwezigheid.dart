@@ -8,8 +8,14 @@ class Afwezigheid extends StatefulWidget {
 class _Afwezigheid extends State<Afwezigheid> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Afwezigheid'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Afwezigheid"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("30 ongeoorloofde absenties"),
+      ),
     );
   }
 }

@@ -8,8 +8,14 @@ class Cijfers extends StatefulWidget {
 class _Cijfers extends State<Cijfers> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: null,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Cijfers"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("Je staat een 4 voor wiskunde"),
+      ),
     );
   }
 }

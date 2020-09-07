@@ -8,8 +8,14 @@ class Studiewijzer extends StatefulWidget {
 class _Studiewijzer extends State<Studiewijzer> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Studiewijzer'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Studiewijzer"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("Hard werken"),
+      ),
     );
   }
 }

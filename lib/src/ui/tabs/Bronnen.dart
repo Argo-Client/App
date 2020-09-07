@@ -8,8 +8,14 @@ class Bronnen extends StatefulWidget {
 class _Bronnen extends State<Bronnen> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Hier komt de Bronnen'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Bronnen"),
+      ),
+      drawer: AppDrawer(),
+      body: Center(
+        child: Text("13 nieuwe opdrachten"),
+      ),
     );
   }
 }

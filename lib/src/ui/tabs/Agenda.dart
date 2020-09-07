@@ -39,7 +39,6 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print(formatted);
     return Scaffold(
       appBar: AppBar(
         title: Text("Agenda"),

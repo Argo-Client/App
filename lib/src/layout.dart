@@ -16,7 +16,7 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
-        accountName: Text("Test Leering"),
+        accountName: Text(Hive.box("magisterData").get("fullName", defaultValue: "Laden...")),
         accountEmail: Text("Leerling Nummer"),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,

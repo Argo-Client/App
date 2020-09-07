@@ -10,7 +10,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/utils/magister/login.dart';
-import 'src/utils/magister/profileInfo.dart';
+import 'src/utils/magister/magister.dart';
 
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
@@ -37,7 +37,12 @@ void main() async {
   await Hive.openBox("magisterData");
   await Hive.openBox("magisterTokens");
   userdata = Hive.box("userdata");
-  runApp(App());
+  // Hive.deleteFromDisk();
+  if (userdata.containsKey("introduction")) {
+    runApp(App());
+  } else {
+    runApp(Introduction());
+  }
   print("Userdata: " + userdata.toMap().toString());
   print("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
   print("magisterData: " + Hive.box("magisterData").toMap().toString());

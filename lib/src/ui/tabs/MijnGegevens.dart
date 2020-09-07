@@ -6,7 +6,7 @@ class MijnGegevens extends StatefulWidget {
 }
 
 class _MijnGegevens extends State<MijnGegevens> {
-  Map user = Hive.box("magisterData").toMap();
+  Box user = Hive.box("magisterData");
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,14 +35,14 @@ class _MijnGegevens extends State<MijnGegevens> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            user["name"] + " " + (user["insertion"] != null ? user["insertion"] + " " : "") + user["lastname"],
+                            user.get("fullName", defaultValue: "Laden..."),
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w300,
                             ),
                           ),
                           Text(
-                            "5v3",
+                            user.get("klas", defaultValue: "Laden..."),
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.grey,
@@ -72,7 +72,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Mentor(en)",
                       ),
                       subtitle: Text(
-                        "V. Mentor",
+                        user.get("mentor", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(
@@ -84,7 +84,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Stamnummer",
                       ),
                       subtitle: Text(
-                        "123456",
+                        user.get("username", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(
@@ -96,7 +96,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Profiel",
                       ),
                       subtitle: Text(
-                        "NG",
+                        user.get("profiel", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(
@@ -126,7 +126,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Officiële naam",
                       ),
                       subtitle: Text(
-                        user["officialName"] + " " + (user["officialInsertion"] != null ? user["officialInsertion"] + " " : "") + user["officialLastname"],
+                        user.get("officialFullName", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(
@@ -138,7 +138,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Geboortedatum",
                       ),
                       subtitle: Text(
-                        user["birthdate"],
+                        user.get("birthdate", defaultValue: "Laden..."),
                       ),
                     ),
                     Padding(

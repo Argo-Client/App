@@ -144,7 +144,6 @@ class _Instellingen extends State<Instellingen> {
               },
             ),
             ListTile(
-              selected: 12 == _currentIndex,
               leading: Icon(Icons.input),
               title: Text('Open Introductie'),
               onTap: () {

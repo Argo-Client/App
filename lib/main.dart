@@ -12,6 +12,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'src/utils/magister/login.dart';
 import 'src/utils/magister/magister.dart';
 
+import 'package:intl/intl.dart';
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/utils/buildDrawer.dart';
@@ -68,7 +69,9 @@ class App extends StatelessWidget {
   }
 }
 
+HomeState homeState = HomeState();
+
 class Home extends StatefulWidget {
   @override
-  _Home createState() => _Home();
+  HomeState createState() => homeState;
 }

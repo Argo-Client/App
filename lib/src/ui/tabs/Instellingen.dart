@@ -6,7 +6,7 @@ class Instellingen extends StatefulWidget {
 }
 
 class _Instellingen extends State<Instellingen> {
-  void _showColorPicker() {
+  void _showColorPicker(Function cb) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -16,8 +16,7 @@ class _Instellingen extends State<Instellingen> {
             pickerColor: Theme.of(context).primaryColor,
             onColorChanged: (color) {
               setState(() {
-                userdata.put("primaryColor", color.value);
-                userdata.put("accentColor", color.value);
+                cb(color);
               });
             },
           ),
@@ -47,7 +46,7 @@ class _Instellingen extends State<Instellingen> {
               padding: EdgeInsets.only(left: 15, top: 20),
               child: Text(
                 "Uiterlijk",
-                style: TextStyle(color: Colors.orange),
+                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
               ),
             ),
             ListTile(
@@ -66,7 +65,7 @@ class _Instellingen extends State<Instellingen> {
               subtitle: Text(
                 '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
               ),
-              onTap: _showColorPicker,
+              onTap: () => _showColorPicker((color) => userdata.put("primaryColor", color.value)),
               trailing: Container(
                 width: 40,
                 height: 40,
@@ -84,7 +83,7 @@ class _Instellingen extends State<Instellingen> {
               subtitle: Text(
                 '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
               ),
-              onTap: _showColorPicker,
+              onTap: () => _showColorPicker((color) => userdata.put("accentColor", color.value)),
               trailing: Container(
                 width: 40,
                 height: 40,
@@ -102,7 +101,7 @@ class _Instellingen extends State<Instellingen> {
               padding: EdgeInsets.only(left: 15, top: 20),
               child: Text(
                 "Account",
-                style: TextStyle(color: Colors.orange),
+                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
               ),
             ),
             Divider(),
@@ -110,7 +109,7 @@ class _Instellingen extends State<Instellingen> {
               padding: EdgeInsets.only(left: 15, top: 20),
               child: Text(
                 "Meldingen",
-                style: TextStyle(color: Colors.orange),
+                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
               ),
             ),
             Divider(),
@@ -118,7 +117,7 @@ class _Instellingen extends State<Instellingen> {
               padding: EdgeInsets.only(left: 15, top: 20),
               child: Text(
                 "Overig",
-                style: TextStyle(color: Colors.orange),
+                style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
               ),
             ),
             ListTile(

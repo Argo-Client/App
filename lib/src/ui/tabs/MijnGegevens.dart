@@ -63,7 +63,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       child: Text(
                         "School info",
                         style: TextStyle(
-                          color: Colors.orange,
+                          color: Color(userdata.get("accentColor") ?? Colors.orange.value),
                         ),
                       ),
                     ),
@@ -117,7 +117,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       child: Text(
                         "Persoonlijk info",
                         style: TextStyle(
-                          color: Colors.orange,
+                          color: Color(userdata.get("accentColor") ?? Colors.orange.value),
                         ),
                       ),
                     ),

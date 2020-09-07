@@ -1,6 +1,5 @@
 part of main;
 
-bool hasRunRunIntro = true;
 int _currentIndex = 0;
 
 class HomeState extends State<Home> {

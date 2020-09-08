@@ -127,10 +127,9 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
                 trailing: CircleAvatar(
                   backgroundColor: Theme.of(context).backgroundColor,
-                  child: Icon(Icons.person, size: 30),
+                  child: Icon(IconData(userdata.get("userIcon"), fontFamily: "MaterialIcons"), size: 30),
                 ),
                 onTap: () async {
-                  Icon _icon;
                   IconData icon = await FlutterIconPicker.showIconPicker(
                     context,
                     title: Text("Kies een icoontje"),
@@ -138,10 +137,11 @@ class _Instellingen extends State<Instellingen> {
                       'Sluit',
                       textScaleFactor: 1.25,
                     ),
-                    iconPackMode: IconPack.materialOutline,
+                    // iconPackMode: IconPack.materialOutline,
                   );
-
-                  _icon = Icon(icon);
+                  setState(() {
+                    userdata.put("userIcon", icon.codePoint);
+                  });
                 },
               ),
               ListTile(

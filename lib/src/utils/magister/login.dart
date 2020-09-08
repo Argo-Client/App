@@ -12,6 +12,7 @@ import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MagisterAuth {
+  Box tokensBox = Hive.box("magisterTokens");
   final String authURL = "https://accounts.magister.net/connect/authorize";
   final String tokenURL = "https://accounts.magister.net/connect/token";
   String codeVerifier;
@@ -19,7 +20,6 @@ class MagisterAuth {
   String nonce;
   String state;
   String code;
-  Box tokensBox = Hive.box("magisterTokens");
   MagisterTokenSet tokenSet;
   MagisterAuth() {
     this.nonce = this.generateRandomBase64(32);
@@ -82,8 +82,6 @@ class MagisterAuth {
 
     Map<String, dynamic> parsed = json.decode(response.body);
     var tokenSet = MagisterTokenSet.fromJson(parsed);
-    tokensBox.put("accessToken", tokenSet.accessToken);
-    tokensBox.put("refreshToken", tokenSet.refreshToken);
     return tokenSet;
   }
 
@@ -108,24 +106,9 @@ class MagisterAuth {
 }
 
 class MagisterTokenSet {
-  final String accessToken;
-  final String idToken;
-  final String refreshToken;
-  // final DateTime expiresAt;
-  final List<String> scope;
-
-  MagisterTokenSet({
-    this.accessToken,
-    this.idToken,
-    this.refreshToken,
-    // this.expiresAt,
-    this.scope,
-  });
-
-  MagisterTokenSet.fromJson(Map<String, dynamic> json)
-      : accessToken = json['access_token'].toString(),
-        idToken = json['id_token'].toString(),
-        refreshToken = json['refresh_token'].toString(),
-        // expiresAt = DateTime.fromMillisecondsSinceEpoch((json["expires_at"] as int) * 1000),
-        scope = json['scope'].toString().split(" ");
+  Box tokensBox = Hive.box("magisterTokens");
+  MagisterTokenSet.fromJson(Map<String, dynamic> json) {
+    tokensBox.put("accessToken", json['access_token'].toString());
+    tokensBox.put("refreshToken", json['refresh_token'].toString());
+  }
 }

@@ -20,7 +20,7 @@ class HomeState extends State<Home> {
         accountEmail: Text(user.get("klasCode", defaultValue: "Laden...")),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
-          child: Icon(Icons.person, size: 50),
+          child: Icon(IconData(Hive.box("userdata").get("userIcon", defaultValue: Icons.person.codePoint), fontFamily: "MaterialIcons"), size: 50),
         ),
       ),
     ];

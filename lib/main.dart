@@ -1,5 +1,6 @@
 library main;
 
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -40,14 +41,13 @@ void main() async {
   await Hive.openBox("magisterTokens");
   userdata = Hive.box("userdata");
   // Hive.deleteFromDisk();
-  // if (userdata.containsKey("introduction")) {
   runApp(App());
   // } else {
   // runApp(Introduction());
   // }
-  print("Userdata: " + userdata.toMap().toString());
-  print("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
-  print("magisterData: " + Hive.box("magisterData").toMap().toString());
+  log("Userdata: " + userdata.toMap().toString());
+  log("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
+  log("magisterData: " + Hive.box("magisterData").toMap().toString());
 }
 
 class App extends StatelessWidget {

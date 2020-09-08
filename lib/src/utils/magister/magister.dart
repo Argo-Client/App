@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Magistex/src/utils/magister/login.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,7 +22,38 @@ class Magister {
     }
   }
 
-  Future<Box> refresh() async {
+  Future refresh() async {
+    await refreshProfileInfo();
+    return;
+  }
+
+  Future refreshToken() async {
+    final response = await http.post("https://accounts.magister.net/connect/token", body: {
+      "refresh_token": tokens.get("refreshToken"),
+      "client_id": "M6LOAPP",
+      "grant_type": "refresh_token",
+    });
+    if (response.statusCode == 200) {
+      var parsed = json.decode(response.body);
+      MagisterTokenSet.fromJson(parsed);
+      await getExpiry();
+      return data;
+    } else {
+      print("Magister Wil niet token verversen: " + response.statusCode.toString());
+      print(response.body);
+    }
+  }
+
+  Future runWithToken() async {
+    if (DateTime.now().millisecondsSinceEpoch > data.get("expiry", defaultValue: 8640000000000000)) {
+      await refreshToken();
+      return;
+    }
+    return;
+  }
+
+  Future refreshProfileInfo() async {
+    await runWithToken();
     var userId = await profileInfo();
     await Future.wait([
       getUsername(userId),
@@ -29,14 +61,19 @@ class Magister {
       personInfo(userId),
       getAdress(userId),
     ]);
-
     return data;
+  }
+
+  Future getExpiry() async {
+    var parsed = await getFromMagister("sessions/current");
+    int expiry = DateTime.parse(parsed["expiresOn"]).millisecondsSinceEpoch;
+    data.put("expiry", expiry);
   }
 
   Future profileInfo() async {
     var parsed = (await getFromMagister("account"))["Persoon"];
     data.put("id", parsed["Id"]);
-    data.put("officialFullName", parsed["OfficieleVoornamen"] + " " + ((parsed["OfficieleTussenvoegsel"].toString() + " ") ?? "") + parsed["OfficieleAchternaam"]);
+    data.put("officialFullName", parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] != null ? parsed["OfficieleTussenvoegsel"] + " " : "") + parsed["OfficieleAchternaam"]);
     data.put("fullName", parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] ?? "") + parsed["Achternaam"]);
     data.put("name", parsed["Roepnaam"]);
     data.put("initials", parsed["Voorletters"]);

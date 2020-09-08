@@ -37,14 +37,14 @@ class _MijnGegevens extends State<MijnGegevens> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          user.get("fullName", defaultValue: "Laden..."),
+                          user.get("fullName"),
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w300,
                           ),
                         ),
                         Text(
-                          user.get("klasCode", defaultValue: "Laden..."),
+                          user.get("klasCode"),
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.grey,
@@ -74,7 +74,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Mentor(en)",
                     ),
                     subtitle: Text(
-                      user.get("mentor", defaultValue: "Laden..."),
+                      user.get("mentor"),
                     ),
                   ),
                   Padding(
@@ -86,7 +86,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Stamnummer",
                     ),
                     subtitle: Text(
-                      user.get("username", defaultValue: "Laden..."),
+                      user.get("username"),
                     ),
                   ),
                   Padding(
@@ -98,7 +98,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Profiel",
                     ),
                     subtitle: Text(
-                      user.get("profiel", defaultValue: "Laden..."),
+                      user.get("profiel"),
                     ),
                   ),
                   Padding(
@@ -110,7 +110,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Studie",
                     ),
                     subtitle: Text(
-                      user.get("klas", defaultValue: "Laden..."),
+                      user.get("klas"),
                     ),
                   ),
                   Divider(),
@@ -128,7 +128,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Officiële naam",
                     ),
                     subtitle: Text(
-                      user.get("officialFullName", defaultValue: "Laden..."),
+                      user.get("officialFullName"),
                     ),
                   ),
                   Padding(
@@ -140,7 +140,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Geboortedatum",
                     ),
                     subtitle: Text(
-                      user.get("birthdate", defaultValue: "Laden..."),
+                      user.get("birthdate"),
                     ),
                   ),
                   Padding(
@@ -152,7 +152,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Mobiele nummer",
                     ),
                     subtitle: Text(
-                      user.get("phone", defaultValue: "Laden..."),
+                      user.get("phone"),
                     ),
                   ),
                   Padding(
@@ -164,7 +164,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Email Adres",
                     ),
                     subtitle: Text(
-                      user.get("email", defaultValue: "Laden..."),
+                      user.get("email"),
                     ),
                   ),
                   Padding(
@@ -176,7 +176,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Adres",
                     ),
                     subtitle: Text(
-                      user.get("address", defaultValue: "Laden..."),
+                      user.get("address"),
                     ),
                   ),
                 ],

@@ -16,8 +16,8 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
-        accountName: Text(user.get("fullName", defaultValue: "Laden...")),
-        accountEmail: Text(user.get("klasCode", defaultValue: "Laden...")),
+        accountName: Text(user.get("fullName")),
+        accountEmail: Text(user.get("klasCode")),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
           child: Icon(IconData(Hive.box("userdata").get("userIcon", defaultValue: Icons.person.codePoint), fontFamily: "MaterialIcons"), size: 50),

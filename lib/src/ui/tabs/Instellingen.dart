@@ -54,7 +54,7 @@ class _Instellingen extends State<Instellingen> {
               ListTile(
                 title: Text('Donker thema'),
                 trailing: Switch.adaptive(
-                  value: box.get('darkMode', defaultValue: false),
+                  value: box.get('darkMode'),
                   onChanged: (value) {
                     setState(() {
                       box.put("darkMode", value);

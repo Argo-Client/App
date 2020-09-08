@@ -41,6 +41,33 @@ void main() async {
   await Hive.openBox("magisterTokens");
   userdata = Hive.box("userdata");
   // Hive.deleteFromDisk();
+  if (!userdata.containsKey("dummyData")) {
+    userdata.putAll({
+      "darkMode": false,
+      "introduction": false,
+      "primaryColor": Colors.blue.value,
+      "accentColor": Colors.orange.value,
+      "userIcon": Icons.person.codePoint,
+      "dummyData": "true",
+    });
+    Hive.box("magisterData").putAll({
+      "address": "",
+      "birthdate": "",
+      "email": "",
+      "fullName": "",
+      "id": "",
+      "initials": "",
+      "klas": "",
+      "klasCode": "",
+      "mentor": "",
+      "name": "",
+      "officialFullName": "",
+      "phone": "",
+      "profiel": "",
+      "username": "",
+    });
+    print("Wrote dummy data");
+  }
   runApp(App());
   // } else {
   // runApp(Introduction());
@@ -56,9 +83,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Magistex',
       theme: ThemeData(
-        brightness: userdata.get("darkMode", defaultValue: false) ? Brightness.dark : Brightness.light,
-        primaryColor: Color(userdata.get("primaryColor") ?? Colors.blue.value),
-        accentColor: Color(userdata.get("accentColor") ?? Colors.orange.value),
+        brightness: userdata.get("darkMode") ? Brightness.dark : Brightness.light,
+        primaryColor: Color(userdata.get("primaryColor")),
+        accentColor: Color(userdata.get("accentColor")),
       ),
       home: Home(),
     );

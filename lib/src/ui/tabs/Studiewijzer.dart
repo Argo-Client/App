@@ -12,7 +12,6 @@ class _Studiewijzer extends State<Studiewijzer> {
       appBar: AppBar(
         title: Text("Studiewijzer"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("Hard werken"),
       ),

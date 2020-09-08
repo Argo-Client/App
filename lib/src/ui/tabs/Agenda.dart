@@ -41,6 +41,12 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer()
+          }
+        ),
         title: Text("Agenda"),
         // bottom: TabBar(
         //   controller: null,
@@ -58,7 +64,6 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
           ),
         ],
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("Yeet"),
       ),

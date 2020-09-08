@@ -12,7 +12,6 @@ class _Huiswerk extends State<Huiswerk> {
       appBar: AppBar(
         title: Text("Huiswerk"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("45 opdrachten voor de komende week"),
       ),

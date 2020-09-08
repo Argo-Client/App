@@ -13,7 +13,6 @@ class _MijnGegevens extends State<MijnGegevens> {
       appBar: AppBar(
         title: Text("Mijn Gegevens"),
       ),
-      drawer: AppDrawer(),
       body: RefreshIndicator(
         child: SingleChildScrollView(
           child: Column(

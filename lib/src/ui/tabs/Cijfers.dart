@@ -12,7 +12,6 @@ class _Cijfers extends State<Cijfers> {
       appBar: AppBar(
         title: Text("Cijfers"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("Je staat een 4 voor wiskunde"),
       ),

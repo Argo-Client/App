@@ -12,7 +12,6 @@ class _Leermiddelen extends State<Leermiddelen> {
       appBar: AppBar(
         title: Text("Leermiddelen"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("3 online methodes beschikbaar"),
       ),

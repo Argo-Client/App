@@ -12,7 +12,6 @@ class _Opdrachten extends State<Opdrachten> {
       appBar: AppBar(
         title: Text("Opdrachten"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("63 opdrachten in te leveren voor het eind van deze week"),
       ),

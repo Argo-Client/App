@@ -12,7 +12,6 @@ class _Berichten extends State<Berichten> {
       appBar: AppBar(
         title: Text("Berichten"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("56 ongelezen berichten"),
       ),

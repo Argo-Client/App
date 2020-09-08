@@ -36,7 +36,7 @@ class Magister {
   Future profileInfo() async {
     var parsed = (await getFromMagister("account"))["Persoon"];
     data.put("id", parsed["Id"]);
-    data.put("officialFullName", parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] ?? "") + parsed["OfficieleAchternaam"]);
+    data.put("officialFullName", parsed["OfficieleVoornamen"] + " " + ((parsed["OfficieleTussenvoegsel"].toString() + " ") ?? "") + parsed["OfficieleAchternaam"]);
     data.put("fullName", parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] ?? "") + parsed["Achternaam"]);
     data.put("name", parsed["Roepnaam"]);
     data.put("initials", parsed["Voorletters"]);

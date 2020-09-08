@@ -29,6 +29,8 @@ part 'src/ui/tabs/Bronnen.dart';
 part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 
+final GlobalKey _layoutKey = new GlobalKey();
+
 MagisterAuth magisterAuth = new MagisterAuth();
 Box userdata;
 void main() async {
@@ -38,11 +40,11 @@ void main() async {
   await Hive.openBox("magisterTokens");
   userdata = Hive.box("userdata");
   // Hive.deleteFromDisk();
-  if (userdata.containsKey("introduction")) {
-    runApp(App());
-  } else {
-    runApp(Introduction());
-  }
+  // if (userdata.containsKey("introduction")) {
+  runApp(App());
+  // } else {
+  // runApp(Introduction());
+  // }
   print("Userdata: " + userdata.toMap().toString());
   print("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
   print("magisterData: " + Hive.box("magisterData").toMap().toString());
@@ -58,12 +60,7 @@ class App extends StatelessWidget {
         primaryColor: Color(userdata.get("primaryColor") ?? Colors.blue.value),
         accentColor: Color(userdata.get("accentColor") ?? Colors.orange.value),
       ),
-      initialRoute: "/",
-      routes: {
-        "/": (context) => Home(),
-        "Introduction": (context) => Introduction(),
-      },
-      // home: Home(),
+      home: Home(),
     );
   }
 }

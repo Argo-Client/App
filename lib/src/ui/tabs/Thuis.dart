@@ -45,7 +45,6 @@ class _Thuis extends State<Thuis> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      drawer: AppDrawer(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Column(

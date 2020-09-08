@@ -12,7 +12,6 @@ class _Afwezigheid extends State<Afwezigheid> {
       appBar: AppBar(
         title: Text("Afwezigheid"),
       ),
-      drawer: AppDrawer(),
       body: Center(
         child: Text("30 ongeoorloofde absenties"),
       ),

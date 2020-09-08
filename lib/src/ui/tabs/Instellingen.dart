@@ -39,7 +39,6 @@ class _Instellingen extends State<Instellingen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Instellingen")),
-      drawer: AppDrawer(),
       body: ValueListenableBuilder(
         valueListenable: Hive.box("userdata").listenable(),
         builder: (context, box, widget) {
@@ -149,7 +148,8 @@ class _Instellingen extends State<Instellingen> {
                 leading: Icon(Icons.input),
                 title: Text('Open Introductie'),
                 onTap: () {
-                  Navigator.pushNamed(context, "Introduction");
+                  // Navigator.pushNamed(context, "Introduction");
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
                 },
               ),
             ],

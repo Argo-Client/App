@@ -40,6 +40,7 @@ dependencies:
   hive: ^1.4.4
   hive_flutter: ^0.3.1
   outline_material_icons: ^0.1.1
+  after_layout: ^1.0.7+2
 dev_dependencies:
   flutter_launcher_icons:
   flutter_test:

@@ -2,12 +2,19 @@ part of main;
 
 int _currentIndex = 0;
 
-class HomeState extends State<Home> {
+class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   Box user = Hive.box("magisterData");
+  void afterFirstLayout(BuildContext context) {
+    if (userdata.containsKey("introduction")) {
+      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+    } else {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
+    }
+  }
 
   void changeIndex(int index) {
     _currentIndex = index;
-    homeState.setState(() {});
+    // homeState.setState(() {});
     Navigator.pop(context);
     setState(() {});
   }

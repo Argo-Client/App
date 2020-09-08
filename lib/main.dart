@@ -8,6 +8,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:after_layout/after_layout.dart';
 
 import 'src/utils/magister/login.dart';
 import 'src/utils/magister/magister.dart';
@@ -44,7 +45,6 @@ void main() async {
   if (!userdata.containsKey("dummyData")) {
     userdata.putAll({
       "darkMode": false,
-      "introduction": false,
       "primaryColor": Colors.blue.value,
       "accentColor": Colors.orange.value,
       "userIcon": Icons.person.codePoint,
@@ -92,9 +92,9 @@ class App extends StatelessWidget {
   }
 }
 
-HomeState homeState = HomeState();
+// HomeState homeState = HomeState();
 
 class Home extends StatefulWidget {
   @override
-  HomeState createState() => homeState;
+  HomeState createState() => HomeState();
 }

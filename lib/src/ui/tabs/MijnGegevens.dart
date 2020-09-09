@@ -158,7 +158,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Mobiele nummer",
                     ),
                     subtitle: Text(
-                      user.get("phone"),
+                      user.get("phone").isEmpty ? user.get("phone") : "-",
                     ),
                   ),
                   Padding(

@@ -70,6 +70,7 @@ void main() async {
   // } else {
   // runApp(Introduction());
   // }
+  log("Time: " + (DateTime.now().hour - 8 * timeFactor).toString());
   log("Userdata: " + userdata.toMap().toString());
   log("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
   log("magisterData: " + Hive.box("magisterData").toMap().toString());

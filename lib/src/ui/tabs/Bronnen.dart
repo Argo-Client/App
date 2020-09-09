@@ -10,6 +10,12 @@ class _Bronnen extends State<Bronnen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
         title: Text("Bronnen"),
       ),
       body: Center(

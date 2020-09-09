@@ -10,6 +10,12 @@ class _Studiewijzer extends State<Studiewijzer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
         title: Text("Studiewijzer"),
       ),
       body: Center(

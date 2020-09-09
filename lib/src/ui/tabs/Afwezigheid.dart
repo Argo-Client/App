@@ -10,6 +10,12 @@ class _Afwezigheid extends State<Afwezigheid> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
         title: Text("Afwezigheid"),
       ),
       body: Center(

@@ -1,6 +1,7 @@
 part of main;
 
 int _currentIndex = 0;
+final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   Box user = Hive.box("magisterData");

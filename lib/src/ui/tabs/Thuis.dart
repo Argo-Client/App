@@ -3,39 +3,6 @@ part of main;
 enum HomeMenu { herlaad, indeling, instellingen }
 
 class Thuis extends StatefulWidget {
-  final AppBar appBar = AppBar(
-    title: Text("Home"),
-    actions: [
-      PopupMenuButton<HomeMenu>(
-        onSelected: (HomeMenu result) {
-          switch (result) {
-            case HomeMenu.instellingen:
-              // Navigator.push(context, Instellingen());
-              break;
-            default:
-              break;
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<HomeMenu>>[
-          const PopupMenuItem<HomeMenu>(
-            value: HomeMenu.herlaad,
-            child: Text('Herlaad'),
-          ),
-          const PopupMenuItem<HomeMenu>(
-            value: HomeMenu.indeling,
-            child: Text('Verander indeling'),
-          ),
-          const PopupMenuDivider(
-            height: 15,
-          ),
-          const PopupMenuItem<HomeMenu>(
-            value: HomeMenu.instellingen,
-            child: Text('Instellingen'),
-          ),
-        ],
-      ),
-    ],
-  );
   @override
   _Thuis createState() => _Thuis();
 }
@@ -44,7 +11,45 @@ class _Thuis extends State<Thuis> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
+        title: Text("Home"),
+        actions: [
+          PopupMenuButton<HomeMenu>(
+            onSelected: (HomeMenu result) {
+              switch (result) {
+                case HomeMenu.instellingen:
+                  // Navigator.push(context, Instellingen());
+                  break;
+                default:
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<HomeMenu>>[
+              const PopupMenuItem<HomeMenu>(
+                value: HomeMenu.herlaad,
+                child: Text('Herlaad'),
+              ),
+              const PopupMenuItem<HomeMenu>(
+                value: HomeMenu.indeling,
+                child: Text('Verander indeling'),
+              ),
+              const PopupMenuDivider(
+                height: 15,
+              ),
+              const PopupMenuItem<HomeMenu>(
+                value: HomeMenu.instellingen,
+                child: Text('Instellingen'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Column(
@@ -61,34 +66,6 @@ class _Thuis extends State<Thuis> {
                         "Vandaag",
                         style: TextStyle(
                           fontSize: 20,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 20),
-                        child: Table(
-                          border: TableBorder.all(color: Colors.black26, width: 1, style: BorderStyle.solid),
-                          children: [
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  child: Text('Value 1'),
-                                ),
-                                TableCell(
-                                  child: Text('Value 2'),
-                                ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  child: Text('Value 1'),
-                                ),
-                                TableCell(
-                                  child: Text('Value 2'),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
                       ),
                     ],

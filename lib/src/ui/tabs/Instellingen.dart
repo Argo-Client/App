@@ -38,7 +38,15 @@ class _Instellingen extends State<Instellingen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Instellingen")),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
+        title: Text("Instellingen"),
+      ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box("userdata").listenable(),
         builder: (context, box, widget) {
@@ -130,7 +138,7 @@ class _Instellingen extends State<Instellingen> {
                   child: Icon(IconData(userdata.get("userIcon"), fontFamily: "MaterialIcons"), size: 30),
                 ),
                 onTap: () async {
-                  IconData icon = await FlutterIconPicker.showIconPicker(
+                  FlutterIconPicker.showIconPicker(
                     context,
                     title: Text("Kies een icoontje"),
                     closeChild: Text(
@@ -139,9 +147,9 @@ class _Instellingen extends State<Instellingen> {
                     ),
                     // iconPackMode: IconPack.materialOutline,
                   );
-                  setState(() {
-                    userdata.put("userIcon", icon.codePoint);
-                  });
+                  // setState(() {
+                  //   userdata.put("userIcon", icon.codePoint);
+                  // });
                 },
               ),
               ListTile(

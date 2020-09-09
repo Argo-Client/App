@@ -10,6 +10,12 @@ class _Leermiddelen extends State<Leermiddelen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
+        ),
         title: Text("Leermiddelen"),
       ),
       body: Center(

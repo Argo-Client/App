@@ -31,8 +31,6 @@ part 'src/ui/tabs/Bronnen.dart';
 part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 
-final GlobalKey _layoutKey = new GlobalKey();
-
 MagisterAuth magisterAuth = new MagisterAuth();
 Box userdata;
 void main() async {

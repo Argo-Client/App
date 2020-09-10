@@ -2,7 +2,8 @@ part of main;
 
 var dayOfWeek = 1;
 DateTime date = DateTime.now();
-var lastMondayUnformat = date.subtract(Duration(days: date.weekday - dayOfWeek));
+var lastMondayUnformat =
+    date.subtract(Duration(days: date.weekday - dayOfWeek));
 DateFormat numFormatter = DateFormat('dd');
 DateFormat dayFormatter = DateFormat('E');
 
@@ -19,64 +20,62 @@ final timeFactor = 5 / 3;
 class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    double timeMinutes = (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor).toDouble();
+    double timeMinutes =
+        (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor)
+            .toDouble();
     if (timeMinutes.isNegative) {
       timeMinutes = 0;
     }
-    final List<Widget> widgetRooster = [];
+    final List<List> widgetRooster = [];
     List _rooster = [
-      {
-        "duration": 90,
-      },
-      {
-        "title": "yeet",
-        "duration": 75,
-      },
-      {
-        "title": "hi",
-        "duration": 60,
-      },
+      [
+        {
+          "start": 550,
+          "title": "yeet",
+          "duration": 60,
+        },
+        {
+          "start": 610,
+          "title": "hi",
+          "duration": 60,
+        },
+      ],
+      [
+        {
+          "start": 600,
+          "duration": 50,
+        },
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
     ];
 
-    for (var les in _rooster) {
-      if (les["title"] == null) {
-        widgetRooster.add(
+    for (var dag in _rooster) {
+      List<Widget> widgetDag = [];
+      for (var les in dag) {
+        widgetDag.add(
           Container(
-            margin: null,
-            width: MediaQuery.of(context).size.width - 30,
-            height: les["duration"] * timeFactor,
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  width: .75,
-                  color: Colors.grey,
-                ),
-              ),
+            margin: EdgeInsets.only(
+              top: ((les["start"] - 480) * timeFactor).toDouble(),
             ),
-          ),
-        );
-      } else {
-        widgetRooster.add(
-          Container(
             width: MediaQuery.of(context).size.width - 30,
             child: Card(
               margin: null,
-              child: Padding(
-                padding: EdgeInsets.all(20),
-              ),
-            ),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  width: .75,
-                  color: Colors.grey,
+              child: InkWell(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
                 ),
+                onTap: () {},
               ),
             ),
             height: les["duration"] * timeFactor,
           ),
         );
       }
+      widgetRooster.add(widgetDag);
     }
     return DefaultTabController(
       // The number of tabs / content sections to display.
@@ -174,21 +173,29 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                                       i.toString(),
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: i == DateTime.now().hour ? Colors.white : Colors.grey,
+                                        color: i == DateTime.now().hour
+                                            ? Colors.white
+                                            : Colors.grey,
                                       ),
                                     ),
                                   ),
                                 ),
                             ],
                           ),
-                          Column(
-                            children: widgetRooster,
+                          Stack(
+                            children: widgetRooster[i],
                           ),
                         ],
                       ),
                       Align(
                         alignment: Alignment.topLeft,
                         child: Container(
+                          // child: ClipOval(
+                          //   child: Container(
+                          //     height: 10,
+                          //     width: 10,
+                          //   ),
+                          // ),
                           margin: EdgeInsets.only(
                             top: timeMinutes,
                           ),

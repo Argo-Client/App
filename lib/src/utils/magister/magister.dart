@@ -1,15 +1,9 @@
-import 'dart:convert';
-import 'package:Magistex/src/utils/magister/login.dart';
-import 'package:hive/hive.dart';
-import 'package:http/http.dart' as http;
+part of main;
 
 class Magister {
-  Box tokens = Hive.box("magisterTokens");
-  Box userdata = Hive.box("userdata");
-  Box data = Hive.box("magisterData");
-
   dynamic getFromMagister(String link) async {
-    final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + tokens.get("accessToken"), "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"});
+    print(account.toString());
+    final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"});
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -23,21 +17,25 @@ class Magister {
   }
 
   Future refresh() async {
-    await refreshProfileInfo();
+    await getExpiry();
+    await Future.wait([
+      refreshProfileInfo(),
+    ]);
     return;
   }
 
   Future refreshToken() async {
     final response = await http.post("https://accounts.magister.net/connect/token", body: {
-      "refresh_token": tokens.get("refreshToken"),
+      "refresh_token": account.refreshToken,
       "client_id": "M6LOAPP",
       "grant_type": "refresh_token",
     });
     if (response.statusCode == 200) {
       var parsed = json.decode(response.body);
-      MagisterTokenSet.fromJson(parsed);
+      saveTokens(parsed);
+      print("refreshed token");
       await getExpiry();
-      return data;
+      return;
     } else {
       print("Magister Wil niet token verversen: " + response.statusCode.toString());
       print(response.body);
@@ -45,10 +43,12 @@ class Magister {
   }
 
   Future runWithToken() async {
-    if (DateTime.now().millisecondsSinceEpoch > data.get("expiry", defaultValue: 8640000000000000)) {
+    if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
+      print("Token expired, refreshing");
       await refreshToken();
       return;
     }
+    print("Token still valid");
     return;
   }
 
@@ -61,47 +61,55 @@ class Magister {
       personInfo(userId),
       getAdress(userId),
     ]);
-    return data;
+    account.save();
+    return;
   }
 
   Future getExpiry() async {
     var parsed = await getFromMagister("sessions/current");
     int expiry = DateTime.parse(parsed["expiresOn"]).millisecondsSinceEpoch;
-    data.put("expiry", expiry);
+    account.expiry = expiry;
   }
 
   Future profileInfo() async {
     var parsed = (await getFromMagister("account"))["Persoon"];
-    data.put("id", parsed["Id"]);
-    data.put("officialFullName", parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] != null ? parsed["OfficieleTussenvoegsel"] + " " : "") + parsed["OfficieleAchternaam"]);
-    data.put("fullName", parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] ?? "") + parsed["Achternaam"]);
-    data.put("name", parsed["Roepnaam"]);
-    data.put("initials", parsed["Voorletters"]);
-    data.put("birthdate", parsed["Geboortedatum"]);
+    account.id = parsed["Id"];
+    account.officialFullName = parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] != null ? parsed["OfficieleTussenvoegsel"] + " " : "") + parsed["OfficieleAchternaam"];
+    account.fullName = parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] ?? "") + parsed["Achternaam"];
+    account.name = parsed["Roepnaam"];
+    account.initials = parsed["Voorletters"];
+    account.birthdate = parsed["Geboortedatum"];
     return parsed["Id"];
   }
 
   Future getUsername(id) async {
     var parsed = await getFromMagister('leerlingen/$id');
-    data.put("username", parsed["stamnummer"].toString());
+    account.username = parsed["stamnummer"].toString();
   }
 
   Future schoolInfo(id) async {
     var parsed = (await getFromMagister('/leerlingen/$id/aanmeldingen'))["items"][0];
-    data.put("klasCode", parsed["groep"]["code"]);
-    data.put("klas", parsed["studie"]["code"]);
-    data.put("mentor", '${parsed["persoonlijkeMentor"]["voorletters"]} ${parsed["persoonlijkeMentor"]["achternaam"]}');
-    data.put("profiel", parsed["profielen"][0]["code"]);
+    account.klasCode = parsed["groep"]["code"];
+    account.klas = parsed["studie"]["code"];
+    account.mentor = '${parsed["persoonlijkeMentor"]["voorletters"]} ${parsed["persoonlijkeMentor"]["achternaam"]}';
+    account.profiel = parsed["profielen"][0]["code"];
   }
 
   Future personInfo(id) async {
     var parsed = (await getFromMagister('/personen/$id/profiel'));
-    data.put("email", parsed["EmailAdres"].toString());
-    data.put("phone", parsed["Mobiel"].toString());
+    account.email = parsed["EmailAdres"].toString();
+    account.phone = parsed["Mobiel"].toString();
   }
 
   Future getAdress(id) async {
     var parsed = (await getFromMagister('/personen/$id/adressen'))["items"][0];
-    data.put("address", '${parsed["straat"]} ${parsed["huisnummer"]}\n${parsed["postcode"]}, ${parsed["plaats"]}');
+    account.address = '${parsed["straat"]} ${parsed["huisnummer"]}\n${parsed["postcode"]}, ${parsed["plaats"]}';
+  }
+
+  void saveTokens(tokenSet) {
+    print("Saving tokenSet:");
+    account.accessToken = tokenSet["access_token"];
+    account.refreshToken = tokenSet["refresh_token"];
+    account.save();
   }
 }

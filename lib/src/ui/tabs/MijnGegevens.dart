@@ -6,7 +6,6 @@ class MijnGegevens extends StatefulWidget {
 }
 
 class _MijnGegevens extends State<MijnGegevens> {
-  Box user = Hive.box("magisterData");
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,23 +33,23 @@ class _MijnGegevens extends State<MijnGegevens> {
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Theme.of(context).backgroundColor,
-                            child: Icon(Icons.person, size: 60),
+                            child: Icon(userdata.get("userIcon"), size: 60),
                           ),
                         ),
                       ],
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.get("fullName"),
+                          account.fullName,
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w300,
                           ),
                         ),
                         Text(
-                          user.get("klasCode"),
+                          account.klasCode,
                           style: TextStyle(
                             fontSize: 20,
                             color: Colors.grey,
@@ -71,7 +70,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                     child: Text(
                       "School info",
                       style: TextStyle(
-                        color: Color(userdata.get("accentColor") ?? Colors.orange.value),
+                        color: userdata.get("accentColor"),
                       ),
                     ),
                   ),
@@ -80,7 +79,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Mentor(en)",
                     ),
                     subtitle: Text(
-                      user.get("mentor"),
+                      account.mentor,
                     ),
                   ),
                   Padding(
@@ -92,7 +91,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Stamnummer",
                     ),
                     subtitle: Text(
-                      user.get("username"),
+                      account.username,
                     ),
                   ),
                   Padding(
@@ -104,7 +103,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Profiel",
                     ),
                     subtitle: Text(
-                      user.get("profiel"),
+                      account.profiel,
                     ),
                   ),
                   Padding(
@@ -116,7 +115,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Studie",
                     ),
                     subtitle: Text(
-                      user.get("klas"),
+                      account.klas,
                     ),
                   ),
                   Divider(),
@@ -125,7 +124,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                     child: Text(
                       "Persoonlijk info",
                       style: TextStyle(
-                        color: Color(userdata.get("accentColor") ?? Colors.orange.value),
+                        color: userdata.get("accentColor"),
                       ),
                     ),
                   ),
@@ -134,7 +133,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Officiële naam",
                     ),
                     subtitle: Text(
-                      user.get("officialFullName"),
+                      account.officialFullName,
                     ),
                   ),
                   Padding(
@@ -146,7 +145,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Geboortedatum",
                     ),
                     subtitle: Text(
-                      user.get("birthdate"),
+                      account.birthdate,
                     ),
                   ),
                   Padding(
@@ -158,7 +157,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Mobiele nummer",
                     ),
                     subtitle: Text(
-                      user.get("phone").isEmpty ? user.get("phone") : "-",
+                      account.phone,
                     ),
                   ),
                   Padding(
@@ -170,7 +169,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Email Adres",
                     ),
                     subtitle: Text(
-                      user.get("email"),
+                      account.email,
                     ),
                   ),
                   Padding(
@@ -182,7 +181,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                       "Adres",
                     ),
                     subtitle: Text(
-                      user.get("address"),
+                      account.address,
                     ),
                   ),
                 ],
@@ -192,7 +191,7 @@ class _MijnGegevens extends State<MijnGegevens> {
         ),
         onRefresh: () async {
           await Magister().refreshProfileInfo();
-          setState(() {});
+          appState.setState(() {});
         },
       ),
     );

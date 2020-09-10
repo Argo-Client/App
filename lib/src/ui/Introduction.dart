@@ -8,9 +8,17 @@ class Introduction extends StatefulWidget {
 class _Introduction extends State<Introduction> {
   void gotoApp(BuildContext context) {
     userdata.put("introduction", true);
-    Magister().refresh();
     // Navigator.pushNamed(context, "/");
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+    appState = _AppState();
+    Magister().refresh().then((value) => appState.setState(() {}));
+  }
+
+  void loginPress() {
+    magisterAuth.fullLogin((tokenSet) {
+      gotoApp(context);
+      Magister().saveTokens(tokenSet);
+    });
   }
 
   @override
@@ -21,9 +29,7 @@ class _Introduction extends State<Introduction> {
           isShowSkipBtn: false,
           colorDot: Color.fromRGBO(255, 255, 255, .5),
           nameDoneBtn: "LOGIN",
-          onDonePress: () {
-            magisterAuth.checkThenLogin(() => gotoApp(context));
-          },
+          onDonePress: loginPress,
           slides: [
             Slide(
               title: "Magistex",
@@ -34,10 +40,9 @@ class _Introduction extends State<Introduction> {
               title: "Login",
               widgetDescription: Center(
                 child: RaisedButton(
-                    child: Text("Login"),
-                    onPressed: () {
-                      magisterAuth.checkThenLogin(() => gotoApp(context));
-                    }),
+                  child: Text("Login"),
+                  onPressed: loginPress,
+                ),
               ),
               backgroundColor: Colors.teal,
             ),

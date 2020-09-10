@@ -3,16 +3,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-
-import 'package:hive/hive.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MagisterAuth {
-  Box tokensBox = Hive.box("magisterTokens");
   final String authURL = "https://accounts.magister.net/connect/authorize";
   final String tokenURL = "https://accounts.magister.net/connect/token";
   String codeVerifier;
@@ -20,27 +16,11 @@ class MagisterAuth {
   String nonce;
   String state;
   String code;
-  MagisterTokenSet tokenSet;
   MagisterAuth() {
     this.nonce = this.generateRandomBase64(32);
     this.state = this.generateRandomString(16);
     this.codeVerifier = generateRandomString(50);
     this.codeChallenge = base64Url.encode(SHA256Digest().process(Uint8List.fromList(this.codeVerifier.codeUnits))).replaceAll('=', '');
-  }
-
-  Future<void> checkThenLogin(Function cb) async {
-    print("Logging in");
-    if (isLoggedIn()) {
-      print("Is al ingelogd");
-      cb();
-    } else {
-      print("Open Popup");
-      await this.fullLogin(() => checkThenLogin(cb));
-    }
-  }
-
-  bool isLoggedIn() {
-    return tokensBox.containsKey("accessToken");
   }
 
   String generateRandomString(length) {
@@ -63,7 +43,7 @@ class MagisterAuth {
     return "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256"; // &acr_values=tenant:$tenant&prompt=select_account
   }
 
-  Future<MagisterTokenSet> getTokenSet() async {
+  Future<Map> getTokenSet() async {
     List<int> bodyBytes = utf8.encode("code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier");
 
     Response response = await post(
@@ -81,8 +61,7 @@ class MagisterAuth {
     );
 
     Map<String, dynamic> parsed = json.decode(response.body);
-    var tokenSet = MagisterTokenSet.fromJson(parsed);
-    return tokenSet;
+    return parsed;
   }
 
   Future<void> fullLogin(Function callback) async {
@@ -92,9 +71,9 @@ class MagisterAuth {
       StreamSubscription _sub;
       _sub = getLinksStream().listen((String link) async {
         code = link.split("code=")[1].split("&")[0];
-        tokenSet = await this.getTokenSet();
+        var tokenSet = await this.getTokenSet();
         _sub.cancel();
-        callback();
+        callback(tokenSet);
       }, onError: (err) {
         _sub.cancel();
         throw Exception("Stream error ofzo idk");
@@ -102,13 +81,5 @@ class MagisterAuth {
     } else {
       throw Exception("Invalid auth url");
     }
-  }
-}
-
-class MagisterTokenSet {
-  Box tokensBox = Hive.box("magisterTokens");
-  MagisterTokenSet.fromJson(Map<String, dynamic> json) {
-    tokensBox.put("accessToken", json['access_token'].toString());
-    tokensBox.put("refreshToken", json['refresh_token'].toString());
   }
 }

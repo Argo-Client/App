@@ -2,8 +2,7 @@ part of main;
 
 var dayOfWeek = 1;
 DateTime date = DateTime.now();
-var lastMondayUnformat =
-    date.subtract(Duration(days: date.weekday - dayOfWeek));
+var lastMondayUnformat = date.subtract(Duration(days: date.weekday - dayOfWeek));
 DateFormat numFormatter = DateFormat('dd');
 DateFormat dayFormatter = DateFormat('E');
 
@@ -20,9 +19,7 @@ final timeFactor = 5 / 3;
 class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    double timeMinutes =
-        (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor)
-            .toDouble();
+    double timeMinutes = (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor).toDouble();
     if (timeMinutes.isNegative) {
       timeMinutes = 0;
     }
@@ -173,9 +170,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                                       i.toString(),
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: i == DateTime.now().hour
-                                            ? Colors.white
-                                            : Colors.grey,
+                                        color: i == DateTime.now().hour ? Colors.white : Colors.grey,
                                       ),
                                     ),
                                   ),
@@ -203,7 +198,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                           decoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
-                                color: Color(userdata.get('accentColor')),
+                                color: userdata.get('accentColor'),
                                 width: .75,
                               ),
                             ),

@@ -4,7 +4,6 @@ int _currentIndex = 0;
 final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
-  Box user = Hive.box("magisterData");
   void afterFirstLayout(BuildContext context) {
     if (userdata.containsKey("introduction")) {
       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
@@ -24,11 +23,14 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   Widget build(BuildContext context) {
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
-        accountName: Text(user.get("fullName")),
-        accountEmail: Text(user.get("klasCode")),
+        accountName: Text(account.fullName),
+        accountEmail: Text(account.klasCode),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
-          child: Icon(IconData(Hive.box("userdata").get("userIcon", defaultValue: Icons.person.codePoint), fontFamily: "MaterialIcons"), size: 50),
+          child: Icon(
+            userdata.get("userIcon"),
+            size: 50,
+          ),
         ),
       ),
     ];
@@ -56,6 +58,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       body: child["page"],
       drawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.all(0),
           children: _drawer,
         ),
       ),

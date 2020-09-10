@@ -1,6 +1,8 @@
 library main;
 
 import 'dart:developer';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -11,9 +13,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:after_layout/after_layout.dart';
 
 import 'src/utils/magister/login.dart';
-import 'src/utils/magister/magister.dart';
-
+import 'src/utils/hiveObjects.dart';
 import 'package:intl/intl.dart';
+part 'src/utils/magister/magister.dart';
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/utils/buildDrawer.dart';
@@ -32,61 +34,59 @@ part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
-Box userdata;
+Account account;
+_AppState appState;
+Box userdata, accounts;
 void main() async {
   await Hive.initFlutter();
-  await Hive.openBox("userdata");
-  await Hive.openBox("magisterData");
-  await Hive.openBox("magisterTokens");
-  userdata = Hive.box("userdata");
+  Hive.registerAdapter(AccountAdapter());
+  Hive.registerAdapter(ColorAdapter());
+  Hive.registerAdapter(MaterialColorAdapter());
+  Hive.registerAdapter(IconAdapter());
+  userdata = await Hive.openBox("userdata");
+  accounts = await Hive.openBox<Account>("accounts");
   // Hive.deleteFromDisk();
+  // userdata.delete("dummyData");
+  log("Userdata: " + userdata.toMap().toString());
+  log("accounts: " + accounts.toMap().toString());
   if (!userdata.containsKey("dummyData")) {
+    userdata.clear();
+    accounts.clear();
     userdata.putAll({
       "darkMode": false,
-      "primaryColor": Colors.blue.value,
-      "accentColor": Colors.orange.value,
-      "userIcon": Icons.person.codePoint,
-      "dummyData": "true",
-    });
-    Hive.box("magisterData").putAll({
-      "address": "",
-      "birthdate": "",
-      "email": "",
-      "fullName": "",
-      "id": "",
-      "initials": "",
-      "klas": "",
-      "klasCode": "",
-      "mentor": "",
-      "name": "",
-      "officialFullName": "",
-      "phone": "",
-      "profiel": "",
-      "username": "",
+      "primaryColor": Colors.blue,
+      "accentColor": Colors.orange,
+      "userIcon": Icons.person,
+      "dummyData": true,
+      "accountIndex": 0,
     });
     print("Wrote dummy data");
+    accounts.put(0, Account());
   }
+  int accountIndex = userdata.get("accountIndex");
+  account = accounts.get(accountIndex);
+  log(account.toJson().toString());
+  appState = _AppState();
   runApp(App());
-  // } else {
-  // runApp(Introduction());
-  // }
-  log("Time: " + (DateTime.now().hour - 8 * timeFactor).toString());
-  log("Userdata: " + userdata.toMap().toString());
-  log("magisterTokens: " + Hive.box("magisterTokens").toMap().toString());
-  log("magisterData: " + Hive.box("magisterData").toMap().toString());
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => appState;
+}
+
+class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Magistex',
       theme: ThemeData(
         brightness: userdata.get("darkMode") ? Brightness.dark : Brightness.light,
-        primaryColor: Color(userdata.get("primaryColor")),
-        accentColor: Color(userdata.get("accentColor")),
+        primaryColor: userdata.get("primaryColor"),
+        accentColor: userdata.get("accentColor"),
       ),
       home: Home(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

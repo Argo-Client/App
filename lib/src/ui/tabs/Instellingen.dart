@@ -48,7 +48,7 @@ class _Instellingen extends State<Instellingen> {
         title: Text("Instellingen"),
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box("userdata").listenable(),
+        valueListenable: userdata.listenable(),
         builder: (context, box, widget) {
           return ListView(
             children: [
@@ -56,7 +56,7 @@ class _Instellingen extends State<Instellingen> {
                 padding: EdgeInsets.only(left: 15, top: 20),
                 child: Text(
                   "Uiterlijk",
-                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                  style: TextStyle(color: userdata.get("accentColor")),
                 ),
               ),
               ListTile(
@@ -64,7 +64,7 @@ class _Instellingen extends State<Instellingen> {
                 trailing: Switch.adaptive(
                   value: box.get('darkMode'),
                   onChanged: (value) {
-                    setState(() {
+                    appState.setState(() {
                       box.put("darkMode", value);
                     });
                   },
@@ -75,13 +75,15 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text(
                   '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                 ),
-                onTap: () => _showColorPicker((color) => userdata.put("primaryColor", color.value)),
+                onTap: () => _showColorPicker((color) => appState.setState(() {
+                      box.put("primaryColor", color);
+                    })),
                 trailing: Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).primaryColor,
+                    color: box.get("primaryColor"),
                     border: Border.all(
                       color: Colors.black,
                     ),
@@ -93,13 +95,15 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text(
                   '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                 ),
-                onTap: () => _showColorPicker((color) => userdata.put("accentColor", color.value)),
+                onTap: () => _showColorPicker((color) => appState.setState(() {
+                      box.put("accentColor", color);
+                    })),
                 trailing: Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).accentColor,
+                    color: box.get("accentColor"),
                     border: Border.all(
                       color: Colors.black,
                     ),
@@ -111,7 +115,7 @@ class _Instellingen extends State<Instellingen> {
                 padding: EdgeInsets.only(left: 15, top: 20),
                 child: Text(
                   "Account",
-                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                  style: TextStyle(color: box.get("accentColor")),
                 ),
               ),
               Divider(),
@@ -119,7 +123,7 @@ class _Instellingen extends State<Instellingen> {
                 padding: EdgeInsets.only(left: 15, top: 20),
                 child: Text(
                   "Meldingen",
-                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                  style: TextStyle(color: box.get("accentColor")),
                 ),
               ),
               Divider(),
@@ -127,7 +131,7 @@ class _Instellingen extends State<Instellingen> {
                 padding: EdgeInsets.only(left: 15, top: 20),
                 child: Text(
                   "Overig",
-                  style: TextStyle(color: Color(userdata.get("accentColor") ?? Colors.orange.value)),
+                  style: TextStyle(color: box.get("accentColor")),
                 ),
               ),
               ListTile(
@@ -135,10 +139,13 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
                 trailing: CircleAvatar(
                   backgroundColor: Theme.of(context).backgroundColor,
-                  child: Icon(IconData(userdata.get("userIcon"), fontFamily: "MaterialIcons"), size: 30),
+                  child: Icon(
+                    box.get("userIcon"),
+                    size: 30,
+                  ),
                 ),
                 onTap: () async {
-                  FlutterIconPicker.showIconPicker(
+                  IconData _icon = await FlutterIconPicker.showIconPicker(
                     context,
                     title: Text("Kies een icoontje"),
                     closeChild: Text(
@@ -147,9 +154,9 @@ class _Instellingen extends State<Instellingen> {
                     ),
                     // iconPackMode: IconPack.materialOutline,
                   );
-                  // setState(() {
-                  //   userdata.put("userIcon", icon.codePoint);
-                  // });
+                  appState.setState(() {
+                    userdata.put("userIcon", _icon);
+                  });
                 },
               ),
               ListTile(

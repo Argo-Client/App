@@ -15,7 +15,6 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-
 class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
@@ -86,17 +85,21 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                           ),
                           Row(
                             children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 5,
-                                ),
-                                child: Text(
-                                  les["location"] + " • " + les["startTime"] + " - " + les["endTime"],
-                                  style: TextStyle(
-                                    color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                              Flexible(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    top: 5,
+                                  ),
+                                  child: Text(
+                                    les["location"] + les["startTime"] + " - " + les["endTime"] + les["description"],
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         ],
@@ -131,11 +134,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                   icon: Text(
                     dayAbbr[i],
                   ),
-                  text: numFormatter.format(
-                    now.add(
-                      Duration(days: i - 1)
-                    )
-                  ),
+                  text: numFormatter.format(now.add(Duration(days: i - 1))),
                 )
             ],
           ),

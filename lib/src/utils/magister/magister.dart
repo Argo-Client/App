@@ -140,9 +140,9 @@ class Magister {
         "hour": (startHour == endHour ? startHour.toString() : '$startHour - $endHour') ?? "",
         "startTime": formatHour.format(start),
         "endTime": formatHour.format(end),
-        "beschrijving": les["Inhoud"] ?? "",
+        "description": les["Inhoud"] != null ? " • " + les["Inhoud"] : "",
         "title": les["Omschrijving"] ?? "",
-        "location": les["Lokatie"] ?? "",
+        "location": les["Lokatie"] != null ? les["Lokatie"] + " • " : "",
       });
     });
     log(account.lessons.toString());

@@ -120,18 +120,32 @@ class Magister {
   }
 
   Future getLessen(id) async {
-    var parsed = (await getFromMagister('/personen/$id/afspraken?van=2020-09-11&tot=2020-09-11'))["Items"];
-    account.lessons = [];
+    DateTime now = DateTime.now();
+    DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
+    DateTime lastSunday = lastMonday.add(Duration(days: 6));
+    DateFormat formatDate = DateFormat("yyyy-MM-dd");
+    DateFormat formatHour = DateFormat("HH:mm");
+    var parsed = (await getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}'))["Items"];
+    account.lessons = [[], [], [], [], [], [], []];
     parsed.forEach((les) {
-      account.lessons.add({
-        "start": les["Start"],
-        "eind": les["Eind"],
-        "beschrijving": les["Inhoud"],
-        "naam": les["Omschrijving"],
-        "locatie": les["Lokatie"],
+      if (les["DuurtHeleDag"]) return;
+      DateTime start = DateTime.parse(les["Start"]).toLocal();
+      DateTime end = DateTime.parse(les["Einde"]).toLocal();
+      int startHour = les['LesuurVan'];
+      int endHour = les["LesuurTotMet"];
+      int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
+      account.lessons[end.weekday - 1].add({
+        "start": minFromMidnight ?? "",
+        "duration": end.difference(start).inMinutes ?? "",
+        "hour": (startHour == endHour ? startHour.toString() : '$startHour - $endHour') ?? "",
+        "startTime": formatHour.format(start),
+        "endTime": formatHour.format(end),
+        "beschrijving": les["Inhoud"] ?? "",
+        "title": les["Omschrijving"] ?? "",
+        "location": les["Lokatie"] ?? "",
       });
     });
-
+    log(account.lessons.toString());
     account.save();
   }
 }

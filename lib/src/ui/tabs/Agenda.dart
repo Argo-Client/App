@@ -1,12 +1,13 @@
 part of main;
 
-var dayOfWeek = 1;
-DateTime date = DateTime.now();
-var lastMondayUnformat = date.subtract(Duration(days: date.weekday - dayOfWeek));
+DateTime now = DateTime.now();
+DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
 DateFormat numFormatter = DateFormat('dd');
 DateFormat dayFormatter = DateFormat('E');
 
 final List dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
+
+final timeFactor = 5 / 3;
 
 class Agenda extends StatefulWidget {
   final int initialPage = 0;
@@ -14,7 +15,6 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-final timeFactor = 5 / 3;
 
 class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
   @override
@@ -23,50 +23,9 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
     if (timeMinutes.isNegative) {
       timeMinutes = 0;
     }
-    final List<List> widgetRooster = [];
-    List _rooster = [
-      [
-        {
-          "start": 690,
-          "hourFrom": "2",
-          "hourTo": "2",
-          "startTime": "11:30",
-          "endTime": "12:30",
-          "duration": 60,
-          "title": "EnTL - DKR - A5v3",
-          "location": "a103",
-        },
-        {
-          "start": 630,
-          "hourFrom": "1",
-          "hourTo": "1",
-          "startTime": "10:30",
-          "endTime": "11:30",
-          "duration": 60,
-          "title": "Men - BTN - a5vmen1",
-          "location": "a103",
-        },
-      ],
-      [
-        {
-          "hourFrom": "1",
-          "hourTo": "1",
-          "title": "DuTL - LUA - a5vdutl1",
-          "startTime": "09:30",
-          "endTime": "10:30",
-          "start": 570,
-          "duration": 60,
-          "location": "a103",
-        },
-      ],
-      [],
-      [],
-      [],
-      [],
-      [],
-    ];
+    List<List> widgetRooster = [];
 
-    for (var dag in _rooster) {
+    for (List dag in account.lessons) {
       List<Widget> widgetDag = [];
       if (dag.isEmpty) {
         widgetDag.add(
@@ -75,8 +34,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
         widgetRooster.add(widgetDag);
         continue;
       }
-      for (var les in dag) {
-        var lesUur = les['hourTo'] == les['hourFrom'] ? les['hourFrom'] : '${les['hourFrom']} - ${les['hourTo']}';
+      for (Map les in dag) {
         widgetDag.add(
           Container(
             decoration: BoxDecoration(
@@ -105,7 +63,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                           left: 5,
                         ),
                         child: Text(
-                          lesUur,
+                          les["hour"],
                           style: TextStyle(
                             color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
                           ),
@@ -156,7 +114,6 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
       widgetRooster.add(widgetDag);
     }
     return DefaultTabController(
-      // The number of tabs / content sections to display.
       length: 7,
       child: Scaffold(
         appBar: AppBar(
@@ -175,9 +132,9 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                     dayAbbr[i],
                   ),
                   text: numFormatter.format(
-                    date.add(
-                      Duration(days: i - 1),
-                    ),
+                    now.add(
+                      Duration(days: i - 1)
+                    )
                   ),
                 )
             ],
@@ -194,6 +151,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
             for (int i = 0; i < 7; i++)
               RefreshIndicator(
                 onRefresh: () async {
+                  await Magister().refreshAgenda();
                   setState(() {});
                 },
                 child: SingleChildScrollView(
@@ -266,12 +224,6 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                       Align(
                         alignment: Alignment.topLeft,
                         child: Container(
-                          // child: ClipOval(
-                          //   child: Container(
-                          //     height: 10,
-                          //     width: 10,
-                          //   ),
-                          // ),
                           margin: EdgeInsets.only(
                             top: timeMinutes,
                           ),

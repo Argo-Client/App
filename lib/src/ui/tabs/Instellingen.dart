@@ -144,8 +144,8 @@ class _Instellingen extends State<Instellingen> {
                     size: 30,
                   ),
                 ),
-                onTap: () async {
-                  IconData _icon = await FlutterIconPicker.showIconPicker(
+                onTap: () {
+                  FlutterIconPicker.showIconPicker(
                     context,
                     title: Text("Kies een icoontje"),
                     closeChild: Text(
@@ -153,9 +153,11 @@ class _Instellingen extends State<Instellingen> {
                       textScaleFactor: 1.25,
                     ),
                     // iconPackMode: IconPack.materialOutline,
-                  );
-                  appState.setState(() {
-                    userdata.put("userIcon", _icon);
+                  ).then((icon) {
+                    if (icon != null)
+                      appState.setState(() {
+                        userdata.put("userIcon", icon);
+                      });
                   });
                 },
               ),

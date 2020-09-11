@@ -18,7 +18,6 @@ import 'package:intl/intl.dart';
 part 'src/utils/magister/magister.dart';
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
-part 'src/utils/buildDrawer.dart';
 part 'src/layout.dart';
 part 'src/ui/tabs/Thuis.dart';
 part 'src/ui/tabs/Agenda.dart';
@@ -45,13 +44,10 @@ void main() async {
   Hive.registerAdapter(IconAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
-  // Hive.deleteFromDisk();
   // userdata.delete("dummyData");
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
   if (!userdata.containsKey("dummyData")) {
-    userdata.clear();
-    accounts.clear();
     userdata.putAll({
       "darkMode": false,
       "primaryColor": Colors.blue,
@@ -67,6 +63,9 @@ void main() async {
   account = accounts.get(accountIndex);
   log(account.toJson().toString());
   appState = _AppState();
+  // Hive.deleteFromDisk();
+  // print("Deleted data");
+  // return;
   runApp(App());
 }
 

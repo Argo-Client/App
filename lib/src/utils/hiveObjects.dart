@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class Account extends HiveObject {
   String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken;
   int expiry, id;
+  List lessons;
   Account() {
     this.address = "";
     this.birthdate = "";
@@ -22,8 +23,15 @@ class Account extends HiveObject {
     this.username = "";
     this.accessToken = "";
     this.refreshToken = "";
+    this.lessons = [];
     this.expiry = 8640000000000000;
   }
+  void saveTokens(tokenSet) {
+    this.accessToken = tokenSet["access_token"];
+    this.refreshToken = tokenSet["refresh_token"];
+    this.save();
+  }
+
   String toString() => this.fullName;
   Account.fromJson(Map<String, dynamic> json) {
     if (json != null) {
@@ -44,6 +52,7 @@ class Account extends HiveObject {
       expiry = json["expiry"];
       accessToken = json["accessToken"];
       refreshToken = json["refreshToken"];
+      lessons = json["lessons"];
     } else {
       print('in else Account from json');
       // name = '';
@@ -69,6 +78,7 @@ class Account extends HiveObject {
     data["expiry"] = expiry;
     data["accessToken"] = accessToken;
     data["refreshToken"] = refreshToken;
+    data["lessons"] = lessons;
     return data;
   }
 }
@@ -100,13 +110,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..username = fields[13] as String
       ..expiry = fields[14] as int
       ..accessToken = fields[15] as String
-      ..refreshToken = fields[16] as String;
+      ..refreshToken = fields[16] as String
+      ..lessons = fields[17] as List;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -140,7 +151,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(15)
       ..write(obj.accessToken)
       ..writeByte(16)
-      ..write(obj.refreshToken);
+      ..write(obj.refreshToken)
+      ..writeByte(17)
+      ..write(obj.lessons);
   }
 }
 

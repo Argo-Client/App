@@ -6,7 +6,7 @@ var lastMondayUnformat = date.subtract(Duration(days: date.weekday - dayOfWeek))
 DateFormat numFormatter = DateFormat('dd');
 DateFormat dayFormatter = DateFormat('E');
 
-final List dayAbbr = ["Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"];
+final List dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
 
 class Agenda extends StatefulWidget {
   final int initialPage = 0;
@@ -27,20 +27,36 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
     List _rooster = [
       [
         {
-          "start": 550,
-          "title": "yeet",
+          "start": 690,
+          "hourFrom": "2",
+          "hourTo": "2",
+          "startTime": "11:30",
+          "endTime": "12:30",
           "duration": 60,
+          "title": "EnTL - DKR - A5v3",
+          "location": "a103",
         },
         {
-          "start": 610,
-          "title": "hi",
+          "start": 630,
+          "hourFrom": "1",
+          "hourTo": "1",
+          "startTime": "10:30",
+          "endTime": "11:30",
           "duration": 60,
+          "title": "Men - BTN - a5vmen1",
+          "location": "a103",
         },
       ],
       [
         {
-          "start": 600,
-          "duration": 50,
+          "hourFrom": "1",
+          "hourTo": "1",
+          "title": "DuTL - LUA - a5vdutl1",
+          "startTime": "09:30",
+          "endTime": "10:30",
+          "start": 570,
+          "duration": 60,
+          "location": "a103",
         },
       ],
       [],
@@ -52,23 +68,88 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
 
     for (var dag in _rooster) {
       List<Widget> widgetDag = [];
+      if (dag.isEmpty) {
+        widgetDag.add(
+          Container(),
+        );
+        widgetRooster.add(widgetDag);
+        continue;
+      }
       for (var les in dag) {
+        var lesUur = les['hourTo'] == les['hourFrom'] ? les['hourFrom'] : '${les['hourFrom']} - ${les['hourTo']}';
         widgetDag.add(
           Container(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  width: 0.75,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
             margin: EdgeInsets.only(
               top: ((les["start"] - 480) * timeFactor).toDouble(),
             ),
             width: MediaQuery.of(context).size.width - 30,
             child: Card(
-              margin: null,
+              shape: Border.all(width: 0),
+              margin: EdgeInsets.zero,
               child: InkWell(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                          left: 5,
+                        ),
+                        child: Text(
+                          lesUur,
+                          style: TextStyle(
+                            color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20, left: 20),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                les["title"],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 5,
+                                ),
+                                child: Text(
+                                  les["location"] + " • " + les["startTime"] + " - " + les["endTime"],
+                                  style: TextStyle(
+                                    color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 onTap: () {},
               ),
             ),
-            height: les["duration"] * timeFactor,
+            height: les["duration"] * timeFactor - 1,
           ),
         );
       }

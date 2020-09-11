@@ -2,7 +2,9 @@ library main;
 
 import 'dart:developer';
 import 'dart:convert';
+// import 'dart:io' as io;
 import 'package:http/http.dart' as http;
+// import 'package:image/image.dart' as imgDecoder;
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -11,7 +13,7 @@ import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:after_layout/after_layout.dart';
-
+// import 'package:path/path.dart';
 import 'src/utils/magister/login.dart';
 import 'src/utils/hiveObjects.dart';
 import 'package:intl/intl.dart';
@@ -44,7 +46,6 @@ void main() async {
   Hive.registerAdapter(IconAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
-  // userdata.delete("dummyData");
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
   if (!userdata.containsKey("dummyData")) {

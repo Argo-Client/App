@@ -2,7 +2,7 @@ part of main;
 
 class Magister {
   dynamic getFromMagister(String link) async {
-    final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36"});
+    final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
@@ -17,6 +17,7 @@ class Magister {
     await Future.wait([
       refreshProfileInfo(),
       refreshAgenda(),
+      downloadProfilePicture(),
     ]);
     account.save();
     return;
@@ -68,6 +69,13 @@ class Magister {
     ]);
     account.save();
     return;
+  }
+
+  Future downloadProfilePicture() async {
+    http.Response img = (await http.get('https://pantarijn.magister.net/api/leerlingen/${account.id}/foto', headers: {"Authorization": "Bearer " + account.accessToken}));
+    String image = base64Encode(img.bodyBytes);
+    account.profilePicture = image;
+    account.save();
   }
 
   Future getExpiry() async {

@@ -27,10 +27,12 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         accountEmail: Text(account.klasCode),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
-          child: Icon(
-            userdata.get("userIcon"),
-            size: 50,
-          ),
+          child: userdata.get("userIcon") != Icons.person || account.profilePicture == null
+              ? Icon(
+                  userdata.get("userIcon"),
+                  size: 50,
+                )
+              : Image.memory(base64Decode(account.profilePicture)),
         ),
       ),
     ];

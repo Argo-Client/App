@@ -139,10 +139,12 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
                 trailing: CircleAvatar(
                   backgroundColor: Theme.of(context).backgroundColor,
-                  child: Icon(
-                    box.get("userIcon"),
-                    size: 30,
-                  ),
+                  child: userdata.get("userIcon") != Icons.person || account.profilePicture == null
+                      ? Icon(
+                          userdata.get("userIcon"),
+                          size: 30,
+                        )
+                      : Image.memory(base64Decode(account.profilePicture)),
                 ),
                 onTap: () {
                   FlutterIconPicker.showIconPicker(

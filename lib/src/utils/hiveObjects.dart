@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 @HiveType(typeId: 0)
 class Account extends HiveObject {
-  String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken;
+  String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture;
   int expiry, id;
   List lessons;
   Account() {
@@ -23,6 +23,7 @@ class Account extends HiveObject {
     this.username = "";
     this.accessToken = "";
     this.refreshToken = "";
+    this.profilePicture = "";
     this.lessons = [];
     this.expiry = 8640000000000000;
   }
@@ -33,31 +34,6 @@ class Account extends HiveObject {
   }
 
   String toString() => this.fullName;
-  Account.fromJson(Map<String, dynamic> json) {
-    if (json != null) {
-      address = json["address"];
-      birthdate = json["birthdate"];
-      email = json["email"];
-      fullName = json["fullName"];
-      id = json["id"];
-      initials = json["initials"];
-      klas = json["klas"];
-      klasCode = json["klasCode"];
-      mentor = json["mentor"];
-      name = json["name"];
-      officialFullName = json["officialFullName"];
-      phone = json["phone"];
-      profiel = json["profiel"];
-      username = json["username"];
-      expiry = json["expiry"];
-      accessToken = json["accessToken"];
-      refreshToken = json["refreshToken"];
-      lessons = json["lessons"];
-    } else {
-      print('in else Account from json');
-      // name = '';
-    }
-  }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -111,13 +87,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..expiry = fields[14] as int
       ..accessToken = fields[15] as String
       ..refreshToken = fields[16] as String
-      ..lessons = fields[17] as List;
+      ..lessons = fields[17] as List
+      ..profilePicture = fields[18] as String;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(18)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -153,7 +130,10 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(16)
       ..write(obj.refreshToken)
       ..writeByte(17)
-      ..write(obj.lessons);
+      ..write(obj.lessons)
+      ..writeByte(18)
+      ..write(obj.profilePicture);
+    // Vergeet niet om getal daarboven lengte +1 te doen
   }
 }
 

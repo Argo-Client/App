@@ -1,13 +1,13 @@
-part of main;
+import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:http/http.dart' as http;
+import 'dart:developer';
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 class Magister {
-  Magister([Account acc]) {
-    if (acc != null) {
-      account = acc;
-    }
-  }
+  Account account;
+  Magister(this.account);
   dynamic getFromMagister(String link) async {
-    print(account);
     final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -20,12 +20,11 @@ class Magister {
   Future refresh() async {
     await getExpiry();
     account.id = await profileInfo();
-    await Future.wait([
+    await runList([
       refreshProfileInfo(),
       refreshAgenda(),
       downloadProfilePicture(),
     ]);
-    account.save();
     log('Refreshed $account');
     return;
   }
@@ -57,24 +56,27 @@ class Magister {
     return;
   }
 
-  Future refreshProfileInfo() async {
+  Future runList(List<Future> list) async {
     await runWithToken();
-    await Future.wait([
+    await Future.wait(list);
+    if (account.isInBox) {
+      account.save();
+    }
+    return;
+  }
+
+  Future refreshProfileInfo() async {
+    await runList([
       getUsername(account.id),
       schoolInfo(account.id),
       personInfo(account.id),
       getAdress(account.id),
     ]);
-    account.save();
     return;
   }
 
   Future refreshAgenda() async {
-    await runWithToken();
-    await Future.wait([
-      getLessen(account.id),
-    ]);
-    account.save();
+    await runList([getLessen(account.id)]);
     return;
   }
 
@@ -82,7 +84,6 @@ class Magister {
     http.Response img = (await http.get('https://pantarijn.magister.net/api/leerlingen/${account.id}/foto', headers: {"Authorization": "Bearer " + account.accessToken}));
     String image = base64Encode(img.bodyBytes);
     account.profilePicture = image;
-    account.save();
   }
 
   Future getExpiry() async {
@@ -153,6 +154,5 @@ class Magister {
         "location": les["Lokatie"] != null ? les["Lokatie"] + " • " : "",
       });
     });
-    account.save();
   }
 }

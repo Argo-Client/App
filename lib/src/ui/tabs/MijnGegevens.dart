@@ -195,7 +195,7 @@ class _MijnGegevens extends State<MijnGegevens> {
           ),
         ),
         onRefresh: () async {
-          await Magister().refreshProfileInfo();
+          await account.magister.refreshProfileInfo();
           appState.setState(() {});
           setState(() {});
         },

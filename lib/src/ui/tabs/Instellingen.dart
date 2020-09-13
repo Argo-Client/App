@@ -175,14 +175,19 @@ class _Instellingen extends State<Instellingen> {
                 leading: Icon(Icons.group_add),
                 title: Text("Voeg account toe"),
                 onTap: () {
-                  magisterAuth.fullLogin((tokenSet) {
+                  magisterAuth.fullLogin((tokenSet) async {
                     if (tokenSet != null) {
                       Account newAccount = Account();
-                      accounts.add(newAccount);
                       newAccount.saveTokens(tokenSet);
-                      Magister(newAccount).refresh();
-                      userdata.put("accountIndex", accounts.length-1);
-                      account = newAccount;
+                      await newAccount.magister.refresh();
+                      if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
+                        accounts.add(newAccount);
+                        userdata.put("accountIndex", accounts.length - 1);
+                        account = newAccount;
+                        print('$account is toegevoegd');
+                      } else {
+                        print("Account bestaat al");
+                      }
                     }
                   });
                 },

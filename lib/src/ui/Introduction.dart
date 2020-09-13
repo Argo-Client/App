@@ -12,7 +12,7 @@ class _Introduction extends State<Introduction> {
       userdata.put("introduction", true);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
       appState = _AppState();
-      Magister().refresh().then((value) => appState.setState(() {}));
+      account.magister.refresh().then((value) => appState.setState(() {}));
     });
   }
 

@@ -1,12 +1,15 @@
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
+import 'package:Magistex/src/utils/magister/magister.dart';
 
 @HiveType(typeId: 0)
 class Account extends HiveObject {
   String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture;
   int expiry, id;
   List lessons;
+  Magister magister;
   Account() {
+    this.magister = Magister(this);
     this.address = "";
     this.birthdate = "";
     this.email = "";
@@ -29,7 +32,6 @@ class Account extends HiveObject {
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
-    this.save();
   }
 
   String toString() => this.fullName;

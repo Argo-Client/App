@@ -150,7 +150,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
             for (int i = 0; i < 7; i++)
               RefreshIndicator(
                 onRefresh: () async {
-                  await Magister().refreshAgenda();
+                  await account.magister.refreshAgenda();
                   setState(() {});
                 },
                 child: SingleChildScrollView(

@@ -1,4 +1,4 @@
-<p align="center"><img src="public/img/magistex.png" width="400"></p>
+<p align="center"><img src="assets/icons/banner.png" width="1000"></p>
 
 # Magistex
 

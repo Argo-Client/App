@@ -60,13 +60,13 @@ void main() async {
     print("Wrote dummy data");
     accounts.put(0, Account());
   }
+  // Hive.deleteFromDisk();
+  // print("Deleted data");
+  // return;
   int accountIndex = userdata.get("accountIndex");
   account = accounts.get(accountIndex);
   log(account.toJson().toString());
   appState = _AppState();
-  // Hive.deleteFromDisk();
-  // print("Deleted data");
-  // return;
   runApp(App());
 }
 

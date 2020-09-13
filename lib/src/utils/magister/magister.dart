@@ -1,7 +1,13 @@
 part of main;
 
 class Magister {
+  Magister([Account acc]) {
+    if (acc != null) {
+      account = acc;
+    }
+  }
   dynamic getFromMagister(String link) async {
+    print(account);
     final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -20,6 +26,7 @@ class Magister {
       downloadProfilePicture(),
     ]);
     account.save();
+    log('Refreshed $account');
     return;
   }
 
@@ -134,6 +141,7 @@ class Magister {
       int startHour = les['LesuurVan'];
       int endHour = les["LesuurTotMet"];
       int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
+      if (minFromMidnight <= 480) return;
       account.lessons[end.weekday - 1].add({
         "start": minFromMidnight ?? "",
         "duration": end.difference(start).inMinutes ?? "",
@@ -145,7 +153,6 @@ class Magister {
         "location": les["Lokatie"] != null ? les["Lokatie"] + " • " : "",
       });
     });
-    log(account.lessons.toString());
     account.save();
   }
 }

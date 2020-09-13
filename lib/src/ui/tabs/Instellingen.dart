@@ -171,6 +171,32 @@ class _Instellingen extends State<Instellingen> {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.group_add),
+                title: Text("Voeg account toe"),
+                onTap: () {
+                  magisterAuth.fullLogin((tokenSet) {
+                    if (tokenSet != null) {
+                      Account newAccount = Account();
+                      accounts.add(newAccount);
+                      newAccount.saveTokens(tokenSet);
+                      Magister(newAccount).refresh();
+                      userdata.put("accountIndex", accounts.length-1);
+                      account = newAccount;
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("Kies account"),
+                onTap: () {
+                  SimpleDialog(
+                    title: Text("Kies account"),
+                    children: [Text("ewa")],
+                  );
+                },
+              )
             ],
           );
         },

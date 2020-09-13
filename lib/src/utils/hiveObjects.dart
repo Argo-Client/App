@@ -23,7 +23,6 @@ class Account extends HiveObject {
     this.username = "";
     this.accessToken = "";
     this.refreshToken = "";
-    this.profilePicture = "";
     this.lessons = [];
     this.expiry = 8640000000000000;
   }

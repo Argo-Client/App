@@ -37,6 +37,7 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
+    bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -139,12 +140,13 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text("Verander je foto als die niet zo goed gelukt is."),
                 trailing: CircleAvatar(
                   backgroundColor: Theme.of(context).backgroundColor,
-                  child: userdata.get("userIcon") != Icons.person || account.profilePicture == null
+                  backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
+                  child: useIcon
                       ? Icon(
                           userdata.get("userIcon"),
-                          size: 30,
+                          size: 50,
                         )
-                      : Image.memory(base64Decode(account.profilePicture)),
+                      : null,
                 ),
                 onTap: () {
                   FlutterIconPicker.showIconPicker(
@@ -163,6 +165,15 @@ class _Instellingen extends State<Instellingen> {
                   });
                 },
               ),
+              if (userdata.get("userIcon") != Icons.person)
+                ListTile(
+                  title: Text("Reset foto"),
+                  subtitle: Text("Reset je foto voor als je weer wilt genieten"),
+                  onTap: () {
+                    userdata.put('userIcon', Icons.person);
+                    appState.setState(() {});
+                  },
+                ),
               ListTile(
                 leading: Icon(Icons.input),
                 title: Text('Open Introductie'),

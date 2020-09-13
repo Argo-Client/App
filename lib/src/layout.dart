@@ -21,18 +21,20 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
+    bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     final List<Widget> _drawer = [
       UserAccountsDrawerHeader(
         accountName: Text(account.fullName),
         accountEmail: Text(account.klasCode),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Theme.of(context).backgroundColor,
-          child: userdata.get("userIcon") != Icons.person || account.profilePicture == null
+          backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
+          child: useIcon
               ? Icon(
                   userdata.get("userIcon"),
                   size: 50,
                 )
-              : Image.memory(base64Decode(account.profilePicture)),
+              : null,
         ),
       ),
     ];

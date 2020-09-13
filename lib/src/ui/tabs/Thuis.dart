@@ -68,6 +68,60 @@ class _Thuis extends State<Thuis> {
                           fontSize: 20,
                         ),
                       ),
+                      // InkWell(
+                      //   child: Stack(
+                      //     children: [
+                      //       Align(
+                      //         alignment: Alignment.topLeft,
+                      //         child: Padding(
+                      //           padding: EdgeInsets.only(
+                      //             top: 5,
+                      //             left: 5,
+                      //           ),
+                      //           child: Text(
+                      //             lesUur,
+                      //             style: TextStyle(
+                      //               color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       Padding(
+                      //         padding: EdgeInsets.only(top: 20, left: 20),
+                      //         child: Column(
+                      //           children: [
+                      //             Row(
+                      //               children: [
+                      //                 Text(
+                      //                   les["title"],
+                      //                   style: TextStyle(
+                      //                     fontSize: 16,
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //             Row(
+                      //               children: [
+                      //                 Padding(
+                      //                   padding: EdgeInsets.only(
+                      //                     top: 5,
+                      //                   ),
+                      //                   child: Text(
+                      //                     les["location"] + " • " + les["startTime"] + " - " + les["endTime"],
+                      //                     style: TextStyle(
+                      //                       color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                      //                     ),
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   onTap: () {},
+                      // ),
                     ],
                   ),
                 ),

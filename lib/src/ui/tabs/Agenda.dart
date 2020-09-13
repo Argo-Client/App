@@ -1,27 +1,26 @@
 part of main;
 
-DateTime now = DateTime.now();
-DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
-DateFormat numFormatter = DateFormat('dd');
-DateFormat dayFormatter = DateFormat('E');
-
-final List dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
-
-final timeFactor = 5 / 3;
-
 class Agenda extends StatefulWidget {
   final int initialPage = 0;
   @override
   _Agenda createState() => _Agenda();
 }
 
-class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
+DateFormat numFormatter = DateFormat('dd');
+final List dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
+final timeFactor = 5 / 3;
+
+class _Agenda extends State<Agenda> {
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
+
     double timeMinutes = (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor).toDouble();
     if (timeMinutes.isNegative) {
       timeMinutes = 0;
     }
+
     List<List> widgetRooster = [];
 
     for (List dag in account.lessons) {
@@ -33,6 +32,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
         widgetRooster.add(widgetDag);
         continue;
       }
+
       for (Map les in dag) {
         widgetDag.add(
           Container(
@@ -91,7 +91,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                                     top: 5,
                                   ),
                                   child: Text(
-                                    les["location"] + les["startTime"] + " - " + les["endTime"] + les["description"],
+                                    les["location"] + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
@@ -107,7 +107,13 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                     ),
                   ],
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => LesPagina(les),
+                    ),
+                  );
+                },
               ),
             ),
             height: les["duration"] * timeFactor - 1,
@@ -133,8 +139,9 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                 Tab(
                   icon: Text(
                     dayAbbr[i],
+                    textAlign: TextAlign.left,
                   ),
-                  text: numFormatter.format(now.add(Duration(days: i - 1))),
+                  text: numFormatter.format(lastMonday.add(Duration(days: i))),
                 )
             ],
           ),
@@ -183,7 +190,7 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                         children: [
                           Column(
                             children: [
-                              for (int i = 8; i <= 23; i++)
+                              for (int j = 8; j <= 23; j++)
                                 Container(
                                   height: 100,
                                   width: 30,
@@ -205,10 +212,10 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      i.toString(),
+                                      j.toString(),
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: i == DateTime.now().hour ? Colors.white : Colors.grey,
+                                        color: j == DateTime.now().hour && i + 1 == DateTime.now().weekday ? Colors.white : Colors.grey,
                                       ),
                                     ),
                                   ),
@@ -220,26 +227,118 @@ class _Agenda extends State<Agenda> with SingleTickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Container(
-                          margin: EdgeInsets.only(
-                            top: timeMinutes,
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: userdata.get('accentColor'),
-                                width: .75,
+                      if (i + 1 == DateTime.now().weekday)
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              top: timeMinutes,
+                            ),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: userdata.get('accentColor'),
+                                  width: .75,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LesPagina extends StatelessWidget {
+  final Map les;
+  const LesPagina(this.les);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(les["title"]),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Card(
+              margin: EdgeInsets.only(
+                bottom: 10,
+                top: 0,
+                left: 0,
+                right: 0,
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.access_time),
+                    title: Text(les["hour"] + "e " + les["startTime"] + " - " + les["endTime"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.event),
+                    title: Text(les["date"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.book),
+                    title: Text(les["vak"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.location_on),
+                    title: Text(les["location"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(les["docent"]),
+                  ),
+                  if (les["description"].length != 0)
+                    ListTile(
+                      leading: Icon(Icons.edit),
+                      title: Text("Bewerkt op " + les["bewerkt"]),
+                    ),
+                ],
+              ),
+            ),
+            if (les["description"].length != 0)
+              Container(
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: 30,
+                      left: 20,
+                      right: 20,
+                      bottom: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            bottom: 10,
+                          ),
+                          child: Text(
+                            "Huiswerk",
+                            style: TextStyle(
+                              fontSize: 23,
+                            ),
+                          ),
+                        ),
+                        Html(
+                          data: les["description"],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                width: MediaQuery.of(context).size.width,
               ),
           ],
         ),

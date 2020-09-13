@@ -8,6 +8,7 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -20,6 +21,7 @@ import 'src/utils/hiveObjects.dart';
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/layout.dart';
+
 part 'src/ui/tabs/Thuis.dart';
 part 'src/ui/tabs/Agenda.dart';
 part 'src/ui/tabs/Cijfers.dart';
@@ -32,6 +34,7 @@ part 'src/ui/tabs/Leermiddelen.dart';
 part 'src/ui/tabs/Bronnen.dart';
 part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
+part 'src/ui/tabs/Info.dart';
 
 MagisterAuth magisterAuth = new MagisterAuth();
 Account account;
@@ -66,6 +69,7 @@ void main() async {
   account = accounts.get(accountIndex);
   log(account.toJson().toString());
   appState = _AppState();
+  account.magister.refresh();
   runApp(App());
 }
 

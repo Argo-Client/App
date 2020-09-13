@@ -66,5 +66,10 @@ final List _children = [
     "name": Text("Instellingen"),
     "icon": Icon(Icons.settings),
     "page": Instellingen(),
+  },
+  {
+    "name": Text("Over deze app"),
+    "icon": Icon(Icons.info),
+    "page": Info(),
   }
 ];

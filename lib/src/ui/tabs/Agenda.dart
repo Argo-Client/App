@@ -6,11 +6,23 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-DateFormat numFormatter = DateFormat('dd');
-final List dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
-final timeFactor = 5 / 3;
-
 class _Agenda extends State<Agenda> {
+  DateTime now;
+  DateTime lastMonday;
+  DateFormat numFormatter;
+  DateFormat dayFormatter;
+  List dayAbbr;
+  int pixelsPerHour;
+  double timeFactor;
+  _Agenda() {
+    now = DateTime.now();
+    lastMonday = now.subtract(Duration(days: now.weekday - 1));
+    numFormatter = DateFormat('dd');
+    dayFormatter = DateFormat('E');
+
+    dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
+    timeFactor = userdata.get("pixelsPerHour") / 60;
+  }
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -170,7 +182,7 @@ class _Agenda extends State<Agenda> {
                               alignment: Alignment.topLeft,
                               child: Container(
                                 margin: EdgeInsets.only(
-                                  top: ((i - 8) * 100).toDouble(),
+                                  top: ((i - 8) * userdata.get("pixelsPerHour")).toDouble(),
                                 ),
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
@@ -192,7 +204,7 @@ class _Agenda extends State<Agenda> {
                             children: [
                               for (int j = 8; j <= 23; j++)
                                 Container(
-                                  height: 100,
+                                  height: userdata.get("pixelsPerHour").toDouble(),
                                   width: 30,
                                   decoration: BoxDecoration(
                                     border: Border(

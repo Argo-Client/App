@@ -32,6 +32,7 @@ class Account extends HiveObject {
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
+    if (this.isInBox) this.save();
   }
 
   String toString() => this.fullName;

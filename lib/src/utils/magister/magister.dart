@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:convert';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
+import 'Cijfers.dart';
 
 class MagisterApi {
   Account account;
@@ -65,11 +66,13 @@ class Magister {
   Account account;
   ProfileInfo profileInfo;
   Agenda agenda;
+  Cijfers cijfers;
   MagisterApi api;
   Magister(Account acc) {
     this.account = acc;
     profileInfo = ProfileInfo(acc);
     agenda = Agenda(acc);
+    cijfers = Cijfers(acc);
     api = MagisterApi(acc);
   }
   Future refresh() async {
@@ -78,6 +81,7 @@ class Magister {
     await api.runList([
       agenda.refresh(),
       profileInfo.refresh(),
+      // cijfers.getCijfers(),
       downloadProfilePicture(),
     ]);
     log('Refreshed $account');

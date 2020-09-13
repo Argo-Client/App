@@ -201,6 +201,15 @@ class _Instellingen extends State<Instellingen> {
                     children: [Text("ewa")],
                   );
                 },
+              ),
+              ListTile(
+                leading: Icon(Icons.refresh),
+                title: Text("Ververs account"),
+                onTap: () async {
+                  print(account.magister);
+                  await account.magister.refresh();
+                  appState.setState(() {});
+                },
               )
             ],
           );

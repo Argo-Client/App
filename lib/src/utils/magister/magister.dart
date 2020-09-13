@@ -57,7 +57,7 @@ class MagisterApi {
 
   Future getExpiry() async {
     var parsed = await getFromMagister("sessions/current");
-    int expiry = DateTime.parse(parsed["expiresOn"]).millisecondsSinceEpoch;
+    int expiry = DateTime.parse(parsed["expiresOn"]).subtract(Duration(minutes: 10)).millisecondsSinceEpoch;
     account.expiry = expiry;
   }
 }
@@ -76,6 +76,7 @@ class Magister {
     api = MagisterApi(acc);
   }
   Future refresh() async {
+    await api.runWithToken();
     await api.getExpiry();
     account.id = await profileInfo.profileInfo();
     await api.runList([

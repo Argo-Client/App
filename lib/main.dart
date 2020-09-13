@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -59,6 +60,7 @@ void main() async {
       "userIcon": Icons.person,
       "dummyData": true,
       "accountIndex": 0,
+      "pixelsPerHour": 85,
     });
     print("Wrote dummy data");
     accounts.put(0, Account());
@@ -70,7 +72,6 @@ void main() async {
   account = accounts.get(accountIndex);
   log(account.toJson().toString());
   appState = _AppState();
-  account.magister.refresh();
   runApp(App());
 }
 

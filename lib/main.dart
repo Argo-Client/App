@@ -9,6 +9,7 @@ import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';

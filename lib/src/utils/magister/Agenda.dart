@@ -18,7 +18,15 @@ class Agenda extends MagisterApi {
     DateFormat formatHour = DateFormat("HH:mm");
     DateFormat formatDatum = DateFormat("EEEE dd MM");
     var parsed = (await getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}'))["Items"];
-    account.lessons = [[], [], [], [], [], [], []];
+    account.lessons = [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ];
     parsed.forEach((les) {
       if (les["DuurtHeleDag"]) return;
       DateTime start = DateTime.parse(les["Start"]).toLocal();

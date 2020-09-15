@@ -5,6 +5,8 @@ class Instellingen extends StatefulWidget {
   _Instellingen createState() => _Instellingen();
 }
 
+enum SingingCharacter { light, dark, system }
+
 class _Instellingen extends State<Instellingen> {
   void _showColorPicker(Function cb) {
     showDialog(
@@ -37,6 +39,7 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
+    SingingCharacter _character = SingingCharacter.system;
     bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     return Scaffold(
       appBar: AppBar(
@@ -57,14 +60,78 @@ class _Instellingen extends State<Instellingen> {
               style: TextStyle(color: userdata.get("accentColor")),
             ),
           ),
-          SwitchListTile(
-            title: Text('Donker thema'),
-            value: userdata.get('darkMode'),
-            secondary: Icon(Icons.brightness_4),
-            onChanged: (value) {
-              appState.setState(() {
-                userdata.put("darkMode", value);
-              });
+          ListTile(
+            // Geen icoontje want dat is lelijk
+            title: Text("Thema"),
+            subtitle: Text("[CURRENT THEME]"),
+            onTap: () {
+              return showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return AlertDialog(
+                        title: Text("Selecteer je thema"),
+                        actions: [
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Sluit",
+                            ),
+                          )
+                        ],
+                        content: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                leading: Radio(
+                                  activeColor: userdata.get('accentColor'),
+                                  value: SingingCharacter.light,
+                                  groupValue: _character,
+                                  onChanged: (SingingCharacter value) {
+                                    setState(() {
+                                      _character = value;
+                                    });
+                                  },
+                                ),
+                                title: Text("Licht"),
+                              ),
+                              ListTile(
+                                leading: Radio(
+                                  activeColor: userdata.get('accentColor'),
+                                  value: SingingCharacter.dark,
+                                  groupValue: _character,
+                                  onChanged: (SingingCharacter value) {
+                                    setState(() {
+                                      _character = value;
+                                    });
+                                  },
+                                ),
+                                title: Text("Donker"),
+                              ),
+                              ListTile(
+                                leading: Radio(
+                                  activeColor: userdata.get('accentColor'),
+                                  value: SingingCharacter.system,
+                                  groupValue: _character,
+                                  onChanged: (SingingCharacter value) {
+                                    setState(() {
+                                      _character = value;
+                                    });
+                                  },
+                                ),
+                                title: Text("Systeem kleur"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
             },
           ),
           ListTile(

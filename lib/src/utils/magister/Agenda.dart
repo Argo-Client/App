@@ -16,7 +16,7 @@ class Agenda extends MagisterApi {
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     DateFormat formatHour = DateFormat("HH:mm");
-    DateFormat formatDatum = DateFormat("EEEE dd MM");
+    DateFormat formatDatum = DateFormat("EEEE dd MMMM");
     var parsed = (await getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}'))["Items"];
     account.lessons = [
       [],
@@ -34,20 +34,21 @@ class Agenda extends MagisterApi {
       int startHour = les['LesuurVan'];
       int endHour = les["LesuurTotMet"];
       int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
-      if (minFromMidnight <= 480) return;
+      var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
       account.lessons[end.weekday - 1].add({
         "start": minFromMidnight ?? "",
         "duration": end.difference(start).inMinutes ?? "",
-        "hour": (startHour == endHour ? startHour.toString() : '$startHour - $endHour') ?? "",
+        "hour": hour == "null" ? "" : hour,
         "startTime": formatHour.format(start),
         "endTime": formatHour.format(end),
         "description": les["Inhoud"] ?? "",
         "title": les["Omschrijving"] ?? "",
-        "location": les["Lokatie"] != null ? les["Lokatie"] + " • " : "",
+        "location": les["Lokatie"],
         "date": formatDatum.format(end),
         "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
-        "docent": "Je moeder",
-        "bewerkt": "kerst",
+        "docent": les["Docenten"].isEmpty ? "" : les["Docenten"][0]["Naam"],
+        "uitval": les["Status"] == 5,
+        // "bewerkt": "kerst",
       });
     });
   }

@@ -56,11 +56,10 @@ class _Agenda extends State<Agenda> {
                 ),
               ),
             ),
-            margin: EdgeInsets.only(
-              top: ((les["start"] - 480) * timeFactor).toDouble(),
-            ),
+            transform: Matrix4.translationValues(0, (les["start"] - 480) * timeFactor, 0),
             width: MediaQuery.of(context).size.width - 30,
             child: Card(
+              color: les["uitval"] ? Colors.red : null,
               shape: Border.all(width: 0),
               margin: EdgeInsets.zero,
               child: InkWell(
@@ -103,7 +102,7 @@ class _Agenda extends State<Agenda> {
                                     top: 5,
                                   ),
                                   child: Text(
-                                    les["location"] + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
+                                    (les["locatie"] != null ? les["locatie"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
@@ -292,7 +291,7 @@ class LesPagina extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: Icon(Icons.access_time),
-                    title: Text(les["hour"] + "e " + les["startTime"] + " - " + les["endTime"]),
+                    title: Text((les["hour"] != "" ? les["hour"] + "e " : "") + les["startTime"] + " - " + les["endTime"]),
                   ),
                   ListTile(
                     leading: Icon(Icons.event),
@@ -302,19 +301,21 @@ class LesPagina extends StatelessWidget {
                     leading: Icon(Icons.book),
                     title: Text(les["vak"]),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.location_on),
-                    title: Text(les["location"]),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(les["docent"]),
-                  ),
-                  if (les["description"].length != 0)
+                  if (les["location"] != "")
                     ListTile(
-                      leading: Icon(Icons.edit),
-                      title: Text("Bewerkt op " + les["bewerkt"]),
+                      leading: Icon(Icons.location_on),
+                      title: Text(les["location"]),
                     ),
+                  if (les["docent"] != "")
+                    ListTile(
+                      leading: Icon(Icons.person),
+                      title: Text(les["docent"]),
+                    ),
+                  // if (les["description"].length != 0)
+                  //   ListTile(
+                  //     leading: Icon(Icons.edit),
+                  //     title: Text("Bewerkt op " + les["bewerkt"]),
+                  //   ),
                 ],
               ),
             ),

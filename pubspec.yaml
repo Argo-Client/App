@@ -43,6 +43,7 @@ dependencies:
   flutter_html: ^1.0.2
   after_layout: ^1.0.7+2
   numberpicker: ^1.2.1
+  flushbar: ^1.10.4
 dev_dependencies:
   flutter_launcher_icons:
   flutter_test:

@@ -1,5 +1,6 @@
 library main;
 
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:developer';
@@ -11,6 +12,7 @@ import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flushbar/flushbar.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -48,6 +50,12 @@ Account account;
 _AppState appState;
 Box userdata, accounts;
 Brightness theme;
+
+void showSnackbar(BuildContext context, String text) {
+  Scaffold.of(context).removeCurrentSnackBar();
+  Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
+}
+
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AccountAdapter());
@@ -58,7 +66,7 @@ void main() async {
   accounts = await Hive.openBox<Account>("accounts");
   if (!userdata.containsKey("dummyData")) {
     userdata.putAll({
-      "theme": "system",
+      "theme": "systeem",
       "primaryColor": Colors.blue,
       "accentColor": Colors.orange,
       "userIcon": Icons.person,

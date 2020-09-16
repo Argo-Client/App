@@ -8,7 +8,7 @@ class Account extends HiveObject {
   int expiry, id;
   List lessons;
   Magister magister;
-  Account() {
+  Account([tokenSet]) {
     this.magister = Magister(this);
     this.address = "";
     this.birthdate = "";
@@ -24,8 +24,8 @@ class Account extends HiveObject {
     this.phone = "-";
     this.profiel = "";
     this.username = "";
-    this.accessToken = "";
-    this.refreshToken = "";
+    this.accessToken = tokenSet != null ? tokenSet["access_token"] : "";
+    this.refreshToken = tokenSet != null ? tokenSet["refresh_token"] : "";
     this.lessons = [];
     this.expiry = 8640000000000000;
   }

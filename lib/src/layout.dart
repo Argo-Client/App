@@ -6,9 +6,8 @@ final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   bool _detailsPressed = false;
   void afterFirstLayout(BuildContext context) {
-    if (userdata.containsKey("introduction")) {
+    if (!userdata.containsKey("introduction")) {
       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-    } else {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
     }
   }
@@ -22,6 +21,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
+    var child = _children[_currentIndex];
     bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
 
     final List<Widget> _accountsDrawer = [
@@ -29,7 +29,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         ListTile(
           leading: CircleAvatar(
             backgroundColor: Theme.of(context).backgroundColor,
-            backgroundImage: !useIcon ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+            backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
             child: useIcon
                 ? Icon(
                     userdata.get("userIcon"),
@@ -43,6 +43,13 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           subtitle: Text(
             acc.klasCode,
           ),
+          onTap: () {
+            int index = accounts.toMap().values.toList().indexWhere((g) => g.id == acc.id);
+            setState(() {
+              userdata.put("accountIndex", index);
+              account = accounts.get(index);
+            });
+          },
         ),
       ListTile(
         leading: Icon(Icons.add),
@@ -50,17 +57,19 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         onTap: () {
           magisterAuth.fullLogin((tokenSet) async {
             if (tokenSet != null) {
-              Account newAccount = Account();
-              newAccount.saveTokens(tokenSet);
+              print(tokenSet);
+              Account newAccount = Account(tokenSet);
               await newAccount.magister.profileInfo.profileInfo();
               if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
-                await account.magister.refresh();
                 accounts.add(newAccount);
-                userdata.put("accountIndex", accounts.length - 1);
+                newAccount.saveTokens(tokenSet);
+                await newAccount.magister.refresh();
                 account = newAccount;
-                print('$account is toegevoegd');
+                userdata.put("accountIndex", accounts.length - 1);
+                FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
+                setState(() {});
               } else {
-                print("Account bestaat al");
+                FlushbarHelper.createError(message: '$account bestaat al')..show(context);
               }
             }
           });
@@ -87,7 +96,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       }
     }
 
-    var child = _children[_currentIndex];
     return Scaffold(
       key: _layoutKey,
       body: child["page"],
@@ -108,7 +116,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   if (acc.id != account.id)
                     CircleAvatar(
                       backgroundColor: Theme.of(context).backgroundColor,
-                      backgroundImage: !useIcon ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                      backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
                       child: useIcon
                           ? Icon(
                               userdata.get("userIcon"),

@@ -2,11 +2,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:developer' as console;
 import 'dart:typed_data';
 import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class MagisterAuth {
   final String authURL = "https://accounts.magister.net/connect/authorize";
@@ -40,7 +42,7 @@ class MagisterAuth {
   }
 
   String getURL() {
-    return "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256"; // &acr_values=tenant:$tenant&prompt=select_account
+    return "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256"; //&acr_values=tenant:pantarijn.magister.net&prompt=select_account&login_hint=616068
   }
 
   Future<Map> getTokenSet() async {
@@ -59,27 +61,29 @@ class MagisterAuth {
       body: bodyBytes,
       encoding: Encoding.getByName("utf-8"),
     );
-
-    Map<String, dynamic> parsed = json.decode(response.body);
-    return parsed;
+    try {
+      Map<String, dynamic> parsed = json.decode(response.body);
+      return parsed;
+    } catch (e) {
+      print(e);
+      print("getTokenSet is gefaald vanwege magister: respons:");
+      console.log(response.body.toString());
+    }
   }
 
   Future<void> fullLogin(Function callback) async {
     String authURL = this.getURL();
-    if (await canLaunch(authURL)) {
-      await launch(authURL, forceWebView: false, forceSafariVC: false);
-      StreamSubscription _sub;
-      _sub = getLinksStream().listen((String link) async {
-        code = link.split("code=")[1].split("&")[0];
-        var tokenSet = await this.getTokenSet();
-        _sub.cancel();
-        callback(tokenSet);
-      }, onError: (err) {
-        _sub.cancel();
-        throw Exception("Stream error ofzo idk");
-      });
-    } else {
-      throw Exception("Invalid auth url");
-    }
+    await launch(authURL, forceWebView: false, forceSafariVC: true, enableJavaScript: true);
+    StreamSubscription _sub;
+    _sub = getLinksStream().listen((String link) async {
+      code = link.split("code=")[1].split("&")[0];
+      var tokenSet = await this.getTokenSet();
+      console.log(tokenSet["access_token"].toString());
+      _sub.cancel();
+      callback(tokenSet);
+    }, onError: (err) {
+      _sub.cancel();
+      throw Exception("Stream error ofzo idk");
+    });
   }
 }

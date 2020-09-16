@@ -223,7 +223,7 @@ class _Instellingen extends State<Instellingen> {
               child: useIcon
                   ? Icon(
                       userdata.get("userIcon"),
-                      size: 50,
+                      size: 30,
                     )
                   : null,
             ),
@@ -251,6 +251,7 @@ class _Instellingen extends State<Instellingen> {
               onTap: () {
                 userdata.put('userIcon', Icons.person);
                 appState.setState(() {});
+                setState(() {});
               },
             ),
           ListTile(
@@ -262,44 +263,15 @@ class _Instellingen extends State<Instellingen> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.group_add),
-            title: Text("Voeg account toe"),
-            onTap: () {
-              magisterAuth.fullLogin((tokenSet) async {
-                if (tokenSet != null) {
-                  Account newAccount = Account();
-                  newAccount.saveTokens(tokenSet);
-                  await newAccount.magister.profileInfo.profileInfo();
-                  if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id) || true) {
-                    await account.magister.refresh();
-                    accounts.add(newAccount);
-                    userdata.put("accountIndex", accounts.length - 1);
-                    account = newAccount;
-                    print('$account is toegevoegd');
-                  } else {
-                    print("Account bestaat al");
-                  }
-                }
-              });
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text("Kies account"),
-            onTap: () {
-              SimpleDialog(
-                title: Text("Kies account"),
-                children: [Text("ewa")],
-              );
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.refresh),
             title: Text("Ververs account"),
             onTap: () async {
-              print(account.magister);
+              Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
               await account.magister.refresh();
+              msg.dismiss();
+              FlushbarHelper.createSuccess(message: '$account is ververst!')..show(context);
               appState.setState(() {});
+              setState(() {});
             },
           )
         ],

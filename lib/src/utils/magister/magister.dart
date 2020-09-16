@@ -10,6 +10,10 @@ class MagisterApi {
   Account account;
   MagisterApi(this.account);
   dynamic getFromMagister(String link) async {
+    if (this.account.accessToken == null) {
+      print("Error: $account accesstoken is niks");
+      return;
+    }
     final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
     if (response.statusCode == 200) {
       return json.decode(response.body);

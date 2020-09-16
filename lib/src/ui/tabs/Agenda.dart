@@ -75,7 +75,7 @@ class _Agenda extends State<Agenda> {
                         child: Text(
                           les["hour"],
                           style: TextStyle(
-                            color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                           ),
                         ),
                       ),
@@ -106,7 +106,7 @@ class _Agenda extends State<Agenda> {
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
-                                      color: userdata.get('darkMode') ? Colors.grey.shade400 : Colors.grey.shade600,
+                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                     ),
                                   ),
                                 ),

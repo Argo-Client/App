@@ -5,8 +5,6 @@ class Instellingen extends StatefulWidget {
   _Instellingen createState() => _Instellingen();
 }
 
-enum SingingCharacter { light, dark, system }
-
 class _Instellingen extends State<Instellingen> {
   void _showColorPicker(Function cb) {
     showDialog(
@@ -39,7 +37,6 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
-    SingingCharacter _character = SingingCharacter.system;
     bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     return Scaffold(
       appBar: AppBar(
@@ -61,9 +58,10 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           ListTile(
-            // Geen icoontje want dat is lelijk
+            // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje
+            trailing: Icon(Icons.brightness_4),
             title: Text("Thema"),
-            subtitle: Text("[CURRENT THEME]"),
+            subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
             onTap: () {
               return showDialog(
                 context: context,
@@ -85,44 +83,44 @@ class _Instellingen extends State<Instellingen> {
                         content: SingleChildScrollView(
                           child: Column(
                             children: [
-                              ListTile(
-                                leading: Radio(
-                                  activeColor: userdata.get('accentColor'),
-                                  value: SingingCharacter.light,
-                                  groupValue: _character,
-                                  onChanged: (SingingCharacter value) {
-                                    setState(() {
-                                      _character = value;
-                                    });
-                                  },
-                                ),
+                              RadioListTile(
                                 title: Text("Licht"),
-                              ),
-                              ListTile(
-                                leading: Radio(
-                                  activeColor: userdata.get('accentColor'),
-                                  value: SingingCharacter.dark,
-                                  groupValue: _character,
-                                  onChanged: (SingingCharacter value) {
+                                activeColor: userdata.get('accentColor'),
+                                value: "licht",
+                                groupValue: userdata.get("theme"),
+                                onChanged: (value) {
+                                  appState.setState(() {
                                     setState(() {
-                                      _character = value;
+                                      userdata.put("theme", value);
                                     });
-                                  },
-                                ),
+                                  });
+                                },
+                              ),
+                              RadioListTile(
                                 title: Text("Donker"),
-                              ),
-                              ListTile(
-                                leading: Radio(
-                                  activeColor: userdata.get('accentColor'),
-                                  value: SingingCharacter.system,
-                                  groupValue: _character,
-                                  onChanged: (SingingCharacter value) {
+                                activeColor: userdata.get('accentColor'),
+                                value: "donker",
+                                groupValue: userdata.get("theme"),
+                                onChanged: (value) {
+                                  appState.setState(() {
                                     setState(() {
-                                      _character = value;
+                                      userdata.put("theme", value);
                                     });
-                                  },
-                                ),
+                                  });
+                                },
+                              ),
+                              RadioListTile(
                                 title: Text("Systeem kleur"),
+                                activeColor: userdata.get('accentColor'),
+                                value: "systeem",
+                                groupValue: userdata.get("theme"),
+                                onChanged: (value) {
+                                  appState.setState(() {
+                                    setState(() {
+                                      userdata.put("theme", value);
+                                    });
+                                  });
+                                },
                               ),
                             ],
                           ),

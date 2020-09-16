@@ -1,6 +1,7 @@
 library main;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'dart:developer';
 import 'dart:convert';
 
@@ -38,10 +39,15 @@ part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 part 'src/ui/tabs/Info.dart';
 
+extension StringExtension on String {
+  String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
+}
+
 MagisterAuth magisterAuth = new MagisterAuth();
 Account account;
 _AppState appState;
 Box userdata, accounts;
+Brightness theme;
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AccountAdapter());
@@ -50,11 +56,9 @@ void main() async {
   Hive.registerAdapter(IconAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
-  log("Userdata: " + userdata.toMap().toString());
-  log("accounts: " + accounts.toMap().toString());
   if (!userdata.containsKey("dummyData")) {
     userdata.putAll({
-      "darkMode": false,
+      "theme": "system",
       "primaryColor": Colors.blue,
       "accentColor": Colors.orange,
       "userIcon": Icons.person,
@@ -65,6 +69,8 @@ void main() async {
     print("Wrote dummy data");
     accounts.put(0, Account());
   }
+  log("Userdata: " + userdata.toMap().toString());
+  log("accounts: " + accounts.toMap().toString());
   // Hive.deleteFromDisk();
   // print("Deleted data");
   // return;
@@ -83,10 +89,20 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
+    switch (userdata.get("theme")) {
+      case "donker":
+        theme = Brightness.dark;
+        break;
+      case "licht":
+        theme = Brightness.light;
+        break;
+      default:
+        theme = SchedulerBinding.instance.window.platformBrightness;
+    }
     return MaterialApp(
       title: 'Magistex',
       theme: ThemeData(
-        brightness: userdata.get("darkMode") ? Brightness.dark : Brightness.light,
+        brightness: theme,
         primaryColor: userdata.get("primaryColor"),
         accentColor: userdata.get("accentColor"),
       ),

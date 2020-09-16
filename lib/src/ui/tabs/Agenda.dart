@@ -59,7 +59,7 @@ class _Agenda extends State<Agenda> {
             transform: Matrix4.translationValues(0, (les["start"] - 480) * timeFactor, 0),
             width: MediaQuery.of(context).size.width - 30,
             child: Card(
-              color: les["uitval"] ? Colors.red : null,
+              color: les["uitval"] ? Color.fromARGB(255, 119, 66, 62) : null,
               shape: Border.all(width: 0),
               margin: EdgeInsets.zero,
               child: InkWell(

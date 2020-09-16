@@ -272,7 +272,7 @@ class _Instellingen extends State<Instellingen> {
                   Account newAccount = Account();
                   newAccount.saveTokens(tokenSet);
                   await newAccount.magister.profileInfo.profileInfo();
-                  if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
+                  if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id) || true) {
                     await account.magister.refresh();
                     accounts.add(newAccount);
                     userdata.put("accountIndex", accounts.length - 1);

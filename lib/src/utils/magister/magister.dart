@@ -24,7 +24,7 @@ class MagisterApi {
   }
 
   Future runWithToken() async {
-    if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
+    if (DateTime.now().add(Duration(minutes: 10)).millisecondsSinceEpoch > account.expiry) {
       print("Token expired, refreshing");
       await refreshToken();
       return;
@@ -61,7 +61,7 @@ class MagisterApi {
 
   Future getExpiry() async {
     var parsed = await getFromMagister("sessions/current");
-    int expiry = DateTime.parse(parsed["expiresOn"]).subtract(Duration(minutes: 10)).millisecondsSinceEpoch;
+    int expiry = DateTime.parse(parsed["expiresOn"]).millisecondsSinceEpoch;
     account.expiry = expiry;
   }
 }

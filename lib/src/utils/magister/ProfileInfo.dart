@@ -23,7 +23,7 @@ class ProfileInfo extends MagisterApi {
     var parsed = (await getFromMagister("account"))["Persoon"];
     account.id = parsed["Id"];
     account.officialFullName = parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] != null ? parsed["OfficieleTussenvoegsel"] + " " : "") + parsed["OfficieleAchternaam"];
-    account.fullName = parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] ?? "") + parsed["Achternaam"];
+    account.fullName = parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] != null ? parsed["Tussenvoegsel"] + " " : "") + parsed["Achternaam"];
     account.name = parsed["Roepnaam"];
     account.initials = parsed["Voorletters"];
     account.birthdate = parsed["Geboortedatum"];

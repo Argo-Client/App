@@ -8,7 +8,6 @@ import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class MagisterAuth {
   final String authURL = "https://accounts.magister.net/connect/authorize";
@@ -68,6 +67,7 @@ class MagisterAuth {
       print(e);
       print("getTokenSet is gefaald vanwege magister: respons:");
       console.log(response.body.toString());
+      return Map();
     }
   }
 

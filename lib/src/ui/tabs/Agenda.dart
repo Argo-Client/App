@@ -102,7 +102,7 @@ class _Agenda extends State<Agenda> {
                                     top: 5,
                                   ),
                                   child: Text(
-                                    (les["locatie"] != null ? les["locatie"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
+                                    (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(

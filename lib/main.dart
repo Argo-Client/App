@@ -64,13 +64,13 @@ void main() async {
   Hive.registerAdapter(IconAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
-  if (!userdata.containsKey("dummyData")) {
+  if (accounts.isEmpty) {
+    userdata.clear();
     userdata.putAll({
       "theme": "systeem",
       "primaryColor": Colors.blue,
       "accentColor": Colors.orange,
       "userIcon": Icons.person,
-      "dummyData": true,
       "accountIndex": 0,
       "pixelsPerHour": 85,
     });

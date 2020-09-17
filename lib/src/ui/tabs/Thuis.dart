@@ -1,7 +1,5 @@
 part of main;
 
-enum HomeMenu { herlaad, indeling, instellingen }
-
 class Thuis extends StatefulWidget {
   @override
   _Thuis createState() => _Thuis();
@@ -20,30 +18,24 @@ class _Thuis extends State<Thuis> {
         ),
         title: Text("Home"),
         actions: [
-          PopupMenuButton<HomeMenu>(
-            onSelected: (HomeMenu result) {
-              switch (result) {
-                case HomeMenu.instellingen:
-                  // Navigator.push(context, Instellingen());
-                  break;
-                default:
-                  break;
-              }
+          PopupMenuButton(
+            onSelected: (result) {
+              if (result == "instellingen") {}
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<HomeMenu>>[
-              const PopupMenuItem<HomeMenu>(
-                value: HomeMenu.herlaad,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: "herlaad",
                 child: Text('Herlaad'),
               ),
-              const PopupMenuItem<HomeMenu>(
-                value: HomeMenu.indeling,
+              const PopupMenuItem(
+                value: "indeling",
                 child: Text('Verander indeling'),
               ),
               const PopupMenuDivider(
                 height: 15,
               ),
-              const PopupMenuItem<HomeMenu>(
-                value: HomeMenu.instellingen,
+              const PopupMenuItem(
+                value: "instellingen",
                 child: Text('Instellingen'),
               ),
             ],

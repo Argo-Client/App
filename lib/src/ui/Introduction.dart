@@ -9,7 +9,7 @@ class _Introduction extends State<Introduction> {
   void loginPress() {
     magisterAuth.fullLogin((tokenSet) {
       account = Account(tokenSet);
-      accounts.put(userdata.get("accountIndex"), account);
+      accounts.put(0, account);
       userdata.put("introduction", true);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
       appState = _AppState();

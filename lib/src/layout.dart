@@ -3,11 +3,6 @@ part of main;
 int _currentIndex = 0;
 final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 
-enum AccountMenu {
-  verwijder,
-  herlaad,
-}
-
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   bool _detailsPressed = false;
   void afterFirstLayout(BuildContext context) {
@@ -32,23 +27,26 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     final List<Widget> _accountsDrawer = [
       for (Account acc in accounts.toMap().values)
         ListTile(
-          trailing: PopupMenuButton<AccountMenu>(
-            onSelected: (AccountMenu result) {
-              switch (result) {
-                case AccountMenu.verwijder:
-                  break;
-                case AccountMenu.herlaad:
-                  account.magister.refresh();
-                  break;
+          trailing: PopupMenuButton(
+            onSelected: (result) async {
+              if (result == "herlaad") {
+                Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
+                await acc.magister.refresh();
+                msg.dismiss();
+                FlushbarHelper.createSuccess(message: '$acc is ververst!')..show(context);
+              } else {
+                accounts.delete(accounts.values.toList().indexWhere((a) => a.id == acc.id));
+                userdata.put("accountIndex", 0);
+                setState(() {});
               }
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<AccountMenu>>[
-              const PopupMenuItem<AccountMenu>(
-                value: AccountMenu.verwijder,
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: "verwijder",
                 child: Text('Verwijder'),
               ),
-              const PopupMenuItem<AccountMenu>(
-                value: AccountMenu.herlaad,
+              const PopupMenuItem(
+                value: "herlaad",
                 child: Text('Herlaad'),
               ),
             ],

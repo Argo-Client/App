@@ -3,6 +3,11 @@ part of main;
 int _currentIndex = 0;
 final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 
+enum AccountMenu {
+  verwijder,
+  herlaad,
+}
+
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   bool _detailsPressed = false;
   void afterFirstLayout(BuildContext context) {
@@ -27,13 +32,34 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     final List<Widget> _accountsDrawer = [
       for (Account acc in accounts.toMap().values)
         ListTile(
+          trailing: PopupMenuButton<AccountMenu>(
+            onSelected: (AccountMenu result) {
+              switch (result) {
+                case AccountMenu.verwijder:
+                  break;
+                case AccountMenu.herlaad:
+                  account.magister.refresh();
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<AccountMenu>>[
+              const PopupMenuItem<AccountMenu>(
+                value: AccountMenu.verwijder,
+                child: Text('Verwijder'),
+              ),
+              const PopupMenuItem<AccountMenu>(
+                value: AccountMenu.herlaad,
+                child: Text('Herlaad'),
+              ),
+            ],
+          ),
           leading: CircleAvatar(
             backgroundColor: Theme.of(context).backgroundColor,
             backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
             child: useIcon
                 ? Icon(
                     userdata.get("userIcon"),
-                    size: 50,
+                    size: 25,
                   )
                 : null,
           ),
@@ -120,7 +146,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       child: useIcon
                           ? Icon(
                               userdata.get("userIcon"),
-                              size: 50,
+                              size: 25,
                             )
                           : null,
                     ),

@@ -134,6 +134,7 @@ class _Agenda extends State<Agenda> {
       widgetRooster.add(widgetDag);
     }
     return DefaultTabController(
+      initialIndex: DateTime.now().weekday - 1,
       length: 7,
       child: Scaffold(
         appBar: AppBar(

@@ -83,7 +83,7 @@ void main() async {
   // print("Deleted data");
   // return;
   int accountIndex = userdata.get("accountIndex");
-  account = accounts.get(accountIndex);
+  account = accounts.get(accountIndex) ?? accounts.get(0);
   log(account.toJson().toString());
   appState = _AppState();
   runApp(App());

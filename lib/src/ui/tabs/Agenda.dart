@@ -38,96 +38,100 @@ class _Agenda extends State<Agenda> {
     for (List dag in account.lessons) {
       List<Widget> widgetDag = [];
       if (dag.isEmpty) {
-        widgetDag.add(
-          Container(),
-        );
+        widgetDag.add(Positioned(
+            child: Container(
+          width: 0,
+          height: 0,
+        )));
         widgetRooster.add(widgetDag);
         continue;
       }
 
       for (Map les in dag) {
         widgetDag.add(
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  width: 0.75,
-                  color: Colors.grey,
+          Positioned(
+            top: (les["start"] - 480) * timeFactor,
+            child: Container(
+              width: MediaQuery.of(context).size.width - 30,
+              height: les["duration"] * timeFactor - 1,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    width: 0.75,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
-            ),
-            transform: Matrix4.translationValues(0, (les["start"] - 480) * timeFactor, 0),
-            width: MediaQuery.of(context).size.width - 30,
-            child: Card(
-              color: les["uitval"] ? Color.fromARGB(255, 119, 66, 62) : null,
-              shape: Border.all(width: 0),
-              margin: EdgeInsets.zero,
-              child: InkWell(
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 5,
-                          left: 5,
-                        ),
-                        child: Text(
-                          les["hour"],
-                          style: TextStyle(
-                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+              child: Card(
+                color: les["uitval"] ? Color.fromARGB(255, 119, 66, 62) : null,
+                shape: Border.all(width: 0),
+                margin: EdgeInsets.zero,
+                child: InkWell(
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            top: 5,
+                            left: 5,
+                          ),
+                          child: Text(
+                            les["hour"],
+                            style: TextStyle(
+                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, left: 20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                les["title"],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                    top: 5,
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  les["title"],
+                                  style: TextStyle(
+                                    fontSize: 16,
                                   ),
-                                  child: Text(
-                                    (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 5,
+                                    ),
+                                    child: Text(
+                                      (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                      style: TextStyle(
+                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => LesPagina(les),
+                      ),
+                    );
+                  },
                 ),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LesPagina(les),
-                    ),
-                  );
-                },
               ),
             ),
-            height: les["duration"] * timeFactor - 1,
           ),
         );
       }
@@ -175,28 +179,21 @@ class _Agenda extends State<Agenda> {
                 child: SingleChildScrollView(
                   child: Stack(
                     children: [
-                      Stack(
-                        children: [
-                          for (int i = 8; i <= 23; i++)
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                  top: ((i - 8) * userdata.get("pixelsPerHour")).toDouble(),
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.grey,
-                                      width: .75,
-                                    ),
-                                  ),
-                                ),
+                      for (int i = 8; i <= 23; i++)
+                        Container(
+                          margin: EdgeInsets.only(
+                            top: ((i - 8) * userdata.get("pixelsPerHour")).toDouble(),
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.grey,
+                                width: .75,
                               ),
                             ),
-                        ],
-                      ),
+                          ),
+                        ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -234,25 +231,26 @@ class _Agenda extends State<Agenda> {
                                 ),
                             ],
                           ),
-                          Stack(
-                            children: widgetRooster[i],
+                          Container(
+                            width: MediaQuery.of(context).size.width - 30,
+                            height: MediaQuery.of(context).size.height,
+                            child: Stack(
+                              children: widgetRooster[i],
+                            ),
                           ),
                         ],
                       ),
                       if (i + 1 == DateTime.now().weekday)
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              top: timeMinutes,
-                            ),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: userdata.get('accentColor'),
-                                  width: .75,
-                                ),
+                        Container(
+                          margin: EdgeInsets.only(
+                            top: timeMinutes,
+                          ),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: userdata.get('accentColor'),
+                                width: .75,
                               ),
                             ),
                           ),

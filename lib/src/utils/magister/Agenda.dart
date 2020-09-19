@@ -48,6 +48,7 @@ class Agenda extends MagisterApi {
         "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
         "docent": les["Docenten"].isEmpty ? "" : les["Docenten"][0]["Naam"],
         "uitval": les["Status"] == 5,
+        "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "")
         // "bewerkt": "kerst",
       });
     });

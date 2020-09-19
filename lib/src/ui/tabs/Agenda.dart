@@ -98,7 +98,7 @@ class _Agenda extends State<Agenda> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
+                                    les["information"],
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(

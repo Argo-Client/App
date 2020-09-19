@@ -18,6 +18,11 @@ class MagisterApi {
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
+      if (response.body.contains("Expired")) {
+        print("Magister heeft je genaaid zonder het te zeggen");
+        await refreshToken();
+        return await getFromMagister(link);
+      }
       print("Magister Wil niet: " + response.statusCode.toString() + link);
       print(response.body);
     }

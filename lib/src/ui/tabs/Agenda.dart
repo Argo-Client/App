@@ -6,14 +6,18 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
+const BorderSide GreyBorderSide = BorderSide(color: Colors.grey, width: .75);
+
 class _Agenda extends State<Agenda> {
-  DateTime now;
-  DateTime lastMonday;
-  DateFormat numFormatter;
-  DateFormat dayFormatter;
+  DateTime now, lastMonday;
+  DateFormat numFormatter, dayFormatter;
   List dayAbbr;
-  int pixelsPerHour;
   double timeFactor;
+  int endHour, defaultStartHour, pixelsPerHour;
+  int getStartHour(dag) {
+    return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first["start"] / 60).floor();
+  }
+
   _Agenda() {
     now = DateTime.now();
     lastMonday = now.subtract(Duration(days: now.weekday - 1));
@@ -22,44 +26,36 @@ class _Agenda extends State<Agenda> {
 
     dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
     timeFactor = userdata.get("pixelsPerHour") / 60;
+    endHour = 23;
+    defaultStartHour = 8;
   }
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
     DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
 
-    double timeMinutes = (((DateTime.now().hour - 8) * 60 + DateTime.now().minute) * timeFactor).toDouble();
-    if (timeMinutes.isNegative) {
-      timeMinutes = 0;
-    }
-
     List<List> widgetRooster = [];
 
     for (List dag in account.lessons) {
       List<Widget> widgetDag = [];
+
       if (dag.isEmpty) {
-        widgetDag.add(Positioned(
-            child: Container(
-          width: 0,
-          height: 0,
-        )));
+        widgetDag.add(Container());
         widgetRooster.add(widgetDag);
         continue;
       }
+      int startHour = (dag.first["start"] / 60).floor();
 
       for (Map les in dag) {
         widgetDag.add(
           Positioned(
-            top: (les["start"] - 480) * timeFactor,
+            top: (les["start"] - startHour * 60) * timeFactor,
             child: Container(
               width: MediaQuery.of(context).size.width - 30,
               height: les["duration"] * timeFactor - 1,
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(
-                    width: 0.75,
-                    color: Colors.grey,
-                  ),
+                  bottom: GreyBorderSide,
                 ),
               ),
               child: Card(
@@ -101,17 +97,12 @@ class _Agenda extends State<Agenda> {
                             Row(
                               children: [
                                 Flexible(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      top: 5,
-                                    ),
-                                    child: Text(
-                                      (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
-                                      style: TextStyle(
-                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                      ),
+                                  child: Text(
+                                    (les["location"] != null ? les["location"] + " • " : "") + les["startTime"] + " - " + les["endTime"] + (les["description"].length != 0 ? " • " + les["description"] : ""),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                     ),
                                   ),
                                 )
@@ -144,20 +135,19 @@ class _Agenda extends State<Agenda> {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.menu),
-            onPressed: () {
-              _layoutKey.currentState.openDrawer();
-            },
+            onPressed: () => _layoutKey.currentState.openDrawer(),
           ),
           title: Text("Agenda"),
           bottom: TabBar(
+            // Dag kiezer bovenaan
             tabs: <Widget>[
-              for (int i = 0; i < 7; i++)
+              for (int dag = 0; dag < 7; dag++)
                 Tab(
                   icon: Text(
-                    dayAbbr[i],
+                    dayAbbr[dag],
                     textAlign: TextAlign.left,
                   ),
-                  text: numFormatter.format(lastMonday.add(Duration(days: i))),
+                  text: numFormatter.format(lastMonday.add(Duration(days: dag))),
                 )
             ],
           ),
@@ -170,7 +160,7 @@ class _Agenda extends State<Agenda> {
         ),
         body: TabBarView(
           children: [
-            for (int i = 0; i < 7; i++)
+            for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
               RefreshIndicator(
                 onRefresh: () async {
                   await account.magister.agenda.refresh();
@@ -179,17 +169,14 @@ class _Agenda extends State<Agenda> {
                 child: SingleChildScrollView(
                   child: Stack(
                     children: [
-                      for (int i = 8; i <= 23; i++)
-                        Container(
-                          margin: EdgeInsets.only(
-                            top: ((i - 8) * userdata.get("pixelsPerHour")).toDouble(),
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey,
-                                width: .75,
+                      for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
+                        Positioned(
+                          top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: GreyBorderSide,
                               ),
                             ),
                           ),
@@ -198,59 +185,52 @@ class _Agenda extends State<Agenda> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Column(
+                            // Balkje aan de zijkant van de uren
                             children: [
-                              for (int j = 8; j <= 23; j++)
+                              for (int uur = getStartHour(dag); uur <= endHour; uur++)
                                 Container(
+                                  // Een uur van het balkje
                                   height: userdata.get("pixelsPerHour").toDouble(),
                                   width: 30,
                                   decoration: BoxDecoration(
                                     border: Border(
-                                      top: BorderSide(
-                                        width: .75,
-                                        color: Colors.grey,
-                                      ),
-                                      right: BorderSide(
-                                        width: .75,
-                                        color: Colors.grey,
-                                      ),
-                                      left: BorderSide(
-                                        width: .75,
-                                        color: Colors.grey,
-                                      ),
+                                      top: GreyBorderSide,
+                                      right: GreyBorderSide,
+                                      left: GreyBorderSide,
                                     ),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      j.toString(),
+                                      uur.toString(),
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: j == DateTime.now().hour && i + 1 == DateTime.now().weekday ? Colors.white : Colors.grey,
+                                        color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Colors.grey,
                                       ),
                                     ),
                                   ),
                                 ),
                             ],
                           ),
+                          // Container van alle lessen
                           Container(
                             width: MediaQuery.of(context).size.width - 30,
                             height: MediaQuery.of(context).size.height,
                             child: Stack(
-                              children: widgetRooster[i],
+                              children: widgetRooster[dag],
                             ),
                           ),
                         ],
                       ),
-                      if (i + 1 == DateTime.now().weekday)
-                        Container(
-                          margin: EdgeInsets.only(
-                            top: timeMinutes,
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: userdata.get('accentColor'),
-                                width: .75,
+                      if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
+                        Positioned(
+                          top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: userdata.get('accentColor'),
+                                ),
                               ),
                             ),
                           ),
@@ -266,6 +246,7 @@ class _Agenda extends State<Agenda> {
   }
 }
 
+// Popup als je op een les klikt
 class LesPagina extends StatelessWidget {
   final Map les;
   const LesPagina(this.les);

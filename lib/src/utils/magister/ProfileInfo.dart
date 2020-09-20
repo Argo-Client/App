@@ -11,6 +11,7 @@ class ProfileInfo extends MagisterApi {
       personInfo(account.id),
       getAdress(account.id),
     ]);
+    account.save();
     return;
   }
 

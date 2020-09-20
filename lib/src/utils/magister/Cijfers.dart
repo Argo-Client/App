@@ -6,6 +6,7 @@ class Cijfers extends MagisterApi {
   Cijfers(this.account) : super(account);
   Future refresh() async {
     await runList([getCijfers()]);
+    account.save();
     return;
   }
 

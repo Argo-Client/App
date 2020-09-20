@@ -6,7 +6,7 @@ import 'package:Magistex/src/utils/magister/magister.dart';
 class Account extends HiveObject {
   String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture;
   int expiry, id;
-  List lessons;
+  List lessons, afwezigheid;
   Magister magister;
   Account([tokenSet]) {
     this.magister = Magister(this);
@@ -57,6 +57,7 @@ class Account extends HiveObject {
     data["accessToken"] = accessToken;
     data["refreshToken"] = refreshToken;
     data["lessons"] = lessons;
+    data["afwezigheid"] = afwezigheid;
     return data;
   }
 }
@@ -90,13 +91,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..accessToken = fields[15] as String
       ..refreshToken = fields[16] as String
       ..lessons = fields[17] as List
-      ..profilePicture = fields[18] as String;
+      ..profilePicture = fields[18] as String
+      ..afwezigheid = fields[19] as List;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -134,7 +136,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(17)
       ..write(obj.lessons)
       ..writeByte(18)
-      ..write(obj.profilePicture);
+      ..write(obj.profilePicture)
+      ..writeByte(19)
+      ..write(obj.afwezigheid);
     // Vergeet niet om getal daarboven lengte +1 te doen
   }
 }

@@ -17,6 +17,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
+// import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -84,7 +85,7 @@ void main() async {
   // return;
   int accountIndex = userdata.get("accountIndex");
   account = accounts.get(accountIndex) ?? accounts.get(0);
-  log(account.toJson().toString());
+  // log(account.toJson().toString());
   appState = _AppState();
   runApp(App());
 }

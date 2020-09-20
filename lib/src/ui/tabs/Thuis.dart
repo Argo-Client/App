@@ -148,10 +148,7 @@ class _Thuis extends State<Thuis> {
                           ),
                           ListTile(
                             title: Text(
-                              "3,4",
-                              style: TextStyle(
-                                color: Colors.red,
-                              ),
+                              "5,7",
                             ),
                             trailing: Text("26-06-2020"),
                             subtitle: Text("Wiskunde"),

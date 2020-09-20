@@ -137,7 +137,18 @@ class _Agenda extends State<Agenda> {
             icon: Icon(Icons.menu),
             onPressed: () => _layoutKey.currentState.openDrawer(),
           ),
-          title: Text("Agenda"),
+          title: InkWell(
+            onTap: () {},
+            child: Row(
+              children: [
+                Text("Agenda"),
+                IconButton(
+                  icon: Icon(Icons.arrow_drop_down),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
           bottom: TabBar(
             // Dag kiezer bovenaan
             tabs: <Widget>[
@@ -277,10 +288,11 @@ class LesPagina extends StatelessWidget {
                     leading: Icon(Icons.event),
                     title: Text(les["date"]),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.book),
-                    title: Text(les["vak"]),
-                  ),
+                  if (les["vak"] != null)
+                    ListTile(
+                      leading: Icon(Icons.book),
+                      title: Text(les["vak"]),
+                    ),
                   if (les["location"] != "")
                     ListTile(
                       leading: Icon(Icons.location_on),

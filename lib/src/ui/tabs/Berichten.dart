@@ -18,8 +18,11 @@ class _Berichten extends State<Berichten> {
         ),
         title: Text("Berichten"),
       ),
-      body: Center(
-        child: Text("56 ongelezen berichten"),
+      body: CalendarDatePicker(
+        initialDate: DateTime.now(),
+        firstDate: DateTime.parse("1970-01-01 00:00:00Z"),
+        lastDate: DateTime.now().add(Duration(days: 365)),
+        onDateChanged: (value) {},
       ),
     );
   }

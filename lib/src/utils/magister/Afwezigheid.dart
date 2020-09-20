@@ -20,13 +20,17 @@ class Afwezigheid extends MagisterApi {
     String start = formatDate.format(DateTime.parse(current["Start"]));
     String eind = formatDate.format(DateTime.parse(current["Eind"]));
     var parsed = (await getFromMagister("personen/${account.id}/absenties?van=$start&tot=$eind"))["Items"];
-    account.afwezigheid = parsed.map((afw) {
-      return {
-        "dag": formatDatum.format(DateTime.parse(afw["Eind"])),
-        "type": afw["Omschrijving"],
-        "les": lesFrom(afw["Afspraak"]),
-        "geoorloofd": afw["Geoorloofd"],
-      };
-    }).toList();
+    account.afwezigheid = parsed
+        .map((afw) {
+          return {
+            "dag": formatDatum.format(DateTime.parse(afw["Afspraak"]["Einde"])),
+            "type": afw["Omschrijving"],
+            "les": lesFrom(afw["Afspraak"]),
+            "geoorloofd": afw["Geoorloofd"],
+          };
+        })
+        .toList()
+        .reversed
+        .toList();
   }
 }

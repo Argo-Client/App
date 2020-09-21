@@ -7,6 +7,7 @@ class Agenda extends StatefulWidget {
 }
 
 const BorderSide GreyBorderSide = BorderSide(color: Colors.grey, width: .75);
+const BorderSide TransparentBorderSide = BorderSide(color: Colors.transparent, width: 0);
 
 class _Agenda extends State<Agenda> {
   DateTime now, lastMonday;
@@ -273,7 +274,7 @@ class LesPagina extends StatelessWidget {
           children: [
             Card(
               margin: EdgeInsets.only(
-                bottom: 10,
+                bottom: 20,
                 top: 0,
                 left: 0,
                 right: 0,
@@ -282,7 +283,9 @@ class LesPagina extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: Icon(Icons.access_time),
-                    title: Text((les["hour"] != "" ? les["hour"] + "e " : "") + les["startTime"] + " - " + les["endTime"]),
+                    title: Text(
+                      (les["hour"] != "" ? les["hour"] + "e " : "") + les["startTime"] + " - " + les["endTime"],
+                    ),
                   ),
                   ListTile(
                     leading: Icon(Icons.event),

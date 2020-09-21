@@ -49,6 +49,12 @@ class _Afwezigheid extends State<Afwezigheid> {
                   ),
                 );
               },
+              trailing: afw["les"]["description"].isEmpty
+                  ? null
+                  : Icon(
+                      Icons.assignment,
+                      color: Colors.grey,
+                    ),
             ),
           ),
           decoration: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1]["dag"] != afw["dag"]

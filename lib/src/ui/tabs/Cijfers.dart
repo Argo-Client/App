@@ -8,18 +8,34 @@ class Cijfers extends StatefulWidget {
 class _Cijfers extends State<Cijfers> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            _layoutKey.currentState.openDrawer();
-          },
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              _layoutKey.currentState.openDrawer();
+            },
+          ),
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                text: "Recent",
+              ),
+              Tab(
+                text: "TP 1",
+              ),
+            ],
+          ),
+          title: Text("Cijfers"),
         ),
-        title: Text("Cijfers"),
-      ),
-      body: Center(
-        child: Text("Je staat een 4 voor wiskunde"),
+        body: TabBarView(
+          children: [
+            ListView(),
+            ListView(),
+          ],
+        ),
       ),
     );
   }

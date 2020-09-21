@@ -1,11 +1,13 @@
 import 'package:Magistex/src/utils/hiveObjects.dart';
 import 'package:http/http.dart' as http;
+import 'login.dart';
 import 'dart:developer';
 import 'dart:convert';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
 import 'Cijfers.dart';
 import 'Afwezigheid.dart';
+import 'Berichten.dart';
 
 class MagisterApi {
   Account account;
@@ -60,6 +62,12 @@ class MagisterApi {
       await getExpiry();
       return;
     } else {
+      if (response.body == '{"error":"invalid_grant"}') {
+        print("$account is uitgelogd!");
+        dynamic tokenSet = await MagisterAuth().fullLogin();
+        account.saveTokens(tokenSet);
+        return;
+      }
       print("Magister Wil niet token verversen: " + response.statusCode.toString());
       print(response.body);
     }
@@ -79,13 +87,15 @@ class Magister {
   Cijfers cijfers;
   MagisterApi api;
   Afwezigheid afwezigheid;
+  Berichten berichten;
   Magister(Account acc) {
     this.account = acc;
+    api = MagisterApi(acc);
     profileInfo = ProfileInfo(acc);
     agenda = Agenda(acc);
     cijfers = Cijfers(acc);
     afwezigheid = Afwezigheid(acc);
-    api = MagisterApi(acc);
+    berichten = Berichten(acc);
   }
   Future refresh() async {
     await api.runWithToken();
@@ -95,6 +105,7 @@ class Magister {
       agenda.refresh(),
       profileInfo.refresh(),
       afwezigheid.refresh(),
+      berichten.refresh(),
       // cijfers.getCijfers(),
       downloadProfilePicture(),
     ]);

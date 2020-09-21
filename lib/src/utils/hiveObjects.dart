@@ -6,7 +6,7 @@ import 'package:Magistex/src/utils/magister/magister.dart';
 class Account extends HiveObject {
   String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture;
   int expiry, id;
-  List lessons, afwezigheid;
+  List lessons, afwezigheid, berichten;
   Magister magister;
   Account([tokenSet]) {
     this.magister = Magister(this);
@@ -28,6 +28,8 @@ class Account extends HiveObject {
     this.refreshToken = tokenSet != null ? tokenSet["refresh_token"] : "";
     this.lessons = [];
     this.expiry = 8640000000000000;
+    this.afwezigheid = [];
+    this.berichten = [];
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
@@ -58,6 +60,7 @@ class Account extends HiveObject {
     data["refreshToken"] = refreshToken;
     data["lessons"] = lessons;
     data["afwezigheid"] = afwezigheid;
+    data["berichten"] = berichten;
     return data;
   }
 }
@@ -92,13 +95,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..refreshToken = fields[16] as String
       ..lessons = fields[17] as List
       ..profilePicture = fields[18] as String
-      ..afwezigheid = fields[19] as List;
+      ..afwezigheid = fields[19] as List
+      ..berichten = fields[20] as List;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -138,7 +142,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(18)
       ..write(obj.profilePicture)
       ..writeByte(19)
-      ..write(obj.afwezigheid);
+      ..write(obj.afwezigheid)
+      ..writeByte(20)
+      ..write(obj.berichten);
     // Vergeet niet om getal daarboven lengte +1 te doen
   }
 }

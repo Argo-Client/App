@@ -7,33 +7,11 @@ class Berichten extends StatefulWidget {
 
 class _Berichten extends State<Berichten> {
   List<Widget> berichten = [];
-  List accountBerichten = [
-    {
-      "dag": "Tuesday 30 Febuary",
-      "prioriteit": true,
-      "onderwerp": "Dit is grappig",
-      "afzender": "De kerstman",
-      "ontvanger": "Sinterklaas",
-      "inhoud": "Bonjour",
-    },
-    {
-      "dag": "Tuesday 30 Febuary",
-      "prioriteit": false,
-      "onderwerp": "Leuk zeg",
-      "afzender": "De kerstman",
-    },
-    {
-      "dag": "Tuesday 31 Febuary",
-      "prioriteit": false,
-      "onderwerp": "Nu is het minder grappig",
-      "afzender": "De kerstman",
-    },
-  ];
   @override
   Widget build(BuildContext context) {
     String lastDay;
-    for (int i = 0; i < accountBerichten.length; i++) {
-      Map ber = accountBerichten[i];
+    for (int i = 0; i < account.berichten.length; i++) {
+      Map ber = account.berichten[i];
       if (lastDay != ber["dag"]) {
         berichten.add(
           Padding(
@@ -61,7 +39,7 @@ class _Berichten extends State<Berichten> {
                   left: 7,
                 ),
               ),
-              subtitle: Text("  " + ber["onderwerp"]),
+              subtitle: Text(ber["onderwerp"]),
               title: Text(ber["afzender"]),
               onTap: () {
                 Navigator.of(context).push(
@@ -72,7 +50,7 @@ class _Berichten extends State<Berichten> {
               },
             ),
           ),
-          decoration: accountBerichten.length - 1 == i || accountBerichten[i + 1]["dag"] != ber["dag"]
+          decoration: account.berichten.length - 1 == i || account.berichten[i + 1]["dag"] != ber["dag"]
               ? null
               : BoxDecoration(
                   border: Border(
@@ -84,18 +62,23 @@ class _Berichten extends State<Berichten> {
       lastDay = ber["dag"];
     }
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              _layoutKey.currentState.openDrawer();
-            },
-          ),
-          title: Text("Berichten"),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
         ),
-        body: ListView(
-          children: berichten,
-        ));
+        title: Text("Berichten"),
+      ),
+      body: RefreshIndicator(
+          child: ListView(
+            children: berichten,
+          ),
+          onRefresh: () async {
+            await account.magister.berichten.refresh();
+          }),
+    );
   }
 }
 
@@ -106,112 +89,114 @@ class BerichtPagina extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          ber["onderwerp"],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.reply),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => NieuwBerichtPagina(ber),
-                ),
-              );
-            },
+        appBar: AppBar(
+          title: Text(
+            ber["onderwerp"],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Card(
-              margin: EdgeInsets.only(
-                bottom: 20,
-                top: 0,
-                left: 0,
-                right: 0,
-              ),
-              child: Column(
-                children: [
-                  ber["afzender"] == null
-                      ? Container()
-                      : ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.person,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            ber["afzender"],
-                          ),
-                          subtitle: Text(
-                            "Afzender",
-                          ),
-                        ),
-                  ber["dag"] == null
-                      ? Container()
-                      : ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.send,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            ber["dag"],
-                          ),
-                          subtitle: Text(
-                            "Verzonden",
-                          ),
-                        ),
-                  ber["ontvanger"] == null
-                      ? Container()
-                      : ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.people,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            ber["ontvanger"],
-                          ),
-                          subtitle: Text(
-                            "Ontvanger(s)",
-                          ),
-                        ),
-                ],
-              ),
-            ),
-            ber["inhoud"] == null
-                ? Container()
-                : Card(
-                    margin: EdgeInsets.zero,
-                    child: Container(
-                      padding: EdgeInsets.all(
-                        20,
-                      ),
-                      child: Html(
-                        data: ber["inhoud"],
-                      ),
-                    ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.reply),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => NieuwBerichtPagina(ber),
                   ),
+                );
+              },
+            ),
           ],
         ),
-      ),
-    );
+        body: FutureBuilder(
+          future: account.magister.berichten.getBerichtFromId(ber["id"]),
+          builder: (BuildContext context, AsyncSnapshot data) {
+            Map loaded = data.data;
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    margin: EdgeInsets.only(
+                      bottom: 20,
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                    ),
+                    child: Column(
+                      children: [
+                        if (ber["afzender"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.person,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              ber["afzender"],
+                            ),
+                            subtitle: Text(
+                              "Afzender",
+                            ),
+                          ),
+                        if (ber["dag"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.send,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              ber["dag"],
+                            ),
+                            subtitle: Text(
+                              "Verzonden",
+                            ),
+                          ),
+                        if (loaded != null && loaded["ontvangers"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.people,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              loaded["ontvangers"],
+                            ),
+                            subtitle: Text(
+                              "Ontvanger(s)",
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (loaded != null && loaded["inhoud"] != null)
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Container(
+                        padding: EdgeInsets.all(
+                          20,
+                        ),
+                        child: Html(
+                          data: loaded["inhoud"],
+                        ),
+                      ),
+                    ),
+                  if (loaded == null) CircularProgressIndicator()
+                ],
+              ),
+            );
+          },
+        ));
   }
 }
 

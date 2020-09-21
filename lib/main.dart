@@ -46,7 +46,6 @@ extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
 }
 
-MagisterAuth magisterAuth = new MagisterAuth();
 Account account;
 _AppState appState;
 Box userdata, accounts;
@@ -66,7 +65,6 @@ void main() async {
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
   if (accounts.isEmpty) {
-    userdata.clear();
     userdata.putAll({
       "theme": "systeem",
       "primaryColor": Colors.blue,

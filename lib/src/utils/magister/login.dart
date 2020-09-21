@@ -71,19 +71,20 @@ class MagisterAuth {
     }
   }
 
-  Future<void> fullLogin(Function callback) async {
+  Future fullLogin() async {
+    Completer c = Completer();
     String authURL = this.getURL();
     await launch(authURL, forceWebView: false, forceSafariVC: true, enableJavaScript: true);
     StreamSubscription _sub;
     _sub = getLinksStream().listen((String link) async {
       code = link.split("code=")[1].split("&")[0];
-      var tokenSet = await this.getTokenSet();
-      console.log(tokenSet["access_token"].toString());
       _sub.cancel();
-      callback(tokenSet);
+      var tokenSet = await this.getTokenSet();
+      c.complete(tokenSet);
     }, onError: (err) {
       _sub.cancel();
       throw Exception("Stream error ofzo idk");
     });
+    return c.future;
   }
 }

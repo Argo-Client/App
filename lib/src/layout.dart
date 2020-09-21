@@ -78,25 +78,24 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       ListTile(
         leading: Icon(Icons.add),
         title: Text("Voeg account toe"),
-        onTap: () {
-          magisterAuth.fullLogin((tokenSet) async {
-            if (tokenSet != null) {
-              print(tokenSet);
-              Account newAccount = Account(tokenSet);
-              await newAccount.magister.profileInfo.profileInfo();
-              if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
-                accounts.add(newAccount);
-                newAccount.saveTokens(tokenSet);
-                await newAccount.magister.refresh();
-                account = newAccount;
-                userdata.put("accountIndex", accounts.length - 1);
-                FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
-                setState(() {});
-              } else {
-                FlushbarHelper.createError(message: '$account bestaat al')..show(context);
-              }
+        onTap: () async {
+          dynamic tokenSet = await MagisterAuth().fullLogin();
+          if (tokenSet != null) {
+            print(tokenSet);
+            Account newAccount = Account(tokenSet);
+            await newAccount.magister.profileInfo.profileInfo();
+            if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
+              accounts.add(newAccount);
+              newAccount.saveTokens(tokenSet);
+              await newAccount.magister.refresh();
+              account = newAccount;
+              userdata.put("accountIndex", accounts.length - 1);
+              FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
+              setState(() {});
+            } else {
+              FlushbarHelper.createError(message: '$account bestaat al')..show(context);
             }
-          });
+          }
         },
       ),
     ];

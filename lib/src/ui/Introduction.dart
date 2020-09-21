@@ -6,15 +6,15 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
-  void loginPress() {
-    magisterAuth.fullLogin((tokenSet) {
-      account = Account(tokenSet);
-      accounts.put(0, account);
-      userdata.put("introduction", true);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-      appState = _AppState();
-      account.magister.refresh().then((value) => appState.setState(() {}));
-    });
+  void loginPress() async {
+    dynamic tokenSet = await MagisterAuth().fullLogin();
+    account = Account(tokenSet);
+    accounts.put(0, account);
+    userdata.put("introduction", true);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+    appState = _AppState();
+    await account.magister.refresh();
+    appState.setState(() {});
   }
 
   @override

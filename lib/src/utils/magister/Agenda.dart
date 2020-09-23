@@ -33,33 +33,53 @@ class Agenda extends MagisterApi {
       account.lessons[end.weekday - 1].add(lesFrom(les));
     });
   }
-}
 
-Map lesFrom(var les) {
-  DateTime start = DateTime.parse(les["Start"]).toLocal();
-  DateTime end = DateTime.parse(les["Einde"]).toLocal();
-  int startHour = les['LesuurVan'];
-  int endHour = les["LesuurTotMet"];
+  Future addAfspraak(Map les) async {
+    Map postLes = {
+      "Id": 0,
+      "Start": les["start"].toUtc().toIso8601String(),
+      "Einde": les["eind"].toUtc().add(Duration(hours: 2)).toIso8601String(),
+      "DuurtHeleDag": les["heledag"] ?? false,
+      "Omschrijving": les["title"],
+      "Lokatie": les["locatie"],
+      "Inhoud": les["inhoud"],
+      "Status": 2,
+      "InfoType": 6,
+      "Type": 1,
+    };
+    print(postLes);
+    return await postToMagister(
+      "personen/${account.id}/afspraken",
+      postLes,
+    );
+  }
 
-  DateFormat formatHour = DateFormat("HH:mm");
-  DateFormat formatDatum = DateFormat("EEEE dd MMMM");
-  int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
-  var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
+  Map lesFrom(var les) {
+    DateTime start = DateTime.parse(les["Start"]).toLocal();
+    DateTime end = DateTime.parse(les["Einde"]).toLocal();
+    int startHour = les['LesuurVan'];
+    int endHour = les["LesuurTotMet"];
 
-  return {
-    "start": minFromMidnight ?? "",
-    "duration": end.difference(start).inMinutes ?? "",
-    "hour": hour == "null" ? "" : hour,
-    "startTime": formatHour.format(start),
-    "endTime": formatHour.format(end),
-    "description": les["Inhoud"] ?? "",
-    "title": les["Omschrijving"] ?? "",
-    "location": les["Lokatie"],
-    "date": formatDatum.format(end),
-    "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
-    "docent": ![[], null].contains(["Docenten"]) ? "" : les["Docenten"][0]["Naam"],
-    "uitval": les["Status"] == 5,
-    "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "")
-    // "bewerkt": "kerst",
-  };
+    DateFormat formatHour = DateFormat("HH:mm");
+    DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+    int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
+    var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
+
+    return {
+      "start": minFromMidnight ?? "",
+      "duration": end.difference(start).inMinutes ?? "",
+      "hour": hour == "null" ? "" : hour,
+      "startTime": formatHour.format(start),
+      "endTime": formatHour.format(end),
+      "description": les["Inhoud"] ?? "",
+      "title": les["Omschrijving"] ?? "",
+      "location": les["Lokatie"],
+      "date": formatDatum.format(end),
+      "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
+      "docent": ![[], null].contains(["Docenten"]) ? "" : les["Docenten"][0]["Naam"],
+      "uitval": les["Status"] == 5,
+      "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "")
+      // "bewerkt": "kerst",
+    };
+  }
 }

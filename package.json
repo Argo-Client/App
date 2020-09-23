@@ -1,5 +1,0 @@
-{
-    "scripts": {
-        "build": "flutter build apk --no-tree-shake-icons --release --split-per-abi"
-    }
-}

@@ -12,22 +12,44 @@ import 'Berichten.dart';
 class MagisterApi {
   Account account;
   MagisterApi(this.account);
-  dynamic getFromMagister(String link) async {
-    if (this.account.accessToken == null) {
-      print("Error: $account accesstoken is niks");
-      return;
-    }
-    final response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
+  dynamic getFromMagister(String link, [bool dontParse, bool resOnly]) async {
+    http.Response response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
     if (response.statusCode == 200) {
+      if (resOnly == true) {
+        return response;
+      }
+      if (dontParse == true) {
+        return response.body;
+      }
       return json.decode(response.body);
     } else {
       if (response.body.contains("Expired")) {
         print("Magister heeft je genaaid zonder het te zeggen");
         await refreshToken();
-        return await getFromMagister(link);
+        return await getFromMagister(link, dontParse, resOnly);
       }
       print("Magister Wil niet: " + response.statusCode.toString() + link);
       print(response.body);
+    }
+  }
+
+  dynamic postToMagister(String link, Map postBody) async {
+    try {
+      http.Response res = await http.post('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody));
+      if (res.statusCode != 201) {
+        if (res.body.contains("Expired")) {
+          print("Magister heeft je genaaid zonder het te zeggen");
+          await refreshToken();
+          return await postToMagister(link, postBody);
+        }
+        print("Magister Wil geen post: " + res.statusCode.toString() + link);
+        print(res.body);
+      }
+      return res.statusCode == 201;
+    } catch (e) {
+      print("error geketst:");
+      print(e);
+      return e;
     }
   }
 
@@ -66,6 +88,8 @@ class MagisterApi {
         print("$account is uitgelogd!");
         dynamic tokenSet = await MagisterAuth().fullLogin();
         account.saveTokens(tokenSet);
+        account.save();
+        await getExpiry();
         return;
       }
       print("Magister Wil niet token verversen: " + response.statusCode.toString());
@@ -114,7 +138,7 @@ class Magister {
   }
 
   Future downloadProfilePicture() async {
-    http.Response img = (await http.get('https://pantarijn.magister.net/api/leerlingen/${account.id}/foto', headers: {"Authorization": "Bearer " + account.accessToken}));
+    http.Response img = await MagisterApi(account).getFromMagister("leerlingen/${account.id}/foto", true, true);
     String image = base64Encode(img.bodyBytes);
     account.profilePicture = image;
   }

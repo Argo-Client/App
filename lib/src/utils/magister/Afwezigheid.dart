@@ -25,7 +25,7 @@ class Afwezigheid extends MagisterApi {
           return {
             "dag": formatDatum.format(DateTime.parse(afw["Afspraak"]["Einde"])),
             "type": afw["Omschrijving"],
-            "les": lesFrom(afw["Afspraak"]),
+            "les": Agenda(account).lesFrom(afw["Afspraak"]),
             "geoorloofd": afw["Geoorloofd"],
           };
         })

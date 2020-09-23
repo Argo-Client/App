@@ -49,7 +49,10 @@ class _Agenda extends State<Agenda> {
       for (Map les in dag) {
         widgetDag.add(
           Positioned(
+            height: les["duration"] * timeFactor - 1,
             top: (les["start"] - startHour * 60) * timeFactor,
+            left: 0,
+            right: 0,
             child: Container(
               width: MediaQuery.of(context).size.width - 30,
               height: les["duration"] * timeFactor,
@@ -136,14 +139,13 @@ class _Agenda extends State<Agenda> {
             onPressed: () => _layoutKey.currentState.openDrawer(),
           ),
           title: InkWell(
+            /// [Guus, maak even dat het hoger is alsjeblieft dankjewel]
+            // Agenda knopje voor maand view
             onTap: () {},
             child: Row(
               children: [
                 Text("Agenda"),
-                IconButton(
-                  icon: Icon(Icons.arrow_drop_down),
-                  onPressed: () {},
-                ),
+                Icon(Icons.arrow_drop_down),
               ],
             ),
           ),
@@ -163,7 +165,13 @@ class _Agenda extends State<Agenda> {
           actions: [
             IconButton(
               icon: Icon(Icons.add),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AddLesPagina(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -221,9 +229,11 @@ class _Agenda extends State<Agenda> {
                             ],
                           ),
                           // Container van alle lessen
-                          Container(
-                            width: MediaQuery.of(context).size.width - 30,
-                            height: MediaQuery.of(context).size.height,
+                          ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: double.maxFinite,
+                              maxWidth: MediaQuery.of(context).size.width - 30,
+                            ),
                             child: Stack(
                               children: widgetRooster[dag],
                             ),
@@ -349,5 +359,101 @@ class LesPagina extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class AddLesPagina extends StatefulWidget {
+  @override
+  _AddLesPagina createState() => _AddLesPagina();
+}
+
+class _AddLesPagina extends State<AddLesPagina> {
+  bool heleDag = false;
+  @override
+  Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    String titel;
+    String locatie;
+    String inhoud;
+    String validator(String value) {
+      if (value.isEmpty) {
+        return 'Please enter some text';
+      }
+      return null;
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Nieuwe Afspraak"),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Card(
+                margin: EdgeInsets.only(
+                  bottom: 20,
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(hintText: "Titel"),
+                        validator: validator,
+                        onChanged: (value) => titel = value,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(hintText: "Locatie"),
+                        validator: validator,
+                        onChanged: (value) => locatie = value,
+                      ),
+                      SwitchListTile(
+                        title: Text("Hele dag?"),
+                        value: heleDag,
+                        onChanged: (value) => setState(() {
+                          heleDag = value;
+                        }),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(hintText: "Inhoud"),
+                        validator: validator,
+                        onChanged: (value) => inhoud = value,
+                        maxLines: 10,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            if (_formKey.currentState.validate()) {
+              var added = await account.magister.agenda.addAfspraak({
+                "title": titel,
+                "locatie": locatie,
+                "heledag": heleDag,
+                "inhoud": inhoud,
+                "start": DateTime.now(),
+                "eind": DateTime.now().add(Duration(minutes: 60)),
+              });
+              if (added == true) {
+                Navigator.of(context).pop();
+                FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
+                await account.magister.agenda.refresh();
+              } else {
+                FlushbarHelper.createError(message: "Afspraak opslaan is mislukt\n$added")..show(context);
+              }
+            }
+          },
+          child: Icon(
+            Icons.send,
+            color: Colors.white,
+          ),
+        ));
   }
 }

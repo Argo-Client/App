@@ -221,9 +221,17 @@ class NieuwBerichtPagina extends StatelessWidget {
                   leading: Icon(Icons.person),
                   title: TextFormField(
                     decoration: InputDecoration(
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 0,
+                      border: OutlineInputBorder(
+                        borderSide: new BorderSide(width: 0.0),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: new BorderSide(
+                          width: 0.0,
+                        ),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: new BorderSide(
+                          width: 0.0,
                         ),
                       ),
                       hintText: 'Aan',

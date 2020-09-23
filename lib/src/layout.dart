@@ -1,6 +1,6 @@
 part of main;
 
-int _currentIndex = 0;
+int _currentIndex = 1;
 final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {

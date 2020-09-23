@@ -44,8 +44,9 @@ dependencies:
   after_layout: ^1.0.7+2
   numberpicker: ^1.2.1
   flushbar: ^1.10.4
+
 dev_dependencies:
-  flutter_launcher_icons:
+  flutter_native_splash: ^0.1.9
   flutter_test:
     sdk: flutter
 
@@ -94,3 +95,7 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icons/icon512.png"
+flutter_native_splash:
+  image: assets/images/splash.png
+  color: "0899DB"
+  android_disable_fullscreen: true

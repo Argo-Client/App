@@ -6,8 +6,7 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-const BorderSide GreyBorderSide = BorderSide(color: Colors.grey, width: .75);
-const BorderSide TransparentBorderSide = BorderSide(color: Colors.transparent, width: 0);
+const BorderSide GreyBorderSide = BorderSide(color: Color.fromARGB(255, 100, 100, 100), width: .75);
 
 class _Agenda extends State<Agenda> {
   DateTime now, lastMonday;
@@ -53,16 +52,14 @@ class _Agenda extends State<Agenda> {
             top: (les["start"] - startHour * 60) * timeFactor,
             child: Container(
               width: MediaQuery.of(context).size.width - 30,
-              height: les["duration"] * timeFactor - 1,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: GreyBorderSide,
-                ),
-              ),
+              height: les["duration"] * timeFactor,
               child: Card(
-                color: les["uitval"] ? Color.fromARGB(255, 119, 66, 62) : null,
-                shape: Border.all(width: 0),
-                margin: EdgeInsets.zero,
+                color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
+                // shape: BorderRadius.all(),
+                margin: EdgeInsets.only(
+                  top: .75,
+                ),
+                shape: Border(bottom: GreyBorderSide),
                 child: InkWell(
                   child: Stack(
                     children: [
@@ -216,7 +213,7 @@ class _Agenda extends State<Agenda> {
                                       uur.toString(),
                                       style: TextStyle(
                                         fontSize: 15,
-                                        color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Colors.grey,
+                                        color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
                                       ),
                                     ),
                                   ),

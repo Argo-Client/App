@@ -315,12 +315,12 @@ class LesPagina extends StatelessWidget {
                       leading: Icon(Icons.book),
                       title: Text(les["vak"]),
                     ),
-                  if (les["location"] != "")
+                  if (les["location"] != null)
                     ListTile(
                       leading: Icon(Icons.location_on),
                       title: Text(les["location"]),
                     ),
-                  if (les["docent"] != "")
+                  if (les["docent"] != null)
                     ListTile(
                       leading: Icon(Icons.person),
                       title: Text(les["docent"]),

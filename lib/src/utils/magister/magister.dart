@@ -29,28 +29,30 @@ class MagisterApi {
         print(response.body);
         c.completeError(response.body);
       }
-    }).catchError(c.completeError);
+    }).catchError((e) {
+      print(e);
+      c.completeError(e);
+    });
     return c.future;
   }
 
   dynamic postToMagister(String link, Map postBody) async {
-    try {
-      http.Response res = await http.post('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody));
+    Completer c = Completer();
+    http.post('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody)).then((res) async {
       if (res.statusCode != 201) {
         if (res.body.contains("Expired")) {
           print("Magister heeft je genaaid zonder het te zeggen");
           await refreshToken();
-          return await postToMagister(link, postBody);
+          c.complete(await postToMagister(link, postBody));
         }
         print("Magister Wil geen post: " + res.statusCode.toString() + link);
         print(res.body);
+        c.completeError(res.body);
+        return;
       }
-      return res.statusCode == 201;
-    } catch (e) {
-      print("error geketst:");
-      print(e);
-      return e;
-    }
+      c.complete(res.statusCode == 201);
+    });
+    return c.future;
   }
 
   Future runWithToken() async {
@@ -97,7 +99,10 @@ class MagisterApi {
         print(response.body);
         c.completeError(response.body);
       }
-    }).catchError(c.completeError);
+    }).catchError((e) {
+      print(e);
+      c.completeError(e);
+    });
     return c.future;
   }
 

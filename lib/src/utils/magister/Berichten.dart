@@ -32,16 +32,13 @@ class Berichten extends MagisterApi {
   }
 
   Future<Map> getBerichtFromId(id) async {
-    Completer c = Completer();
-    getFromMagister("berichten/berichten/$id").then((res) {
-      Map body = json.decode(res.body);
-      Map ber = {
-        "inhoud": body["inhoud"],
-        "ontvangers": body["ontvangers"].take(10).map((ont) => ont["weergavenaam"]).join(" "),
-      };
-      // ber.addAll(parseBericht(body));
-      c.complete(ber);
-    });
-    return c.future;
+    var res = await getFromMagister("berichten/berichten/$id");
+    Map body = json.decode(res.body);
+    Map ber = {
+      "inhoud": body["inhoud"],
+      "ontvangers": body["ontvangers"].take(10).map((ont) => ont["weergavenaam"]).join(" "),
+    };
+    // ber.addAll(parseBericht(body));
+    return ber;
   }
 }

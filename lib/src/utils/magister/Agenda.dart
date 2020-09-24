@@ -27,7 +27,10 @@ class Agenda extends MagisterApi {
         account.lessons[end.weekday - 1].add(lesFrom(les));
       });
       c.complete(true);
-    }).catchError(c.completeError);
+    }).catchError((e) {
+      print(e);
+      c.completeError(e);
+    });
     return c.future;
   }
 
@@ -58,9 +61,12 @@ class Agenda extends MagisterApi {
 
     DateFormat formatHour = DateFormat("HH:mm");
     DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+    var docent;
     int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
     var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
-
+    if (les["Docenten"] != null && !les["Docenten"].isEmpty) {
+      docent = les["Docenten"][0]["Naam"];
+    }
     return {
       "start": minFromMidnight ?? "",
       "duration": end.difference(start).inMinutes ?? "",
@@ -72,7 +78,7 @@ class Agenda extends MagisterApi {
       "location": les["Lokatie"],
       "date": formatDatum.format(end),
       "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
-      "docent": ![[], null].contains(["Docenten"]) ? "" : les["Docenten"][0]["Naam"],
+      "docent": docent,
       "uitval": les["Status"] == 5,
       "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "")
       // "bewerkt": "kerst",

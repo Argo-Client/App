@@ -37,27 +37,24 @@ class ProfileInfo extends MagisterApi {
   }
 
   Future schoolInfo() async {
-    getFromMagister('/leerlingen/$id/aanmeldingen').then((res) {
-      Map body = json.decode(res.body)["items"][0];
-      account.klasCode = body["groep"]["code"];
-      account.klas = body["studie"]["code"];
-      account.mentor = '${body["persoonlijkeMentor"]["voorletters"]} ${body["persoonlijkeMentor"]["achternaam"]}';
-      account.profiel = body["profielen"][0]["code"];
-    });
+    var res = await getFromMagister('/leerlingen/$id/aanmeldingen');
+    Map body = json.decode(res.body)["items"][0];
+    account.klasCode = body["groep"]["code"];
+    account.klas = body["studie"]["code"];
+    account.mentor = '${body["persoonlijkeMentor"]["voorletters"]} ${body["persoonlijkeMentor"]["achternaam"]}';
+    account.profiel = body["profielen"][0]["code"];
   }
 
   Future personInfo() async {
-    getFromMagister('/personen/$id/profiel').then((res) {
-      Map body = json.decode(res.body);
-      account.email = body["EmailAdres"].toString();
-      account.phone = body["Mobiel"].toString();
-    });
+    var res = await getFromMagister('/personen/$id/profiel');
+    Map body = json.decode(res.body);
+    account.email = body["EmailAdres"].toString();
+    account.phone = body["Mobiel"].toString();
   }
 
   Future getAdress() async {
-    getFromMagister('/personen/$id/adressen').then((res) {
-      Map body = json.decode(res.body)["items"][0];
-      account.address = '${body["straat"]} ${body["huisnummer"]}\n${body["postcode"]}, ${body["plaats"]}';
-    });
+    var res = await getFromMagister('/personen/$id/adressen');
+    Map body = json.decode(res.body)["items"][0];
+    account.address = '${body["straat"]} ${body["huisnummer"]}\n${body["postcode"]}, ${body["plaats"]}';
   }
 }

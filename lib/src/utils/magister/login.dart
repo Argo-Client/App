@@ -79,11 +79,7 @@ class MagisterAuth {
     _sub = getLinksStream().listen((String link) async {
       code = link.split("code=")[1].split("&")[0];
       _sub.cancel();
-      var tokenSet = await this.getTokenSet();
-      c.complete(tokenSet);
-    }, onError: (err) {
-      _sub.cancel();
-      throw Exception("Stream error ofzo idk");
+      c.complete(await this.getTokenSet());
     });
     return c.future;
   }

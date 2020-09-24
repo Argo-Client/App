@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'dart:convert';
 
 class Berichten extends MagisterApi {
   Account account;
@@ -8,9 +11,7 @@ class Berichten extends MagisterApi {
   DateFormat formatDatum = DateFormat("EEEE dd MMMM");
   Berichten(this.account) : super(account);
   Future refresh() async {
-    await runList([getBerichten()]);
-    account.save();
-    return;
+    return await runList([getBerichten()]);
   }
 
   Map<String, dynamic> parseBericht(ber) {
@@ -25,17 +26,22 @@ class Berichten extends MagisterApi {
   }
 
   Future getBerichten() async {
-    var parsed = (await getFromMagister("berichten/postvakin/berichten?top=30"))["items"];
-    account.berichten = parsed.map((ber) => parseBericht(ber)).toList();
+    getFromMagister("berichten/postvakin/berichten?top=30").then((res) {
+      account.berichten = json.decode(res.body)["items"].map((ber) => parseBericht(ber)).toList();
+    });
   }
 
   Future<Map> getBerichtFromId(id) async {
-    var parsed = (await getFromMagister("berichten/berichten/$id"));
-    Map ber = {
-      "inhoud": parsed["inhoud"],
-      "ontvangers": parsed["ontvangers"].take(10).map((ont) => ont["weergavenaam"]).join(" "),
-    };
-    ber.addAll(parseBericht(parsed));
-    return ber;
+    Completer c = Completer();
+    getFromMagister("berichten/berichten/$id").then((res) {
+      Map body = json.decode(res.body);
+      Map ber = {
+        "inhoud": body["inhoud"],
+        "ontvangers": body["ontvangers"].take(10).map((ont) => ont["weergavenaam"]).join(" "),
+      };
+      // ber.addAll(parseBericht(body));
+      c.complete(ber);
+    });
+    return c.future;
   }
 }

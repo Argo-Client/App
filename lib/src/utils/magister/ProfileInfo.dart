@@ -1,52 +1,63 @@
+import 'dart:async';
+import 'dart:convert';
 import 'magister.dart';
 import 'package:Magistex/src/utils/hiveObjects.dart';
 
 class ProfileInfo extends MagisterApi {
   Account account;
+  int id;
   ProfileInfo(this.account) : super(account);
   Future refresh() async {
-    await runList([
-      getUsername(account.id),
-      schoolInfo(account.id),
-      personInfo(account.id),
-      getAdress(account.id),
+    await runWithToken();
+    await profileInfo();
+    return await runList([
+      getUsername(),
+      schoolInfo(),
+      personInfo(),
+      getAdress(),
     ]);
-    account.save();
-    return;
   }
 
-  Future getUsername(id) async {
-    var parsed = await getFromMagister('leerlingen/$id');
-    account.username = parsed["stamnummer"].toString();
+  Future getUsername() async {
+    getFromMagister('leerlingen/$id').then((res) => account.username = json.decode(res.body)["stamnummer"].toString());
   }
 
   Future profileInfo() async {
-    var parsed = (await getFromMagister("account"))["Persoon"];
-    account.id = parsed["Id"];
-    account.officialFullName = parsed["OfficieleVoornamen"] + " " + (parsed["OfficieleTussenvoegsel"] != null ? parsed["OfficieleTussenvoegsel"] + " " : "") + parsed["OfficieleAchternaam"];
-    account.fullName = parsed["Roepnaam"] + " " + (parsed["Tussenvoegsel"] != null ? parsed["Tussenvoegsel"] + " " : "") + parsed["Achternaam"];
-    account.name = parsed["Roepnaam"];
-    account.initials = parsed["Voorletters"];
-    account.birthdate = parsed["Geboortedatum"];
-    return parsed["Id"];
+    var res = await getFromMagister("account");
+    Map body = json.decode(res.body)["Persoon"];
+    account.id = body["Id"];
+    account.officialFullName = body["OfficieleVoornamen"] + " " + (body["OfficieleTussenvoegsel"] != null ? body["OfficieleTussenvoegsel"] + " " : "") + body["OfficieleAchternaam"];
+    account.fullName = body["Roepnaam"] + " " + (body["Tussenvoegsel"] != null ? body["Tussenvoegsel"] + " " : "") + body["Achternaam"];
+    account.name = body["Roepnaam"];
+    account.initials = body["Voorletters"];
+    account.birthdate = body["Geboortedatum"];
+    id = account.id;
+
+    return;
   }
 
-  Future schoolInfo(id) async {
-    var parsed = (await getFromMagister('/leerlingen/$id/aanmeldingen'))["items"][0];
-    account.klasCode = parsed["groep"]["code"];
-    account.klas = parsed["studie"]["code"];
-    account.mentor = '${parsed["persoonlijkeMentor"]["voorletters"]} ${parsed["persoonlijkeMentor"]["achternaam"]}';
-    account.profiel = parsed["profielen"][0]["code"];
+  Future schoolInfo() async {
+    getFromMagister('/leerlingen/$id/aanmeldingen').then((res) {
+      Map body = json.decode(res.body)["items"][0];
+      account.klasCode = body["groep"]["code"];
+      account.klas = body["studie"]["code"];
+      account.mentor = '${body["persoonlijkeMentor"]["voorletters"]} ${body["persoonlijkeMentor"]["achternaam"]}';
+      account.profiel = body["profielen"][0]["code"];
+    });
   }
 
-  Future personInfo(id) async {
-    var parsed = (await getFromMagister('/personen/$id/profiel'));
-    account.email = parsed["EmailAdres"].toString();
-    account.phone = parsed["Mobiel"].toString();
+  Future personInfo() async {
+    getFromMagister('/personen/$id/profiel').then((res) {
+      Map body = json.decode(res.body);
+      account.email = body["EmailAdres"].toString();
+      account.phone = body["Mobiel"].toString();
+    });
   }
 
-  Future getAdress(id) async {
-    var parsed = (await getFromMagister('/personen/$id/adressen'))["items"][0];
-    account.address = '${parsed["straat"]} ${parsed["huisnummer"]}\n${parsed["postcode"]}, ${parsed["plaats"]}';
+  Future getAdress() async {
+    getFromMagister('/personen/$id/adressen').then((res) {
+      Map body = json.decode(res.body)["items"][0];
+      account.address = '${body["straat"]} ${body["huisnummer"]}\n${body["postcode"]}, ${body["plaats"]}';
+    });
   }
 }

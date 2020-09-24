@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'magister.dart';
+import 'dart:convert';
 import 'package:Magistex/src/utils/hiveObjects.dart';
 import 'Agenda.dart';
 
@@ -9,28 +10,29 @@ class Afwezigheid extends MagisterApi {
   DateFormat formatDatum = DateFormat("EEEE dd MMMM");
   Afwezigheid(this.account) : super(account);
   Future refresh() async {
-    await runList([getAfwezigheid()]);
-    account.save();
-    return;
+    return await runList([getAfwezigheid()]);
   }
 
   Future getAfwezigheid() async {
-    var perioden = (await getFromMagister("personen/${account.id}/absentieperioden"))["Items"];
-    var current = perioden.first;
-    String start = formatDate.format(DateTime.parse(current["Start"]));
-    String eind = formatDate.format(DateTime.parse(current["Eind"]));
-    var parsed = (await getFromMagister("personen/${account.id}/absenties?van=$start&tot=$eind"))["Items"];
-    account.afwezigheid = parsed
-        .map((afw) {
-          return {
-            "dag": formatDatum.format(DateTime.parse(afw["Afspraak"]["Einde"])),
-            "type": afw["Omschrijving"],
-            "les": Agenda(account).lesFrom(afw["Afspraak"]),
-            "geoorloofd": afw["Geoorloofd"],
-          };
-        })
-        .toList()
-        .reversed
-        .toList();
+    getFromMagister("personen/${account.id}/absentieperioden").then((res) {
+      Map current = json.decode(res.body)["Items"].first;
+      String start = formatDate.format(DateTime.parse(current["Start"]));
+      String eind = formatDate.format(DateTime.parse(current["Eind"]));
+      getFromMagister("personen/${account.id}/absenties?van=$start&tot=$eind").then((res) {
+        account.afwezigheid = json
+            .decode(res.body)["Items"]
+            .map((afw) {
+              return {
+                "dag": formatDatum.format(DateTime.parse(afw["Afspraak"]["Einde"])),
+                "type": afw["Omschrijving"],
+                "les": Agenda(account).lesFrom(afw["Afspraak"]),
+                "geoorloofd": afw["Geoorloofd"],
+              };
+            })
+            .toList()
+            .reversed
+            .toList();
+      });
+    });
   }
 }

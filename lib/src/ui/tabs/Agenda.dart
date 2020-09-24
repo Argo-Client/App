@@ -1,6 +1,10 @@
 part of main;
 
+final GlobalKey<ScaffoldState> _agendaKey = new GlobalKey<ScaffoldState>();
+
 class Agenda extends StatefulWidget {
+  static _Agenda of(BuildContext context) => context.findAncestorStateOfType<_Agenda>();
+
   final int initialPage = 0;
   @override
   _Agenda createState() => _Agenda();
@@ -15,6 +19,7 @@ class _Agenda extends State<Agenda> {
   double timeFactor;
   int endHour, defaultStartHour, pixelsPerHour;
   int getStartHour(dag) {
+    if (account.lessons.isEmpty) return 0;
     return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first["start"] / 60).floor();
   }
 
@@ -133,6 +138,7 @@ class _Agenda extends State<Agenda> {
       initialIndex: DateTime.now().weekday - 1,
       length: 7,
       child: Scaffold(
+        key: _agendaKey,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.menu),
@@ -175,90 +181,96 @@ class _Agenda extends State<Agenda> {
             ),
           ],
         ),
-        body: TabBarView(
-          children: [
-            for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
-              RefreshIndicator(
-                onRefresh: () async {
-                  await account.magister.agenda.refresh();
-                  setState(() {});
-                },
-                child: SingleChildScrollView(
-                  child: Stack(
-                    children: [
-                      for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
-                        Positioned(
-                          top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: GreyBorderSide,
+        body: Container(
+          child: TabBarView(
+            children: [
+              for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
+                RefreshIndicator(
+                  onRefresh: () async {
+                    account.magister.agenda.refresh().then((_) {
+                      setState(() {});
+                    }).catchError((e) {
+                      FlushbarHelper.createError(message: "Kon agenda niet verversen:\n$e")..show(context);
+                    });
+                  },
+                  child: SingleChildScrollView(
+                    child: Stack(
+                      children: [
+                        for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
+                          Positioned(
+                            top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: GreyBorderSide,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            // Balkje aan de zijkant van de uren
-                            children: [
-                              for (int uur = getStartHour(dag); uur <= endHour; uur++)
-                                Container(
-                                  // Een uur van het balkje
-                                  height: userdata.get("pixelsPerHour").toDouble(),
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      top: GreyBorderSide,
-                                      right: GreyBorderSide,
-                                      left: GreyBorderSide,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              // Balkje aan de zijkant van de uren
+                              children: [
+                                for (int uur = getStartHour(dag); uur <= endHour; uur++)
+                                  Container(
+                                    // Een uur van het balkje
+                                    height: userdata.get("pixelsPerHour").toDouble(),
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: GreyBorderSide,
+                                        right: GreyBorderSide,
+                                        left: GreyBorderSide,
+                                      ),
                                     ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      uur.toString(),
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
+
+                                    child: Center(
+                                      child: Text(
+                                        uur.toString(),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                          // Container van alle lessen
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: double.maxFinite,
-                              maxWidth: MediaQuery.of(context).size.width - 30,
+                              ],
                             ),
-                            child: Stack(
-                              children: widgetRooster[dag],
+                            // Container van alle lessen
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: double.maxFinite,
+                                maxWidth: MediaQuery.of(context).size.width - 30,
+                              ),
+                              child: Stack(
+                                children: widgetRooster.isEmpty ? [] : widgetRooster[dag],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
-                        Positioned(
-                          top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: userdata.get('accentColor'),
+                          ],
+                        ),
+                        if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
+                          Positioned(
+                            top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: userdata.get('accentColor'),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

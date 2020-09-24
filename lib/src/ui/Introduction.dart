@@ -15,6 +15,8 @@ class _Introduction extends State<Introduction> {
     appState = _AppState();
     await account.magister.refresh();
     appState.setState(() {});
+    Agenda.of(_agendaKey.currentContext).setState(() {});
+    FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(_agendaKey.currentContext);
   }
 
   @override

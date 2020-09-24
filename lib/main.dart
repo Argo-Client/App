@@ -52,11 +52,6 @@ _AppState appState;
 Box userdata, accounts;
 Brightness theme;
 
-void showSnackbar(BuildContext context, String text) {
-  Scaffold.of(context).removeCurrentSnackBar();
-  Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
-}
-
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(AccountAdapter());

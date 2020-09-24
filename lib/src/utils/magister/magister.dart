@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Magistex/src/utils/hiveObjects.dart';
 import 'package:http/http.dart' as http;
 import 'login.dart';
@@ -13,24 +15,22 @@ class MagisterApi {
   Account account;
   MagisterApi(this.account);
   dynamic getFromMagister(String link, [bool dontParse, bool resOnly]) async {
-    http.Response response = await http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken});
-    if (response.statusCode == 200) {
-      if (resOnly == true) {
-        return response;
+    Completer c = Completer();
+    http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken}).then((response) async {
+      if (response.statusCode == 200) {
+        c.complete(response);
+      } else {
+        if (response.body.contains("Expired")) {
+          print("Magister heeft je genaaid zonder het te zeggen");
+          await refreshToken();
+          return await getFromMagister(link, dontParse, resOnly);
+        }
+        print("Magister Wil niet: " + response.statusCode.toString() + link);
+        print(response.body);
+        c.completeError(response.body);
       }
-      if (dontParse == true) {
-        return response.body;
-      }
-      return json.decode(response.body);
-    } else {
-      if (response.body.contains("Expired")) {
-        print("Magister heeft je genaaid zonder het te zeggen");
-        await refreshToken();
-        return await getFromMagister(link, dontParse, resOnly);
-      }
-      print("Magister Wil niet: " + response.statusCode.toString() + link);
-      print(response.body);
-    }
+    }).catchError(c.completeError);
+    return c.future;
   }
 
   dynamic postToMagister(String link, Map postBody) async {
@@ -64,43 +64,53 @@ class MagisterApi {
 
   Future runList(List<Future> list) async {
     await runWithToken();
-    await Future.wait(list);
+    List values = await Future.wait(list);
     if (account.isInBox) {
       account.save();
     }
-    return;
+    return values;
   }
 
   Future refreshToken() async {
-    final response = await http.post("https://accounts.magister.net/connect/token", body: {
+    Completer c = Completer();
+    http.post("https://accounts.magister.net/connect/token", body: {
       "refresh_token": account.refreshToken,
       "client_id": "M6LOAPP",
       "grant_type": "refresh_token",
-    });
-    if (response.statusCode == 200) {
-      var parsed = json.decode(response.body);
-      account.saveTokens(parsed);
-      print("refreshed token");
-      await getExpiry();
-      return;
-    } else {
-      if (response.body == '{"error":"invalid_grant"}') {
-        print("$account is uitgelogd!");
-        dynamic tokenSet = await MagisterAuth().fullLogin();
-        account.saveTokens(tokenSet);
-        account.save();
+    }).then((http.Response response) async {
+      if (response.statusCode == 200) {
+        var parsed = json.decode(response.body);
+        account.saveTokens(parsed);
+        print("Refreshed token");
         await getExpiry();
-        return;
+        c.complete();
+      } else {
+        if (response.body == '{"error":"invalid_grant"}') {
+          print("$account is uitgelogd!");
+          dynamic tokenSet = await MagisterAuth().fullLogin();
+          account.saveTokens(tokenSet);
+          account.save();
+          await getExpiry();
+          c.complete();
+        }
+        print("Magister Wil niet token verversen: " + response.statusCode.toString());
+        print(response.body);
+        c.completeError(response.body);
       }
-      print("Magister Wil niet token verversen: " + response.statusCode.toString());
-      print(response.body);
-    }
+    }).catchError(c.completeError);
+    return c.future;
   }
 
   Future getExpiry() async {
-    var parsed = await getFromMagister("sessions/current");
-    int expiry = DateTime.parse(parsed["expiresOn"]).millisecondsSinceEpoch;
-    account.expiry = expiry;
+    getFromMagister("sessions/current").then((res) {
+      Map body = json.decode(res.body);
+      int expiry = DateTime.parse(body["expiresOn"]).millisecondsSinceEpoch;
+      account.expiry = expiry;
+      account.save();
+    }).catchError((e) {
+      log("Error expiry geketst:");
+      print(e);
+    });
   }
 }
 
@@ -124,8 +134,8 @@ class Magister {
   Future refresh() async {
     await api.runWithToken();
     await api.getExpiry();
-    account.id = await profileInfo.profileInfo();
-    await api.runList([
+    await profileInfo.profileInfo();
+    return await api.runList([
       agenda.refresh(),
       profileInfo.refresh(),
       afwezigheid.refresh(),
@@ -133,8 +143,6 @@ class Magister {
       // cijfers.getCijfers(),
       downloadProfilePicture(),
     ]);
-    log('Refreshed $account');
-    return;
   }
 
   Future downloadProfilePicture() async {

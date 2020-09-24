@@ -81,7 +81,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         onTap: () async {
           dynamic tokenSet = await MagisterAuth().fullLogin();
           if (tokenSet != null) {
-            print(tokenSet);
             Account newAccount = Account(tokenSet);
             await newAccount.magister.profileInfo.profileInfo();
             if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {

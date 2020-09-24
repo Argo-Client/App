@@ -1,37 +1,34 @@
+import 'dart:async';
+
 import 'package:intl/intl.dart';
 import 'magister.dart';
+import 'dart:convert';
 import 'package:Magistex/src/utils/hiveObjects.dart';
 
 class Agenda extends MagisterApi {
   Account account;
   Agenda(this.account) : super(account);
   Future refresh() async {
-    await runList([getLessen(account.id)]);
-    account.save();
-    return;
+    return await runList([getLessen(account.id)]);
   }
 
   Future getLessen(id) async {
     DateTime now = DateTime.now();
     DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
-
+    Completer c = Completer();
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
-    var parsed = (await getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}'))["Items"];
-    account.lessons = [
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-      [],
-    ];
-    parsed.forEach((les) {
-      if (les["DuurtHeleDag"]) return;
-      DateTime end = DateTime.parse(les["Einde"]).toLocal();
-      account.lessons[end.weekday - 1].add(lesFrom(les));
-    });
+    account.lessons = [[], [], [], [], [], [], []];
+    getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}').then((res) {
+      Map body = json.decode(res.body);
+      body["Items"].forEach((les) {
+        if (les["DuurtHeleDag"]) return;
+        DateTime end = DateTime.parse(les["Einde"]).toLocal();
+        account.lessons[end.weekday - 1].add(lesFrom(les));
+      });
+      c.complete(true);
+    }).catchError(c.completeError);
+    return c.future;
   }
 
   Future addAfspraak(Map les) async {
@@ -47,7 +44,6 @@ class Agenda extends MagisterApi {
       "InfoType": 6,
       "Type": 1,
     };
-    print(postLes);
     return await postToMagister(
       "personen/${account.id}/afspraken",
       postLes,

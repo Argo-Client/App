@@ -2,6 +2,7 @@ part of main;
 
 int _currentIndex = 1;
 final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
+final GlobalKey<State> _drawerState = new GlobalKey<State>();
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   bool _detailsPressed = false;
@@ -127,7 +128,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           children: [
             UserAccountsDrawerHeader(
               onDetailsPressed: () => {
-                setState(
+                _drawerState.currentState.setState(
                   () {
                     _detailsPressed = !_detailsPressed;
                   },
@@ -136,15 +137,24 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
               otherAccountsPictures: [
                 for (Account acc in accounts.toMap().values)
                   if (acc.id != account.id)
-                    CircleAvatar(
-                      backgroundColor: Theme.of(context).backgroundColor,
-                      backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
-                      child: useIcon
-                          ? Icon(
-                              userdata.get("userIcon"),
-                              size: 25,
-                            )
-                          : null,
+                    InkWell(
+                      onTap: () {
+                        int index = accounts.toMap().values.toList().indexWhere((g) => g.id == acc.id);
+                        setState(() {
+                          userdata.put("accountIndex", index);
+                          account = accounts.get(index);
+                        });
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Theme.of(context).backgroundColor,
+                        backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                        child: useIcon
+                            ? Icon(
+                                userdata.get("userIcon"),
+                                size: 25,
+                              )
+                            : null,
+                      ),
                     ),
               ],
               accountName: Text(account.fullName),
@@ -160,8 +170,13 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     : null,
               ),
             ),
-            Column(
-              children: _detailsPressed ? _accountsDrawer : _drawer,
+            StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return Column(
+                  children: _detailsPressed ? _accountsDrawer : _drawer,
+                );
+              },
+              key: _drawerState,
             ),
           ],
         ),

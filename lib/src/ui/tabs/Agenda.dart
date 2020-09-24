@@ -380,10 +380,10 @@ class AddLesPagina extends StatefulWidget {
 }
 
 class _AddLesPagina extends State<AddLesPagina> {
+  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool heleDag = false;
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
     String titel;
     String locatie;
     String inhoud;
@@ -395,77 +395,121 @@ class _AddLesPagina extends State<AddLesPagina> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Nieuwe Afspraak"),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Card(
-                margin: EdgeInsets.only(
-                  bottom: 20,
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(hintText: "Titel"),
+      appBar: AppBar(
+        title: Text("Nieuwe afspraak"),
+      ),
+      body: Card(
+        margin: EdgeInsets.zero,
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: GreyBorderSide,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.title),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Titel',
+                        ),
                         validator: validator,
                         onChanged: (value) => titel = value,
                       ),
-                      TextFormField(
-                        decoration: InputDecoration(hintText: "Locatie"),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: GreyBorderSide,
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.location_on),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Locatie',
+                        ),
                         validator: validator,
                         onChanged: (value) => locatie = value,
                       ),
-                      SwitchListTile(
-                        title: Text("Hele dag?"),
-                        value: heleDag,
-                        onChanged: (value) => setState(() {
-                          heleDag = value;
-                        }),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(hintText: "Inhoud"),
-                        validator: validator,
-                        onChanged: (value) => inhoud = value,
-                        maxLines: 10,
-                      )
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: GreyBorderSide,
+                      ),
+                    ),
+                    child: SwitchListTile(
+                      activeColor: userdata.get("accentColor"),
+                      title: Text("Hele dag?"),
+                      value: heleDag,
+                      onChanged: (value) => setState(() {
+                        heleDag = value;
+                      }),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.description),
+                    title: TextFormField(
+                      maxLines: 10,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Inhoud',
+                      ),
+                      validator: validator,
+                      onChanged: (value) => inhoud = value,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            if (_formKey.currentState.validate()) {
-              var added = await account.magister.agenda.addAfspraak({
-                "title": titel,
-                "locatie": locatie,
-                "heledag": heleDag,
-                "inhoud": inhoud,
-                "start": DateTime.now(),
-                "eind": DateTime.now().add(Duration(minutes: 60)),
-              });
-              if (added == true) {
-                Navigator.of(context).pop();
-                FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
-                await account.magister.agenda.refresh();
-              } else {
-                FlushbarHelper.createError(message: "Afspraak opslaan is mislukt\n$added")..show(context);
-              }
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
+            var added = await account.magister.agenda.addAfspraak({
+              "title": titel,
+              "locatie": locatie,
+              "heledag": heleDag,
+              "inhoud": inhoud,
+              "start": DateTime.now(),
+              "eind": DateTime.now().add(Duration(minutes: 60)),
+            });
+            if (added == true) {
+              Navigator.of(context).pop();
+              FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
+              await account.magister.agenda.refresh();
+            } else {
+              FlushbarHelper.createError(message: "Afspraak opslaan is mislukt\n$added")..show(context);
             }
-          },
-          child: Icon(
-            Icons.send,
-            color: Colors.white,
-          ),
-        ));
+          }
+        },
+        child: Icon(
+          Icons.send,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 }

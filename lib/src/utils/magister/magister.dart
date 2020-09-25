@@ -15,7 +15,7 @@ class MagisterApi {
   MagisterApi(this.account);
   dynamic getFromMagister(String link, [bool dontParse, bool resOnly]) async {
     Completer c = Completer();
-    http.get('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken}).then((response) async {
+    http.get('https://${account.tenant}/api/$link', headers: {"Authorization": "Bearer " + account.accessToken}).then((response) async {
       if (response.statusCode == 200) {
         c.complete(response);
       } else {
@@ -37,7 +37,7 @@ class MagisterApi {
 
   dynamic postToMagister(String link, Map postBody) async {
     Completer c = Completer();
-    http.post('https://pantarijn.magister.net/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody)).then((res) async {
+    http.post('https://${account.tenant}/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody)).then((res) async {
       if (res.statusCode != 201) {
         if (res.body.contains("Expired")) {
           print("Magister heeft je genaaid zonder het te zeggen");
@@ -146,7 +146,7 @@ class Magister {
     account.expiry = accesData()["exp"] * 1000;
     account.username = accesData()["urn:magister:claims:iam:username"];
     account.tenant = accesData()["urn:magister:claims:iam:tenant"];
-    account.save();
+    if (account.isInBox) account.save();
   }
 
   Future downloadProfilePicture() async {

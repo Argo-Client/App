@@ -77,6 +77,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             setState(() {
               userdata.put("accountIndex", index);
               account = accounts.get(index);
+              Agenda.of(_agendaKey.currentContext).setState(() {});
             });
           },
         ),
@@ -86,6 +87,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         onTap: () {
           MagisterAuth().fullLogin().then((tokenSet) async {
             Account newAccount = Account(tokenSet);
+            newAccount.magister.expiryAndTenant();
             await newAccount.magister.profileInfo.profileInfo();
             if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
               account = newAccount;
@@ -104,9 +106,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             } else {
               FlushbarHelper.createError(message: '$account bestaat al')..show(context);
             }
-          }).catchError((e) {
-            print(e);
-            FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(_agendaKey.currentContext);
           });
         },
       ),
@@ -155,6 +154,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                         setState(() {
                           userdata.put("accountIndex", index);
                           account = accounts.get(index);
+                          Agenda.of(_agendaKey.currentContext).setState(() {});
                         });
                       },
                       child: CircleAvatar(

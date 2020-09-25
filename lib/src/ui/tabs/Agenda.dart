@@ -287,6 +287,28 @@ class LesPagina extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(les["title"]),
+        actions: !les["editable"]
+            ? null
+            : [
+                // IconButton(
+                //   icon: Icon(Icons.edit),
+                //   onPressed: () {
+                //     print("edit");
+                //   },
+                // ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () => account.magister.agenda.deleteLes(les).then((e) async {
+                    if (e == true) {
+                      Navigator.of(context).pop();
+                      await account.magister.agenda.refresh();
+                      Agenda.of(_agendaKey.currentContext).setState(() {});
+                    } else {
+                      FlushbarHelper.createError(message: "Les verwijderen mislukt: $e");
+                    }
+                  }),
+                )
+              ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -488,21 +510,22 @@ class _AddLesPagina extends State<AddLesPagina> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_formKey.currentState.validate()) {
-            var added = await account.magister.agenda.addAfspraak({
+            account.magister.agenda.addAfspraak({
               "title": titel,
               "locatie": locatie,
               "heledag": heleDag,
               "inhoud": inhoud,
               "start": DateTime.now(),
               "eind": DateTime.now().add(Duration(minutes: 60)),
-            });
-            if (added == true) {
+            }).then((added) async {
               Navigator.of(context).pop();
               FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
               await account.magister.agenda.refresh();
-            } else {
-              FlushbarHelper.createError(message: "Afspraak opslaan is mislukt\n$added")..show(context);
-            }
+              Agenda.of(_agendaKey.currentContext).setState(() {});
+            }).catchError((e) {
+              print(e);
+              FlushbarHelper.createError(message: "Kon afspraak niet opslaan:\n$e");
+            });
           }
         },
         child: Icon(

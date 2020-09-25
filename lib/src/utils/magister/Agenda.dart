@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
 import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:http/http.dart' as http;
 
 class Agenda extends MagisterApi {
   Account account;
@@ -53,6 +54,14 @@ class Agenda extends MagisterApi {
     );
   }
 
+  Future deleteLes(Map les) async {
+    http.Response deleted = await http.delete("https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}", headers: {"Authorization": "Bearer " + account.accessToken});
+    if (deleted.statusCode == 204) {
+      return true;
+    }
+    return deleted.body;
+  }
+
   Map lesFrom(var les) {
     DateTime start = DateTime.parse(les["Start"]).toLocal();
     DateTime end = DateTime.parse(les["Einde"]).toLocal();
@@ -80,8 +89,9 @@ class Agenda extends MagisterApi {
       "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
       "docent": docent,
       "uitval": les["Status"] == 5,
-      "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "")
-      // "bewerkt": "kerst",
+      "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : ""),
+      "editable": les["Type"] == 1,
+      "id": les["Id"]
     };
   }
 }

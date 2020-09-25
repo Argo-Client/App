@@ -4,7 +4,7 @@ import 'package:Magistex/src/utils/magister/magister.dart';
 
 @HiveType(typeId: 0)
 class Account extends HiveObject {
-  String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture;
+  String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture, tenant;
   int expiry, id;
   List lessons, afwezigheid, berichten;
   Magister magister;
@@ -30,6 +30,7 @@ class Account extends HiveObject {
     this.expiry = 8640000000000000;
     this.afwezigheid = [];
     this.berichten = [];
+    this.tenant = "";
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
@@ -38,31 +39,6 @@ class Account extends HiveObject {
   }
 
   String toString() => this.fullName;
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data["address"] = address;
-    data["birthdate"] = birthdate;
-    data["email"] = email;
-    data["fullName"] = fullName;
-    data["id"] = id;
-    data["initials"] = initials;
-    data["klas"] = klas;
-    data["klasCode"] = klasCode;
-    data["mentor"] = mentor;
-    data["name"] = name;
-    data["officialFullName"] = officialFullName;
-    data["phone"] = phone;
-    data["profiel"] = profiel;
-    data["username"] = username;
-    data["expiry"] = expiry;
-    data["accessToken"] = accessToken;
-    data["refreshToken"] = refreshToken;
-    data["lessons"] = lessons;
-    data["afwezigheid"] = afwezigheid;
-    data["berichten"] = berichten;
-    return data;
-  }
 }
 
 class AccountAdapter extends TypeAdapter<Account> {
@@ -96,13 +72,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..lessons = fields[17] as List
       ..profilePicture = fields[18] as String
       ..afwezigheid = fields[19] as List
-      ..berichten = fields[20] as List;
+      ..berichten = fields[20] as List
+      ..tenant = fields[21] as String;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -144,7 +121,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(19)
       ..write(obj.afwezigheid)
       ..writeByte(20)
-      ..write(obj.berichten);
+      ..write(obj.berichten)
+      ..writeByte(21)
+      ..write(obj.tenant);
     // Vergeet niet om getal daarboven lengte +1 te doen
   }
 }

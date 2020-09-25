@@ -261,18 +261,6 @@ class _Instellingen extends State<Instellingen> {
               // Navigator.pushNamed(context, "Introduction");
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
             },
-          ),
-          ListTile(
-            leading: Icon(Icons.refresh),
-            title: Text("Ververs account"),
-            onTap: () async {
-              Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
-              await account.magister.refresh();
-              msg.dismiss();
-              FlushbarHelper.createSuccess(message: '$account is ververst!')..show(context);
-              appState.setState(() {});
-              setState(() {});
-            },
           )
         ],
       ),

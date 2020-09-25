@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:Magistex/src/utils/hiveObjects.dart';
 import 'package:http/http.dart' as http;
 import 'login.dart';
-import 'dart:developer';
 import 'dart:convert';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
@@ -67,9 +66,7 @@ class MagisterApi {
   Future runList(List<Future> list) async {
     await runWithToken();
     List values = await Future.wait(list);
-    if (account.isInBox) {
-      account.save();
-    }
+    account.save();
     return values;
   }
 
@@ -84,15 +81,15 @@ class MagisterApi {
         var parsed = json.decode(response.body);
         account.saveTokens(parsed);
         print("Refreshed token");
-        await getExpiry();
+        Magister(account).expiryAndTenant();
         c.complete();
       } else {
         if (response.body == '{"error":"invalid_grant"}') {
           print("$account is uitgelogd!");
-          dynamic tokenSet = await MagisterAuth().fullLogin();
+          dynamic tokenSet = await MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant});
           account.saveTokens(tokenSet);
           account.save();
-          await getExpiry();
+          Magister(account).expiryAndTenant();
           c.complete();
         }
         print("Magister Wil niet token verversen: " + response.statusCode.toString());
@@ -104,18 +101,6 @@ class MagisterApi {
       c.completeError(e);
     });
     return c.future;
-  }
-
-  Future getExpiry() async {
-    getFromMagister("sessions/current").then((res) {
-      Map body = json.decode(res.body);
-      int expiry = DateTime.parse(body["expiresOn"]).millisecondsSinceEpoch;
-      account.expiry = expiry;
-      account.save();
-    }).catchError((e) {
-      log("Error expiry geketst:");
-      print(e);
-    });
   }
 }
 
@@ -138,21 +123,36 @@ class Magister {
   }
   Future refresh() async {
     await api.runWithToken();
-    await api.getExpiry();
-    await profileInfo.profileInfo();
+    expiryAndTenant();
+    if (account.id == 0) {
+      await profileInfo.profileInfo();
+    }
+
     return await api.runList([
       agenda.refresh(),
       profileInfo.refresh(),
       afwezigheid.refresh(),
       berichten.refresh(),
       // cijfers.getCijfers(),
-      downloadProfilePicture(),
     ]);
+  }
+
+  Map accesData() {
+    String parsed = base64.normalize(account.accessToken.split(".")[1]);
+    return json.decode(utf8.decode(base64Decode(parsed)));
+  }
+
+  void expiryAndTenant() {
+    account.expiry = accesData()["exp"] * 1000;
+    account.username = accesData()["urn:magister:claims:iam:username"];
+    account.tenant = accesData()["urn:magister:claims:iam:tenant"];
+    account.save();
   }
 
   Future downloadProfilePicture() async {
     http.Response img = await MagisterApi(account).getFromMagister("leerlingen/${account.id}/foto", true, true);
     String image = base64Encode(img.bodyBytes);
     account.profilePicture = image;
+    account.save();
   }
 }

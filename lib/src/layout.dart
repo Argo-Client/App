@@ -32,9 +32,13 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             onSelected: (result) async {
               if (result == "herlaad") {
                 Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
-                await acc.magister.refresh();
-                msg.dismiss();
-                FlushbarHelper.createSuccess(message: '$acc is ververst!')..show(context);
+                acc.magister.refresh().then((_) {
+                  msg.dismiss();
+                  FlushbarHelper.createSuccess(message: '$acc is ververst!')..show(context);
+                }).catchError((e) {
+                  print(e);
+                  FlushbarHelper.createError(message: 'Fout tijdens verversen:\n$e')..show(context);
+                });
               } else {
                 accounts.delete(accounts.values.toList().indexWhere((a) => a.id == acc.id));
                 userdata.put("accountIndex", 0);
@@ -79,23 +83,31 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       ListTile(
         leading: Icon(Icons.add),
         title: Text("Voeg account toe"),
-        onTap: () async {
-          dynamic tokenSet = await MagisterAuth().fullLogin();
-          if (tokenSet != null) {
+        onTap: () {
+          MagisterAuth().fullLogin().then((tokenSet) async {
             Account newAccount = Account(tokenSet);
             await newAccount.magister.profileInfo.profileInfo();
             if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
-              accounts.add(newAccount);
-              newAccount.saveTokens(tokenSet);
-              await newAccount.magister.refresh();
               account = newAccount;
-              userdata.put("accountIndex", accounts.length - 1);
-              FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
-              setState(() {});
+              accounts.add(account);
+              account.saveTokens(tokenSet);
+              account.magister.refresh().then((_) async {
+                userdata.put("accountIndex", accounts.length - 1);
+                setState(() {});
+                FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
+                await account.magister.downloadProfilePicture();
+                setState(() {});
+              }).catchError((e) {
+                print(e);
+                FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+              });
             } else {
               FlushbarHelper.createError(message: '$account bestaat al')..show(context);
             }
-          }
+          }).catchError((e) {
+            print(e);
+            FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(_agendaKey.currentContext);
+          });
         },
       ),
     ];

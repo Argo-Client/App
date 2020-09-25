@@ -69,17 +69,14 @@ void main() async {
       "accountIndex": 0,
       "pixelsPerHour": 85,
     });
-    print("Wrote dummy data");
     accounts.put(0, Account());
   }
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
   // Hive.deleteFromDisk();
-  // print("Deleted data");
   // return;
   int accountIndex = userdata.get("accountIndex");
   account = accounts.get(accountIndex) ?? accounts.get(0);
-  // log(account.toJson().toString());
   appState = _AppState();
   runApp(App());
 }

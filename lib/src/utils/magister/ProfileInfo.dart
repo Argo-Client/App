@@ -9,17 +9,12 @@ class ProfileInfo extends MagisterApi {
   ProfileInfo(this.account) : super(account);
   Future refresh() async {
     await runWithToken();
-    await profileInfo();
     return await runList([
-      getUsername(),
       schoolInfo(),
       personInfo(),
       getAdress(),
+      profileInfo(),
     ]);
-  }
-
-  Future getUsername() async {
-    getFromMagister('leerlingen/$id').then((res) => account.username = json.decode(res.body)["stamnummer"].toString());
   }
 
   Future profileInfo() async {
@@ -32,8 +27,6 @@ class ProfileInfo extends MagisterApi {
     account.initials = body["Voorletters"];
     account.birthdate = body["Geboortedatum"];
     id = account.id;
-
-    return;
   }
 
   Future schoolInfo() async {

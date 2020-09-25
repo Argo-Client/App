@@ -6,17 +6,27 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
-  void loginPress() async {
-    dynamic tokenSet = await MagisterAuth().fullLogin();
-    account = Account(tokenSet);
-    accounts.put(0, account);
-    userdata.put("introduction", true);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-    appState = _AppState();
-    await account.magister.refresh();
-    appState.setState(() {});
-    Agenda.of(_agendaKey.currentContext).setState(() {});
-    FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(_agendaKey.currentContext);
+  void loginPress() {
+    MagisterAuth().fullLogin().then((tokenSet) {
+      account = Account(tokenSet);
+      accounts.put(0, account);
+      userdata.put("introduction", true);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+      appState = _AppState();
+      account.magister.refresh().then((_) async {
+        appState.setState(() {});
+        Agenda.of(_agendaKey.currentContext).setState(() {});
+        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(_agendaKey.currentContext);
+        await account.magister.downloadProfilePicture();
+        appState.setState(() {});
+      }).catchError((e) {
+        print(e);
+        FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+      });
+    }).catchError((e) {
+      print(e);
+      FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(context);
+    });
   }
 
   @override

@@ -40,8 +40,12 @@ class MagisterAuth {
     return text;
   }
 
-  String getURL() {
-    return "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256"; //&acr_values=tenant:pantarijn.magister.net&prompt=select_account&login_hint=616068
+  String getURL([Map preFill]) {
+    String str = "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256";
+    if (preFill != null) {
+      str += "&acr_values=tenant:${preFill["tenant"]}&prompt=select_account&login_hint=${preFill['username']}";
+    }
+    return str;
   }
 
   Future<Map> getTokenSet() async {
@@ -71,9 +75,9 @@ class MagisterAuth {
     }
   }
 
-  Future fullLogin() async {
+  Future fullLogin([Map preFill]) async {
     Completer c = Completer();
-    String authURL = this.getURL();
+    String authURL = this.getURL(preFill);
     await launch(authURL, forceWebView: false, forceSafariVC: true, enableJavaScript: true);
     StreamSubscription _sub;
     _sub = getLinksStream().listen((String link) async {

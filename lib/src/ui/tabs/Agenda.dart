@@ -33,6 +33,14 @@ class _Agenda extends State<Agenda> {
     timeFactor = userdata.get("pixelsPerHour") / 60;
     endHour = 23;
     defaultStartHour = 8;
+    if (account.id != 0) {
+      account.magister.agenda.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        print(e);
+        FlushbarHelper.createError(message: "Fout tijdens verversen van agenda:\n$e")..show(context);
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -302,7 +310,6 @@ class LesPagina extends StatelessWidget {
                     if (e == true) {
                       Navigator.of(context).pop();
                       await account.magister.agenda.refresh();
-                      Agenda.of(_agendaKey.currentContext).setState(() {});
                     } else {
                       FlushbarHelper.createError(message: "Les verwijderen mislukt: $e");
                     }

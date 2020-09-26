@@ -5,7 +5,6 @@ import 'package:Magistex/src/utils/hiveObjects.dart';
 
 class ProfileInfo extends MagisterApi {
   Account account;
-  int id;
   ProfileInfo(this.account) : super(account);
   Future refresh() async {
     await runWithToken();
@@ -26,11 +25,11 @@ class ProfileInfo extends MagisterApi {
     account.name = body["Roepnaam"];
     account.initials = body["Voorletters"];
     account.birthdate = body["Geboortedatum"];
-    id = account.id;
+    account.save();
   }
 
   Future schoolInfo() async {
-    var res = await getFromMagister('/leerlingen/$id/aanmeldingen');
+    var res = await getFromMagister('/leerlingen/${account.id}/aanmeldingen');
     Map body = json.decode(res.body)["items"][0];
     account.klasCode = body["groep"]["code"];
     account.klas = body["studie"]["code"];
@@ -39,14 +38,14 @@ class ProfileInfo extends MagisterApi {
   }
 
   Future personInfo() async {
-    var res = await getFromMagister('/personen/$id/profiel');
+    var res = await getFromMagister('/personen/${account.id}/profiel');
     Map body = json.decode(res.body);
     account.email = body["EmailAdres"].toString();
     account.phone = body["Mobiel"].toString();
   }
 
   Future getAdress() async {
-    var res = await getFromMagister('/personen/$id/adressen');
+    var res = await getFromMagister('/personen/${account.id}/adressen');
     Map body = json.decode(res.body)["items"][0];
     account.address = '${body["straat"]} ${body["huisnummer"]}\n${body["postcode"]}, ${body["plaats"]}';
   }

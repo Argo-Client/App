@@ -77,7 +77,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             setState(() {
               userdata.put("accountIndex", index);
               account = accounts.get(index);
-              Agenda.of(_agendaKey.currentContext).setState(() {});
             });
           },
         ),

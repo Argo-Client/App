@@ -71,6 +71,8 @@ class MagisterApi {
   }
 
   Future refreshToken() async {
+    print("ververs token");
+    String oldRefreshToken = account.refreshToken;
     Completer c = Completer();
     http.post("https://accounts.magister.net/connect/token", body: {
       "refresh_token": account.refreshToken,
@@ -85,12 +87,17 @@ class MagisterApi {
         c.complete();
       } else {
         if (response.body == '{"error":"invalid_grant"}') {
+          if (oldRefreshToken != account.refreshToken) {
+            print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
+            c.complete();
+          }
           print("$account is uitgelogd!");
-          dynamic tokenSet = await MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant});
-          account.saveTokens(tokenSet);
-          account.save();
-          Magister(account).expiryAndTenant();
-          c.complete();
+          MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
+            account.saveTokens(tokenSet);
+            account.save();
+            account.magister.expiryAndTenant();
+            c.complete();
+          });
         }
         print("Magister Wil niet token verversen: " + response.statusCode.toString());
         print(response.body);
@@ -124,9 +131,7 @@ class Magister {
   Future refresh() async {
     await api.runWithToken();
     expiryAndTenant();
-    if (account.id == 0) {
-      await profileInfo.profileInfo();
-    }
+    if (account.id == 0) await profileInfo.profileInfo();
 
     return await api.runList([
       agenda.refresh(),

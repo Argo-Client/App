@@ -10,17 +10,17 @@ class Agenda extends MagisterApi {
   Account account;
   Agenda(this.account) : super(account);
   Future refresh() async {
-    return await runList([getLessen(account.id)]);
+    return await runList([getLessen()]);
   }
 
-  Future getLessen(id) async {
+  Future getLessen() async {
     DateTime now = DateTime.now();
     DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
     Completer c = Completer();
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     account.lessons = [[], [], [], [], [], [], []];
-    getFromMagister('/personen/$id/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}').then((res) {
+    getFromMagister('/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}').then((res) {
       Map body = json.decode(res.body);
       body["Items"].forEach((les) {
         if (les["DuurtHeleDag"]) return;
@@ -28,9 +28,6 @@ class Agenda extends MagisterApi {
         account.lessons[end.weekday - 1].add(lesFrom(les));
       });
       c.complete(true);
-    }).catchError((e) {
-      print(e);
-      c.completeError(e);
     });
     return c.future;
   }

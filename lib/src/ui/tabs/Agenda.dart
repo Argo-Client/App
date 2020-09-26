@@ -61,80 +61,77 @@ class _Agenda extends State<Agenda> {
 
       for (Map les in dag) {
         widgetDag.add(
-          Positioned(
-            height: les["duration"] * timeFactor - 1,
-            top: (les["start"] - startHour * 60) * timeFactor,
-            left: 0,
-            right: 0,
-            child: Container(
-              width: MediaQuery.of(context).size.width - 30,
-              height: les["duration"] * timeFactor,
-              child: Card(
-                color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
-                // shape: BorderRadius.all(),
-                margin: EdgeInsets.only(
-                  top: .75,
-                ),
-                shape: Border(bottom: GreyBorderSide),
-                child: InkWell(
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: 5,
-                            left: 5,
-                          ),
-                          child: Text(
-                            les["hour"],
-                            style: TextStyle(
-                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                            ),
+          Container(
+            margin: EdgeInsets.only(
+              top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
+            ),
+            width: MediaQuery.of(context).size.width - 30,
+            height: les["duration"] * timeFactor,
+            child: Card(
+              color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
+              // shape: BorderRadius.all(),
+              margin: EdgeInsets.only(
+                top: .75,
+              ),
+              shape: Border(bottom: GreyBorderSide),
+              child: InkWell(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                          left: 5,
+                        ),
+                        child: Text(
+                          les["hour"],
+                          style: TextStyle(
+                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 20, left: 20),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  les["title"],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20, left: 20),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                les["title"],
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  les["information"],
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                   ),
                                 ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    les["information"],
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: TextStyle(
-                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => LesPagina(les),
-                      ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => LesPagina(les),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -248,15 +245,10 @@ class _Agenda extends State<Agenda> {
                               ],
                             ),
                             // Container van alle lessen
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight: double.maxFinite,
-                                maxWidth: MediaQuery.of(context).size.width - 30,
+                            if (widgetRooster.isNotEmpty)
+                              Stack(
+                                children: widgetRooster[dag],
                               ),
-                              child: Stack(
-                                children: widgetRooster.isEmpty ? [] : widgetRooster[dag],
-                              ),
-                            ),
                           ],
                         ),
                         if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu

@@ -1,5 +1,5 @@
 import 'magister.dart';
-import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
 
 class Cijfers extends MagisterApi {
   Account account;

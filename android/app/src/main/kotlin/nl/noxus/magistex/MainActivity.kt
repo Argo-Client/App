@@ -1,4 +1,4 @@
-package nl.samtaen.magistex
+package nl.noxus.argo
 
 import io.flutter.embedding.android.FlutterActivity
 

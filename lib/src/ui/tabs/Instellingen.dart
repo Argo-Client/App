@@ -202,6 +202,32 @@ class _Instellingen extends State<Instellingen> {
           Padding(
             padding: EdgeInsets.only(left: 15, top: 20),
             child: Text(
+              "Home",
+              style: TextStyle(color: userdata.get("accentColor")),
+            ),
+          ),
+          ListTile(
+            title: Text("Aantal pixels per uur"),
+            subtitle: Text("Hoe hoog een uur is in home"),
+            onTap: () => showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return NumberPickerDialog.integer(
+                    title: Text("Pixels per uur"),
+                    minValue: 50,
+                    maxValue: 500,
+                    initialIntegerValue: userdata.get("pixelsPerHourHome"),
+                  );
+                }).then((value) {
+              if (value != null) {
+                userdata.put("pixelsPerHourHome", value);
+              }
+            }),
+          ),
+          Divider(),
+          Padding(
+            padding: EdgeInsets.only(left: 15, top: 20),
+            child: Text(
               "Meldingen",
               style: TextStyle(color: userdata.get("accentColor")),
             ),

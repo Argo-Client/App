@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:intl/intl.dart';
 import 'magister.dart';
-import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
 import 'dart:convert';
 
 class Berichten extends MagisterApi {

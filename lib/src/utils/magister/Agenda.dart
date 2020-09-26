@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
-import 'package:Magistex/src/utils/hiveObjects.dart';
 import 'package:http/http.dart' as http;
+import 'package:Argo/src/utils/hiveObjects.dart';
 
 class Agenda extends MagisterApi {
   Account account;

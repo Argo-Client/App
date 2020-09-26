@@ -67,7 +67,8 @@ void main() async {
       "accentColor": Colors.orange,
       "userIcon": Icons.person,
       "accountIndex": 0,
-      "pixelsPerHour": 85,
+      "pixelsPerHour": 75,
+      "pixelsPerHourHome": 70,
     });
     accounts.put(0, Account());
   }
@@ -100,7 +101,7 @@ class _AppState extends State<App> {
         theme = SchedulerBinding.instance.window.platformBrightness;
     }
     return MaterialApp(
-      title: 'Magistex',
+      title: 'Argo',
       theme: ThemeData(
         brightness: theme,
         primaryColor: userdata.get("primaryColor"),

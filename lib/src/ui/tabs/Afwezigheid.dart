@@ -109,14 +109,18 @@ class _Afwezigheid extends State<Afwezigheid> {
           ]),
       body: RefreshIndicator(
         child: account.afwezigheid.isEmpty
-            ? Center(
-                child: Text(
-                  "Geen afwezigheid",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20,
+            ? ListView(
+                children: [
+                  Center(
+                    child: Text(
+                      "Geen afwezigheid",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 20,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               )
             : ListView(
                 children: absenties,

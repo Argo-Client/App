@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
-import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
 import 'Agenda.dart';
 
 class Afwezigheid extends MagisterApi {

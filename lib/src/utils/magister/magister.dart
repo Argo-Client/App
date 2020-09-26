@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
 import 'package:http/http.dart' as http;
 import 'login.dart';
 import 'dart:convert';

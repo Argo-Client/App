@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'magister.dart';
-import 'package:Magistex/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
 
 class ProfileInfo extends MagisterApi {
   Account account;

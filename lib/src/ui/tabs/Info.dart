@@ -56,13 +56,13 @@ class _Info extends State<Info> {
                   leading: Icon(Icons.device_hub),
                   title: Text('Github'),
                   subtitle: Text("Source code"),
-                  onTap: () => launch("https://g-vm.nl/magistex/github/"),
+                  onTap: () => launch("https://g-vm.nl/argo/github/"),
                 ),
                 ListTile(
                   leading: Icon(Icons.chat),
                   title: Text('Discord'),
                   subtitle: Text("Gezelligheid"),
-                  onTap: () => launch("https://g-vm.nl/magistex/discord/"),
+                  onTap: () => launch("https://g-vm.nl/argo/discord/"),
                 ),
                 ListTile(
                   leading: Icon(Icons.feedback),

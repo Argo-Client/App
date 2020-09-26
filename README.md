@@ -1,14 +1,14 @@
 <p align="center"><img src="assets/icons/banner.png" width="1000"></p>
 
-# Magistex
+# Argo
 
-Magistex is a Magister 6 application built with material design. 
+Argo is a Magister 6 application built with material design. 
 
 
 <!-- ## How to install
 ```
-git clone https://github.com/Netfloex/Magistex.git
-cd Magistex
+git clone https://github.com/Netfloex/Argo.git
+cd Argo
 npm run firstrun
 ```-->
 ## Built With
@@ -20,7 +20,7 @@ npm run firstrun
 * **Guus van Meerveld** - *Main Developer* - [Github](https://github.com/Guusvanmeerveld)   -   [Website](https://g-vm.nl)
 * **Sam Taen** - *Main Developer* - [Github](https://github.com/Netfloex/)  -   [Website](https://samtaen.nl)
 
-See also the list of [contributors](https://github.com/Netfloex/Magistex/graphs/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/Netfloex/Argo/graphs/contributors) who participated in this project.
 
 ## License
 

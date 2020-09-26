@@ -201,6 +201,21 @@ class _Agenda extends State<Agenda> {
                   child: SingleChildScrollView(
                     child: Stack(
                       children: [
+                        if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
+                          Positioned(
+                            top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                            child: Container(
+                              height: 0,
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: userdata.get('accentColor'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
                           Positioned(
                             top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
@@ -251,20 +266,6 @@ class _Agenda extends State<Agenda> {
                               ),
                           ],
                         ),
-                        if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
-                          Positioned(
-                            top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: userdata.get('accentColor'),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                       ],
                     ),
                   ),

@@ -40,7 +40,7 @@ class _Introduction extends State<Introduction> {
           onDonePress: loginPress,
           slides: [
             Slide(
-              title: "Magistex",
+              title: "Argo",
               description: "Een moderne magister app.\nStart snel op en is gebruiksvriendelijk",
               backgroundColor: Colors.lightBlue,
             ),

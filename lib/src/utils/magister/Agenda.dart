@@ -19,9 +19,9 @@ class Agenda extends MagisterApi {
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
     Completer c = Completer();
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
-    account.lessons = [[], [], [], [], [], [], []];
     getFromMagister('/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}').then((res) {
       Map body = json.decode(res.body);
+      account.lessons = [[], [], [], [], [], [], []];
       body["Items"].forEach((les) {
         if (les["DuurtHeleDag"]) return;
         DateTime end = DateTime.parse(les["Einde"]).toLocal();
@@ -42,7 +42,7 @@ class Agenda extends MagisterApi {
       "Lokatie": les["locatie"],
       "Inhoud": les["inhoud"],
       "Status": 2,
-      "InfoType": 6,
+      "InfoType": les["inhoud"] != null ? 6 : 0,
       "Type": 1,
     };
     return await postToMagister(

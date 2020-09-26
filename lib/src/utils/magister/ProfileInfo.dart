@@ -25,7 +25,6 @@ class ProfileInfo extends MagisterApi {
     account.name = body["Roepnaam"];
     account.initials = body["Voorletters"];
     account.birthdate = body["Geboortedatum"];
-    account.save();
   }
 
   Future schoolInfo() async {

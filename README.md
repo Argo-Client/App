@@ -13,7 +13,7 @@ npm run firstrun
 ```-->
 ## Built With
 
-* [Flutter](https://materializecss.com) - UI toolkit for building applications
+* [Flutter](https://flutter.dev) - UI toolkit for building applications
 
 ## Authors
 

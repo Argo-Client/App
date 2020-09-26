@@ -299,12 +299,13 @@ class LesPagina extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.delete),
                   onPressed: () => account.magister.agenda.deleteLes(les).then((e) async {
-                    if (e == true) {
-                      Navigator.of(context).pop();
-                      await account.magister.agenda.refresh();
-                    } else {
-                      FlushbarHelper.createError(message: "Les verwijderen mislukt: $e");
-                    }
+                    Navigator.of(context).pop();
+                    await account.magister.agenda.refresh();
+
+                    /// [refreshpagina]
+                  }).catchError((e) {
+                    FlushbarHelper.createError(message: "Les verwijderen mislukt: $e")..show(context);
+                    throw (e);
                   }),
                 )
               ],
@@ -465,7 +466,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                           disabledBorder: InputBorder.none,
                           hintText: 'Locatie',
                         ),
-                        validator: validator,
+                        // validator: validator,
                         onChanged: (value) => locatie = value,
                       ),
                     ),
@@ -496,7 +497,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                         disabledBorder: InputBorder.none,
                         hintText: 'Inhoud',
                       ),
-                      validator: validator,
+                      // validator: validator,
                       onChanged: (value) => inhoud = value,
                     ),
                   ),

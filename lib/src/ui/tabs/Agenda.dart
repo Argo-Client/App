@@ -1,6 +1,7 @@
 part of main;
 
 final GlobalKey<ScaffoldState> _agendaKey = new GlobalKey<ScaffoldState>();
+final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
 class Agenda extends StatefulWidget {
   static _Agenda of(BuildContext context) => context.findAncestorStateOfType<_Agenda>();
@@ -10,7 +11,7 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-const BorderSide GreyBorderSide = BorderSide(color: Color.fromARGB(255, 100, 100, 100), width: .75);
+const BorderSide GreyBorderSide = BorderSide(color: Color.fromARGB(255, 100, 100, 100), width: 1);
 
 class _Agenda extends State<Agenda> {
   DateTime now, lastMonday;
@@ -151,6 +152,7 @@ class _Agenda extends State<Agenda> {
           ),
           title: InkWell(
             /// [Guus, maak even dat het hoger is alsjeblieft dankjewel]
+            /// [NEE]
             // Agenda knopje voor maand view
             onTap: () {},
             child: Row(
@@ -167,7 +169,8 @@ class _Agenda extends State<Agenda> {
                 Tab(
                   icon: Text(
                     dayAbbr[dag],
-                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.visible,
+                    softWrap: false,
                   ),
                   text: numFormatter.format(lastMonday.add(Duration(days: dag))),
                 )
@@ -421,20 +424,20 @@ class AddLesPagina extends StatefulWidget {
 }
 
 class _AddLesPagina extends State<AddLesPagina> {
-  static GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool heleDag = false;
+  TimeOfDay startTime = TimeOfDay.now();
+  TimeOfDay endTime = TimeOfDay.fromDateTime(
+    DateTime.now().add(
+      Duration(hours: 1),
+    ),
+  );
+  DateTime date = DateTime.now();
+  DateFormat formatDate = DateFormat("d-M-y");
+  String titel;
+  String locatie;
+  String inhoud;
   @override
   Widget build(BuildContext context) {
-    String titel;
-    String locatie;
-    String inhoud;
-    String validator(String value) {
-      if (value.isEmpty) {
-        return 'Please enter some text';
-      }
-      return null;
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Nieuwe afspraak"),
@@ -445,6 +448,7 @@ class _AddLesPagina extends State<AddLesPagina> {
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(
             child: Form(
+              autovalidate: true,
               key: _formKey,
               child: Column(
                 children: [
@@ -464,7 +468,12 @@ class _AddLesPagina extends State<AddLesPagina> {
                           disabledBorder: InputBorder.none,
                           hintText: 'Titel',
                         ),
-                        validator: validator,
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Veld verplicht';
+                          }
+                          return null;
+                        },
                         onChanged: (value) => titel = value,
                       ),
                     ),
@@ -496,13 +505,65 @@ class _AddLesPagina extends State<AddLesPagina> {
                         bottom: GreyBorderSide,
                       ),
                     ),
-                    child: SwitchListTile(
-                      activeColor: userdata.get("accentColor"),
-                      title: Text("Hele dag?"),
-                      value: heleDag,
-                      onChanged: (value) => setState(() {
-                        heleDag = value;
-                      }),
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          activeColor: userdata.get("accentColor"),
+                          title: Text("Hele dag"),
+                          value: heleDag,
+                          onChanged: (value) => setState(() {
+                            heleDag = value;
+                          }),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            RaisedButton(
+                              color: userdata.get("accentColor"),
+                              child: Text("Datum: " + formatDate.format(date)),
+                              onPressed: () async {
+                                DateTime newDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                                  lastDate: DateTime(DateTime.now().year + 100),
+                                );
+                                setState(() {
+                                  if (newDate != null) date = newDate;
+                                });
+                              },
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                TimeOfDay newStartTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: startTime,
+                                );
+                                setState(() {
+                                  if (newStartTime != null) startTime = newStartTime;
+                                });
+                              },
+                              child: Text(
+                                "Begin: " + startTime.format(context),
+                              ),
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                TimeOfDay newEndTime = await showTimePicker(
+                                  context: context,
+                                  initialTime: endTime,
+                                );
+                                setState(() {
+                                  if (newEndTime != null) endTime = newEndTime;
+                                });
+                              },
+                              child: Text(
+                                "Eind: " + endTime.format(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                   ListTile(
@@ -534,8 +595,20 @@ class _AddLesPagina extends State<AddLesPagina> {
               "locatie": locatie,
               "heledag": heleDag,
               "inhoud": inhoud,
-              "start": DateTime.now(),
-              "eind": DateTime.now().add(Duration(minutes: 60)),
+              "start": DateTime(
+                date.year,
+                date.month,
+                date.day,
+                startTime.hour,
+                startTime.minute,
+              ),
+              "eind": DateTime(
+                date.year,
+                date.month,
+                date.day,
+                endTime.hour,
+                endTime.minute,
+              ),
             }).then((added) async {
               Navigator.of(context).pop();
               FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);

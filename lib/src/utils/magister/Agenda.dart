@@ -36,7 +36,7 @@ class Agenda extends MagisterApi {
     Map postLes = {
       "Id": 0,
       "Start": les["start"].toUtc().toIso8601String(),
-      "Einde": les["eind"].toUtc().add(Duration(hours: 2)).toIso8601String(),
+      "Einde": les["eind"].toUtc().toIso8601String(),
       "DuurtHeleDag": les["heledag"] ?? false,
       "Omschrijving": les["title"],
       "Lokatie": les["locatie"],

@@ -158,6 +158,7 @@ class _Thuis extends State<Thuis> {
                         child: ListView(
                           children: [
                             ListTile(
+                              leading: Text("TP1"),
                               title: Text("7,5"),
                               subtitle: Text("Nederlands"),
                               trailing: Text("26-06-2020"),

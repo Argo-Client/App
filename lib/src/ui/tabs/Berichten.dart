@@ -72,12 +72,19 @@ class _Berichten extends State<Berichten> {
         title: Text("Berichten"),
       ),
       body: RefreshIndicator(
-          child: ListView(
-            children: berichten,
-          ),
-          onRefresh: () async {
+        child: ListView(
+          children: berichten,
+        ),
+        onRefresh: () async {
+          try {
             await account.magister.berichten.refresh();
-          }),
+            setState(() {});
+          } catch (e) {
+            FlushbarHelper.createError(message: "Kon berichten niet verversen:\n$e")..show(context);
+            throw (e);
+          }
+        },
+      ),
     );
   }
 }

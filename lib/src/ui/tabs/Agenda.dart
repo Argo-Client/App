@@ -279,9 +279,16 @@ class _Agenda extends State<Agenda> {
 }
 
 // Popup als je op een les klikt
-class LesPagina extends StatelessWidget {
+class LesPagina extends StatefulWidget {
   final Map les;
-  const LesPagina(this.les);
+  LesPagina(this.les);
+  @override
+  _LesPagina createState() => _LesPagina(les);
+}
+
+class _LesPagina extends State<LesPagina> {
+  Map les;
+  _LesPagina(this.les);
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +318,17 @@ class LesPagina extends StatelessWidget {
                 )
               ],
       ),
+      floatingActionButton: les["huiswerk"] == null
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                await account.magister.agenda.toggleHuiswerk(les);
+                les["huiswerkAf"] = !les["huiswerkAf"];
+                setState(() {});
+              },
+              backgroundColor: les["huiswerkAf"] ? Colors.green : userdata.get("accentColor"),
+              child: Icon(les["huiswerkAf"] ? Icons.check : Icons.refresh),
+            ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -524,8 +542,8 @@ class _AddLesPagina extends State<AddLesPagina> {
               await account.magister.agenda.refresh();
               Agenda.of(_agendaKey.currentContext).setState(() {});
             }).catchError((e) {
-              print(e);
               FlushbarHelper.createError(message: "Kon afspraak niet opslaan:\n$e");
+              throw (e);
             });
           }
         },

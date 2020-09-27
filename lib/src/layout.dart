@@ -36,8 +36,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   msg.dismiss();
                   FlushbarHelper.createSuccess(message: '$acc is ververst!')..show(context);
                 }).catchError((e) {
-                  print(e);
                   FlushbarHelper.createError(message: 'Fout tijdens verversen:\n$e')..show(context);
+                  throw (e);
                 });
               } else {
                 accounts.delete(accounts.values.toList().indexWhere((a) => a.id == acc.id));
@@ -99,7 +99,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 await account.magister.downloadProfilePicture();
                 setState(() {});
               }).catchError((e) {
-                print(e);
+                throw (e);
                 FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
               });
             } else {

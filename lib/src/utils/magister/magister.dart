@@ -29,8 +29,8 @@ class MagisterApi {
         c.completeError(response.body);
       }
     }).catchError((e) {
-      print(e);
       c.completeError(e);
+      throw (e);
     });
     return c.future;
   }
@@ -70,11 +70,32 @@ class MagisterApi {
     return values;
   }
 
+  Future handleLogOut() {
+    Completer c = Completer();
+    print("$account is uitgelogd!");
+    MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
+      account.saveTokens(tokenSet);
+      account.magister.expiryAndTenant();
+      account.save();
+      c.complete();
+    });
+    return c.future;
+  }
+
   Future refreshToken() async {
     print("ververs token");
     String oldRefreshToken = account.refreshToken;
     Completer c = Completer();
-    http.post("https://accounts.magister.net/connect/token", body: {
+    if (account.refreshToken == null) {
+      await handleLogOut();
+      c.complete();
+      return;
+    }
+
+    http.post("https://accounts.magister.net/connect/token", headers: {
+      'Content-type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/x-www-form-urlencoded'
+    }, body: {
       "refresh_token": account.refreshToken,
       "client_id": "M6LOAPP",
       "grant_type": "refresh_token",
@@ -82,30 +103,26 @@ class MagisterApi {
       if (response.statusCode == 200) {
         var parsed = json.decode(response.body);
         account.saveTokens(parsed);
-        print("Refreshed token");
         Magister(account).expiryAndTenant();
+        print("Refreshed token");
         c.complete();
       } else {
         if (response.body == '{"error":"invalid_grant"}') {
           if (oldRefreshToken != account.refreshToken) {
             print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
             c.complete();
+            return;
           }
-          print("$account is uitgelogd!");
-          MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
-            account.saveTokens(tokenSet);
-            account.save();
-            account.magister.expiryAndTenant();
-            c.complete();
-          });
+          await handleLogOut();
+          c.complete();
         }
         print("Magister Wil niet token verversen: " + response.statusCode.toString());
         print(response.body);
         c.completeError(response.body);
       }
     }).catchError((e) {
-      print(e);
       c.completeError(e);
+      throw (e);
     });
     return c.future;
   }

@@ -52,11 +52,34 @@ class Agenda extends MagisterApi {
   }
 
   Future deleteLes(Map les) async {
-    http.Response deleted = await http.delete("https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}", headers: {"Authorization": "Bearer " + account.accessToken});
-    if (deleted.statusCode == 204) {
-      return true;
+    try {
+      http.Response deleted = await http.put(
+        "https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}",
+        headers: {"Authorization": "Bearer " + account.accessToken},
+      );
+      if (deleted.statusCode == 204) {
+        return true;
+      }
+      return deleted.body;
+    } catch (e) {
+      return (e);
     }
-    return deleted.body;
+  }
+
+  Future toggleHuiswerk(Map les) async {
+    try {
+      http.Response res = await http.put(
+        "https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}",
+        headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"},
+        body: json.encode({"Id": les["id"], "Afgerond": !les["huiswerkAf"]}),
+      );
+      if (res.statusCode == 200) {
+        return true;
+      }
+      return res.body;
+    } catch (e) {
+      return (e);
+    }
   }
 
   Map lesFrom(var les) {
@@ -85,6 +108,8 @@ class Agenda extends MagisterApi {
       "date": formatDatum.format(end),
       "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
       "docent": docent,
+      "huiswerk": les["Inhoud"],
+      "huiswerkAf": les["Afgerond"],
       "uitval": les["Status"] == 5,
       "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : ""),
       "editable": les["Type"] == 1,

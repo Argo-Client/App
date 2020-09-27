@@ -20,12 +20,12 @@ class _Introduction extends State<Introduction> {
         await account.magister.downloadProfilePicture();
         appState.setState(() {});
       }).catchError((e) {
-        print(e);
         FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+        throw (e);
       });
     }).catchError((e) {
-      print(e);
       FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(context);
+      throw (e);
     });
   }
 

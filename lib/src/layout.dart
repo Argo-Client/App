@@ -99,8 +99,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 await account.magister.downloadProfilePicture();
                 setState(() {});
               }).catchError((e) {
-                throw (e);
                 FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+                throw (e);
               });
             } else {
               FlushbarHelper.createError(message: '$account bestaat al')..show(context);

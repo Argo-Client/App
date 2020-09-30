@@ -52,6 +52,8 @@ Account account;
 _AppState appState;
 Box userdata, accounts;
 Brightness theme;
+ValueNotifier<bool> updateNotifier = ValueNotifier(false);
+void update() => updateNotifier.value = !updateNotifier.value;
 
 void main() async {
   await Hive.initFlutter();

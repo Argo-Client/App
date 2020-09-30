@@ -24,6 +24,16 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   Widget build(BuildContext context) {
     var child = _children[_currentIndex];
     bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
+    void changeAccount(int id) {
+      int index = accounts.toMap().values.toList().indexWhere((g) => g.id == id);
+      if (userdata.get("accountIndex") != index) {
+        setState(() {
+          userdata.put("accountIndex", index);
+          account = accounts.get(index);
+          update();
+        });
+      }
+    }
 
     final List<Widget> _accountsDrawer = [
       for (Account acc in accounts.toMap().values)
@@ -41,7 +51,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 });
               } else {
                 accounts.delete(accounts.values.toList().indexWhere((a) => a.id == acc.id));
-                userdata.put("accountIndex", 0);
+                userdata.put("accountsIndex", 0);
                 setState(() {});
               }
             },
@@ -72,13 +82,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           subtitle: Text(
             acc.klasCode,
           ),
-          onTap: () {
-            int index = accounts.toMap().values.toList().indexWhere((g) => g.id == acc.id);
-            setState(() {
-              userdata.put("accountIndex", index);
-              account = accounts.get(index);
-            });
-          },
+          onTap: () => changeAccount(acc.id),
         ),
       ListTile(
         leading: Icon(Icons.add),
@@ -96,6 +100,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 userdata.put("accountIndex", accounts.length - 1);
                 setState(() {});
                 FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
+                update();
                 await account.magister.downloadProfilePicture();
                 setState(() {});
               }).catchError((e) {
@@ -148,13 +153,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 for (Account acc in accounts.toMap().values)
                   if (acc.id != account.id)
                     InkWell(
-                      onTap: () {
-                        int index = accounts.toMap().values.toList().indexWhere((g) => g.id == acc.id);
-                        setState(() {
-                          userdata.put("accountIndex", index);
-                          account = accounts.get(index);
-                        });
-                      },
+                      onTap: () => changeAccount(acc.id),
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).backgroundColor,
                         backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,

@@ -11,25 +11,20 @@ class _Introduction extends State<Introduction> {
       account = Account(tokenSet);
       accounts.put(0, account);
       userdata.put("introduction", true);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => App()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
       appState = _AppState();
       account.magister.refresh().then((_) async {
         appState.setState(() {});
-        Agenda.of(_agendaKey.currentContext).setState(() {});
-        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")
-          ..show(_agendaKey.currentContext);
+        update();
+        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(_agendaKey.currentContext);
         await account.magister.downloadProfilePicture();
         appState.setState(() {});
       }).catchError((e) {
-        FlushbarHelper.createError(
-            message: "Fout bij ophalen van gegevens:\n$e")
-          ..show(_agendaKey.currentContext);
+        FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
         throw (e);
       });
     }).catchError((e) {
-      FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")
-        ..show(context);
+      FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(context);
       throw (e);
     });
   }
@@ -53,14 +48,12 @@ class _Introduction extends State<Introduction> {
             Slide(
               title: "Argo",
               pathImage: "assets/images/splash.png",
-              description:
-                  "Magister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
+              description: "Magister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
               backgroundColor: Colors.lightBlue,
             ),
             Slide(
               title: "DISCLAIMER",
-              description:
-                  "Argo is niet gerelateerd en maakt geen onderdeel uit van SchoolMaster B.V.",
+              description: "Argo is niet gerelateerd en maakt geen onderdeel uit van SchoolMaster B.V.",
               backgroundColor: Color(0xff3da4ab),
             ),
             Slide(

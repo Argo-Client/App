@@ -118,6 +118,7 @@ class MagisterApi {
                 await refreshDio.post("");
                 return options;
               }
+              Magister(account).expiryAndTenant();
               options.baseUrl = "https://${account.tenant}/";
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
               return options;

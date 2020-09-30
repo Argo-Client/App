@@ -6,61 +6,8 @@ class Berichten extends StatefulWidget {
 }
 
 class _Berichten extends State<Berichten> {
-  List<Widget> berichten = [];
   @override
   Widget build(BuildContext context) {
-    String lastDay;
-    for (int i = 0; i < account.berichten.length; i++) {
-      Map ber = account.berichten[i];
-      if (lastDay != ber["dag"]) {
-        berichten.add(
-          Padding(
-            padding: EdgeInsets.only(
-              left: 15,
-              top: 20,
-              bottom: 20,
-            ),
-            child: Text(
-              ber["dag"],
-              style: TextStyle(color: userdata.get("accentColor")),
-            ),
-          ),
-        );
-      }
-      berichten.add(
-        Container(
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: ListTile(
-              trailing: Padding(
-                child: ber["prioriteit"] ? Icon(Icons.error, color: Colors.redAccent) : null,
-                padding: EdgeInsets.only(
-                  top: 7,
-                  left: 7,
-                ),
-              ),
-              subtitle: Text(ber["onderwerp"]),
-              title: Text(ber["afzender"]),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => BerichtPagina(ber),
-                  ),
-                );
-              },
-            ),
-          ),
-          decoration: account.berichten.length - 1 == i || account.berichten[i + 1]["dag"] != ber["dag"]
-              ? null
-              : BoxDecoration(
-                  border: Border(
-                    bottom: GreyBorderSide,
-                  ),
-                ),
-        ),
-      );
-      lastDay = ber["dag"];
-    }
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -72,8 +19,66 @@ class _Berichten extends State<Berichten> {
         title: Text("Berichten"),
       ),
       body: RefreshIndicator(
-        child: ListView(
-          children: berichten,
+        child: ValueListenableBuilder(
+          valueListenable: updateNotifier,
+          builder: (BuildContext context, box, Widget child) {
+            List<Widget> berichten = [];
+            String lastDay;
+            for (int i = 0; i < account.berichten.length; i++) {
+              Map ber = account.berichten[i];
+              if (lastDay != ber["dag"]) {
+                berichten.add(
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 15,
+                      top: 20,
+                      bottom: 20,
+                    ),
+                    child: Text(
+                      ber["dag"],
+                      style: TextStyle(color: userdata.get("accentColor")),
+                    ),
+                  ),
+                );
+              }
+              berichten.add(
+                Container(
+                  child: Card(
+                    margin: EdgeInsets.zero,
+                    child: ListTile(
+                      trailing: Padding(
+                        child: ber["prioriteit"] ? Icon(Icons.error, color: Colors.redAccent) : null,
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
+                        ),
+                      ),
+                      subtitle: Text(ber["onderwerp"]),
+                      title: Text(ber["afzender"]),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => BerichtPagina(ber),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  decoration: account.berichten.length - 1 == i || account.berichten[i + 1]["dag"] != ber["dag"]
+                      ? null
+                      : BoxDecoration(
+                          border: Border(
+                            bottom: GreyBorderSide,
+                          ),
+                        ),
+                ),
+              );
+              lastDay = ber["dag"];
+            }
+            return ListView(
+              children: berichten,
+            );
+          },
         ),
         onRefresh: () async {
           try {

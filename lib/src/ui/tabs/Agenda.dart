@@ -4,9 +4,6 @@ final GlobalKey<ScaffoldState> _agendaKey = new GlobalKey<ScaffoldState>();
 final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
 class Agenda extends StatefulWidget {
-  static _Agenda of(BuildContext context) => context.findAncestorStateOfType<_Agenda>();
-
-  final int initialPage = 0;
   @override
   _Agenda createState() => _Agenda();
 }
@@ -45,101 +42,6 @@ class _Agenda extends State<Agenda> {
   }
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
-
-    List<List> widgetRooster = [];
-
-    for (List dag in account.lessons) {
-      List<Widget> widgetDag = [];
-
-      if (dag.isEmpty) {
-        widgetDag.add(Container());
-        widgetRooster.add(widgetDag);
-        continue;
-      }
-      int startHour = (dag.first["start"] / 60).floor();
-
-      for (Map les in dag) {
-        widgetDag.add(
-          Container(
-            margin: EdgeInsets.only(
-              top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
-            ),
-            width: MediaQuery.of(context).size.width - 30,
-            height: les["duration"] * timeFactor,
-            child: Card(
-              color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
-              // shape: BorderRadius.all(),
-              margin: EdgeInsets.only(
-                top: .75,
-              ),
-              shape: Border(bottom: GreyBorderSide),
-              child: InkWell(
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 5,
-                          left: 5,
-                        ),
-                        child: Text(
-                          les["hour"],
-                          style: TextStyle(
-                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, left: 20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                les["title"],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  les["information"],
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  style: TextStyle(
-                                    color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LesPagina(les),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      }
-      widgetRooster.add(widgetDag);
-    }
     return DefaultTabController(
       initialIndex: DateTime.now().weekday - 1,
       length: 7,
@@ -263,10 +165,108 @@ class _Agenda extends State<Agenda> {
                               ],
                             ),
                             // Container van alle lessen
-                            if (widgetRooster.isNotEmpty)
-                              Stack(
-                                children: widgetRooster[dag],
-                              ),
+                            ValueListenableBuilder(
+                              valueListenable: updateNotifier,
+                              builder: (BuildContext context, _, Widget child) {
+                                List<List> widgetRooster = [];
+
+                                for (List dag in account.lessons) {
+                                  List<Widget> widgetDag = [];
+
+                                  if (dag.isEmpty) {
+                                    widgetDag.add(Container());
+                                    widgetRooster.add(widgetDag);
+                                    continue;
+                                  }
+                                  int startHour = (dag.first["start"] / 60).floor();
+
+                                  for (Map les in dag) {
+                                    widgetDag.add(
+                                      Container(
+                                        margin: EdgeInsets.only(
+                                          top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
+                                        ),
+                                        width: MediaQuery.of(context).size.width - 30,
+                                        height: les["duration"] * timeFactor,
+                                        child: Card(
+                                          color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
+                                          // shape: BorderRadius.all(),
+                                          margin: EdgeInsets.only(
+                                            top: .75,
+                                          ),
+                                          shape: Border(bottom: GreyBorderSide),
+                                          child: InkWell(
+                                            child: Stack(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.topLeft,
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                      top: 5,
+                                                      left: 5,
+                                                    ),
+                                                    child: Text(
+                                                      les["hour"],
+                                                      style: TextStyle(
+                                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(top: 20, left: 20),
+                                                  child: Column(
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            les["title"],
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Flexible(
+                                                            child: Text(
+                                                              les["information"],
+                                                              overflow: TextOverflow.ellipsis,
+                                                              maxLines: 2,
+                                                              style: TextStyle(
+                                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => LesPagina(les),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  widgetRooster.add(widgetDag);
+                                }
+                                return widgetRooster.isEmpty
+                                    ? Container()
+                                    : Stack(
+                                        children: widgetRooster[dag],
+                                      );
+                              },
+                            )
                           ],
                         ),
                       ],
@@ -312,8 +312,7 @@ class _LesPagina extends State<LesPagina> {
                   onPressed: () => account.magister.agenda.deleteLes(les).then((e) async {
                     Navigator.of(context).pop();
                     await account.magister.agenda.refresh();
-
-                    /// [refreshpagina]
+                    update();
                   }).catchError((e) {
                     FlushbarHelper.createError(message: "Les verwijderen mislukt: $e")..show(context);
                     throw (e);
@@ -328,6 +327,7 @@ class _LesPagina extends State<LesPagina> {
                 await account.magister.agenda.toggleHuiswerk(les);
                 les["huiswerkAf"] = !les["huiswerkAf"];
                 setState(() {});
+                update();
               },
               backgroundColor: les["huiswerkAf"] ? Colors.green : userdata.get("accentColor"),
               child: Icon(les["huiswerkAf"] ? Icons.check : Icons.refresh),
@@ -613,7 +613,7 @@ class _AddLesPagina extends State<AddLesPagina> {
               Navigator.of(context).pop();
               FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
               await account.magister.agenda.refresh();
-              Agenda.of(_agendaKey.currentContext).setState(() {});
+              update();
             }).catchError((e) {
               FlushbarHelper.createError(message: "Kon afspraak niet opslaan:\n$e");
               throw (e);

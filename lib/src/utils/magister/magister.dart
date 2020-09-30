@@ -1,132 +1,12 @@
-import 'dart:async';
-
-import 'package:Argo/src/utils/hiveObjects.dart';
-import 'package:http/http.dart' as http;
-import 'login.dart';
 import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:Argo/src/utils/hiveObjects.dart';
+import 'package:Argo/src/utils/magister/login.dart';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
 import 'Cijfers.dart';
 import 'Afwezigheid.dart';
 import 'Berichten.dart';
-
-class MagisterApi {
-  Account account;
-  MagisterApi(this.account);
-  dynamic getFromMagister(String link, [bool dontParse, bool resOnly]) async {
-    Completer c = Completer();
-    http.get('https://${account.tenant}/api/$link', headers: {"Authorization": "Bearer " + account.accessToken}).then((response) async {
-      if (response.statusCode == 200) {
-        c.complete(response);
-      } else {
-        if (response.body.contains("Expired")) {
-          print("Magister heeft je genaaid zonder het te zeggen");
-          await refreshToken();
-          return await getFromMagister(link, dontParse, resOnly);
-        }
-        print("Magister Wil niet: " + response.statusCode.toString() + link);
-        print(response.body);
-        c.completeError(response.body);
-      }
-    }).catchError((e) {
-      c.completeError(e);
-      throw (e);
-    });
-    return c.future;
-  }
-
-  dynamic postToMagister(String link, Map postBody) async {
-    Completer c = Completer();
-    http.post('https://${account.tenant}/api/$link', headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"}, body: json.encode(postBody)).then((res) async {
-      if (res.statusCode != 201) {
-        if (res.body.contains("Expired")) {
-          print("Magister heeft je genaaid zonder het te zeggen");
-          await refreshToken();
-          c.complete(await postToMagister(link, postBody));
-        }
-        print("Magister Wil geen post: " + res.statusCode.toString() + link);
-        print(res.body);
-        c.completeError(res.body);
-        return;
-      }
-      c.complete(res.statusCode == 201);
-    });
-    return c.future;
-  }
-
-  Future runWithToken() async {
-    if (DateTime.now().add(Duration(minutes: 10)).millisecondsSinceEpoch > account.expiry) {
-      print("Token expired, refreshing");
-      await refreshToken();
-      return;
-    }
-    return;
-  }
-
-  Future runList(List<Future> list) async {
-    await runWithToken();
-    List values = await Future.wait(list);
-    account.save();
-    return values;
-  }
-
-  Future handleLogOut() {
-    Completer c = Completer();
-    print("$account is uitgelogd!");
-    MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
-      account.saveTokens(tokenSet);
-      account.magister.expiryAndTenant();
-      account.save();
-      c.complete();
-    });
-    return c.future;
-  }
-
-  Future refreshToken() async {
-    print("ververs token");
-    String oldRefreshToken = account.refreshToken;
-    Completer c = Completer();
-    if (account.refreshToken == null) {
-      await handleLogOut();
-      c.complete();
-      return;
-    }
-
-    http.post("https://accounts.magister.net/connect/token", headers: {
-      'Content-type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/x-www-form-urlencoded'
-    }, body: {
-      "refresh_token": account.refreshToken,
-      "client_id": "M6LOAPP",
-      "grant_type": "refresh_token",
-    }).then((http.Response response) async {
-      if (response.statusCode == 200) {
-        var parsed = json.decode(response.body);
-        account.saveTokens(parsed);
-        Magister(account).expiryAndTenant();
-        print("Refreshed token");
-        c.complete();
-      } else {
-        if (response.body == '{"error":"invalid_grant"}') {
-          if (oldRefreshToken != account.refreshToken) {
-            print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
-            c.complete();
-            return;
-          }
-          await handleLogOut();
-          c.complete();
-        }
-        print("Magister Wil niet token verversen: " + response.statusCode.toString());
-        print(response.body);
-        c.completeError(response.body);
-      }
-    }).catchError((e) {
-      c.completeError(e);
-      throw (e);
-    });
-    return c.future;
-  }
-}
 
 class Magister {
   Account account;
@@ -139,42 +19,132 @@ class Magister {
   Magister(Account acc) {
     this.account = acc;
     api = MagisterApi(acc);
-    profileInfo = ProfileInfo(acc);
-    agenda = Agenda(acc);
-    cijfers = Cijfers(acc);
-    afwezigheid = Afwezigheid(acc);
-    berichten = Berichten(acc);
+    profileInfo = ProfileInfo(MagisterApi(acc));
+    agenda = Agenda(MagisterApi(acc));
+    cijfers = Cijfers(MagisterApi(acc));
+    afwezigheid = Afwezigheid(MagisterApi(acc));
+    berichten = Berichten(MagisterApi(acc));
   }
-  Future refresh() async {
-    await api.runWithToken();
-    expiryAndTenant();
-    if (account.id == 0) await profileInfo.profileInfo();
+  void expiryAndTenant() {
+    String parsed = base64.normalize(account.accessToken.split(".")[1]);
+    Map data = json.decode(utf8.decode(base64Decode(parsed)));
+    account.expiry = data["exp"] * 1000;
+    account.username = data["urn:magister:claims:iam:username"];
+    account.tenant = data["urn:magister:claims:iam:tenant"];
+    if (account.isInBox) account.save();
+  }
 
-    return await api.runList([
+  Future refresh() async {
+    expiryAndTenant();
+    if (account.id == 0) await account.magister.profileInfo.profileInfo();
+    return Future.wait([
       agenda.refresh(),
       profileInfo.refresh(),
       afwezigheid.refresh(),
       berichten.refresh(),
-      // cijfers.getCijfers(),
     ]);
   }
 
-  Map accesData() {
-    String parsed = base64.normalize(account.accessToken.split(".")[1]);
-    return json.decode(utf8.decode(base64Decode(parsed)));
-  }
-
-  void expiryAndTenant() {
-    account.expiry = accesData()["exp"] * 1000;
-    account.username = accesData()["urn:magister:claims:iam:username"];
-    account.tenant = accesData()["urn:magister:claims:iam:tenant"];
-    if (account.isInBox) account.save();
-  }
-
   Future downloadProfilePicture() async {
-    http.Response img = await MagisterApi(account).getFromMagister("leerlingen/${account.id}/foto", true, true);
-    String image = base64Encode(img.bodyBytes);
+    var img = (await api.dio.get("api/leerlingen/${account.id}/foto", options: Options(responseType: ResponseType.bytes)));
+    String image = base64Encode(img.data);
     account.profilePicture = image;
     account.save();
+  }
+}
+
+class MagisterApi {
+  Account account;
+  Dio dio;
+  Dio refreshDio;
+  MagisterApi(Account account) {
+    this.account = account;
+    this.refreshDio = Dio(BaseOptions(
+      baseUrl: "https://accounts.magister.net/connect/token",
+      // contentType: Headers.formUrlEncodedContentType,
+      responseType: ResponseType.json,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
+        "Accept": "application/x-www-form-urlencoded",
+      },
+    ));
+    this.refreshDio.interceptors.add(InterceptorsWrapper(
+          onRequest: (options) {
+            print("Refreshing token");
+            this.dio.lock();
+            options.data = "refresh_token=${account.refreshToken}&client_id=M6LOAPP&grant_type=refresh_token";
+            options.headers["Content-Type"] = 'application/x-www-form-urlencoded; charset=utf-8';
+            return options;
+          },
+          onResponse: (Response res) {
+            account.saveTokens(res.data);
+            account.magister.expiryAndTenant();
+            this.dio.unlock();
+            print("Refreshed token");
+            return res;
+          },
+          onError: (e) {
+            if (e.response?.data == '{"error":"invalid_grant"}') {
+              if (e.request.headers["refresh_token"] != account.refreshToken) {
+                print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
+                //repeat
+                return dio.request(e.request.path, options: e.request);
+              }
+              MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
+                account.saveTokens(tokenSet);
+                account.magister.expiryAndTenant();
+                account.save();
+              });
+            }
+            print("Error refreshing token");
+            print(e.request.uri);
+            print(e.request.data);
+            print(e);
+            print(e.response.data);
+            return e;
+          },
+        ));
+    this.dio = Dio(
+      BaseOptions(baseUrl: "https://${account.tenant}/", headers: {"Authorization": "Bearer ${account.accessToken}"}),
+    );
+    this.dio.interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (options) async {
+              if (account.accessToken == null) {
+                throw ("Accestoken is null");
+              }
+              if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
+                print("Accestoken expired");
+                await refreshDio.post("");
+                return options;
+              }
+              options.baseUrl = "https://${account.tenant}/";
+              options.headers["Authorization"] = "Bearer ${account.accessToken}";
+              return options;
+            },
+            onError: (DioError e) {
+              RequestOptions options = e.request;
+              if (e.response?.data == "SecurityToken Expired") {
+                if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
+                  options.headers["Authorization"] = "Bearer ${account.accessToken}";
+                  return dio.request(options.path, options: options);
+                }
+                print(e.response.data);
+                return refreshDio.post("");
+              }
+              print("error");
+              print(e.request.uri);
+              print(e);
+              print(e.response?.data);
+              return e;
+            },
+          ),
+        );
+  }
+
+  Future wait(List<Future> runList) {
+    var values = Future.wait(runList);
+    account.save();
+    return values;
   }
 }

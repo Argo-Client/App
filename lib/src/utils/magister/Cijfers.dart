@@ -1,14 +1,13 @@
 import 'magister.dart';
-import 'package:Argo/src/utils/hiveObjects.dart';
 
 class Cijfers extends MagisterApi {
-  Account account;
-  Cijfers(this.account) : super(account);
+  MagisterApi api;
+  Cijfers(this.api) : super(api.account);
   Future refresh() async {
-    return await runList([getCijfers()]);
+    return await api.wait([getCijfers()]);
   }
 
   Future getCijfers() async {
-    getFromMagister("personen/${account.id}/cijfers/laatste?top=50&skip=0").then(print);
+    api.dio.get("api/personen/${account.id}/cijfers/laatste?top=50&skip=0").then(print);
   }
 }

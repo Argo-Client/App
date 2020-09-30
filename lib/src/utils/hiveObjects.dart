@@ -1,6 +1,6 @@
+import 'package:Argo/src/utils/magister/magister.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
-import 'package:Argo/src/utils/magister/magister.dart';
 
 @HiveType(typeId: 0)
 class Account extends HiveObject {

@@ -3,33 +3,27 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:Argo/src/utils/hiveObjects.dart';
 
 class Agenda extends MagisterApi {
-  Account account;
-  Agenda(this.account) : super(account);
+  MagisterApi api;
+  Agenda(this.api) : super(api.account);
   Future refresh() async {
-    return await runList([getLessen()]);
+    return await api.wait([getLessen()]);
   }
 
   Future getLessen() async {
     DateTime now = DateTime.now();
     DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
-    Completer c = Completer();
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
-    getFromMagister('/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}').then((res) {
-      Map body = json.decode(res.body);
-      account.lessons = [[], [], [], [], [], [], []];
-      body["Items"].forEach((les) {
-        if (les["DuurtHeleDag"]) return;
-        DateTime end = DateTime.parse(les["Einde"]).toLocal();
-        account.lessons[end.weekday - 1].add(lesFrom(les));
-      });
-      c.complete(true);
+    Map body = (await api.dio.get('api/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}')).data;
+    account.lessons = [[], [], [], [], [], [], []];
+    body["Items"].forEach((les) {
+      if (les["DuurtHeleDag"]) return;
+      DateTime end = DateTime.parse(les["Einde"]).toLocal();
+      account.lessons[end.weekday - 1].add(lesFrom(les));
     });
-    return c.future;
+    return;
   }
 
   Future addAfspraak(Map les) async {
@@ -45,22 +39,16 @@ class Agenda extends MagisterApi {
       "InfoType": les["inhoud"] != null ? 6 : 0,
       "Type": 1,
     };
-    return await postToMagister(
-      "personen/${account.id}/afspraken",
-      postLes,
-    );
+    return await api.dio.post("api/personen/${account.id}/afspraken", data: postLes);
   }
 
   Future deleteLes(Map les) async {
     try {
-      http.Response deleted = await http.put(
-        "https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}",
-        headers: {"Authorization": "Bearer " + account.accessToken},
-      );
+      var deleted = await api.dio.delete("api/personen/${account.id}/afspraken/${les["id"]}");
       if (deleted.statusCode == 204) {
         return true;
       }
-      return deleted.body;
+      return deleted.data;
     } catch (e) {
       return (e);
     }
@@ -68,15 +56,14 @@ class Agenda extends MagisterApi {
 
   Future toggleHuiswerk(Map les) async {
     try {
-      http.Response res = await http.put(
-        "https://${account.tenant}/api/personen/${account.id}/afspraken/${les["id"]}",
-        headers: {"Authorization": "Bearer " + account.accessToken, "Content-Type": "application/json"},
-        body: json.encode({"Id": les["id"], "Afgerond": !les["huiswerkAf"]}),
+      var res = await api.dio.put(
+        "api/personen/${account.id}/afspraken/${les["id"]}",
+        data: json.encode({"Id": les["id"], "Afgerond": !les["huiswerkAf"]}),
       );
       if (res.statusCode == 200) {
         return true;
       }
-      return res.body;
+      return res.data;
     } catch (e) {
       return (e);
     }

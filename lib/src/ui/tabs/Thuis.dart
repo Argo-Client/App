@@ -6,6 +6,16 @@ class Thuis extends StatefulWidget {
 }
 
 class _Thuis extends State<Thuis> {
+  _Thuis() {
+    if (account.id != 0) {
+      account.magister.agenda.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        FlushbarHelper.createError(message: "Fout tijdens verversen van agenda:\n$e")..show(context);
+        throw (e);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

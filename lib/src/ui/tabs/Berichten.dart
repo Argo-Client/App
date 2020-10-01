@@ -6,6 +6,16 @@ class Berichten extends StatefulWidget {
 }
 
 class _Berichten extends State<Berichten> {
+  _Berichten() {
+    if (account.id != 0) {
+      account.magister.berichten.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        FlushbarHelper.createError(message: "Fout tijdens verversen van berichten:\n$e")..show(context);
+        throw (e);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

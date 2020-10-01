@@ -134,60 +134,71 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       }
     }
 
-    return Scaffold(
-      key: _layoutKey,
-      body: child["page"],
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.all(0),
-          children: [
-            UserAccountsDrawerHeader(
-              onDetailsPressed: () => {
-                _drawerState.currentState.setState(
-                  () {
-                    _detailsPressed = !_detailsPressed;
-                  },
-                ),
-              },
-              otherAccountsPictures: [
-                for (Account acc in accounts.toMap().values)
-                  if (acc.id != account.id)
-                    InkWell(
-                      onTap: () => changeAccount(acc.id),
-                      child: CircleAvatar(
-                        backgroundColor: Theme.of(context).backgroundColor,
-                        backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
-                        child: useIcon
-                            ? Icon(
-                                userdata.get("userIcon"),
-                                size: 25,
-                              )
-                            : null,
+    return WillPopScope(
+      onWillPop: () {
+        if (!userdata.get("backOpensDrawer")) return Future.value(true);
+        if (_layoutKey.currentState.isDrawerOpen) {
+          Navigator.of(context).pop();
+        } else {
+          _layoutKey.currentState.openDrawer();
+        }
+        return Future.value(false);
+      },
+      child: Scaffold(
+        key: _layoutKey,
+        body: child["page"],
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.all(0),
+            children: [
+              UserAccountsDrawerHeader(
+                onDetailsPressed: () => {
+                  _drawerState.currentState.setState(
+                    () {
+                      _detailsPressed = !_detailsPressed;
+                    },
+                  ),
+                },
+                otherAccountsPictures: [
+                  for (Account acc in accounts.toMap().values)
+                    if (acc.id != account.id)
+                      InkWell(
+                        onTap: () => changeAccount(acc.id),
+                        child: CircleAvatar(
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                          child: useIcon
+                              ? Icon(
+                                  userdata.get("userIcon"),
+                                  size: 25,
+                                )
+                              : null,
+                        ),
                       ),
-                    ),
-              ],
-              accountName: Text(account.fullName),
-              accountEmail: Text(account.klasCode),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Theme.of(context).backgroundColor,
-                backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
-                child: useIcon
-                    ? Icon(
-                        userdata.get("userIcon"),
-                        size: 50,
-                      )
-                    : null,
+                ],
+                accountName: Text(account.fullName),
+                accountEmail: Text(account.klasCode),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
+                  child: useIcon
+                      ? Icon(
+                          userdata.get("userIcon"),
+                          size: 50,
+                        )
+                      : null,
+                ),
               ),
-            ),
-            StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                return Column(
-                  children: _detailsPressed ? _accountsDrawer : _drawer,
-                );
-              },
-              key: _drawerState,
-            ),
-          ],
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    children: _detailsPressed ? _accountsDrawer : _drawer,
+                  );
+                },
+                key: _drawerState,
+              ),
+            ],
+          ),
         ),
       ),
     );

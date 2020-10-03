@@ -6,6 +6,16 @@ class Afwezigheid extends StatefulWidget {
 }
 
 class _Afwezigheid extends State<Afwezigheid> {
+  _Afwezigheid() {
+    if (account.id != 0) {
+      account.magister.afwezigheid.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        FlushbarHelper.createError(message: "Fout tijdens verversen van afwezigheid:\n$e")..show(context);
+        throw (e);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

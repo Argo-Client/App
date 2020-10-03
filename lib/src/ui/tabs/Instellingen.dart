@@ -280,12 +280,27 @@ class _Instellingen extends State<Instellingen> {
                 setState(() {});
               },
             ),
+          CheckboxListTile(
+            title: Text("Terugknop"),
+            subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
+            value: userdata.get("backOpensDrawer"),
+            onChanged: (value) => setState(
+              () {
+                userdata.put("backOpensDrawer", value);
+              },
+            ),
+          ),
           ListTile(
             leading: Icon(Icons.input),
             title: Text('Open Introductie'),
             onTap: () {
               // Navigator.pushNamed(context, "Introduction");
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Introduction(),
+                ),
+              );
             },
           )
         ],

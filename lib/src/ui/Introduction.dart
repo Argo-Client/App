@@ -10,17 +10,18 @@ class _Introduction extends State<Introduction> {
     MagisterAuth().fullLogin().then((tokenSet) {
       account = Account(tokenSet);
       accounts.put(0, account);
+      account.save();
       userdata.put("introduction", true);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
       appState = _AppState();
       account.magister.refresh().then((_) async {
         appState.setState(() {});
         update();
-        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(_agendaKey.currentContext);
+        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(appState.context);
         await account.magister.downloadProfilePicture();
         appState.setState(() {});
       }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+        FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(appState.context);
         throw (e);
       });
     }).catchError((e) {

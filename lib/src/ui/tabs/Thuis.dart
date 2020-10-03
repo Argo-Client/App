@@ -6,6 +6,16 @@ class Thuis extends StatefulWidget {
 }
 
 class _Thuis extends State<Thuis> {
+  _Thuis() {
+    if (account.id != 0) {
+      account.magister.agenda.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        FlushbarHelper.createError(message: "Fout tijdens verversen van agenda:\n$e")..show(context);
+        throw (e);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +86,7 @@ class _Thuis extends State<Thuis> {
                                   Container(
                                     height: 75,
                                     decoration: BoxDecoration(
-                                      color: les["uitval"] ? (theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210)) : Colors.transparent,
+                                      color: les["uitval"] ? (theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210)) : null,
                                       border: Border(
                                         top: GreyBorderSide,
                                       ),

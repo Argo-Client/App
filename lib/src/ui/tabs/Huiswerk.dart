@@ -6,6 +6,16 @@ class Huiswerk extends StatefulWidget {
 }
 
 class _Huiswerk extends State<Huiswerk> {
+  _Huiswerk() {
+    if (account.id != 0) {
+      account.magister.agenda.refresh().then((_) {
+        setState(() {});
+      }).catchError((e) {
+        FlushbarHelper.createError(message: "Fout tijdens verversen van huiswerk:\n$e")..show(context);
+        throw (e);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

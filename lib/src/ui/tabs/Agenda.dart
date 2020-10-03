@@ -35,8 +35,8 @@ class _Agenda extends State<Agenda> {
       account.magister.agenda.refresh().then((_) {
         setState(() {});
       }).catchError((e) {
-        print(e);
         FlushbarHelper.createError(message: "Fout tijdens verversen van agenda:\n$e")..show(context);
+        throw (e);
       });
     }
   }
@@ -104,172 +104,173 @@ class _Agenda extends State<Agenda> {
                     });
                   },
                   child: SingleChildScrollView(
-                    child: Stack(
-                      children: [
-                        if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
-                          Positioned(
-                            top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
-                            child: Container(
-                              height: 0,
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: userdata.get('accentColor'),
-                                  ),
+                    child: ValueListenableBuilder(
+                      valueListenable: updateNotifier,
+                      builder: (BuildContext context, _, Widget child) {
+                        List<List> widgetRooster = [];
+
+                        for (List dag in account.lessons) {
+                          List<Widget> widgetDag = [];
+
+                          if (dag.isEmpty) {
+                            widgetDag.add(Container());
+                            widgetRooster.add(widgetDag);
+                            continue;
+                          }
+                          int startHour = (dag.first["start"] / 60).floor();
+
+                          for (Map les in dag) {
+                            widgetDag.add(
+                              Container(
+                                margin: EdgeInsets.only(
+                                  top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
                                 ),
-                              ),
-                            ),
-                          ),
-                        for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
-                          Positioned(
-                            top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: GreyBorderSide,
-                                ),
-                              ),
-                            ),
-                          ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              // Balkje aan de zijkant van de uren
-                              children: [
-                                for (int uur = getStartHour(dag); uur <= endHour; uur++)
-                                  Container(
-                                    // Een uur van het balkje
-                                    height: userdata.get("pixelsPerHour").toDouble(),
-                                    width: 30,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        top: GreyBorderSide,
-                                        right: GreyBorderSide,
-                                        left: GreyBorderSide,
-                                      ),
-                                    ),
-
-                                    child: Center(
-                                      child: Text(
-                                        uur.toString(),
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
-                                        ),
-                                      ),
-                                    ),
+                                width: MediaQuery.of(context).size.width - 30,
+                                height: les["duration"] * timeFactor,
+                                child: Card(
+                                  color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
+                                  // shape: BorderRadius.all(),
+                                  margin: EdgeInsets.only(
+                                    top: .75,
                                   ),
-                              ],
-                            ),
-                            // Container van alle lessen
-                            ValueListenableBuilder(
-                              valueListenable: updateNotifier,
-                              builder: (BuildContext context, _, Widget child) {
-                                List<List> widgetRooster = [];
-
-                                for (List dag in account.lessons) {
-                                  List<Widget> widgetDag = [];
-
-                                  if (dag.isEmpty) {
-                                    widgetDag.add(Container());
-                                    widgetRooster.add(widgetDag);
-                                    continue;
-                                  }
-                                  int startHour = (dag.first["start"] / 60).floor();
-
-                                  for (Map les in dag) {
-                                    widgetDag.add(
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                          top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
-                                        ),
-                                        width: MediaQuery.of(context).size.width - 30,
-                                        height: les["duration"] * timeFactor,
-                                        child: Card(
-                                          color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
-                                          // shape: BorderRadius.all(),
-                                          margin: EdgeInsets.only(
-                                            top: .75,
+                                  shape: Border(bottom: GreyBorderSide),
+                                  child: InkWell(
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              top: 5,
+                                              left: 5,
+                                            ),
+                                            child: Text(
+                                              les["hour"],
+                                              style: TextStyle(
+                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                              ),
+                                            ),
                                           ),
-                                          shape: Border(bottom: GreyBorderSide),
-                                          child: InkWell(
-                                            child: Stack(
-                                              children: [
-                                                Align(
-                                                  alignment: Alignment.topLeft,
-                                                  child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 5,
-                                                      left: 5,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 20, left: 20),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    les["title"],
+                                                    style: TextStyle(
+                                                      fontSize: 16,
                                                     ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Flexible(
                                                     child: Text(
-                                                      les["hour"],
+                                                      les["information"],
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 2,
                                                       style: TextStyle(
                                                         color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                                       ),
                                                     ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.only(top: 20, left: 20),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            les["title"],
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          Flexible(
-                                                            child: Text(
-                                                              les["information"],
-                                                              overflow: TextOverflow.ellipsis,
-                                                              maxLines: 2,
-                                                              style: TextStyle(
-                                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                                              ),
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => LesPagina(les),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          widgetRooster.add(widgetDag);
+                        }
+                        return Stack(
+                          children: [
+                            if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
+                              Positioned(
+                                top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                                child: Container(
+                                  height: 0,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: userdata.get('accentColor'),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
+                              Positioned(
+                                top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: GreyBorderSide,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  // Balkje aan de zijkant van de uren
+                                  children: [
+                                    for (int uur = getStartHour(dag); uur <= endHour; uur++)
+                                      Container(
+                                        // Een uur van het balkje
+                                        height: userdata.get("pixelsPerHour").toDouble(),
+                                        width: 30,
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            top: GreyBorderSide,
+                                            right: GreyBorderSide,
+                                            left: GreyBorderSide,
+                                          ),
+                                        ),
+
+                                        child: Center(
+                                          child: Text(
+                                            uur.toString(),
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
                                             ),
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) => LesPagina(les),
-                                                ),
-                                              );
-                                            },
                                           ),
                                         ),
                                       ),
-                                    );
-                                  }
-                                  widgetRooster.add(widgetDag);
-                                }
-                                return widgetRooster.isEmpty
+                                  ],
+                                ),
+                                // Container van alle lessen
+
+                                widgetRooster.isEmpty
                                     ? Container()
                                     : Stack(
                                         children: widgetRooster[dag],
-                                      );
-                              },
-                            )
+                                      ),
+                              ],
+                            ),
                           ],
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
                 ),

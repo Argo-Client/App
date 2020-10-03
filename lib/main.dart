@@ -65,6 +65,7 @@ void main() async {
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
   if (accounts.isEmpty) {
+    userdata.delete("introduction");
     userdata.putAll({
       "theme": "systeem",
       "primaryColor": Colors.blue,
@@ -72,14 +73,12 @@ void main() async {
       "userIcon": Icons.person,
       "accountIndex": 0,
       "pixelsPerHour": 75,
-      "pixelsPerHourHome": 70,
+      "backOpensDrawer": true,
     });
     accounts.put(0, Account());
   }
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
-  // Hive.deleteFromDisk();
-  // return;
   int accountIndex = userdata.get("accountIndex");
   account = accounts.get(accountIndex) ?? accounts.get(0);
   appState = _AppState();

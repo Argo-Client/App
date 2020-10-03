@@ -30,7 +30,9 @@ class Magister {
     Map data = json.decode(utf8.decode(base64Decode(parsed)));
     account.expiry = data["exp"] * 1000;
     account.username = data["urn:magister:claims:iam:username"];
-    account.tenant = data["urn:magister:claims:iam:tenant"];
+    String tenant = data["urn:magister:claims:iam:tenant"];
+    print("Tenant: $tenant");
+    if (tenant.isNotEmpty) account.tenant = tenant;
     if (account.isInBox) account.save();
   }
 
@@ -61,7 +63,6 @@ class MagisterApi {
     this.account = account;
     this.refreshDio = Dio(BaseOptions(
       baseUrl: "https://accounts.magister.net/connect/token",
-      // contentType: Headers.formUrlEncodedContentType,
       responseType: ResponseType.json,
       headers: {
         'content-type': 'application/x-www-form-urlencoded; charset=utf-8',

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class Account extends HiveObject {
   String address, birthdate, email, fullName, initials, klas, klasCode, mentor, name, officialFullName, phone, profiel, username, accessToken, refreshToken, profilePicture, tenant;
   int expiry, id;
-  List lessons, afwezigheid, berichten;
+  List lessons, afwezigheid, berichten, cijfers;
   Magister magister;
   Account([tokenSet]) {
     this.magister = Magister(this);
@@ -31,6 +31,7 @@ class Account extends HiveObject {
     this.afwezigheid = [];
     this.berichten = [];
     this.tenant = "";
+    this.cijfers = [];
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
@@ -73,13 +74,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..profilePicture = fields[18] as String
       ..afwezigheid = fields[19] as List
       ..berichten = fields[20] as List
-      ..tenant = fields[21] as String;
+      ..tenant = fields[21] as String
+      ..cijfers = fields[22] as List;
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -123,7 +125,10 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(20)
       ..write(obj.berichten)
       ..writeByte(21)
-      ..write(obj.tenant);
+      ..write(obj.tenant)
+      ..writeByte(22)
+      ..write(obj.cijfers);
+
     // Vergeet niet om getal daarboven lengte +1 te doen
   }
 }

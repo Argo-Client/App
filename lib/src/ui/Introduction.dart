@@ -6,6 +6,12 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
+  List _colors = [
+    0xffA26769,
+    0xffBFB5AF,
+    0xffBFA6A0,
+    0xffD5B9B2,
+  ];
   void loginPress() {
     MagisterAuth().fullLogin().then((tokenSet) {
       account = Account(tokenSet);
@@ -50,128 +56,166 @@ class _Introduction extends State<Introduction> {
               title: "Argo",
               pathImage: "assets/images/splash.png",
               description: "\nMagister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
-              backgroundColor: Color(0xff264653),
+              backgroundColor: Color(_colors[0]),
             ),
             Slide(
-              title: "Kies je thema",
-              widgetDescription: StatefulBuilder(
+              widgetTitle: StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  return Column(
                     children: [
                       Container(
-                        width: MediaQuery.of(context).size.width / 2 - 70,
-                        child: Column(
-                          children: [
-                            Card(
-                              margin: EdgeInsets.symmetric(
-                                vertical: 25,
-                              ),
-                              child: Container(
-                                height: 75,
-                              ),
-                            ),
-                            PlaceholderLines(
-                              count: 3,
-                              align: TextAlign.right,
-                              color: Colors.white,
-                            ),
-                            Card(
-                              margin: EdgeInsets.symmetric(
-                                vertical: 25,
-                              ),
-                              child: Container(
-                                height: 75,
-                              ),
-                            ),
-                            PlaceholderLines(
-                              count: 3,
-                              color: Colors.white,
-                            ),
-                            RadioListTile(
-                              title: Text(
-                                "Licht",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                softWrap: false,
-                                overflow: TextOverflow.visible,
-                              ),
-                              value: "licht",
-                              groupValue: userdata.get("theme"),
-                              activeColor: Colors.white,
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    userdata.put("theme", value);
-                                    print(userdata.get("theme"));
-                                  },
-                                );
-                              },
-                            ),
-                          ],
+                        child: Text(
+                          "Kies je thema",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        padding: EdgeInsets.only(
+                          bottom: 30,
                         ),
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width / 2 - 70,
-                        child: Column(
-                          children: [
-                            Card(
-                              color: Colors.grey[800],
-                              margin: EdgeInsets.symmetric(
-                                vertical: 25,
-                              ),
-                              child: Container(
-                                height: 75,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                userdata.put("theme", "licht");
+                              });
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2 - 70,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 25,
+                                    ),
+                                    child: Container(
+                                      height: 75,
+                                    ),
+                                  ),
+                                  PlaceholderLines(
+                                    count: 3,
+                                    color: Colors.white,
+                                  ),
+                                  Card(
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 25,
+                                    ),
+                                    child: Container(
+                                      height: 75,
+                                    ),
+                                  ),
+                                  PlaceholderLines(
+                                    count: 3,
+                                    color: Colors.white,
+                                    align: TextAlign.right,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 15,
+                                    ),
+                                    child: RadioListTile(
+                                      title: Text(
+                                        "Licht",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        softWrap: false,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                      value: "licht",
+                                      groupValue: userdata.get("theme"),
+                                      activeColor: Colors.white,
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            userdata.put("theme", value);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            PlaceholderLines(
-                              count: 3,
-                              color: Colors.grey[800],
-                            ),
-                            Card(
-                              color: Colors.grey[800],
-                              margin: EdgeInsets.symmetric(
-                                vertical: 25,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                userdata.put("theme", "donker");
+                              });
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2 - 70,
+                              child: Column(
+                                children: [
+                                  Card(
+                                    color: Colors.grey[800],
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 25,
+                                    ),
+                                    child: Container(
+                                      height: 75,
+                                    ),
+                                  ),
+                                  PlaceholderLines(
+                                    count: 3,
+                                    color: Colors.grey[800],
+                                  ),
+                                  Card(
+                                    color: Colors.grey[800],
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 25,
+                                    ),
+                                    child: Container(
+                                      height: 75,
+                                    ),
+                                  ),
+                                  PlaceholderLines(
+                                    count: 3,
+                                    align: TextAlign.right,
+                                    color: Colors.grey[800],
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: 15,
+                                    ),
+                                    child: RadioListTile(
+                                      value: "donker",
+                                      title: Text(
+                                        "Donker",
+                                        style: TextStyle(
+                                          color: Colors.grey[800],
+                                        ),
+                                        softWrap: false,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                      activeColor: Colors.grey[800],
+                                      groupValue: userdata.get("theme"),
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            userdata.put("theme", value);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                              child: Container(
-                                height: 75,
-                              ),
                             ),
-                            PlaceholderLines(
-                              count: 3,
-                              align: TextAlign.right,
-                              color: Colors.grey[800],
-                            ),
-                            RadioListTile(
-                              value: "donker",
-                              title: Text(
-                                "Donker",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                softWrap: false,
-                                overflow: TextOverflow.visible,
-                              ),
-                              activeColor: Colors.white,
-                              groupValue: userdata.get("theme"),
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    userdata.put("theme", value);
-                                    print(userdata.put("theme", value));
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   );
                 },
               ),
-              backgroundColor: Color(0xff2A9D8F),
+              backgroundColor: Color(_colors[1]),
             ),
             Slide(
               title: "Login",
@@ -192,9 +236,9 @@ class _Introduction extends State<Introduction> {
                   ),
                   Center(
                     child: Container(
-                      height: 70,
+                      height: 50,
                       child: RaisedButton(
-                        color: Color(0xffE9C46A),
+                        color: Color(_colors[2]),
                         child: Text(
                           "Log nu in!",
                           style: TextStyle(
@@ -208,7 +252,7 @@ class _Introduction extends State<Introduction> {
                   ),
                 ],
               ),
-              backgroundColor: Color(0xffE9C46A),
+              backgroundColor: Color(_colors[3]),
             ),
           ],
         ),

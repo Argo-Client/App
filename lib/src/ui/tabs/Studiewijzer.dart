@@ -18,9 +18,6 @@ class _Studiewijzer extends State<Studiewijzer> {
         ),
         title: Text("Studiewijzer"),
       ),
-      body: Center(
-        child: Text("Hard werken"),
-      ),
     );
   }
 }

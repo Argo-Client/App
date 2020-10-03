@@ -44,6 +44,7 @@ dependencies:
   flushbar: ^1.10.4
   flutter_date_pickers: ^0.1.7
   dio: ^3.0.10
+  flutter_placeholder_textlines: ^1.0.4
 
 dev_dependencies:
   flutter_native_splash: ^0.1.9

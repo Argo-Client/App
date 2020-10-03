@@ -15,6 +15,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
+import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';

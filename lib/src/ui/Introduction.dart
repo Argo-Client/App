@@ -48,13 +48,129 @@ class _Introduction extends State<Introduction> {
             Slide(
               title: "Argo",
               pathImage: "assets/images/splash.png",
-              description: "Magister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
-              backgroundColor: Colors.lightBlue,
+              description: "\nMagister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
+              backgroundColor: Color(0xff264653),
             ),
             Slide(
-              title: "DISCLAIMER",
-              description: "Argo is niet gerelateerd en maakt geen onderdeel uit van SchoolMaster B.V.",
-              backgroundColor: Color(0xff3da4ab),
+              title: "Kies je thema",
+              widgetDescription: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2 - 70,
+                        child: Column(
+                          children: [
+                            Card(
+                              margin: EdgeInsets.symmetric(
+                                vertical: 25,
+                              ),
+                              child: Container(
+                                height: 75,
+                              ),
+                            ),
+                            PlaceholderLines(
+                              count: 3,
+                              align: TextAlign.right,
+                              color: Colors.white,
+                            ),
+                            Card(
+                              margin: EdgeInsets.symmetric(
+                                vertical: 25,
+                              ),
+                              child: Container(
+                                height: 75,
+                              ),
+                            ),
+                            PlaceholderLines(
+                              count: 3,
+                              color: Colors.white,
+                            ),
+                            RadioListTile(
+                              title: Text(
+                                "Licht",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                softWrap: false,
+                                overflow: TextOverflow.visible,
+                              ),
+                              value: "licht",
+                              groupValue: userdata.get("theme"),
+                              activeColor: Colors.white,
+                              onChanged: (value) {
+                                setState(
+                                  () {
+                                    userdata.put("theme", value);
+                                    print(userdata.get("theme"));
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2 - 70,
+                        child: Column(
+                          children: [
+                            Card(
+                              color: Colors.grey[800],
+                              margin: EdgeInsets.symmetric(
+                                vertical: 25,
+                              ),
+                              child: Container(
+                                height: 75,
+                              ),
+                            ),
+                            PlaceholderLines(
+                              count: 3,
+                              color: Colors.grey[800],
+                            ),
+                            Card(
+                              color: Colors.grey[800],
+                              margin: EdgeInsets.symmetric(
+                                vertical: 25,
+                              ),
+                              child: Container(
+                                height: 75,
+                              ),
+                            ),
+                            PlaceholderLines(
+                              count: 3,
+                              align: TextAlign.right,
+                              color: Colors.grey[800],
+                            ),
+                            RadioListTile(
+                              value: "donker",
+                              title: Text(
+                                "Donker",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                softWrap: false,
+                                overflow: TextOverflow.visible,
+                              ),
+                              activeColor: Colors.white,
+                              groupValue: userdata.get("theme"),
+                              onChanged: (value) {
+                                setState(
+                                  () {
+                                    userdata.put("theme", value);
+                                    print(userdata.put("theme", value));
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              backgroundColor: Color(0xff2A9D8F),
             ),
             Slide(
               title: "Login",
@@ -77,9 +193,7 @@ class _Introduction extends State<Introduction> {
                     child: Container(
                       height: 70,
                       child: RaisedButton(
-                        elevation: 4,
-                        focusElevation: 6,
-                        color: Color(0xffe88679),
+                        color: Color(0xffE9C46A),
                         child: Text(
                           "Log nu in!",
                           style: TextStyle(
@@ -93,7 +207,7 @@ class _Introduction extends State<Introduction> {
                   ),
                 ],
               ),
-              backgroundColor: Color(0xfffe9c8f),
+              backgroundColor: Color(0xffE9C46A),
             ),
           ],
         ),

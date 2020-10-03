@@ -448,7 +448,6 @@ class _AddLesPagina extends State<AddLesPagina> {
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(
             child: Form(
-              autovalidate: true,
               key: _formKey,
               child: Column(
                 children: [
@@ -515,61 +514,91 @@ class _AddLesPagina extends State<AddLesPagina> {
                             heleDag = value;
                           }),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            RaisedButton(
-                              color: userdata.get("accentColor"),
-                              child: Text("Datum: " + formatDate.format(date)),
-                              onPressed: () async {
-                                DateTime newDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                                  lastDate: DateTime(DateTime.now().year + 100),
-                                );
-                                setState(() {
-                                  if (newDate != null) date = newDate;
-                                });
-                              },
-                            ),
-                            FlatButton(
-                              onPressed: () async {
-                                TimeOfDay newStartTime = await showTimePicker(
-                                  context: context,
-                                  initialTime: startTime,
-                                );
-                                setState(() {
-                                  if (newStartTime != null) startTime = newStartTime;
-                                });
-                              },
-                              child: Text(
-                                "Begin: " + startTime.format(context),
+                        Container(
+                          margin: EdgeInsets.only(
+                            bottom: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 10,
+                                    ),
+                                    child: RaisedButton(
+                                      color: userdata.get("accentColor"),
+                                      child: Text("Datum: " + formatDate.format(date)),
+                                      onPressed: () async {
+                                        DateTime newDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                                          lastDate: DateTime(DateTime.now().year + 100),
+                                        );
+                                        setState(
+                                          () {
+                                            if (newDate != null) date = newDate;
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            FlatButton(
-                              onPressed: () async {
-                                TimeOfDay newEndTime = await showTimePicker(
-                                  context: context,
-                                  initialTime: endTime,
-                                );
-                                setState(() {
-                                  if (newEndTime != null) endTime = newEndTime;
-                                });
-                              },
-                              child: Text(
-                                "Eind: " + endTime.format(context),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  FlatButton(
+                                    onPressed: !heleDag
+                                        ? () async {
+                                            TimeOfDay newStartTime = await showTimePicker(
+                                              context: context,
+                                              initialTime: startTime,
+                                            );
+                                            setState(
+                                              () {
+                                                if (newStartTime != null) startTime = newStartTime;
+                                              },
+                                            );
+                                          }
+                                        : null,
+                                    child: Text(
+                                      "Begin: " + startTime.format(context),
+                                    ),
+                                  ),
+                                  FlatButton(
+                                    onPressed: !heleDag
+                                        ? () async {
+                                            TimeOfDay newEndTime = await showTimePicker(
+                                              context: context,
+                                              initialTime: endTime,
+                                            );
+                                            setState(
+                                              () {
+                                                if (newEndTime != null) endTime = newEndTime;
+                                              },
+                                            );
+                                          }
+                                        : null,
+                                    child: Text(
+                                      "Eind: " + endTime.format(context),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.description),
+                    leading: Icon(Icons.subject),
                     title: TextFormField(
-                      maxLines: 10,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 20,
+                      scrollPadding: EdgeInsets.all(20.0),
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
@@ -625,6 +654,7 @@ class _AddLesPagina extends State<AddLesPagina> {
           color: Colors.white,
         ),
       ),
+      resizeToAvoidBottomPadding: true,
     );
   }
 }

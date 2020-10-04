@@ -25,7 +25,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     var child = _children[_currentIndex];
     bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     void changeAccount(int id) {
-      int index = accounts.toMap().values.toList().indexWhere((g) => g.id == id);
+      int index = accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
       if (userdata.get("accountIndex") != index) {
         setState(() {
           userdata.put("accountIndex", index);
@@ -50,8 +50,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   throw (e);
                 });
               } else {
-                accounts.delete(accounts.values.toList().indexWhere((a) => a.id == acc.id));
-                userdata.put("accountsIndex", 0);
+                accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+                userdata.put("accountsIndex", accounts.toMap().entries.first.key);
                 setState(() {});
               }
             },

@@ -80,7 +80,8 @@ void main() async {
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
   int accountIndex = userdata.get("accountIndex");
-  account = accounts.get(accountIndex) ?? accounts.get(0);
+  account = accounts.get(accountIndex) ?? accounts.get(accounts.toMap().entries.first.key);
+  print(accounts.toMap().values.last.refreshToken);
   appState = _AppState();
   runApp(App());
 }

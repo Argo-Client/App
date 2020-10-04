@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'magister.dart';
 
 class Cijfers extends MagisterApi {

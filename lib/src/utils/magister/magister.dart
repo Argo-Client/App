@@ -30,9 +30,7 @@ class Magister {
     Map data = json.decode(utf8.decode(base64Decode(parsed)));
     account.expiry = data["exp"] * 1000;
     account.username = data["urn:magister:claims:iam:username"];
-    String tenant = data["urn:magister:claims:iam:tenant"];
-    print("Tenant: $tenant");
-    if (tenant.isNotEmpty) account.tenant = tenant;
+    account.tenant = data["urn:magister:claims:iam:tenant"];
     if (account.isInBox) account.save();
   }
 
@@ -44,6 +42,7 @@ class Magister {
       profileInfo.refresh(),
       afwezigheid.refresh(),
       berichten.refresh(),
+      cijfers.refresh(),
     ]);
   }
 
@@ -84,20 +83,20 @@ class MagisterApi {
             print("Refreshed token");
             return res;
           },
-          onError: (e) {
-            if (e.response?.data == '{"error":"invalid_grant"}') {
+          onError: (e) async {
+            print("Error refreshing token");
+            if (e.response?.data["error"] == "invalid_grant") {
+              print("$account is uitgelogd");
               if (e.request.headers["refresh_token"] != account.refreshToken) {
                 print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
-                //repeat
                 return dio.request(e.request.path, options: e.request);
               }
-              MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant}).then((tokenSet) {
-                account.saveTokens(tokenSet);
-                account.magister.expiryAndTenant();
-                account.save();
-              });
+              Map tokenSet = await MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant});
+              account.saveTokens(tokenSet);
+              account.magister.expiryAndTenant();
+              account.save();
+              return dio.request(e.request.path, options: e.request);
             }
-            print("Error refreshing token");
             print(e.request.uri);
             print(e.request.data);
             print(e);
@@ -105,23 +104,20 @@ class MagisterApi {
             return e;
           },
         ));
-    this.dio = Dio(
-      BaseOptions(baseUrl: "https://${account.tenant}/", headers: {"Authorization": "Bearer ${account.accessToken}"}),
-    );
+    this.dio = Dio();
     this.dio.interceptors.add(
           InterceptorsWrapper(
             onRequest: (options) async {
               if (account.accessToken == null) {
                 throw ("Accestoken is null");
               }
+              options.baseUrl = "https://${account.tenant}/";
+              options.headers["Authorization"] = "Bearer ${account.accessToken}";
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
                 await refreshDio.post("");
                 return options;
               }
-              Magister(account).expiryAndTenant();
-              options.baseUrl = "https://${account.tenant}/";
-              options.headers["Authorization"] = "Bearer ${account.accessToken}";
               return options;
             },
             onError: (DioError e) {

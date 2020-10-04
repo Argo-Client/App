@@ -78,7 +78,7 @@ class _Berichten extends State<Berichten> {
                       ? null
                       : BoxDecoration(
                           border: Border(
-                            bottom: GreyBorderSide,
+                            bottom: greyBorderSide(),
                           ),
                         ),
                 ),
@@ -268,7 +268,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   border: Border(
-                    bottom: GreyBorderSide,
+                    bottom: greyBorderSide(),
                   ),
                 ),
               ),

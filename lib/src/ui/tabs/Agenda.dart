@@ -8,7 +8,15 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-const BorderSide GreyBorderSide = BorderSide(color: Color.fromARGB(255, 100, 100, 100), width: 1);
+BorderSide greyBorderSide() {
+  return BorderSide(color: theme == Brightness.dark ? Color.fromARGB(255, 100, 100, 100) : Color.fromARGB(255, 205, 205, 205), width: 1);
+}
+
+Future huiswerkAf(hw) async {
+  await account.magister.agenda.toggleHuiswerk(hw);
+  hw["huiswerkAf"] = !hw["huiswerkAf"];
+  update();
+}
 
 class _Agenda extends State<Agenda> {
   DateTime now, lastMonday;
@@ -133,7 +141,7 @@ class _Agenda extends State<Agenda> {
                                   margin: EdgeInsets.only(
                                     top: .75,
                                   ),
-                                  shape: Border(bottom: GreyBorderSide),
+                                  shape: Border(bottom: greyBorderSide()),
                                   child: InkWell(
                                     child: Stack(
                                       children: [
@@ -172,12 +180,12 @@ class _Agenda extends State<Agenda> {
                                                     child: Text(
                                                       les["information"],
                                                       overflow: TextOverflow.ellipsis,
-                                                      maxLines: 2,
+                                                      maxLines: 1,
                                                       style: TextStyle(
                                                         color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                                       ),
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                             ],
@@ -223,7 +231,7 @@ class _Agenda extends State<Agenda> {
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
                                     border: Border(
-                                      bottom: GreyBorderSide,
+                                      bottom: greyBorderSide(),
                                     ),
                                   ),
                                 ),
@@ -241,9 +249,9 @@ class _Agenda extends State<Agenda> {
                                         width: 30,
                                         decoration: BoxDecoration(
                                           border: Border(
-                                            top: GreyBorderSide,
-                                            right: GreyBorderSide,
-                                            left: GreyBorderSide,
+                                            top: greyBorderSide(),
+                                            right: greyBorderSide(),
+                                            left: greyBorderSide(),
                                           ),
                                         ),
 
@@ -339,9 +347,6 @@ class _LesPagina extends State<LesPagina> {
             Card(
               margin: EdgeInsets.only(
                 bottom: 20,
-                top: 0,
-                left: 0,
-                right: 0,
               ),
               child: Column(
                 children: [
@@ -405,6 +410,7 @@ class _LesPagina extends State<LesPagina> {
                         ),
                         Html(
                           data: les["description"],
+                          onLinkTap: launch,
                         ),
                       ],
                     ),
@@ -455,7 +461,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: GreyBorderSide,
+                        bottom: greyBorderSide(),
                       ),
                     ),
                     child: ListTile(
@@ -481,7 +487,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: GreyBorderSide,
+                        bottom: greyBorderSide(),
                       ),
                     ),
                     child: ListTile(
@@ -502,7 +508,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        bottom: GreyBorderSide,
+                        bottom: greyBorderSide(),
                       ),
                     ),
                     child: Column(

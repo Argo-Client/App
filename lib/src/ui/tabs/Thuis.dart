@@ -88,7 +88,7 @@ class _Thuis extends State<Thuis> {
                                     decoration: BoxDecoration(
                                       color: les["uitval"] ? (theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210)) : null,
                                       border: Border(
-                                        top: GreyBorderSide,
+                                        top: greyBorderSide(),
                                       ),
                                     ),
                                     child: ListTile(

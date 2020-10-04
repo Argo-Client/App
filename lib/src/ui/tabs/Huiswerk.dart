@@ -55,25 +55,57 @@ class _Huiswerk extends State<Huiswerk> {
                 huiswerk.add(
                   Container(
                     child: Card(
-                      color: hw["huiswerkAf"] ? Colors.green : null,
                       margin: EdgeInsets.zero,
-                      child: ListTile(
-                        subtitle: Html(data: hw["huiswerk"]),
-                        title: Text(hw["title"]),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LesPagina(hw),
+                      child: ExpansionTile(
+                        leading: hw["huiswerkAf"]
+                            ? IconButton(
+                                onPressed: () {
+                                  huiswerkAf(hw);
+                                },
+                                icon: Icon(
+                                  Icons.check,
+                                  color: Colors.greenAccent,
+                                ),
+                              )
+                            : IconButton(
+                                onPressed: () {
+                                  huiswerkAf(hw);
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => LesPagina(hw),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              child: Html(
+                                data: hw["huiswerk"],
+                                onLinkTap: launch,
+                              ),
+                              padding: EdgeInsets.only(
+                                left: 30,
+                              ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
+                        title: Text(
+                          hw["title"],
+                        ),
                       ),
                     ),
                     decoration: huiswerkLessen.length - 1 == i || huiswerkLessen[i + 1]["date"] != hw["date"]
                         ? null
                         : BoxDecoration(
                             border: Border(
-                              bottom: GreyBorderSide,
+                              bottom: greyBorderSide(),
                             ),
                           ),
                   ),

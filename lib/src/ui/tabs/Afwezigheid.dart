@@ -114,7 +114,7 @@ class _Afwezigheid extends State<Afwezigheid> {
                         ? null
                         : BoxDecoration(
                             border: Border(
-                              bottom: GreyBorderSide,
+                              bottom: greyBorderSide(),
                             ),
                           ),
                   ),

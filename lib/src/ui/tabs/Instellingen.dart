@@ -37,7 +37,6 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
-    bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -202,32 +201,6 @@ class _Instellingen extends State<Instellingen> {
           Padding(
             padding: EdgeInsets.only(left: 15, top: 20),
             child: Text(
-              "Home",
-              style: TextStyle(color: userdata.get("accentColor")),
-            ),
-          ),
-          ListTile(
-            title: Text("Aantal pixels per uur"),
-            subtitle: Text("Hoe hoog een uur is in home"),
-            onTap: () => showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return NumberPickerDialog.integer(
-                    title: Text("Pixels per uur"),
-                    minValue: 50,
-                    maxValue: 500,
-                    initialIntegerValue: userdata.get("pixelsPerHourHome"),
-                  );
-                }).then((value) {
-              if (value != null) {
-                userdata.put("pixelsPerHourHome", value);
-              }
-            }),
-          ),
-          Divider(),
-          Padding(
-            padding: EdgeInsets.only(left: 15, top: 20),
-            child: Text(
               "Meldingen",
               style: TextStyle(color: userdata.get("accentColor")),
             ),
@@ -240,48 +213,20 @@ class _Instellingen extends State<Instellingen> {
               style: TextStyle(color: userdata.get("accentColor")),
             ),
           ),
-          ListTile(
-            title: Text("Verander foto"),
+          CheckboxListTile(
+            title: Text("Zet je foto uit"),
+            activeColor: userdata.get("accentColor"),
             subtitle: Text("Voor als die niet zo goed gelukt is."),
-            trailing: CircleAvatar(
-              backgroundColor: Theme.of(context).backgroundColor,
-              backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
-              child: useIcon
-                  ? Icon(
-                      userdata.get("userIcon"),
-                      size: 30,
-                    )
-                  : null,
-            ),
-            onTap: () {
-              FlutterIconPicker.showIconPicker(
-                context,
-                title: Text("Kies een icoontje"),
-                closeChild: Text(
-                  'Sluit',
-                  textScaleFactor: 1.25,
-                ),
-                // iconPackMode: IconPack.materialOutline,
-              ).then((icon) {
-                if (icon != null)
-                  appState.setState(() {
-                    userdata.put("userIcon", icon);
-                  });
-              });
+            value: userdata.get("useIcon"),
+            onChanged: (value) {
+              userdata.put("useIcon", value);
+              setState(() {});
+              appState.setState(() {});
             },
           ),
-          if (userdata.get("userIcon") != Icons.person)
-            ListTile(
-              title: Text("Reset foto"),
-              subtitle: Text("Reset je foto voor als je weer wilt genieten"),
-              onTap: () {
-                userdata.put('userIcon', Icons.person);
-                appState.setState(() {});
-                setState(() {});
-              },
-            ),
           CheckboxListTile(
             title: Text("Terugknop"),
+            activeColor: userdata.get("accentColor"),
             subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
             value: userdata.get("backOpensDrawer"),
             onChanged: (value) => setState(

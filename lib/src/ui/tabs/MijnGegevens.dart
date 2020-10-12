@@ -33,9 +33,9 @@ class _MijnGegevens extends State<MijnGegevens> {
                           child: CircleAvatar(
                             radius: 50,
                             backgroundColor: Theme.of(context).backgroundColor,
-                            child: userdata.get("userIcon") != Icons.person || account.profilePicture == null
+                            child: userdata.get("useIcon") || account.profilePicture == null
                                 ? Icon(
-                                    userdata.get("userIcon"),
+                                    Icons.person,
                                     size: 60,
                                   )
                                 : Image.memory(base64Decode(account.profilePicture)),

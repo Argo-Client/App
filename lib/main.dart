@@ -18,7 +18,7 @@ import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
 
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_iconpicker/flutter_iconpicker.dart';
+// import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
 // import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
@@ -64,13 +64,14 @@ void main() async {
   Hive.registerAdapter(IconAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
+  // Hive.deleteFromDisk();
   if (accounts.isEmpty) {
     userdata.delete("introduction");
     userdata.putAll({
       "theme": "systeem",
       "primaryColor": Colors.blue,
       "accentColor": Colors.orange,
-      "userIcon": Icons.person,
+      "useIcon": false,
       "accountIndex": 0,
       "pixelsPerHour": 75,
       "backOpensDrawer": true,

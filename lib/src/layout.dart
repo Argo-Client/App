@@ -23,7 +23,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   @override
   Widget build(BuildContext context) {
     var child = _children[_currentIndex];
-    bool useIcon = account.profilePicture == null || userdata.get("userIcon") != Icons.person;
+    bool useIcon = account.profilePicture == null || userdata.get("useIcon");
     void changeAccount(int id) {
       int index = accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
       if (userdata.get("accountIndex") != index) {
@@ -71,7 +71,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
             child: useIcon
                 ? Icon(
-                    userdata.get("userIcon"),
+                    Icons.person,
                     size: 25,
                   )
                 : null,
@@ -101,8 +101,10 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 setState(() {});
                 FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
                 update();
-                await account.magister.downloadProfilePicture();
-                setState(() {});
+                if (!userdata.get("useIcon")) {
+                  await account.magister.downloadProfilePicture();
+                  setState(() {});
+                }
               }).catchError((e) {
                 FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
                 throw (e);
@@ -169,7 +171,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                           backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
                           child: useIcon
                               ? Icon(
-                                  userdata.get("userIcon"),
+                                  Icons.person,
                                   size: 25,
                                 )
                               : null,
@@ -183,7 +185,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
                   child: useIcon
                       ? Icon(
-                          userdata.get("userIcon"),
+                          Icons.person,
                           size: 50,
                         )
                       : null,

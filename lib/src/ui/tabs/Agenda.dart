@@ -160,6 +160,28 @@ class _Agenda extends State<Agenda> {
                                             ),
                                           ),
                                         ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              top: 5,
+                                              right: 5,
+                                            ),
+                                            child: les["huiswerk"] != null
+                                                ? !les["huiswerkAf"]
+                                                    ? Icon(
+                                                        Icons.assignment,
+                                                        size: 23,
+                                                        color: Colors.grey,
+                                                      )
+                                                    : Icon(
+                                                        Icons.check,
+                                                        size: 23,
+                                                        color: Colors.greenAccent,
+                                                      )
+                                                : null,
+                                          ),
+                                        ),
                                         Padding(
                                           padding: EdgeInsets.only(top: 20, left: 20),
                                           child: Column(

@@ -5,17 +5,8 @@ class Afwezigheid extends StatefulWidget {
   _Afwezigheid createState() => _Afwezigheid();
 }
 
-class _Afwezigheid extends State<Afwezigheid> {
-  _Afwezigheid() {
-    if (account.id != 0) {
-      account.magister.afwezigheid.refresh().then((_) {
-        setState(() {});
-      }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout tijdens verversen van afwezigheid:\n$e")..show(context);
-        throw (e);
-      });
-    }
-  }
+class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid> {
+  void afterFirstLayout(BuildContext context) => handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,8 +138,7 @@ class _Afwezigheid extends State<Afwezigheid> {
                     );
             }),
         onRefresh: () async {
-          await account.magister.afwezigheid.refresh();
-          setState(() {});
+          await handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
         },
       ),
     );

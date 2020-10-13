@@ -5,17 +5,8 @@ class Huiswerk extends StatefulWidget {
   _Huiswerk createState() => _Huiswerk();
 }
 
-class _Huiswerk extends State<Huiswerk> {
-  _Huiswerk() {
-    if (account.id != 0) {
-      account.magister.agenda.refresh().then((_) {
-        setState(() {});
-      }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout tijdens verversen van huiswerk:\n$e")..show(context);
-        throw (e);
-      });
-    }
-  }
+class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
+  void afterFirstLayout(BuildContext context) => handleError(account.magister.agenda.refresh, "Fout tijdens verversen van huiswerk", context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,13 +108,7 @@ class _Huiswerk extends State<Huiswerk> {
             },
           ),
           onRefresh: () async {
-            try {
-              await account.magister.agenda.refresh();
-              setState(() {});
-            } catch (e) {
-              FlushbarHelper.createError(message: "Kon huiswerk niet verversen:\n$e")..show(context);
-              throw (e);
-            }
+            await handleError(account.magister.agenda.refresh, "Kon huiswerk niet verversen", context);
           }),
     );
   }

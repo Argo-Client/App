@@ -5,17 +5,8 @@ class Berichten extends StatefulWidget {
   _Berichten createState() => _Berichten();
 }
 
-class _Berichten extends State<Berichten> {
-  _Berichten() {
-    if (account.id != 0) {
-      account.magister.berichten.refresh().then((_) {
-        setState(() {});
-      }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout tijdens verversen van berichten:\n$e")..show(context);
-        throw (e);
-      });
-    }
-  }
+class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
+  void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,13 +94,7 @@ class _Berichten extends State<Berichten> {
           },
         ),
         onRefresh: () async {
-          try {
-            await account.magister.berichten.refresh();
-            setState(() {});
-          } catch (e) {
-            FlushbarHelper.createError(message: "Kon berichten niet verversen:\n$e")..show(context);
-            throw (e);
-          }
+          await handleError(account.magister.berichten.refresh, "Kon berichten niet verversen", context);
         },
       ),
     );

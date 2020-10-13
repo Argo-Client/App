@@ -56,6 +56,22 @@ Box userdata, accounts;
 Brightness theme;
 ValueNotifier<bool> updateNotifier = ValueNotifier(false);
 void update() => updateNotifier.value = !updateNotifier.value;
+Future handleError(Function fun, String msg, BuildContext context) async {
+  if (account.id != 0) {
+    try {
+      await fun();
+      update();
+    } catch (e) {
+      String flush = "$msg:\n$e";
+      try {
+        flush = "$msg:\n${e.error}";
+      } catch (_) {
+        throw (e);
+      }
+      FlushbarHelper.createError(message: flush)..show(context);
+    }
+  }
+}
 
 void main() async {
   await Hive.initFlutter();
@@ -83,7 +99,6 @@ void main() async {
   log("accounts: " + accounts.toMap().toString());
   int accountIndex = userdata.get("accountIndex");
   account = accounts.get(accountIndex) ?? accounts.get(accounts.toMap().entries.first.key);
-  print(accounts.toMap().values.last.refreshToken);
   appState = _AppState();
   runApp(App());
 }

@@ -18,7 +18,7 @@ Future huiswerkAf(hw) async {
   update();
 }
 
-class _Agenda extends State<Agenda> {
+class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   DateTime now, lastMonday;
   DateFormat numFormatter, dayFormatter;
   List dayAbbr;
@@ -27,6 +27,10 @@ class _Agenda extends State<Agenda> {
   int getStartHour(dag) {
     if (account.lessons.isEmpty) return 0;
     return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first["start"] / 60).floor();
+  }
+
+  void afterFirstLayout(BuildContext context) {
+    handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
   _Agenda() {
@@ -39,14 +43,6 @@ class _Agenda extends State<Agenda> {
     timeFactor = userdata.get("pixelsPerHour") / 60;
     endHour = 23;
     defaultStartHour = 8;
-    if (account.id != 0) {
-      account.magister.agenda.refresh().then((_) {
-        setState(() {});
-      }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout tijdens verversen van agenda:\n$e")..show(context);
-        throw (e);
-      });
-    }
   }
   @override
   Widget build(BuildContext context) {
@@ -105,11 +101,7 @@ class _Agenda extends State<Agenda> {
               for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
                 RefreshIndicator(
                   onRefresh: () async {
-                    account.magister.agenda.refresh().then((_) {
-                      setState(() {});
-                    }).catchError((e) {
-                      FlushbarHelper.createError(message: "Kon agenda niet verversen:\n$e")..show(context);
-                    });
+                    await handleError(account.magister.agenda.refresh, "Kon agenda niet verversen", context);
                   },
                   child: SingleChildScrollView(
                     child: ValueListenableBuilder(

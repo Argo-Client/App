@@ -93,13 +93,7 @@ class _Cijfers extends State<Cijfers> {
                       ),
                     ),
                     onRefresh: () async {
-                      try {
-                        await account.magister.cijfers.refresh();
-                        setState(() {});
-                      } catch (e) {
-                        FlushbarHelper.createError(message: "Kon cijfers niet verversen:\n$e")..show(context);
-                        throw (e);
-                      }
+                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
                     },
                   ),
               ],

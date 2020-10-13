@@ -195,9 +195,7 @@ class _MijnGegevens extends State<MijnGegevens> {
           ),
         ),
         onRefresh: () async {
-          await account.magister.profileInfo.refresh();
-          appState.setState(() {});
-          setState(() {});
+          await handleError(account.magister.profileInfo.refresh, "Kon mijn gegevens niet verversen", context);
         },
       ),
     );

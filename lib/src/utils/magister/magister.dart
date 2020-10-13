@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:Argo/src/utils/hiveObjects.dart';
 import 'package:Argo/src/utils/magister/login.dart';
@@ -60,6 +61,7 @@ class MagisterApi {
   Dio refreshDio;
   MagisterApi(Account account) {
     this.account = account;
+    this.dio = Dio(BaseOptions(baseUrl: "https://${account.tenant}/"));
     this.refreshDio = Dio(BaseOptions(
       baseUrl: "https://accounts.magister.net/connect/token",
       responseType: ResponseType.json,
@@ -85,7 +87,8 @@ class MagisterApi {
           },
           onError: (e) async {
             print("Error refreshing token");
-            if (e.response?.data["error"] == "invalid_grant") {
+            print(e);
+            if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
               print("$account is uitgelogd");
               if (e.request.headers["refresh_token"] != account.refreshToken) {
                 print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
@@ -97,14 +100,9 @@ class MagisterApi {
               account.save();
               return dio.request(e.request.path, options: e.request);
             }
-            print(e.request.uri);
-            print(e.request.data);
-            print(e);
-            print(e.response.data);
             return e;
           },
         ));
-    this.dio = Dio();
     this.dio.interceptors.add(
           InterceptorsWrapper(
             onRequest: (options) async {
@@ -115,8 +113,9 @@ class MagisterApi {
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
-                await refreshDio.post("");
-                return options;
+                return refreshDio.post("").then((value) {
+                  return options;
+                });
               }
               return options;
             },
@@ -130,14 +129,15 @@ class MagisterApi {
                 print(e.response.data);
                 return refreshDio.post("");
               }
-              print("error");
-              print(e.request.uri);
-              print(e);
-              print(e.response?.data);
+
+              if (e.error.runtimeType == SocketException) return "Geen Internet";
               return e;
             },
           ),
         );
+
+    // this.refreshDio.interceptors.add(LogInterceptor());
+    // this.dio.interceptors.add(LogInterceptor());
   }
 
   Future wait(List<Future> runList) {

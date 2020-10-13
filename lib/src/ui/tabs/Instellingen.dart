@@ -57,8 +57,8 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           ListTile(
-            // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje
-            trailing: Icon(Icons.brightness_4),
+            // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
+            trailing: Icon(Icons.brightness_4_outlined),
             title: Text("Thema"),
             subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
             onTap: () {
@@ -236,7 +236,7 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.input),
+            leading: Icon(Icons.input_outlined),
             title: Text('Open Introductie'),
             onTap: () {
               // Navigator.pushNamed(context, "Introduction");

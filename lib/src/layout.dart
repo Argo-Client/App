@@ -85,7 +85,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           onTap: () => changeAccount(acc.id),
         ),
       ListTile(
-        leading: Icon(Icons.add),
+        leading: Icon(Icons.add_outlined),
         title: Text("Voeg account toe"),
         onTap: () {
           MagisterAuth().fullLogin().then((tokenSet) async {

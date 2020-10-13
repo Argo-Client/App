@@ -27,6 +27,18 @@ class _Berichten extends State<Berichten> {
           },
         ),
         title: Text("Berichten"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NieuwBerichtPagina(null),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         child: ValueListenableBuilder(
@@ -111,114 +123,136 @@ class BerichtPagina extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            ber["onderwerp"],
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.reply),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => NieuwBerichtPagina(ber),
-                  ),
-                );
-              },
-            ),
-          ],
+      appBar: AppBar(
+        title: Text(
+          ber["onderwerp"],
         ),
-        body: FutureBuilder(
-          future: account.magister.berichten.getBerichtFromId(ber["id"]),
-          builder: (BuildContext context, AsyncSnapshot data) {
-            Map loaded = data.data;
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  Card(
-                    margin: EdgeInsets.only(
-                      bottom: 20,
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                    ),
-                    child: Column(
-                      children: [
-                        if (ber["afzender"] != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.person,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              ber["afzender"],
-                            ),
-                            subtitle: Text(
-                              "Afzender",
-                            ),
-                          ),
-                        if (ber["dag"] != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.send,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              ber["dag"],
-                            ),
-                            subtitle: Text(
-                              "Verzonden",
-                            ),
-                          ),
-                        if (loaded != null && loaded["ontvangers"] != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.people,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              loaded["ontvangers"],
-                            ),
-                            subtitle: Text(
-                              "Ontvanger(s)",
-                            ),
-                          ),
-                      ],
-                    ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.reply),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NieuwBerichtPagina(ber),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+        future: account.magister.berichten.getBerichtFromId(ber["id"]),
+        builder: (BuildContext context, AsyncSnapshot data) {
+          Map loaded = data.data;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Card(
+                  margin: EdgeInsets.only(
+                    bottom: 20,
+                    top: 0,
+                    left: 0,
+                    right: 0,
                   ),
-                  if (loaded != null && loaded["inhoud"] != null)
-                    Card(
-                      margin: EdgeInsets.zero,
-                      child: Container(
-                        padding: EdgeInsets.all(
-                          20,
+                  child: Column(
+                    children: [
+                      if (ber["afzender"] != null)
+                        ListTile(
+                          leading: Padding(
+                            child: Icon(
+                              Icons.person_outlined,
+                            ),
+                            padding: EdgeInsets.only(
+                              top: 7,
+                              left: 7,
+                            ),
+                          ),
+                          title: Text(
+                            ber["afzender"],
+                          ),
+                          subtitle: Text(
+                            "Afzender",
+                          ),
                         ),
-                        child: Html(
-                          data: loaded["inhoud"],
+                      if (ber["dag"] != null)
+                        ListTile(
+                          leading: Padding(
+                            child: Icon(
+                              Icons.send,
+                            ),
+                            padding: EdgeInsets.only(
+                              top: 7,
+                              left: 7,
+                            ),
+                          ),
+                          title: Text(
+                            ber["dag"],
+                          ),
+                          subtitle: Text(
+                            "Verzonden",
+                          ),
                         ),
+                      if (loaded != null && loaded["ontvangers"] != null)
+                        ListTile(
+                          leading: Padding(
+                            child: Icon(
+                              Icons.people_outlined,
+                            ),
+                            padding: EdgeInsets.only(
+                              top: 7,
+                              left: 7,
+                            ),
+                          ),
+                          title: Text(
+                            loaded["ontvangers"],
+                          ),
+                          subtitle: Text(
+                            "Ontvanger(s)",
+                          ),
+                        ),
+                      if (loaded != null && loaded["cc"] != null)
+                        ListTile(
+                          leading: Padding(
+                            child: Icon(
+                              Icons.people,
+                            ),
+                            padding: EdgeInsets.only(
+                              top: 7,
+                              left: 7,
+                            ),
+                          ),
+                          title: Text(
+                            loaded["cc"],
+                          ),
+                          subtitle: Text(
+                            "CC",
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (loaded != null && loaded["inhoud"] != null)
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Container(
+                      padding: EdgeInsets.all(
+                        20,
+                      ),
+                      child: Html(
+                        onLinkTap: (link) {
+                          launch(link);
+                        },
+                        data: loaded["inhoud"],
                       ),
                     ),
-                  if (loaded == null) CircularProgressIndicator()
-                ],
-              ),
-            );
-          },
-        ));
+                  ),
+                if (loaded == null) CircularProgressIndicator()
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -238,42 +272,111 @@ class NieuwBerichtPagina extends StatelessWidget {
         child: Form(
           child: Column(
             children: [
-              Container(
-                child: ListTile(
-                  leading: Icon(Icons.person),
-                  title: TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: new BorderSide(width: 0.0),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: new BorderSide(
-                          width: 0.0,
-                        ),
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: new BorderSide(
-                          width: 0.0,
-                        ),
-                      ),
-                      hintText: 'Aan',
-                    ),
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Geef aan naar wie het bericht verzonden moet worden';
-                      }
-                      return null;
-                    },
-                  ),
+              Card(
+                margin: EdgeInsets.only(
+                  bottom: 20,
                 ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: greyBorderSide(),
-                  ),
+                child: Column(
+                  children: [
+                    Container(
+                      child: ListTile(
+                        leading: Icon(Icons.person_outlined),
+                        title: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: 'Aan',
+                          ),
+                          initialValue: ber != null ? ber["afzender"] : null,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Veld verplicht';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: ListTile(
+                        leading: Icon(Icons.people_outlined),
+                        title: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: 'CC',
+                          ),
+                          initialValue: ber != null ? ber["cc"] : null,
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.subject),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Onderwerp',
+                        ),
+                        initialValue: ber != null ? "RE: " + ber["onderwerp"] : null,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Veld verplicht';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                margin: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.edit),
+                      title: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 20,
+                        scrollPadding: EdgeInsets.all(20.0),
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Inhoud',
+                        ),
+                        // validator: validator,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.send,
+          color: Colors.white,
         ),
       ),
     );

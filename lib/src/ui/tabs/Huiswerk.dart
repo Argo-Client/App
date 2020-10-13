@@ -63,8 +63,8 @@ class _Huiswerk extends State<Huiswerk> {
                                   huiswerkAf(hw);
                                 },
                                 icon: Icon(
-                                  Icons.check,
-                                  color: Colors.greenAccent,
+                                  Icons.assignment_turned_in_outlined,
+                                  color: Colors.green,
                                 ),
                               )
                             : IconButton(
@@ -72,8 +72,7 @@ class _Huiswerk extends State<Huiswerk> {
                                   huiswerkAf(hw);
                                 },
                                 icon: Icon(
-                                  Icons.info,
-                                  color: Colors.blueAccent,
+                                  Icons.assignment_outlined,
                                 ),
                               ),
                         children: [

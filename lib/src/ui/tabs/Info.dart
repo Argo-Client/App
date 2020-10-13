@@ -48,24 +48,24 @@ class _Info extends State<Info> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.verified_user),
+                  leading: Icon(Icons.verified_user_outlined),
                   title: Text('Versie'),
                   subtitle: Text('0.1'),
                 ),
                 ListTile(
-                  leading: Icon(Icons.device_hub),
+                  leading: Icon(Icons.device_hub_outlined),
                   title: Text('Github'),
                   subtitle: Text("Source code"),
                   onTap: () => launch("https://argo-magister.net/github/"),
                 ),
                 ListTile(
-                  leading: Icon(Icons.chat),
+                  leading: Icon(Icons.chat_outlined),
                   title: Text('Discord'),
                   subtitle: Text("Gezelligheid"),
                   onTap: () => launch("https://argo-magister.net/discord/"),
                 ),
                 ListTile(
-                  leading: Icon(Icons.feedback),
+                  leading: Icon(Icons.feedback_outlined),
                   title: Text('Feedback'),
                   subtitle: Text("Klik hier als je feedback wil geven over deze app"),
                   onTap: () => {
@@ -105,7 +105,7 @@ class _Info extends State<Info> {
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.send),
+                              icon: Icon(Icons.send_outlined),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
@@ -130,7 +130,7 @@ class _Info extends State<Info> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(Icons.android),
+                  leading: Icon(Icons.android_outlined),
                   title: Text('Flutter'),
                   subtitle: Text("Platform gebruikt om de app te maken"),
                   onTap: () => launch("https://flutter.dev/"),
@@ -153,19 +153,19 @@ class _Info extends State<Info> {
                   ),
                 ),
                 ExpansionTile(
-                  leading: Icon(Icons.person_outline),
+                  leading: Icon(Icons.person_outlined),
                   title: Text('Guus van Meerveld'),
                   subtitle: Text('Bijdrage: UI'),
                   children: [
                     ListTile(
-                      leading: Icon(Icons.public),
+                      leading: Icon(Icons.public_outlined),
                       title: Text("Website"),
                       onTap: () {
                         launch("https://g-vm.nl");
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.device_hub),
+                      leading: Icon(Icons.device_hub_outlined),
                       title: Text("Github"),
                       onTap: () {
                         launch("https://github.com/guusvanmeerveld");
@@ -174,19 +174,19 @@ class _Info extends State<Info> {
                   ],
                 ),
                 ExpansionTile(
-                  leading: Icon(Icons.person_outline),
+                  leading: Icon(Icons.person_outlined),
                   title: Text('Sam Taen'),
                   subtitle: Text('Bijdrage: Backend'),
                   children: [
                     ListTile(
-                      leading: Icon(Icons.public),
+                      leading: Icon(Icons.public_outlined),
                       title: Text("Website"),
                       onTap: () {
                         launch("https://samtaen.nl");
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.device_hub),
+                      leading: Icon(Icons.device_hub_outlined),
                       title: Text("Github"),
                       onTap: () {
                         launch("https://github.com/netfloex");
@@ -208,19 +208,19 @@ class _Info extends State<Info> {
                   ),
                 ),
                 ExpansionTile(
-                  leading: Icon(Icons.person_outline),
+                  leading: Icon(Icons.person_outlined),
                   title: Text('Martijn Oosterhuis'),
                   subtitle: Text('Bijdrage: Emotionele support'),
                   children: [
                     ListTile(
-                      leading: Icon(Icons.public),
+                      leading: Icon(Icons.public_outlined),
                       title: Text("Website"),
                       onTap: () {
                         launch("https://mb-o.nl");
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.device_hub),
+                      leading: Icon(Icons.device_hub_outlined),
                       title: Text("Github"),
                       onTap: () {
                         launch("https://github.com/devostex");
@@ -229,19 +229,19 @@ class _Info extends State<Info> {
                   ],
                 ),
                 ExpansionTile(
-                  leading: Icon(Icons.person_outline),
+                  leading: Icon(Icons.person_outlined),
                   title: Text('Sjoerd Bolten'),
                   subtitle: Text('Bijdrage: Alles'),
                   children: [
                     ListTile(
-                      leading: Icon(Icons.public),
+                      leading: Icon(Icons.public_outlined),
                       title: Text("Website"),
                       onTap: () {
                         launch("https://netlob.dev");
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.device_hub),
+                      leading: Icon(Icons.device_hub_outlined),
                       title: Text("Github"),
                       onTap: () {
                         launch("https://github.com/netlob");

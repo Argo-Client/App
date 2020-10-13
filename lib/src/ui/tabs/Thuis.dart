@@ -135,12 +135,19 @@ class _Thuis extends State<Thuis> {
                                           )
                                         ],
                                       ),
-                                      trailing: les["description"].isEmpty
-                                          ? null
-                                          : Icon(
-                                              Icons.assignment,
-                                              color: Colors.grey,
-                                            ),
+                                      trailing: les["huiswerk"] != null
+                                          ? !les["huiswerkAf"]
+                                              ? Icon(
+                                                  Icons.assignment_outlined,
+                                                  size: 23,
+                                                  color: Colors.grey,
+                                                )
+                                              : Icon(
+                                                  Icons.assignment_turned_in_outlined,
+                                                  size: 23,
+                                                  color: Colors.green,
+                                                )
+                                          : null,
                                     ),
                                   ),
                               ],

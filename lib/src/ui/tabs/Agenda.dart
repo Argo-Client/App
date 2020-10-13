@@ -136,7 +136,11 @@ class _Agenda extends State<Agenda> {
                                 width: MediaQuery.of(context).size.width - 30,
                                 height: les["duration"] * timeFactor,
                                 child: Card(
-                                  color: les["uitval"] ? theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210) : null,
+                                  color: les["uitval"]
+                                      ? theme == Brightness.dark
+                                          ? Color.fromARGB(255, 119, 66, 62)
+                                          : Color.fromARGB(255, 255, 205, 210)
+                                      : null,
                                   // shape: BorderRadius.all(),
                                   margin: EdgeInsets.only(
                                     top: .75,
@@ -170,18 +174,40 @@ class _Agenda extends State<Agenda> {
                                             child: les["huiswerk"] != null
                                                 ? !les["huiswerkAf"]
                                                     ? Icon(
-                                                        Icons.assignment,
+                                                        Icons.assignment_outlined,
                                                         size: 23,
                                                         color: Colors.grey,
                                                       )
                                                     : Icon(
-                                                        Icons.check,
+                                                        Icons.assignment_turned_in_outlined,
                                                         size: 23,
-                                                        color: Colors.greenAccent,
+                                                        color: Colors.green,
                                                       )
                                                 : null,
                                           ),
                                         ),
+                                        // Align(
+                                        //   alignment: Alignment.bottomRight,
+                                        //   child: Padding(
+                                        //     padding: EdgeInsets.only(
+                                        //       top: 5,
+                                        //       right: 5,
+                                        //     ),
+                                        //     child: les["huiswerk"] != null
+                                        //         ? !les["huiswerkAf"]
+                                        //             ? Icon(
+                                        //                 Icons.assignment,
+                                        //                 size: 23,
+                                        //                 color: Colors.grey,
+                                        //               )
+                                        //             : Icon(
+                                        //                 Icons.check,
+                                        //                 size: 23,
+                                        //                 color: Colors.greenAccent,
+                                        //               )
+                                        //         : null,
+                                        //   ),
+                                        // ),
                                         Padding(
                                           padding: EdgeInsets.only(top: 20, left: 20),
                                           child: Column(
@@ -679,7 +705,7 @@ class _AddLesPagina extends State<AddLesPagina> {
           }
         },
         child: Icon(
-          Icons.send,
+          Icons.add,
           color: Colors.white,
         ),
       ),

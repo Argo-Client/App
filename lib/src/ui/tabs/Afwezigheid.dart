@@ -87,7 +87,7 @@ class _Afwezigheid extends State<Afwezigheid> {
                       margin: EdgeInsets.zero,
                       child: ListTile(
                         leading: Padding(
-                          child: afw["geoorloofd"] ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error, color: Colors.redAccent),
+                          child: afw["geoorloofd"] ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error_outlined, color: Colors.redAccent),
                           padding: EdgeInsets.only(
                             top: 7,
                             left: 7,
@@ -102,12 +102,19 @@ class _Afwezigheid extends State<Afwezigheid> {
                             ),
                           );
                         },
-                        trailing: afw["les"]["description"].isEmpty
-                            ? null
-                            : Icon(
-                                Icons.assignment,
-                                color: Colors.grey,
-                              ),
+                        trailing: afw["les"]["huiswerk"] != null
+                            ? !afw["les"]["huiswerkAf"]
+                                ? Icon(
+                                    Icons.assignment_outlined,
+                                    size: 23,
+                                    color: Colors.grey,
+                                  )
+                                : Icon(
+                                    Icons.assignment_turned_in_outlined,
+                                    size: 23,
+                                    color: Colors.green,
+                                  )
+                            : null,
                       ),
                     ),
                     decoration: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1]["dag"] != afw["dag"]

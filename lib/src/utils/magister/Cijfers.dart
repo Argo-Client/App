@@ -10,8 +10,7 @@ class Cijfers extends MagisterApi {
   }
 
   Future recentCijfers() async {
-    List recent = (await api.dio.get("api/personen/${account.id}/cijfers/laatste?top=50&skip=0")).data["items"];
-    print(recent);
+    // List recent = (await api.dio.get("api/personen/${account.id}/cijfers/laatste?top=50&skip=0")).data["items"];
   }
 
   Future cijferJaren() async {
@@ -43,7 +42,6 @@ class Cijfers extends MagisterApi {
   Future cijfers() async {
     for (var i = 0; i < account.cijfers.length; i++) {
       List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${account.cijfers[i]["id"]}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${account.cijfers[i]["eind"]}")).data["Items"];
-      print(cijfers);
       account.cijfers[i]["cijfers"] = cijfers
           .map((cijfer) => {
                 "ingevoerd": DateTime.parse(cijfer["DatumIngevoerd"] ?? "1970-01-01T00:00:00.0000000Z"),

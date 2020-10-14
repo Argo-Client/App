@@ -56,11 +56,12 @@ Box userdata, accounts;
 Brightness theme;
 ValueNotifier<bool> updateNotifier = ValueNotifier(false);
 void update() => updateNotifier.value = !updateNotifier.value;
-Future handleError(Function fun, String msg, BuildContext context) async {
+Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
   if (account.id != 0) {
     try {
       await fun();
       update();
+      if (cb != null) cb();
     } catch (e) {
       String flush = "$msg:\n$e";
       try {

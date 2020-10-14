@@ -42,13 +42,10 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             onSelected: (result) async {
               if (result == "herlaad") {
                 Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
-                acc.magister.refresh().then((_) {
-                  msg.dismiss();
-                  FlushbarHelper.createSuccess(message: '$acc is ververst!')..show(context);
-                }).catchError((e) {
-                  FlushbarHelper.createError(message: 'Fout tijdens verversen:\n$e')..show(context);
-                  throw (e);
+                await handleError(acc.magister.refresh, "Fout tijdens verversen", context, () {
+                  FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
                 });
+                msg..dismiss();
               } else {
                 accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
                 userdata.put("accountsIndex", accounts.toMap().entries.first.key);

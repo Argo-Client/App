@@ -231,7 +231,17 @@ class BerichtPagina extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (loaded == null) CircularProgressIndicator()
+                if (loaded == null && !data.hasError)
+                  CircularProgressIndicator()
+                else if (data.hasError)
+
+                  /// [GUUS] maak even mooier
+                  Container(
+                    child: Text(
+                      "Kon geen verbinding maken met magister:\n${(data.error as dynamic).error.toString()}",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
               ],
             ),
           );
@@ -359,6 +369,9 @@ class NieuwBerichtPagina extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          /// [SAM] fix dit
+        },
         child: Icon(
           Icons.send,
           color: Colors.white,

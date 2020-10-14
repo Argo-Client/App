@@ -87,6 +87,7 @@ class MagisterApi {
           },
           onError: (e) async {
             print("Error refreshing token");
+            this.dio.unlock();
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
               print("$account is uitgelogd");
@@ -130,7 +131,11 @@ class MagisterApi {
                 return refreshDio.post("");
               }
 
-              if (e.error.runtimeType == SocketException) return "Geen Internet";
+              if (e.error.runtimeType == SocketException) {
+                this.dio.clear();
+                this.refreshDio.clear();
+                return "Geen Internet";
+              }
               return e;
             },
           ),

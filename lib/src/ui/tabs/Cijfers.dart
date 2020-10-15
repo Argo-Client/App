@@ -60,7 +60,7 @@ class _Cijfers extends State<Cijfers> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          for (Map cijfer in account.cijfers[jaar]["cijfers"].where((cijfer) => cijfer["periodeId"] == periode["id"]))
+                          for (Map cijfer in account.cijfers[jaar]["cijfers"].where((cijfer) => cijfer["periode"]["id"] == periode["id"]))
                             ListTile(
                               title: Text("${cijfer["vak"]["naam"]}"),
                               subtitle: Text("${formatDate.format(cijfer["ingevoerd"])}"),
@@ -84,7 +84,7 @@ class _Cijfers extends State<Cijfers> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => CijferPagina(cijfer),
+                                    builder: (context) => CijferPagina(cijfer["vak"]["id"], jaar),
                                   ),
                                 );
                               },
@@ -106,10 +106,11 @@ class _Cijfers extends State<Cijfers> {
 }
 
 class CijferPagina extends StatefulWidget {
-  final Map cijf;
-  CijferPagina(this.cijf);
+  final int id;
+  final int jaar;
+  CijferPagina(this.id, this.jaar);
   @override
-  _CijferPagina createState() => _CijferPagina(cijf);
+  _CijferPagina createState() => _CijferPagina(id, jaar);
 }
 
 class _CijferPagina extends State<CijferPagina> {
@@ -132,44 +133,64 @@ class _CijferPagina extends State<CijferPagina> {
   //   ];
   // }
 
-  Map cijf;
-  _CijferPagina(this.cijf);
+  Map jaar;
+  List cijfers;
+  Map vak;
+  _CijferPagina(int id, int jaar) {
+    this.jaar = account.cijfers[jaar];
+    this.cijfers = this.jaar["cijfers"].where((cijfer) => cijfer["vak"]["id"] == id).toList();
+    this.vak = cijfers.first["vak"];
+    print(id);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          cijf["vak"]["naam"],
+          vak["naam"],
         ),
       ),
-      body: Column(
-        children: [
-          Card(
-            margin: EdgeInsets.only(
-              bottom: 20,
-            ),
-            child: Column(
-              children: [
-                // charts.TimeSeriesChart(
-                //   _createCijfers(),
-                //   // Optionally pass in a [DateTimeFactory] used by the chart. The factory
-                //   // should create the same type of [DateTime] as the data provided. If none
-                //   // specified, the default creates local date time.
-                //   dateTimeFactory: const charts.LocalDateTimeFactory(),
-                // ),
-                ListTile(
-                  leading: Icon(
-                    Icons.book,
-                  ),
-                  title: Text(
-                    cijf["vak"]["naam"],
-                  ),
-                ),
-              ],
-            ),
+      body: SingleChildScrollView(
+        child: Card(
+          margin: EdgeInsets.only(
+            bottom: 20,
           ),
-        ],
+          child: Column(
+            children: [
+              // charts.TimeSeriesChart(
+              //   _createCijfers(),
+              //   // Optionally pass in a [DateTimeFactory] used by the chart. The factory
+              //   // should create the same type of [DateTime] as the data provided. If none
+              //   // specified, the default creates local date time.
+              //   dateTimeFactory: const charts.LocalDateTimeFactory(),
+              // ),
+              ListTile(
+                leading: Icon(
+                  Icons.book,
+                ),
+                title: Text(
+                  vak["naam"],
+                ),
+              ),
+              for (Map periode in jaar["perioden"])
+                Column(
+                  children: [
+                    Divider(),
+                    Text(
+                      periode["naam"],
+                      style: TextStyle(color: userdata.get("accentColor")),
+                    ),
+                    for (Map cijfer in cijfers.where((cijf) => cijf["periode"]["id"] == periode["id"]))
+                      ListTile(
+                        onTap: () {},
+                        title: Text(cijfer["cijfer"]),
+                      )
+                  ],
+                )
+            ],
+          ),
+        ),
       ),
     );
   }

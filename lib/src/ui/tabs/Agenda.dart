@@ -250,20 +250,27 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                         return Stack(
                           children: [
                             if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
-                              Positioned(
-                                top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
-                                child: Container(
-                                  height: 0,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: userdata.get('accentColor'),
+                              StatefulBuilder(builder: (BuildContext context, StateSetter rebuildMinute) {
+                                Future.delayed(const Duration(seconds: 10), () {
+                                  try {
+                                    rebuildMinute(() {});
+                                  } catch (e) {}
+                                });
+                                return Positioned(
+                                  top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                                  child: Container(
+                                    height: 0,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: userdata.get('accentColor'),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
                               Positioned(
                                 top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),

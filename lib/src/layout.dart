@@ -42,8 +42,11 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             onSelected: (result) async {
               if (result == "herlaad") {
                 Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
-                await handleError(acc.magister.refresh, "Fout tijdens verversen", context, () {
+                await handleError(acc.magister.refresh, "Fout tijdens verversen", context, () async {
                   FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
+                  update();
+                  await acc.magister.downloadProfilePicture();
+                  setState(() {});
                 });
                 msg..dismiss();
               } else {
@@ -98,10 +101,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 setState(() {});
                 FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
                 update();
-                if (!userdata.get("useIcon")) {
-                  await account.magister.downloadProfilePicture();
-                  setState(() {});
-                }
+                await account.magister.downloadProfilePicture();
+                setState(() {});
               }).catchError((e) {
                 FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
                 throw (e);

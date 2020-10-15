@@ -1,5 +1,9 @@
 import 'magister.dart';
 
+extension StringExtension on String {
+  String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
+}
+
 class Cijfers extends MagisterApi {
   MagisterApi api;
   Cijfers(this.api) : super(api.account);
@@ -36,6 +40,7 @@ class Cijfers extends MagisterApi {
                 "id": per["Id"],
               })
           .toList();
+      (account.cijfers[i]["perioden"] as List<Map>).sort((a, b) => a["id"].compareTo(b["id"]));
     }
   }
 
@@ -46,8 +51,16 @@ class Cijfers extends MagisterApi {
           .map((cijfer) => {
                 "ingevoerd": DateTime.parse(cijfer["DatumIngevoerd"] ?? "1970-01-01T00:00:00.0000000Z"),
                 "cijfer": cijfer["CijferStr"],
-                "vak": cijfer["Vak"],
-                "periodeId": cijfer["CijferPeriode"] == null ? null : cijfer["CijferPeriode"]["Id"],
+                "vak": {
+                  "naam": (cijfer["Vak"]["Omschrijving"] as String).capitalize,
+                  "id": cijfer["Vak"]["Id"],
+                },
+                "periode": cijfer["CijferPeriode"] == null
+                    ? {}
+                    : {
+                        "id": cijfer["CijferPeriode"]["Id"],
+                        "naam": cijfer["CijferPeriode"]["Naam"],
+                      },
               })
           .toList();
       (account.cijfers[i]["cijfers"] as List<Map>).sort((a, b) => a["ingevoerd"].millisecondsSinceEpoch.compareTo(b["ingevoerd"].millisecondsSinceEpoch));

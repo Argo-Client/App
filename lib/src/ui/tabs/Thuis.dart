@@ -49,7 +49,7 @@ class _Thuis extends State<Thuis> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                if (!account.lessons[DateTime.now().weekday - 1].isEmpty)
+                if (account.lessons[DateTime.now().weekday - 1].isNotEmpty)
                   Card(
                     margin: EdgeInsets.only(
                       bottom: 20,
@@ -77,7 +77,7 @@ class _Thuis extends State<Thuis> {
                                   Container(
                                     height: 75,
                                     decoration: BoxDecoration(
-                                      color: les["uitval"] ? (theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210)) : null,
+                                      color: les.uitval ? (theme == Brightness.dark ? Color.fromARGB(255, 119, 66, 62) : Color.fromARGB(255, 255, 205, 210)) : null,
                                       border: Border(
                                         top: greyBorderSide(),
                                       ),
@@ -90,11 +90,11 @@ class _Thuis extends State<Thuis> {
                                           ),
                                         );
                                       },
-                                      title: Text(les["title"]),
+                                      title: Text(les.title),
                                       leading: Container(
                                         height: 23,
                                         width: 23,
-                                        decoration: les["hour"] == ""
+                                        decoration: les.hour == ""
                                             ? null
                                             : BoxDecoration(
                                                 shape: BoxShape.circle,
@@ -109,14 +109,14 @@ class _Thuis extends State<Thuis> {
                                           left: 10,
                                         ),
                                         child: Text(
-                                          les["hour"],
+                                          les.hour,
                                         ),
                                       ),
                                       subtitle: Row(
                                         children: [
                                           Flexible(
                                             child: Text(
-                                              les["information"],
+                                              les.information,
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                               style: TextStyle(
@@ -126,8 +126,8 @@ class _Thuis extends State<Thuis> {
                                           )
                                         ],
                                       ),
-                                      trailing: les["huiswerk"] != null
-                                          ? !les["huiswerkAf"]
+                                      trailing: les.huiswerk != null
+                                          ? !les.huiswerkAf
                                               ? Icon(
                                                   Icons.assignment_outlined,
                                                   size: 23,

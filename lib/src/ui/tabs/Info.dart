@@ -90,7 +90,6 @@ class _Info extends State<Info> {
                                   onChanged: (bool value) {
                                     setState(() {
                                       checked = value;
-                                      print(checked);
                                     });
                                   },
                                 ),

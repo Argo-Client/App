@@ -38,8 +38,8 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
             List<Widget> berichten = [];
             String lastDay;
             for (int i = 0; i < account.berichten.length; i++) {
-              Map ber = account.berichten[i];
-              if (lastDay != ber["dag"]) {
+              Bericht ber = account.berichten[i];
+              if (lastDay != ber.dag) {
                 berichten.add(
                   Padding(
                     padding: EdgeInsets.only(
@@ -48,7 +48,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                       bottom: 20,
                     ),
                     child: Text(
-                      ber["dag"],
+                      ber.dag,
                       style: TextStyle(color: userdata.get("accentColor")),
                     ),
                   ),
@@ -60,17 +60,17 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                     margin: EdgeInsets.zero,
                     child: ListTile(
                       trailing: Padding(
-                        child: ber["prioriteit"] ? Icon(Icons.error, color: Colors.redAccent) : null,
+                        child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
                         padding: EdgeInsets.only(
                           top: 7,
                           left: 7,
                         ),
                       ),
                       subtitle: Text(
-                        ber["afzender"],
+                        ber.afzender,
                       ),
                       title: Text(
-                        ber["onderwerp"],
+                        ber.onderwerp,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -83,7 +83,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                       },
                     ),
                   ),
-                  decoration: account.berichten.length - 1 == i || account.berichten[i + 1]["dag"] != ber["dag"]
+                  decoration: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.dag
                       ? null
                       : BoxDecoration(
                           border: Border(
@@ -92,7 +92,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                         ),
                 ),
               );
-              lastDay = ber["dag"];
+              lastDay = ber.dag;
             }
             return ListView(
               children: berichten,
@@ -108,7 +108,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
 }
 
 class BerichtPagina extends StatelessWidget {
-  final Map ber;
+  final Bericht ber;
   const BerichtPagina(this.ber);
 
   @override
@@ -116,7 +116,7 @@ class BerichtPagina extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ber["onderwerp"],
+          ber.onderwerp,
         ),
         actions: [
           IconButton(
@@ -132,12 +132,14 @@ class BerichtPagina extends StatelessWidget {
         ],
       ),
       body: FutureBuilder(
-        future: account.magister.berichten.getBerichtFromId(ber["id"]),
+        future: account.magister.berichten.getBerichtFromId(ber.id),
         builder: (BuildContext context, AsyncSnapshot snap) {
-          Map loaded = snap.data;
+          Bericht loaded = snap.data;
           if (snap.hasError) {
             return RefreshIndicator(
               onRefresh: () {
+                return;
+
                 /// [SAM] Gewoon doen, niet zo huilen
               },
               child: Column(
@@ -148,7 +150,7 @@ class BerichtPagina extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            "Kon geen verbinding maken met Magister:\n${(snap.error as dynamic).error.toString()}",
+                            "Kon geen verbinding maken met Magister:\n${snap.error.toString()}",
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 20,
@@ -175,7 +177,7 @@ class BerichtPagina extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        if (ber["afzender"] != null)
+                        if (ber.afzender != null)
                           ListTile(
                             leading: Padding(
                               child: Icon(
@@ -187,13 +189,13 @@ class BerichtPagina extends StatelessWidget {
                               ),
                             ),
                             title: Text(
-                              ber["afzender"],
+                              ber.afzender,
                             ),
                             subtitle: Text(
                               "Afzender",
                             ),
                           ),
-                        if (ber["dag"] != null)
+                        if (ber.dag != null)
                           ListTile(
                             leading: Padding(
                               child: Icon(
@@ -205,13 +207,13 @@ class BerichtPagina extends StatelessWidget {
                               ),
                             ),
                             title: Text(
-                              ber["dag"],
+                              ber.dag,
                             ),
                             subtitle: Text(
                               "Verzonden",
                             ),
                           ),
-                        if (loaded != null && loaded["ontvangers"] != null)
+                        if (loaded != null && loaded.ontvangers != null)
                           ListTile(
                             leading: Padding(
                               child: Icon(
@@ -223,17 +225,17 @@ class BerichtPagina extends StatelessWidget {
                               ),
                             ),
                             title: Text(
-                              loaded["ontvangers"],
+                              loaded.ontvangers,
                             ),
                             subtitle: Text(
                               "Ontvanger(s)",
                             ),
                           ),
-                        if (loaded != null && loaded["cc"] != null)
+                        if (loaded != null && loaded.cc != null)
                           ListTile(
                             leading: Padding(
                               child: Icon(
-                                Icons.people,
+                                Icons.people_outline,
                               ),
                               padding: EdgeInsets.only(
                                 top: 7,
@@ -241,7 +243,7 @@ class BerichtPagina extends StatelessWidget {
                               ),
                             ),
                             title: Text(
-                              loaded["cc"],
+                              loaded.cc,
                             ),
                             subtitle: Text(
                               "CC",
@@ -250,7 +252,7 @@ class BerichtPagina extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (loaded != null && loaded["inhoud"] != null)
+                  if (loaded != null && loaded.inhoud != null)
                     Card(
                       margin: EdgeInsets.zero,
                       child: Container(
@@ -261,7 +263,7 @@ class BerichtPagina extends StatelessWidget {
                           onLinkTap: (link) {
                             launch(link);
                           },
-                          data: loaded["inhoud"],
+                          data: loaded.inhoud,
                         ),
                       ),
                     ),
@@ -277,7 +279,7 @@ class BerichtPagina extends StatelessWidget {
 }
 
 class NieuwBerichtPagina extends StatelessWidget {
-  final Map ber;
+  final Bericht ber;
   const NieuwBerichtPagina(this.ber);
 
   @override
@@ -309,7 +311,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                             disabledBorder: InputBorder.none,
                             hintText: 'Aan',
                           ),
-                          initialValue: ber != null ? ber["afzender"] : null,
+                          initialValue: ber != null ? ber.afzender : null,
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Veld verplicht';
@@ -335,7 +337,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                             disabledBorder: InputBorder.none,
                             hintText: 'CC',
                           ),
-                          initialValue: ber != null ? ber["cc"] : null,
+                          initialValue: ber != null ? ber.cc : null,
                         ),
                       ),
                       decoration: BoxDecoration(
@@ -354,7 +356,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                           disabledBorder: InputBorder.none,
                           hintText: 'Onderwerp',
                         ),
-                        initialValue: ber != null ? "RE: " + ber["onderwerp"] : null,
+                        initialValue: ber != null ? "RE: " + ber.onderwerp : null,
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Veld verplicht';

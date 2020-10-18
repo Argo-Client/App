@@ -28,7 +28,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/utils/magister/login.dart';
-import 'src/utils/hiveObjects.dart';
+import 'src/utils/hive/adapters.dart';
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/layout.dart';
@@ -59,8 +59,8 @@ ValueNotifier<bool> updateNotifier = ValueNotifier(false);
 void update() => updateNotifier.value = !updateNotifier.value;
 Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
   if (account.id != 0) {
+    await fun();
     try {
-      await fun();
       update();
       if (cb != null) cb();
     } catch (e) {
@@ -80,10 +80,16 @@ void main() async {
   Hive.registerAdapter(AccountAdapter());
   Hive.registerAdapter(ColorAdapter());
   Hive.registerAdapter(MaterialColorAdapter());
-  Hive.registerAdapter(IconAdapter());
+  // Hive.registerAdapter(IconAdapter());
+  Hive.registerAdapter(LesAdapter());
+  Hive.registerAdapter(CijferJaarAdapter());
+  Hive.registerAdapter(CijferAdapter());
+  Hive.registerAdapter(VakAdapter());
+  Hive.registerAdapter(PeriodeAdapter());
+  Hive.registerAdapter(BerichtAdapter());
+  Hive.registerAdapter(AbsentieAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
-  // Hive.deleteFromDisk();
   if (accounts.isEmpty) {
     userdata.delete("introduction");
     userdata.putAll({

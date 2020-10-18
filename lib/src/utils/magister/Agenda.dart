@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
+import 'package:Argo/src/utils/hive/adapters.dart';
 
 class Agenda extends MagisterApi {
   MagisterApi api;
@@ -17,11 +18,11 @@ class Agenda extends MagisterApi {
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     Map body = (await api.dio.get('api/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}')).data;
-    account.lessons = [[], [], [], [], [], [], []];
+    account.lessons = <List<Les>>[[], [], [], [], [], [], []];
     body["Items"].forEach((les) {
       if (les["DuurtHeleDag"]) return;
       DateTime end = DateTime.parse(les["Einde"]).toLocal();
-      account.lessons[end.weekday - 1].add(lesFrom(les));
+      account.lessons[end.weekday - 1].add(Les(les));
     });
     return;
   }
@@ -42,9 +43,9 @@ class Agenda extends MagisterApi {
     return await api.dio.post("api/personen/${account.id}/afspraken", data: postLes);
   }
 
-  Future deleteLes(Map les) async {
+  Future deleteLes(Les les) async {
     try {
-      var deleted = await api.dio.delete("api/personen/${account.id}/afspraken/${les["id"]}");
+      var deleted = await api.dio.delete("api/personen/${account.id}/afspraken/${les.id}");
       if (deleted.statusCode == 204) {
         return true;
       }
@@ -54,11 +55,11 @@ class Agenda extends MagisterApi {
     }
   }
 
-  Future toggleHuiswerk(Map les) async {
+  Future toggleHuiswerk(Les les) async {
     try {
       var res = await api.dio.put(
-        "api/personen/${account.id}/afspraken/${les["id"]}",
-        data: json.encode({"Id": les["id"], "Afgerond": !les["huiswerkAf"]}),
+        "api/personen/${account.id}/afspraken/${les.id}",
+        data: json.encode({"Id": les.id, "Afgerond": !les.huiswerkAf}),
       );
       if (res.statusCode == 200) {
         return true;
@@ -69,38 +70,38 @@ class Agenda extends MagisterApi {
     }
   }
 
-  Map lesFrom(var les) {
-    DateTime start = DateTime.parse(les["Start"]).toLocal();
-    DateTime end = DateTime.parse(les["Einde"]).toLocal();
-    int startHour = les['LesuurVan'];
-    int endHour = les["LesuurTotMet"];
+  // Map lesFrom(var les) {
+  //   DateTime start = DateTime.parse(les["Start"]).toLocal();
+  //   DateTime end = DateTime.parse(les["Einde"]).toLocal();
+  //   int startHour = les['LesuurVan'];
+  //   int endHour = les["LesuurTotMet"];
 
-    DateFormat formatHour = DateFormat("HH:mm");
-    DateFormat formatDatum = DateFormat("EEEE dd MMMM");
-    var docent;
-    int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
-    var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
-    if (les["Docenten"] != null && !les["Docenten"].isEmpty) {
-      docent = les["Docenten"][0]["Naam"];
-    }
-    return {
-      "start": minFromMidnight ?? "",
-      "duration": end.difference(start).inMinutes ?? "",
-      "hour": hour == "null" ? "" : hour,
-      "startTime": formatHour.format(start),
-      "endTime": formatHour.format(end),
-      "description": les["Inhoud"] ?? "",
-      "title": les["Omschrijving"] ?? "",
-      "location": les["Lokatie"],
-      "date": formatDatum.format(end),
-      "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
-      "docent": docent,
-      "huiswerk": les["Inhoud"],
-      "huiswerkAf": les["Afgerond"],
-      "uitval": les["Status"] == 5,
-      "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : ""),
-      "editable": les["Type"] == 1,
-      "id": les["Id"]
-    };
-  }
+  //   DateFormat formatHour = DateFormat("HH:mm");
+  //   DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+  //   var docent;
+  //   int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
+  //   var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
+  //   if (les["Docenten"] != null && !les["Docenten"].isEmpty) {
+  //     docent = les["Docenten"][0]["Naam"];
+  //   }
+  //   return {
+  //     "start": minFromMidnight ?? "",
+  //     "duration": end.difference(start).inMinutes ?? "",
+  //     "hour": hour == "null" ? "" : hour,
+  //     "startTime": formatHour.format(start),
+  //     "endTime": formatHour.format(end),
+  //     "description": les["Inhoud"] ?? "",
+  //     "title": les["Omschrijving"] ?? "",
+  //     "location": les["Lokatie"],
+  //     "date": formatDatum.format(end),
+  //     "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
+  //     "docent": docent,
+  //     "huiswerk": les["Inhoud"],
+  //     "huiswerkAf": les["Afgerond"],
+  //     "uitval": les["Status"] == 5,
+  //     "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : ""),
+  //     "editable": les["Type"] == 1,
+  //     "id": les["Id"]
+  //   };
+  // }
 }

@@ -26,7 +26,7 @@ class _Cijfers extends State<Cijfers> {
       // child: ,
       builder: (BuildContext context, _, _a) {
         return DefaultTabController(
-          length: account.cijfers[jaar]["perioden"].length,
+          length: account.cijfers[jaar].perioden.length,
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -40,30 +40,30 @@ class _Cijfers extends State<Cijfers> {
               bottom: TabBar(
                 isScrollable: true,
                 tabs: [
-                  for (var periode in account.cijfers[jaar]["perioden"])
+                  for (var periode in account.cijfers[jaar].perioden)
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 20,
                       ),
                       child: Tab(
-                        text: periode["abbr"],
+                        text: periode.abbr,
                       ),
                     ),
                 ],
               ),
-              title: Text("Cijfers - ${account.cijfers[jaar]["leerjaar"]}"),
+              title: Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
             ),
             body: TabBarView(
               children: [
-                for (Map periode in account.cijfers[jaar]["perioden"])
+                for (Periode periode in account.cijfers[jaar].perioden)
                   RefreshIndicator(
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          for (Map cijfer in account.cijfers[jaar]["cijfers"].where((cijfer) => cijfer["periode"]["id"] == periode["id"]))
+                          for (Cijfer cijfer in account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id))
                             ListTile(
-                              title: Text("${cijfer["vak"]["naam"]}"),
-                              subtitle: Text("${formatDate.format(cijfer["ingevoerd"])}"),
+                              title: Text("${cijfer.vak.naam}"),
+                              subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
                               trailing: Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -73,7 +73,7 @@ class _Cijfers extends State<Cijfers> {
                                 height: 45,
                                 child: Center(
                                   child: Text(
-                                    "${cijfer["cijfer"]}",
+                                    "${cijfer.cijfer}",
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.fade,
                                     softWrap: false,
@@ -84,7 +84,7 @@ class _Cijfers extends State<Cijfers> {
                               onTap: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => CijferPagina(cijfer["vak"]["id"], jaar),
+                                    builder: (context) => CijferPagina(cijfer.vak.id, jaar),
                                   ),
                                 );
                               },
@@ -133,14 +133,13 @@ class _CijferPagina extends State<CijferPagina> {
   //   ];
   // }
 
-  Map jaar;
-  List cijfers;
-  Map vak;
+  CijferJaar jaar;
+  List<Cijfer> cijfers;
+  Vak vak;
   _CijferPagina(int id, int jaar) {
     this.jaar = account.cijfers[jaar];
-    this.cijfers = this.jaar["cijfers"].where((cijfer) => cijfer["vak"]["id"] == id).toList();
-    this.vak = cijfers.first["vak"];
-    print(id);
+    this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
+    this.vak = cijfers.first.vak;
   }
 
   @override
@@ -148,7 +147,7 @@ class _CijferPagina extends State<CijferPagina> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          vak["naam"],
+          vak.naam,
         ),
       ),
       body: SingleChildScrollView(
@@ -171,17 +170,17 @@ class _CijferPagina extends State<CijferPagina> {
                     Icons.book,
                   ),
                   title: Text(
-                    vak["naam"],
+                    vak.naam,
                   ),
                 ),
               ),
             ),
-            for (Map periode in jaar["perioden"])
+            for (Periode periode in jaar.perioden)
               Column(
                 children: [
                   if (cijfers
                       .where(
-                        (cijf) => cijf["periode"]["id"] == periode["id"],
+                        (cijf) => cijf.periode.id == periode.id,
                       )
                       .isNotEmpty)
                     Container(
@@ -192,7 +191,7 @@ class _CijferPagina extends State<CijferPagina> {
                         bottom: 15,
                       ),
                       child: Text(
-                        periode["naam"],
+                        periode.naam,
                         // maxLines: 1,
                         // overflow: TextOverflow.visible,
                         // softWrap: false,
@@ -209,8 +208,8 @@ class _CijferPagina extends State<CijferPagina> {
                       ),
                       child: Column(
                         children: [
-                          for (Map cijfer in cijfers.where(
-                            (cijf) => cijf["periode"]["id"] == periode["id"],
+                          for (Cijfer cijfer in cijfers.where(
+                            (cijf) => cijf.periode.id == periode.id,
                           ))
                             Container(
                               decoration: BoxDecoration(
@@ -220,7 +219,7 @@ class _CijferPagina extends State<CijferPagina> {
                               ),
                               child: ListTile(
                                 title: Text(
-                                  cijfer["cijfer"],
+                                  cijfer.cijfer,
                                 ),
                               ),
                             ),

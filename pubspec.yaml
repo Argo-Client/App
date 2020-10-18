@@ -49,6 +49,8 @@ dependencies:
 dev_dependencies:
   flutter_native_splash: ^0.1.9
   flutter_launcher_icons: "^0.8.0"
+  hive_generator: ^0.8.1
+  build_runner: ^1.10.3
   flutter_test:
     sdk: flutter
 # For information on the generic Dart part of this file, see the

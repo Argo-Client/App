@@ -14,7 +14,7 @@ BorderSide greyBorderSide() {
 
 Future huiswerkAf(hw) async {
   await account.magister.agenda.toggleHuiswerk(hw);
-  hw["huiswerkAf"] = !hw["huiswerkAf"];
+  hw.huiswerkAf = !hw.huiswerkAf;
   update();
 }
 
@@ -26,7 +26,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   int endHour, defaultStartHour, pixelsPerHour;
   int getStartHour(dag) {
     if (account.lessons.isEmpty) return 0;
-    return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first["start"] / 60).floor();
+    return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first.start / 60).floor();
   }
 
   void afterFirstLayout(BuildContext context) {
@@ -114,7 +114,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                       valueListenable: updateNotifier,
                       builder: (BuildContext context, _, Widget child) {
                         List<List> widgetRooster = [];
-
                         for (List dag in account.lessons) {
                           List<Widget> widgetDag = [];
 
@@ -123,18 +122,18 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                             widgetRooster.add(widgetDag);
                             continue;
                           }
-                          int startHour = (dag.first["start"] / 60).floor();
+                          int startHour = (dag.first.start / 60).floor();
 
-                          for (Map les in dag) {
+                          for (Les les in dag) {
                             widgetDag.add(
                               Container(
                                 margin: EdgeInsets.only(
-                                  top: ((les["start"] - startHour * 60) * timeFactor).toDouble(),
+                                  top: ((les.start - startHour * 60) * timeFactor).toDouble(),
                                 ),
                                 width: MediaQuery.of(context).size.width - 30,
-                                height: les["duration"] * timeFactor,
+                                height: les.duration * timeFactor,
                                 child: Card(
-                                  color: les["uitval"]
+                                  color: les.uitval
                                       ? theme == Brightness.dark
                                           ? Color.fromARGB(255, 119, 66, 62)
                                           : Color.fromARGB(255, 255, 205, 210)
@@ -155,7 +154,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                               left: 5,
                                             ),
                                             child: Text(
-                                              les["hour"],
+                                              les.hour,
                                               style: TextStyle(
                                                 color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                                               ),
@@ -169,8 +168,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                               top: 5,
                                               right: 5,
                                             ),
-                                            child: les["huiswerk"] != null
-                                                ? !les["huiswerkAf"]
+                                            child: les.huiswerk != null
+                                                ? !les.huiswerkAf
                                                     ? Icon(
                                                         Icons.assignment_outlined,
                                                         size: 23,
@@ -213,7 +212,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    les["title"],
+                                                    les.title,
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                     ),
@@ -224,7 +223,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                                 children: [
                                                   Flexible(
                                                     child: Text(
-                                                      les["information"],
+                                                      les.information,
                                                       overflow: TextOverflow.ellipsis,
                                                       maxLines: 1,
                                                       style: TextStyle(
@@ -345,22 +344,22 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
 
 // Popup als je op een les klikt
 class LesPagina extends StatefulWidget {
-  final Map les;
+  final Les les;
   LesPagina(this.les);
   @override
   _LesPagina createState() => _LesPagina(les);
 }
 
 class _LesPagina extends State<LesPagina> {
-  Map les;
+  Les les;
   _LesPagina(this.les);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(les["title"]),
-        actions: !les["editable"]
+        title: Text(les.title),
+        actions: !les.editable
             ? null
             : [
                 // IconButton(
@@ -382,17 +381,17 @@ class _LesPagina extends State<LesPagina> {
                 )
               ],
       ),
-      floatingActionButton: les["huiswerk"] == null
+      floatingActionButton: les.huiswerk == null
           ? null
           : FloatingActionButton(
               onPressed: () async {
                 await account.magister.agenda.toggleHuiswerk(les);
-                les["huiswerkAf"] = !les["huiswerkAf"];
+                les.huiswerkAf = !les.huiswerkAf;
                 setState(() {});
                 update();
               },
-              backgroundColor: les["huiswerkAf"] ? Colors.green : userdata.get("accentColor"),
-              child: Icon(les["huiswerkAf"] ? Icons.check : Icons.refresh),
+              backgroundColor: les.huiswerkAf ? Colors.green : userdata.get("accentColor"),
+              child: Icon(les.huiswerkAf ? Icons.check : Icons.refresh),
             ),
       body: SingleChildScrollView(
         child: Column(
@@ -406,27 +405,27 @@ class _LesPagina extends State<LesPagina> {
                   ListTile(
                     leading: Icon(Icons.access_time),
                     title: Text(
-                      (les["hour"] != "" ? les["hour"] + "e " : "") + les["startTime"] + " - " + les["endTime"],
+                      (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
                     ),
                   ),
                   ListTile(
                     leading: Icon(Icons.event),
-                    title: Text(les["date"]),
+                    title: Text(les.date),
                   ),
-                  if (les["vak"] != null)
+                  if (les.vak != null)
                     ListTile(
                       leading: Icon(Icons.book),
-                      title: Text(les["vak"]),
+                      title: Text(les.vak),
                     ),
-                  if (les["location"] != null)
+                  if (les.location != null)
                     ListTile(
                       leading: Icon(Icons.location_on),
-                      title: Text(les["location"]),
+                      title: Text(les.location),
                     ),
-                  if (les["docent"] != null)
+                  if (les.docent != null)
                     ListTile(
                       leading: Icon(Icons.person),
-                      title: Text(les["docent"]),
+                      title: Text(les.docent),
                     ),
                   // if (les["description"].length != 0)
                   //   ListTile(
@@ -436,7 +435,7 @@ class _LesPagina extends State<LesPagina> {
                 ],
               ),
             ),
-            if (les["description"].length != 0)
+            if (les.description.length != 0)
               Container(
                 child: Card(
                   margin: EdgeInsets.zero,
@@ -462,7 +461,7 @@ class _LesPagina extends State<LesPagina> {
                           ),
                         ),
                         Html(
-                          data: les["description"],
+                          data: les.description,
                           onLinkTap: launch,
                         ),
                       ],
@@ -628,6 +627,8 @@ class _AddLesPagina extends State<AddLesPagina> {
                                       "Begin: " + startTime.format(context),
                                     ),
                                   ),
+
+                                  /// [GUUS] renderflex error bij AM PM of klein telefoontje
                                   FlatButton(
                                     onPressed: !heleDag
                                         ? () async {

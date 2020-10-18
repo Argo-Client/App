@@ -25,10 +25,10 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
             builder: (BuildContext context, _, _a) {
               List<Widget> huiswerk = [];
               String lastDay;
-              List huiswerkLessen = account.lessons.expand((x) => x).where((les) => les["huiswerk"] != null).toList();
+              List<Les> huiswerkLessen = account.lessons.expand((x) => x).where((les) => les.huiswerk != null).toList();
               for (int i = 0; i < huiswerkLessen.length; i++) {
-                Map hw = huiswerkLessen[i];
-                if (lastDay != hw["date"]) {
+                Les hw = huiswerkLessen[i];
+                if (lastDay != hw.date) {
                   huiswerk.add(
                     Padding(
                       padding: EdgeInsets.only(
@@ -37,7 +37,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                         bottom: 20,
                       ),
                       child: Text(
-                        hw["date"],
+                        hw.date,
                         style: TextStyle(color: userdata.get("accentColor")),
                       ),
                     ),
@@ -48,7 +48,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                     child: Card(
                       margin: EdgeInsets.zero,
                       child: ExpansionTile(
-                        leading: hw["huiswerkAf"]
+                        leading: hw.huiswerkAf
                             ? IconButton(
                                 onPressed: () {
                                   huiswerkAf(hw);
@@ -77,7 +77,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                             },
                             child: Padding(
                               child: Html(
-                                data: hw["huiswerk"],
+                                data: hw.huiswerk,
                                 onLinkTap: launch,
                               ),
                               padding: EdgeInsets.only(
@@ -87,11 +87,11 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                           ),
                         ],
                         title: Text(
-                          hw["title"],
+                          hw.title,
                         ),
                       ),
                     ),
-                    decoration: huiswerkLessen.length - 1 == i || huiswerkLessen[i + 1]["date"] != hw["date"]
+                    decoration: huiswerkLessen.length - 1 == i || huiswerkLessen[i + 1].date != hw.date
                         ? null
                         : BoxDecoration(
                             border: Border(
@@ -100,7 +100,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                           ),
                   ),
                 );
-                lastDay = hw["date"];
+                lastDay = hw.date;
               }
               return ListView(
                 children: huiswerk,

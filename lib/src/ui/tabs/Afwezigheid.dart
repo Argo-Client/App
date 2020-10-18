@@ -27,7 +27,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 child: Row(
                   children: [
                     Icon(Icons.check),
-                    Text(" " + account.afwezigheid.where((afw) => afw["geoorloofd"]).length.toString()),
+                    Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
                   ],
                 ),
               ),
@@ -42,7 +42,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 child: Row(
                   children: [
                     Icon(Icons.error),
-                    Text(" " + account.afwezigheid.where((afw) => !afw["geoorloofd"]).length.toString()),
+                    Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
                   ],
                 ),
               ),
@@ -55,9 +55,9 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
               List<Widget> absenties = [];
               String lastDay;
               for (int i = 0; i < account.afwezigheid.length; i++) {
-                Map afw = account.afwezigheid[i];
-                String hour = afw["les"]["hour"].isEmpty ? "" : afw["les"]["hour"] + "e - ";
-                if (lastDay != afw["dag"]) {
+                Absentie afw = account.afwezigheid[i];
+                String hour = afw.les.hour.isEmpty ? "" : afw.les.hour + "e - ";
+                if (lastDay != afw.dag) {
                   absenties.add(
                     Padding(
                       padding: EdgeInsets.only(
@@ -66,7 +66,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                         bottom: 20,
                       ),
                       child: Text(
-                        afw["dag"],
+                        afw.dag,
                         style: TextStyle(color: userdata.get("accentColor")),
                       ),
                     ),
@@ -78,23 +78,23 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                       margin: EdgeInsets.zero,
                       child: ListTile(
                         leading: Padding(
-                          child: afw["geoorloofd"] ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error_outlined, color: Colors.redAccent),
+                          child: afw.geoorloofd ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error_outlined, color: Colors.redAccent),
                           padding: EdgeInsets.only(
                             top: 7,
                             left: 7,
                           ),
                         ),
-                        subtitle: Text(hour + afw["les"]["title"]),
-                        title: Text(afw["type"]),
+                        subtitle: Text(hour + afw.les.title),
+                        title: Text(afw.type),
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => LesPagina(afw["les"]),
+                              builder: (context) => LesPagina(afw.les),
                             ),
                           );
                         },
-                        trailing: afw["les"]["huiswerk"] != null
-                            ? !afw["les"]["huiswerkAf"]
+                        trailing: afw.les.huiswerk != null
+                            ? !afw.les.huiswerkAf
                                 ? Icon(
                                     Icons.assignment_outlined,
                                     size: 23,
@@ -108,7 +108,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                             : null,
                       ),
                     ),
-                    decoration: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1]["dag"] != afw["dag"]
+                    decoration: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afw.dag
                         ? null
                         : BoxDecoration(
                             border: Border(
@@ -117,7 +117,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                           ),
                   ),
                 );
-                lastDay = afw["dag"];
+                lastDay = afw.dag;
               }
               return account.afwezigheid.isEmpty
                   ? ListView(

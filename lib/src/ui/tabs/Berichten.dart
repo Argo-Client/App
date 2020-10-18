@@ -66,8 +66,14 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                           left: 7,
                         ),
                       ),
-                      subtitle: Text(ber["onderwerp"]),
-                      title: Text(ber["afzender"]),
+                      subtitle: Text(
+                        ber["afzender"],
+                      ),
+                      title: Text(
+                        ber["onderwerp"],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -127,124 +133,143 @@ class BerichtPagina extends StatelessWidget {
       ),
       body: FutureBuilder(
         future: account.magister.berichten.getBerichtFromId(ber["id"]),
-        builder: (BuildContext context, AsyncSnapshot data) {
-          Map loaded = data.data;
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Card(
-                  margin: EdgeInsets.only(
-                    bottom: 20,
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                  ),
-                  child: Column(
-                    children: [
-                      if (ber["afzender"] != null)
-                        ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.person_outlined,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            ber["afzender"],
-                          ),
-                          subtitle: Text(
-                            "Afzender",
-                          ),
-                        ),
-                      if (ber["dag"] != null)
-                        ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.send,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            ber["dag"],
-                          ),
-                          subtitle: Text(
-                            "Verzonden",
-                          ),
-                        ),
-                      if (loaded != null && loaded["ontvangers"] != null)
-                        ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.people_outlined,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            loaded["ontvangers"],
-                          ),
-                          subtitle: Text(
-                            "Ontvanger(s)",
-                          ),
-                        ),
-                      if (loaded != null && loaded["cc"] != null)
-                        ListTile(
-                          leading: Padding(
-                            child: Icon(
-                              Icons.people,
-                            ),
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          title: Text(
-                            loaded["cc"],
-                          ),
-                          subtitle: Text(
-                            "CC",
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (loaded != null && loaded["inhoud"] != null)
-                  Card(
-                    margin: EdgeInsets.zero,
+        builder: (BuildContext context, AsyncSnapshot snap) {
+          Map loaded = snap.data;
+          if (snap.hasError) {
+            return RefreshIndicator(
+              onRefresh: () {
+                /// [SAM] Gewoon doen, niet zo huilen
+              },
+              child: Column(
+                children: [
+                  Center(
                     child: Container(
-                      padding: EdgeInsets.all(
-                        20,
-                      ),
-                      child: Html(
-                        onLinkTap: (link) {
-                          launch(link);
-                        },
-                        data: loaded["inhoud"],
+                      width: MediaQuery.of(context).size.width - 50,
+                      child: Column(
+                        children: [
+                          Text(
+                            "Kon geen verbinding maken met Magister:\n${(snap.error as dynamic).error.toString()}",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                if (loaded == null && !data.hasError)
-                  CircularProgressIndicator()
-                else if (data.hasError)
-
-                  /// [GUUS] maak even mooier
-                  Container(
-                    child: Text(
-                      "Kon geen verbinding maken met magister:\n${(data.error as dynamic).error.toString()}",
-                      textAlign: TextAlign.center,
+                ],
+              ),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Card(
+                    margin: EdgeInsets.only(
+                      bottom: 20,
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                    ),
+                    child: Column(
+                      children: [
+                        if (ber["afzender"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.person_outlined,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              ber["afzender"],
+                            ),
+                            subtitle: Text(
+                              "Afzender",
+                            ),
+                          ),
+                        if (ber["dag"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.send,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              ber["dag"],
+                            ),
+                            subtitle: Text(
+                              "Verzonden",
+                            ),
+                          ),
+                        if (loaded != null && loaded["ontvangers"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.people_outlined,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              loaded["ontvangers"],
+                            ),
+                            subtitle: Text(
+                              "Ontvanger(s)",
+                            ),
+                          ),
+                        if (loaded != null && loaded["cc"] != null)
+                          ListTile(
+                            leading: Padding(
+                              child: Icon(
+                                Icons.people,
+                              ),
+                              padding: EdgeInsets.only(
+                                top: 7,
+                                left: 7,
+                              ),
+                            ),
+                            title: Text(
+                              loaded["cc"],
+                            ),
+                            subtitle: Text(
+                              "CC",
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-              ],
-            ),
-          );
+                  if (loaded != null && loaded["inhoud"] != null)
+                    Card(
+                      margin: EdgeInsets.zero,
+                      child: Container(
+                        padding: EdgeInsets.all(
+                          20,
+                        ),
+                        child: Html(
+                          onLinkTap: (link) {
+                            launch(link);
+                          },
+                          data: loaded["inhoud"],
+                        ),
+                      ),
+                    ),
+                  if (loaded == null && !snap.hasError) CircularProgressIndicator()
+                ],
+              ),
+            );
+          }
         },
       ),
     );

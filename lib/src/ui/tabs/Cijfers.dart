@@ -152,46 +152,103 @@ class _CijferPagina extends State<CijferPagina> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Card(
-          margin: EdgeInsets.only(
-            bottom: 20,
-          ),
-          child: Column(
-            children: [
-              // charts.TimeSeriesChart(
-              //   _createCijfers(),
-              //   // Optionally pass in a [DateTimeFactory] used by the chart. The factory
-              //   // should create the same type of [DateTime] as the data provided. If none
-              //   // specified, the default creates local date time.
-              //   dateTimeFactory: const charts.LocalDateTimeFactory(),
-              // ),
-              ListTile(
-                leading: Icon(
-                  Icons.book,
-                ),
-                title: Text(
-                  vak["naam"],
+        child: Column(
+          children: [
+            // charts.TimeSeriesChart(
+            //   _createCijfers(),
+            //   dateTimeFactory: const charts.LocalDateTimeFactory(),
+            // ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.symmetric(
+                  vertical: greyBorderSide(),
                 ),
               ),
-              for (Map periode in jaar["perioden"])
-                Column(
-                  children: [
-                    Divider(),
-                    Text(
-                      periode["naam"],
-                      style: TextStyle(color: userdata.get("accentColor")),
-                    ),
-                    for (Map cijfer in cijfers.where((cijf) => cijf["periode"]["id"] == periode["id"]))
-                      ListTile(
-                        onTap: () {},
-                        title: Text(cijfer["cijfer"]),
+              child: Card(
+                margin: EdgeInsets.zero,
+                child: ListTile(
+                  leading: Icon(
+                    Icons.book,
+                  ),
+                  title: Text(
+                    vak["naam"],
+                  ),
+                ),
+              ),
+            ),
+            for (Map periode in jaar["perioden"])
+              Column(
+                children: [
+                  if (cijfers
+                      .where(
+                        (cijf) => cijf["periode"]["id"] == periode["id"],
                       )
-                  ],
-                )
-            ],
-          ),
+                      .isNotEmpty)
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        top: 15,
+                        bottom: 15,
+                      ),
+                      child: Text(
+                        periode["naam"],
+                        // maxLines: 1,
+                        // overflow: TextOverflow.visible,
+                        // softWrap: false,
+                        style: TextStyle(color: userdata.get("accentColor")),
+                      ),
+                    ),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: greyBorderSide(),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          for (Map cijfer in cijfers.where(
+                            (cijf) => cijf["periode"]["id"] == periode["id"],
+                          ))
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: greyBorderSide(),
+                                ),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  cijfer["cijfer"],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
       ),
     );
   }
+
+  // static List<charts.Series<Cijfer, DateTime>> _createCijfers() {
+  //   final data = [
+  //     new Cijfer(new DateTime(2017, 9, 19), 5),
+  //   ];
+
+  //   return [
+  //     new charts.Series<Cijfer, DateTime>(
+  //       id: 'Sales',
+  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //       domainFn: (Cijfer sales, _) => sales.time,
+  //       measureFn: (Cijfer sales, _) => sales.sales,
+  //       data: data,
+  //     )
+  //   ];
+  // }
 }

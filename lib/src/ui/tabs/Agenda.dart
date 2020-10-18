@@ -47,7 +47,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      initialIndex: DateTime.now().weekday - 1,
+      initialIndex: now.weekday - 1,
       length: 7,
       child: Scaffold(
         key: _agendaKey,
@@ -56,17 +56,23 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
             icon: Icon(Icons.menu),
             onPressed: () => _layoutKey.currentState.openDrawer(),
           ),
-          title: InkWell(
-            /// [Guus, maak even dat het hoger is alsjeblieft dankjewel]
-            /// [NEE]
-            // Agenda knopje voor maand view
-            onTap: () {},
-            child: Row(
-              children: [
-                Text("Agenda"),
-                Icon(Icons.arrow_drop_down),
-              ],
+          title: GestureDetector(
+            child: Text(
+              "Agenda",
             ),
+            onTap: () async {
+              DateTime pickDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                lastDate: DateTime(DateTime.now().year + 100),
+              );
+              if (pickDate == null) return;
+              setState(() {
+                now = pickDate;
+              });
+              update();
+            },
           ),
           bottom: TabBar(
             // Dag kiezer bovenaan
@@ -249,7 +255,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                         }
                         return Stack(
                           children: [
-                            if (dag + 1 == DateTime.now().weekday) // Balkje van de tijd nu
+                            if (dag + 1 == now.weekday) // Balkje van de tijd nu
                               StatefulBuilder(builder: (BuildContext context, StateSetter rebuildMinute) {
                                 Future.delayed(const Duration(seconds: 10), () {
                                   try {
@@ -257,7 +263,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                   } catch (e) {}
                                 });
                                 return Positioned(
-                                  top: (((DateTime.now().hour - getStartHour(dag)) * 60 + DateTime.now().minute) * timeFactor).toDouble(),
+                                  top: (((now.hour - getStartHour(dag)) * 60 + now.minute) * timeFactor).toDouble(),
                                   child: Container(
                                     height: 0,
                                     width: MediaQuery.of(context).size.width,
@@ -307,7 +313,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                             uur.toString(),
                                             style: TextStyle(
                                               fontSize: 15,
-                                              color: uur == DateTime.now().hour && dag + 1 == DateTime.now().weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
+                                              color: uur == now.hour && dag + 1 == now.weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
                                             ),
                                           ),
                                         ),
@@ -590,6 +596,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                                           firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
                                           lastDate: DateTime(DateTime.now().year + 100),
                                         );
+
                                         setState(
                                           () {
                                             if (newDate != null) date = newDate;
@@ -672,35 +679,45 @@ class _AddLesPagina extends State<AddLesPagina> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          if (startTime.hour * 60 + startTime.minute > endTime.hour * 60 + endTime.minute) {
+            FlushbarHelper.createError(message: "Eind tijd kan niet eerder zijn dan start tijd.")..show(context);
+            return;
+          }
           if (_formKey.currentState.validate()) {
-            account.magister.agenda.addAfspraak({
-              "title": titel,
-              "locatie": locatie,
-              "heledag": heleDag,
-              "inhoud": inhoud,
-              "start": DateTime(
-                date.year,
-                date.month,
-                date.day,
-                startTime.hour,
-                startTime.minute,
-              ),
-              "eind": DateTime(
-                date.year,
-                date.month,
-                date.day,
-                endTime.hour,
-                endTime.minute,
-              ),
-            }).then((added) async {
-              Navigator.of(context).pop();
-              FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
-              await account.magister.agenda.refresh();
-              update();
-            }).catchError((e) {
-              FlushbarHelper.createError(message: "Kon afspraak niet opslaan:\n$e");
-              throw (e);
-            });
+            handleError(
+              () async {
+                await account.magister.agenda.addAfspraak(
+                  {
+                    "title": titel,
+                    "locatie": locatie,
+                    "heledag": heleDag,
+                    "inhoud": inhoud,
+                    "start": DateTime(
+                      date.year,
+                      date.month,
+                      date.day,
+                      startTime.hour,
+                      startTime.minute,
+                    ),
+                    "eind": DateTime(
+                      date.year,
+                      date.month,
+                      date.day,
+                      endTime.hour,
+                      endTime.minute,
+                    ),
+                  },
+                );
+              },
+              "Kon afspraak niet opslaan",
+              context,
+              () async {
+                Navigator.of(context).pop();
+                FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
+                await account.magister.agenda.refresh();
+                update();
+              },
+            );
           }
         },
         child: Icon(

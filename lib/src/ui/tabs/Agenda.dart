@@ -23,22 +23,24 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   DateFormat numFormatter, dayFormatter;
   List dayAbbr;
   double timeFactor;
+  String weekslug;
   int endHour, defaultStartHour, pixelsPerHour;
   int getStartHour(dag) {
-    if (account.lessons.isEmpty) return 0;
-    return account.lessons[dag].isEmpty ? defaultStartHour : (account.lessons[dag].first.start / 60).floor();
+    if (account.lessons[weekslug] == null) return 0;
+    return account.lessons[weekslug][dag].isEmpty ? defaultStartHour : (account.lessons[weekslug][dag].first.start / 60).floor();
   }
 
   void afterFirstLayout(BuildContext context) {
     handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
+  DateFormat formatDate = DateFormat("yyyy-MM-dd");
   _Agenda() {
     now = DateTime.now();
     lastMonday = now.subtract(Duration(days: now.weekday - 1));
     numFormatter = DateFormat('dd');
     dayFormatter = DateFormat('E');
-
+    weekslug = formatDate.format(lastMonday);
     dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
     timeFactor = userdata.get("pixelsPerHour") / 60;
     endHour = 23;
@@ -60,19 +62,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
             child: Text(
               "Agenda",
             ),
-            onTap: () async {
-              DateTime pickDate = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                lastDate: DateTime(DateTime.now().year + 100),
-              );
-              if (pickDate == null) return;
-              setState(() {
-                now = pickDate;
-              });
-              update();
-            },
+            onTap: () {},
           ),
           bottom: TabBar(
             // Dag kiezer bovenaan
@@ -89,6 +79,26 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
             ],
           ),
           actions: [
+            IconButton(
+              icon: Icon(Icons.date_range_outlined),
+              onPressed: () async {
+                DateTime pickDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                  lastDate: DateTime(DateTime.now().year + 100),
+                );
+                if (pickDate == null) return;
+                weekslug = formatDate.format(pickDate.subtract(Duration(days: pickDate.weekday - 1)));
+                lastMonday = DateTime.parse(weekslug);
+
+                if (!account.lessons.containsKey(weekslug)) {
+                  handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon gekozen week niet laden", context, account.save);
+                  account.save();
+                }
+                setState(() {});
+              },
+            ),
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
@@ -114,7 +124,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                       valueListenable: updateNotifier,
                       builder: (BuildContext context, _, Widget child) {
                         List<List> widgetRooster = [];
-                        for (List dag in account.lessons) {
+                        for (List dag in account.lessons[weekslug] ?? []) {
                           List<Widget> widgetDag = [];
 
                           if (dag.isEmpty) {

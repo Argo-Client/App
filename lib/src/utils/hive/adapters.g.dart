@@ -39,9 +39,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..afwezigheid = (fields[19] as List)?.cast<Absentie>()
       ..berichten = (fields[20] as List)?.cast<Bericht>()
       ..cijfers = (fields[21] as List)?.cast<CijferJaar>()
-      ..lessons = (fields[22] as List)
-          ?.map((dynamic e) => (e as List)?.cast<Les>())
-          ?.toList();
+      ..lessons = (fields[22] as Map)?.map((dynamic k, dynamic v) => MapEntry(
+          k as String,
+          (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()));
   }
 
   @override

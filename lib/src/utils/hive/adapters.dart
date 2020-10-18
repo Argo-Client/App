@@ -63,7 +63,7 @@ class Account extends HiveObject {
   @HiveField(21)
   List<CijferJaar> cijfers;
   @HiveField(22)
-  List<List<Les>> lessons;
+  Map<String, List<List<Les>>> lessons;
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
@@ -90,10 +90,10 @@ class Account extends HiveObject {
     this.refreshToken = tokenSet != null ? tokenSet["refresh_token"] : "";
     this.tenant = "";
     this.expiry = 8640000000000000;
-    this.afwezigheid = [];
+    this.afwezigheid = <Absentie>[];
     this.berichten = <Bericht>[];
     this.cijfers = <CijferJaar>[];
-    this.lessons = <List<Les>>[];
+    this.lessons = {}.cast<String, List<List<Les>>>();
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];

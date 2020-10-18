@@ -6,9 +6,13 @@ class Huiswerk extends StatefulWidget {
 }
 
 class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
+  static DateFormat formatDate = DateFormat("yyyy-MM-dd");
+  static DateTime now = DateTime.now();
+  DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
   void afterFirstLayout(BuildContext context) => handleError(account.magister.agenda.refresh, "Fout tijdens verversen van huiswerk", context);
   @override
   Widget build(BuildContext context) {
+    String weekslug = formatDate.format(lastMonday);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -25,7 +29,48 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
             builder: (BuildContext context, _, _a) {
               List<Widget> huiswerk = [];
               String lastDay;
-              List<Les> huiswerkLessen = account.lessons.expand((x) => x).where((les) => les.huiswerk != null).toList();
+              List<Les> huiswerkLessen;
+              bool loading = false;
+              if (account.lessons[weekslug] != null) {
+                huiswerkLessen = account.lessons[weekslug].expand((x) => x).where((les) => les.huiswerk != null).toList();
+              } else {
+                huiswerkLessen = [];
+                loading = true;
+                handleError(
+                  () async => await account.magister.agenda.getLessen(DateTime.parse(weekslug)),
+                  "Kon deze week niet ophalen",
+                  context,
+                );
+              }
+
+              huiswerk.add(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_left),
+                      onPressed: () {
+                        lastMonday = lastMonday.subtract(Duration(days: 7));
+                        setState(() {});
+                      },
+                    ),
+                    Text("Week $weekslug"),
+                    IconButton(
+                      icon: Icon(Icons.arrow_right),
+                      onPressed: () {
+                        lastMonday = lastMonday.add(Duration(days: 7));
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
+              );
+              if (loading) {
+                huiswerk.add(Center(child: CircularProgressIndicator()));
+              } else if (huiswerkLessen.isEmpty) {
+                /// [GUUS] maak even mooier, oja maak dan ook gelijk dat je naar volgende week kan ofzo
+                huiswerk.add(Center(child: Text("Geen huiswerk deze week")));
+              }
               for (int i = 0; i < huiswerkLessen.length; i++) {
                 Les hw = huiswerkLessen[i];
                 if (lastDay != hw.date) {

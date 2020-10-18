@@ -12,17 +12,18 @@ class Agenda extends MagisterApi {
     return await api.wait([getLessen()]);
   }
 
-  Future getLessen() async {
+  Future getLessen([DateTime lastM]) async {
     DateTime now = DateTime.now();
-    DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
+    DateTime lastMonday = lastM ?? now.subtract(Duration(days: now.weekday - 1));
     DateTime lastSunday = lastMonday.add(Duration(days: 6));
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     Map body = (await api.dio.get('api/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}')).data;
-    account.lessons = <List<Les>>[[], [], [], [], [], [], []];
+    String weekslug = formatDate.format(lastMonday);
+    account.lessons[weekslug] = <List<Les>>[[], [], [], [], [], [], []];
     body["Items"].forEach((les) {
       if (les["DuurtHeleDag"]) return;
       DateTime end = DateTime.parse(les["Einde"]).toLocal();
-      account.lessons[end.weekday - 1].add(Les(les));
+      account.lessons[weekslug][end.weekday - 1].add(Les(les));
     });
     return;
   }

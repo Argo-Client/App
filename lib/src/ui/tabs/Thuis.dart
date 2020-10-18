@@ -6,6 +6,11 @@ class Thuis extends StatefulWidget {
 }
 
 class _Thuis extends State<Thuis> {
+  static DateTime now = DateTime.now();
+  static DateTime lastMonday = now.subtract(Duration(days: now.weekday - 1));
+  static DateFormat formatDate = DateFormat("yyyy-MM-dd");
+
+  String weekslug = formatDate.format(lastMonday);
   void afterFirstLayout(BuildContext context) => handleError(account.magister.agenda.refresh, "Fout tijdens verversen van thuis", context);
   @override
   Widget build(BuildContext context) {
@@ -49,7 +54,7 @@ class _Thuis extends State<Thuis> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                if (account.lessons[DateTime.now().weekday - 1].isNotEmpty)
+                if (account.lessons[weekslug][DateTime.now().weekday - 1].isNotEmpty)
                   Card(
                     margin: EdgeInsets.only(
                       bottom: 20,
@@ -73,7 +78,7 @@ class _Thuis extends State<Thuis> {
                             ),
                             Column(
                               children: [
-                                for (var les in account.lessons[DateTime.now().weekday - 1])
+                                for (Les les in account.lessons[weekslug][DateTime.now().weekday - 1])
                                   Container(
                                     height: 75,
                                     decoration: BoxDecoration(

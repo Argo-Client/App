@@ -286,13 +286,18 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..ingevoerd = fields[0] as DateTime
       ..cijfer = fields[1] as String
       ..vak = fields[2] as Vak
-      ..periode = fields[3] as Periode;
+      ..periode = fields[3] as Periode
+      ..kolomId = fields[4] as int
+      ..title = fields[5] as String
+      ..id = fields[6] as int
+      ..voldoende = fields[7] as bool
+      ..weging = fields[8] as double;
   }
 
   @override
   void write(BinaryWriter writer, Cijfer obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.ingevoerd)
       ..writeByte(1)
@@ -300,7 +305,17 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..writeByte(2)
       ..write(obj.vak)
       ..writeByte(3)
-      ..write(obj.periode);
+      ..write(obj.periode)
+      ..writeByte(4)
+      ..write(obj.kolomId)
+      ..writeByte(5)
+      ..write(obj.title)
+      ..writeByte(6)
+      ..write(obj.id)
+      ..writeByte(7)
+      ..write(obj.voldoende)
+      ..writeByte(8)
+      ..write(obj.weging);
   }
 
   @override

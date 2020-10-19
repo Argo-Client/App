@@ -30,9 +30,17 @@ class Cijfers extends MagisterApi {
   Future cijfers() async {
     for (var i = 0; i < account.cijfers.length; i++) {
       List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${account.cijfers[i].id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${account.cijfers[i].eind}")).data["Items"];
-      account.cijfers[i].cijfers = cijfers.map((cijfer) => Cijfer(cijfer)).toList();
+      account.cijfers[i].cijfers = cijfers.map((cijfer) => Cijfer(cijfer)).where((cijfer) => cijfer.id != 0).toList();
       account.cijfers[i].cijfers.sort((a, b) => a.ingevoerd.millisecondsSinceEpoch.compareTo(b.ingevoerd.millisecondsSinceEpoch));
       account.cijfers[i].cijfers = account.cijfers[i].cijfers.reversed.toList();
     }
+  }
+
+  Future getExtraInfo(Cijfer cijf, CijferJaar jaar) async {
+    if (cijf.title != null) return cijf;
+    Map cijfer = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/extracijferkolominfo/${cijf.kolomId}")).data;
+    cijf.title = cijfer["WerkInformatieOmschrijving"] ?? cijfer["KolomOmschrijving"];
+    cijf.weging = cijfer["Weging"];
+    return cijf;
   }
 }

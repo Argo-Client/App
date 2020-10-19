@@ -226,12 +226,25 @@ class Cijfer {
   Vak vak;
   @HiveField(3)
   Periode periode;
+  @HiveField(4)
+  int kolomId;
+  @HiveField(5)
+  String title;
+  @HiveField(6)
+  int id;
+  @HiveField(7)
+  bool voldoende;
+  @HiveField(8)
+  double weging;
   Cijfer([Map cijfer]) {
     if (cijfer != null) {
       this.ingevoerd = DateTime.parse(cijfer["DatumIngevoerd"] ?? "1970-01-01T00:00:00.0000000Z");
       this.cijfer = cijfer["CijferStr"];
       this.periode = Periode(cijfer["CijferPeriode"]);
       this.vak = Vak(cijfer["Vak"]);
+      this.kolomId = cijfer["CijferKolom"]["Id"];
+      this.id = cijfer["Id"];
+      this.voldoende = cijfer["IsVoldoende"];
     }
   }
 }

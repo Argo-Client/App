@@ -217,9 +217,30 @@ class _CijferPagina extends State<CijferPagina> {
                                   bottom: greyBorderSide(),
                                 ),
                               ),
-                              child: ListTile(
-                                title: Text(
-                                  cijfer.cijfer,
+                              child: Futuristic(
+                                autoStart: true,
+                                futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                                busyBuilder: (context) => CircularProgressIndicator(),
+                                errorBuilder: (context, error, retry) {
+                                  return Text("Error $error");
+                                },
+                                dataBuilder: (context, data) => ListTile(
+                                  trailing: cijfer.cijfer.length > 4
+                                      ? null
+                                      : Stack(
+                                          children: [
+                                            Text(
+                                              cijfer.cijfer,
+                                              style: TextStyle(color: cijfer.voldoende ? null : Colors.red),
+                                            ),
+                                            Transform.translate(
+                                              offset: Offset(10, -18),
+                                              child: Text("${cijfer.weging}", style: TextStyle(color: Colors.grey[400])),
+                                            )
+                                          ],
+                                        ),
+                                  subtitle: cijfer.cijfer.length <= 4 ? null : Text(cijfer.cijfer),
+                                  title: Text(cijfer.title),
                                 ),
                               ),
                             ),

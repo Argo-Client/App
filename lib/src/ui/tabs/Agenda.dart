@@ -18,13 +18,13 @@ Future huiswerkAf(hw) async {
   update();
 }
 
-class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
+class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerProviderStateMixin {
   DateTime now, lastMonday;
   DateFormat numFormatter, dayFormatter;
   List dayAbbr;
   double timeFactor;
   String weekslug;
-  int endHour, defaultStartHour, pixelsPerHour;
+  int endHour, defaultStartHour, pixelsPerHour, currentDay;
   int getStartHour(dag) {
     if (account.lessons[weekslug] == null) return 0;
     return account.lessons[weekslug][dag].isEmpty ? defaultStartHour : (account.lessons[weekslug][dag].first.start / 60).floor();
@@ -37,7 +37,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   DateFormat formatDate = DateFormat("yyyy-MM-dd");
   _Agenda() {
     now = DateTime.now();
-    lastMonday = now.subtract(Duration(days: now.weekday - 1));
+    lastMonday = now.subtract(
+      Duration(
+        days: now.weekday - 1,
+      ),
+    );
     numFormatter = DateFormat('dd');
     dayFormatter = DateFormat('E');
     weekslug = formatDate.format(lastMonday);
@@ -45,307 +49,369 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
     timeFactor = userdata.get("pixelsPerHour") / 60;
     endHour = 23;
     defaultStartHour = 8;
+    currentDay = now.weekday - 1;
   }
+
+  Future openDatePicker() async {
+    DateTime pickDate = await showDatePicker(
+      context: context,
+      initialDate: lastMonday.add(
+        Duration(
+          days: currentDay,
+        ),
+      ),
+      firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+      lastDate: DateTime(DateTime.now().year + 100),
+    );
+
+    if (pickDate == null) return;
+    weekslug = formatDate.format(pickDate.subtract(Duration(days: pickDate.weekday - 1)));
+    lastMonday = DateTime.parse(weekslug);
+
+    if (!account.lessons.containsKey(weekslug)) {
+      handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon gekozen week niet laden", context, account.save);
+      account.save();
+    }
+
+    setState(() {
+      currentDay = pickDate.weekday - 1;
+      _tabController.index = pickDate.weekday - 1;
+    });
+  }
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      vsync: this,
+      length: 7,
+      initialIndex: currentDay,
+    )..addListener(
+        () {
+          setState(
+            () {
+              currentDay = _tabController.index;
+            },
+          );
+        },
+      );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      initialIndex: now.weekday - 1,
-      length: 7,
-      child: Scaffold(
-        key: _agendaKey,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => _layoutKey.currentState.openDrawer(),
-          ),
-          title: GestureDetector(
-            child: Text(
-              "Agenda",
-            ),
-            onTap: () {},
-          ),
-          bottom: TabBar(
-            // Dag kiezer bovenaan
-            tabs: <Widget>[
-              for (int dag = 0; dag < 7; dag++)
-                Tab(
-                  icon: Text(
-                    dayAbbr[dag],
-                    overflow: TextOverflow.visible,
-                    softWrap: false,
-                  ),
-                  text: numFormatter.format(lastMonday.add(Duration(days: dag))),
-                )
-            ],
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.date_range_outlined),
-              onPressed: () async {
-                DateTime pickDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                  lastDate: DateTime(DateTime.now().year + 100),
-                );
-                if (pickDate == null) return;
-                weekslug = formatDate.format(pickDate.subtract(Duration(days: pickDate.weekday - 1)));
-                lastMonday = DateTime.parse(weekslug);
-
-                if (!account.lessons.containsKey(weekslug)) {
-                  handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon gekozen week niet laden", context, account.save);
-                  account.save();
-                }
-                setState(() {});
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddLesPagina(),
-                  ),
-                );
-              },
-            ),
-          ],
+    return Scaffold(
+      key: _agendaKey,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () => _layoutKey.currentState.openDrawer(),
         ),
-        body: Container(
-          child: TabBarView(
+        title: GestureDetector(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
-                RefreshIndicator(
-                  onRefresh: () async {
-                    await handleError(account.magister.agenda.refresh, "Kon agenda niet verversen", context);
-                  },
-                  child: SingleChildScrollView(
-                    child: ValueListenableBuilder(
-                      valueListenable: updateNotifier,
-                      builder: (BuildContext context, _, Widget child) {
-                        List<List> widgetRooster = [];
-                        for (List dag in account.lessons[weekslug] ?? []) {
-                          List<Widget> widgetDag = [];
-
-                          if (dag.isEmpty) {
-                            widgetDag.add(Container());
-                            widgetRooster.add(widgetDag);
-                            continue;
-                          }
-                          int startHour = (dag.first.start / 60).floor();
-
-                          for (Les les in dag) {
-                            widgetDag.add(
-                              Container(
-                                margin: EdgeInsets.only(
-                                  top: ((les.start - startHour * 60) * timeFactor).toDouble(),
-                                ),
-                                width: MediaQuery.of(context).size.width - 30,
-                                height: les.duration * timeFactor,
-                                child: Card(
-                                  color: les.uitval
-                                      ? theme == Brightness.dark
-                                          ? Color.fromARGB(255, 119, 66, 62)
-                                          : Color.fromARGB(255, 255, 205, 210)
-                                      : null,
-                                  // shape: BorderRadius.all(),
-                                  margin: EdgeInsets.only(
-                                    top: .75,
-                                  ),
-                                  shape: Border(bottom: greyBorderSide()),
-                                  child: InkWell(
-                                    child: Stack(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.topLeft,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 5,
-                                              left: 5,
-                                            ),
-                                            child: Text(
-                                              les.hour,
-                                              style: TextStyle(
-                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topRight,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 5,
-                                              right: 5,
-                                            ),
-                                            child: les.huiswerk != null
-                                                ? !les.huiswerkAf
-                                                    ? Icon(
-                                                        Icons.assignment_outlined,
-                                                        size: 23,
-                                                        color: Colors.grey,
-                                                      )
-                                                    : Icon(
-                                                        Icons.assignment_turned_in_outlined,
-                                                        size: 23,
-                                                        color: Colors.green,
-                                                      )
-                                                : null,
-                                          ),
-                                        ),
-                                        // Align(
-                                        //   alignment: Alignment.bottomRight,
-                                        //   child: Padding(
-                                        //     padding: EdgeInsets.only(
-                                        //       top: 5,
-                                        //       right: 5,
-                                        //     ),
-                                        //     child: les["huiswerk"] != null
-                                        //         ? !les["huiswerkAf"]
-                                        //             ? Icon(
-                                        //                 Icons.assignment,
-                                        //                 size: 23,
-                                        //                 color: Colors.grey,
-                                        //               )
-                                        //             : Icon(
-                                        //                 Icons.check,
-                                        //                 size: 23,
-                                        //                 color: Colors.greenAccent,
-                                        //               )
-                                        //         : null,
-                                        //   ),
-                                        // ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 20, left: 20),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    les.title,
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      les.information,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => LesPagina(les),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                          widgetRooster.add(widgetDag);
-                        }
-                        return Stack(
-                          children: [
-                            if (dag + 1 == now.weekday) // Balkje van de tijd nu
-                              StatefulBuilder(builder: (BuildContext context, StateSetter rebuildMinute) {
-                                Future.delayed(const Duration(seconds: 10), () {
-                                  try {
-                                    rebuildMinute(() {});
-                                  } catch (e) {}
-                                });
-                                return Positioned(
-                                  top: (((now.hour - getStartHour(dag)) * 60 + now.minute) * timeFactor).toDouble(),
-                                  child: Container(
-                                    height: 0,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: userdata.get('accentColor'),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }),
-                            for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
-                              Positioned(
-                                top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: greyBorderSide(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  // Balkje aan de zijkant van de uren
-                                  children: [
-                                    for (int uur = getStartHour(dag); uur <= endHour; uur++)
-                                      Container(
-                                        // Een uur van het balkje
-                                        height: userdata.get("pixelsPerHour").toDouble(),
-                                        width: 30,
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            top: greyBorderSide(),
-                                            right: greyBorderSide(),
-                                            left: greyBorderSide(),
-                                          ),
-                                        ),
-
-                                        child: Center(
-                                          child: Text(
-                                            uur.toString(),
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: uur == now.hour && dag + 1 == now.weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                // Container van alle lessen
-
-                                widgetRooster.isEmpty
-                                    ? Container()
-                                    : Stack(
-                                        children: widgetRooster[dag],
-                                      ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
+              Text(
+                "Agenda",
+              ),
+              Text(
+                formatDatum.format(
+                  lastMonday.add(
+                    Duration(
+                      days: currentDay,
                     ),
                   ),
                 ),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey[300],
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
             ],
           ),
+          onTap: openDatePicker,
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          // Dag kiezer bovenaan
+          tabs: <Widget>[
+            for (int dag = 0; dag < 7; dag++)
+              Tab(
+                icon: Text(
+                  dayAbbr[dag],
+                  overflow: TextOverflow.visible,
+                  softWrap: false,
+                ),
+                text: numFormatter.format(lastMonday.add(Duration(days: dag))),
+              )
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today_outlined),
+            onPressed: openDatePicker,
+          ),
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AddLesPagina(
+                    lastMonday.add(
+                      Duration(
+                        days: currentDay,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: Container(
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
+              RefreshIndicator(
+                onRefresh: () async {
+                  await handleError(account.magister.agenda.refresh, "Kon agenda niet verversen", context);
+                },
+                child: SingleChildScrollView(
+                  child: ValueListenableBuilder(
+                    valueListenable: updateNotifier,
+                    builder: (BuildContext context, _, Widget child) {
+                      List<List> widgetRooster = [];
+                      for (List dag in account.lessons[weekslug] ?? []) {
+                        List<Widget> widgetDag = [];
+
+                        if (dag.isEmpty) {
+                          widgetDag.add(Container());
+                          widgetRooster.add(widgetDag);
+                          continue;
+                        }
+                        int startHour = (dag.first.start / 60).floor();
+
+                        for (Les les in dag) {
+                          widgetDag.add(
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: ((les.start - startHour * 60) * timeFactor).toDouble(),
+                              ),
+                              width: MediaQuery.of(context).size.width - 30,
+                              height: les.duration * timeFactor,
+                              child: Card(
+                                color: les.uitval
+                                    ? theme == Brightness.dark
+                                        ? Color.fromARGB(255, 119, 66, 62)
+                                        : Color.fromARGB(255, 255, 205, 210)
+                                    : null,
+                                // shape: BorderRadius.all(),
+                                margin: EdgeInsets.only(
+                                  top: .75,
+                                ),
+                                shape: Border(bottom: greyBorderSide()),
+                                child: InkWell(
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                            left: 5,
+                                          ),
+                                          child: Text(
+                                            les.hour,
+                                            style: TextStyle(
+                                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topRight,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                            right: 5,
+                                          ),
+                                          child: les.huiswerk != null
+                                              ? !les.huiswerkAf
+                                                  ? Icon(
+                                                      Icons.assignment_outlined,
+                                                      size: 23,
+                                                      color: Colors.grey,
+                                                    )
+                                                  : Icon(
+                                                      Icons.assignment_turned_in_outlined,
+                                                      size: 23,
+                                                      color: Colors.green,
+                                                    )
+                                              : null,
+                                        ),
+                                      ),
+                                      // Align(
+                                      //   alignment: Alignment.bottomRight,
+                                      //   child: Padding(
+                                      //     padding: EdgeInsets.only(
+                                      //       top: 5,
+                                      //       right: 5,
+                                      //     ),
+                                      //     child: les["huiswerk"] != null
+                                      //         ? !les["huiswerkAf"]
+                                      //             ? Icon(
+                                      //                 Icons.assignment,
+                                      //                 size: 23,
+                                      //                 color: Colors.grey,
+                                      //               )
+                                      //             : Icon(
+                                      //                 Icons.check,
+                                      //                 size: 23,
+                                      //                 color: Colors.greenAccent,
+                                      //               )
+                                      //         : null,
+                                      //   ),
+                                      // ),
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 20, left: 20),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  les.title,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    les.information,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => LesPagina(les),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        widgetRooster.add(widgetDag);
+                      }
+                      return Stack(
+                        children: [
+                          if (dag + 1 == now.weekday) // Balkje van de tijd nu
+                            StatefulBuilder(builder: (BuildContext context, StateSetter rebuildMinute) {
+                              Future.delayed(const Duration(seconds: 10), () {
+                                try {
+                                  rebuildMinute(() {});
+                                } catch (e) {}
+                              });
+                              return Positioned(
+                                top: (((now.hour - getStartHour(dag)) * 60 + now.minute) * timeFactor).toDouble(),
+                                child: Container(
+                                  height: 0,
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: userdata.get('accentColor'),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
+                            Positioned(
+                              top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: greyBorderSide(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                // Balkje aan de zijkant van de uren
+                                children: [
+                                  for (int uur = getStartHour(dag); uur <= endHour; uur++)
+                                    Container(
+                                      // Een uur van het balkje
+                                      height: userdata.get("pixelsPerHour").toDouble(),
+                                      width: 30,
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          top: greyBorderSide(),
+                                          right: greyBorderSide(),
+                                          left: greyBorderSide(),
+                                        ),
+                                      ),
+
+                                      child: Center(
+                                        child: Text(
+                                          uur.toString(),
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: uur == now.hour && dag + 1 == now.weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              // Container van alle lessen
+
+                              widgetRooster.isEmpty
+                                  ? Container()
+                                  : Stack(
+                                      children: widgetRooster[dag],
+                                    ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -488,23 +554,26 @@ class _LesPagina extends State<LesPagina> {
 }
 
 class AddLesPagina extends StatefulWidget {
+  final DateTime date;
+  AddLesPagina(this.date);
   @override
-  _AddLesPagina createState() => _AddLesPagina();
+  _AddLesPagina createState() => _AddLesPagina(date);
 }
 
 class _AddLesPagina extends State<AddLesPagina> {
+  DateTime date;
   bool heleDag = false;
-  TimeOfDay startTime = TimeOfDay.now();
-  TimeOfDay endTime = TimeOfDay.fromDateTime(
-    DateTime.now().add(
-      Duration(hours: 1),
-    ),
-  );
-  DateTime date = DateTime.now();
+
+  TimeOfDay startTime = TimeOfDay.now(),
+      endTime = TimeOfDay.fromDateTime(
+        DateTime.now().add(
+          Duration(hours: 1),
+        ),
+      );
+
   DateFormat formatDate = DateFormat("d-M-y");
-  String titel;
-  String locatie;
-  String inhoud;
+  String titel, locatie, inhoud;
+  _AddLesPagina(this.date);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -601,7 +670,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                                       onPressed: () async {
                                         DateTime newDate = await showDatePicker(
                                           context: context,
-                                          initialDate: DateTime.now(),
+                                          initialDate: date,
                                           firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
                                           lastDate: DateTime(DateTime.now().year + 100),
                                         );

@@ -58,7 +58,11 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                     IconButton(
                       icon: Icon(Icons.arrow_right),
                       onPressed: () {
-                        lastMonday = lastMonday.add(Duration(days: 7));
+                        lastMonday = lastMonday.add(
+                          Duration(
+                            days: 7,
+                          ),
+                        );
                         setState(() {});
                       },
                     ),
@@ -66,7 +70,11 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk> {
                 ),
               );
               if (loading) {
-                huiswerk.add(Center(child: CircularProgressIndicator()));
+                huiswerk.add(
+                  Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               } else if (huiswerkLessen.isEmpty) {
                 /// [GUUS] maak even mooier, oja maak dan ook gelijk dat je naar volgende week kan ofzo
                 huiswerk.add(Center(child: Text("Geen huiswerk deze week")));

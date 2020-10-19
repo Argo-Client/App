@@ -51,7 +51,7 @@ final List _children = [
   },
   {
     "name": Text("Bronnen"),
-    "icon": Icon(Icons.folder_shared_outlined),
+    "icon": Icon(Icons.folder_outlined),
     "page": Bronnen(),
   },
   {

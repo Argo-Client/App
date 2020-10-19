@@ -295,9 +295,7 @@ class NieuwBerichtPagina extends StatelessWidget {
           child: Column(
             children: [
               Card(
-                margin: EdgeInsets.only(
-                  bottom: 20,
-                ),
+                margin: EdgeInsets.zero,
                 child: Column(
                   children: [
                     Container(
@@ -346,37 +344,37 @@ class NieuwBerichtPagina extends StatelessWidget {
                         ),
                       ),
                     ),
-                    ListTile(
-                      leading: Icon(Icons.subject),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'Onderwerp',
+                    Container(
+                      child: ListTile(
+                        leading: Icon(Icons.subject),
+                        title: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: 'Onderwerp',
+                          ),
+                          initialValue: ber != null ? "RE: " + ber.onderwerp : null,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Veld verplicht';
+                            }
+                            return null;
+                          },
                         ),
-                        initialValue: ber != null ? "RE: " + ber.onderwerp : null,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Veld verplicht';
-                          }
-                          return null;
-                        },
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Card(
-                margin: EdgeInsets.zero,
-                child: Column(
-                  children: [
                     ListTile(
                       leading: Icon(Icons.edit),
                       title: TextFormField(
                         keyboardType: TextInputType.multiline,
-                        maxLines: 20,
+                        maxLines: 25,
                         scrollPadding: EdgeInsets.all(20.0),
                         decoration: InputDecoration(
                           border: InputBorder.none,

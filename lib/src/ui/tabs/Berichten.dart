@@ -131,148 +131,135 @@ class BerichtPagina extends StatelessWidget {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: account.magister.berichten.getBerichtFromId(ber.id),
-        builder: (BuildContext context, AsyncSnapshot snap) {
-          Bericht loaded = snap.data;
-          if (snap.hasError) {
-            return RefreshIndicator(
-              onRefresh: () {
-                return;
-
-                /// [SAM] Gewoon doen, niet zo huilen
-              },
-              child: Column(
-                children: [
-                  Center(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 50,
-                      child: Column(
-                        children: [
-                          Text(
-                            "Kon geen verbinding maken met Magister:\n${snap.error.toString()}",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 20,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
+      body: Futuristic(
+        autoStart: true,
+        futureBuilder: () => account.magister.berichten.getBerichtFromId(ber.id),
+        busyBuilder: (context) => Center(
+          child: CircularProgressIndicator(),
+        ),
+        errorBuilder: (context, error, retry) => RefreshIndicator(
+          onRefresh: () async => retry(),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width - 50,
+                height: MediaQuery.of(context).size.height - 80,
+                child: Text(
+                  "Kon geen verbinding maken met Magister:\n${(error as dynamic).error.toString()}",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 20,
                   ),
-                ],
+                  textAlign: TextAlign.center,
+                ),
               ),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  Card(
-                    margin: EdgeInsets.only(
-                      bottom: 20,
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                    ),
-                    child: Column(
-                      children: [
-                        if (ber.afzender != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.person_outlined,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              ber.afzender,
-                            ),
-                            subtitle: Text(
-                              "Afzender",
-                            ),
+            ),
+          ),
+        ),
+        dataBuilder: (context, ber) => SingleChildScrollView(
+          child: Column(
+            children: [
+              Card(
+                margin: EdgeInsets.only(
+                  bottom: 20,
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                ),
+                child: Column(
+                  children: [
+                    if (ber.afzender != null)
+                      ListTile(
+                        leading: Padding(
+                          child: Icon(
+                            Icons.person_outlined,
                           ),
-                        if (ber.dag != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.send,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              ber.dag,
-                            ),
-                            subtitle: Text(
-                              "Verzonden",
-                            ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
                           ),
-                        if (loaded != null && loaded.ontvangers != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.people_outlined,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              loaded.ontvangers,
-                            ),
-                            subtitle: Text(
-                              "Ontvanger(s)",
-                            ),
-                          ),
-                        if (loaded != null && loaded.cc != null)
-                          ListTile(
-                            leading: Padding(
-                              child: Icon(
-                                Icons.people_outline,
-                              ),
-                              padding: EdgeInsets.only(
-                                top: 7,
-                                left: 7,
-                              ),
-                            ),
-                            title: Text(
-                              loaded.cc,
-                            ),
-                            subtitle: Text(
-                              "CC",
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (loaded != null && loaded.inhoud != null)
-                    Card(
-                      margin: EdgeInsets.zero,
-                      child: Container(
-                        padding: EdgeInsets.all(
-                          20,
                         ),
-                        child: Html(
-                          onLinkTap: (link) {
-                            launch(link);
-                          },
-                          data: loaded.inhoud,
+                        title: Text(
+                          ber.afzender,
+                        ),
+                        subtitle: Text(
+                          "Afzender",
                         ),
                       ),
-                    ),
-                  if (loaded == null && !snap.hasError) CircularProgressIndicator()
-                ],
+                    if (ber.dag != null)
+                      ListTile(
+                        leading: Padding(
+                          child: Icon(
+                            Icons.send,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.dag,
+                        ),
+                        subtitle: Text(
+                          "Verzonden",
+                        ),
+                      ),
+                    if (ber.ontvangers != null)
+                      ListTile(
+                        leading: Padding(
+                          child: Icon(
+                            Icons.people_outlined,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.ontvangers,
+                        ),
+                        subtitle: Text(
+                          "Ontvanger(s)",
+                        ),
+                      ),
+                    if (ber.cc != null)
+                      ListTile(
+                        leading: Padding(
+                          child: Icon(
+                            Icons.people_outline,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.cc,
+                        ),
+                        subtitle: Text(
+                          "CC",
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            );
-          }
-        },
+              if (ber.inhoud != null)
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Container(
+                    padding: EdgeInsets.all(
+                      20,
+                    ),
+                    child: Html(
+                      onLinkTap: launch,
+                      data: ber.inhoud,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

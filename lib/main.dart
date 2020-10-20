@@ -19,8 +19,10 @@ import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:filesize/filesize.dart';
 // import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 // import 'package:charts_flutter/flutter.dart' as charts;
 // import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
@@ -88,6 +90,7 @@ void main() async {
   Hive.registerAdapter(PeriodeAdapter());
   Hive.registerAdapter(BerichtAdapter());
   Hive.registerAdapter(AbsentieAdapter());
+  Hive.registerAdapter(BronAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
   if (accounts.isEmpty) {

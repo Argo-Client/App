@@ -41,13 +41,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..cijfers = (fields[21] as List)?.cast<CijferJaar>()
       ..lessons = (fields[22] as Map)?.map((dynamic k, dynamic v) => MapEntry(
           k as String,
-          (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()));
+          (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
+      ..bronnen = (fields[23] as List)?.cast<Bron>();
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -93,7 +94,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(21)
       ..write(obj.cijfers)
       ..writeByte(22)
-      ..write(obj.lessons);
+      ..write(obj.lessons)
+      ..writeByte(23)
+      ..write(obj.bronnen);
   }
 
   @override
@@ -451,6 +454,54 @@ class AbsentieAdapter extends TypeAdapter<Absentie> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AbsentieAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class BronAdapter extends TypeAdapter<Bron> {
+  @override
+  final int typeId = 9;
+
+  @override
+  Bron read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Bron()
+      ..naam = fields[0] as String
+      ..id = fields[1] as int
+      ..contentType = fields[2] as String
+      ..isFolder = fields[3] as bool
+      ..children = (fields[4] as List)?.cast<Bron>()
+      ..size = fields[5] as int;
+  }
+
+  @override
+  void write(BinaryWriter writer, Bron obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(0)
+      ..write(obj.naam)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.contentType)
+      ..writeByte(3)
+      ..write(obj.isFolder)
+      ..writeByte(4)
+      ..write(obj.children)
+      ..writeByte(5)
+      ..write(obj.size);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BronAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

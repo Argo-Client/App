@@ -53,6 +53,7 @@ final List _children = [
     "name": Text("Bronnen"),
     "icon": Icon(Icons.folder_outlined),
     "page": Bronnen(),
+    "overridePop": true,
   },
   {
     "divider": true,

@@ -64,6 +64,9 @@ class Account extends HiveObject {
   List<CijferJaar> cijfers;
   @HiveField(22)
   Map<String, List<List<Les>>> lessons;
+  @HiveField(23)
+  List<Bron> bronnen;
+
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
@@ -316,6 +319,32 @@ class Absentie {
       this.type = afw["Omschrijving"];
       this.les = Les(afw["Afspraak"]);
       this.geoorloofd = afw["Geoorloofd"];
+    }
+  }
+}
+
+@HiveType(typeId: 9)
+class Bron {
+  @HiveField(0)
+  String naam;
+  @HiveField(1)
+  int id;
+  @HiveField(2)
+  String contentType;
+  @HiveField(3)
+  bool isFolder;
+  @HiveField(4)
+  List<Bron> children;
+  @HiveField(5)
+  int size;
+  int downloadCount;
+  Bron([Map bron]) {
+    if (bron != null) {
+      this.naam = bron["Naam"];
+      this.id = bron["Id"];
+      this.contentType = bron["ContentType"];
+      this.isFolder = bron["BronSoort"] == 0;
+      this.size = bron["Grootte"];
     }
   }
 }

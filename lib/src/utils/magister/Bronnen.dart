@@ -19,7 +19,6 @@ class Bronnen extends MagisterApi {
 
   Future loadChildren(Bron bron) async {
     bron.children = await loadBron(bron.id);
-    print(bron.children);
     account.save();
   }
 
@@ -36,7 +35,6 @@ class Bronnen extends MagisterApi {
       onReceiveProgress(bron.size, 0);
       return;
     }
-    print(savePath);
     await api.dio.download(
       "api/personen/${account.id}/bronnen/${bron.id}/content",
       savePath,

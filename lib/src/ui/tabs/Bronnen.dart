@@ -65,10 +65,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                               if (bron.children == null) {
                                 await handleError(() async => await account.magister.bronnen.loadChildren(bron), "Kon ${bron.naam} niet laden.", context, () {
                                   setState(() {});
-                                  print("Length voor ${bronnenView.length}");
                                   bronnenView = bronnenView.where((list) => list != null).toList();
-
-                                  print("Length na ${bronnenView.length}");
                                   bronnenView.add(bron.children);
                                 });
                               }

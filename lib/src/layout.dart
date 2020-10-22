@@ -178,15 +178,32 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 ],
                 accountName: Text(account.fullName),
                 accountEmail: Text(account.klasCode),
-                currentAccountPicture: CircleAvatar(
-                  backgroundColor: Theme.of(context).backgroundColor,
-                  backgroundImage: !useIcon ? Image.memory(base64Decode(account.profilePicture)).image : null,
-                  child: useIcon
-                      ? Icon(
-                          Icons.person,
-                          size: 50,
-                        )
-                      : null,
+                currentAccountPicture: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Theme.of(context).backgroundColor,
+                      backgroundImage: !useIcon
+                          ? Image.memory(
+                              base64Decode(account.profilePicture),
+                            ).image
+                          : null,
+                      child: useIcon
+                          ? Icon(
+                              Icons.person_outline,
+                              size: 50,
+                            )
+                          : null,
+                    ),
+                    // Align(
+                    //   alignment: Alignment.bottomRight,
+                    //   child: Icon(
+                    //     Icons.star,
+                    //     size: 25,
+                    //     color: Color.fromARGB(255, 255, 223, 0),
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
               StatefulBuilder(

@@ -74,8 +74,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 }
                 absenties.add(
                   Container(
-                    child: Card(
-                      margin: EdgeInsets.zero,
+                    child: SeeCard(
                       child: ListTile(
                         leading: Padding(
                           child: afw.geoorloofd ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error_outlined, color: Colors.redAccent),

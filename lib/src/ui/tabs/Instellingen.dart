@@ -50,204 +50,270 @@ class _Instellingen extends State<Instellingen> {
       body: ListView(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 15, top: 20),
+            padding: EdgeInsets.only(
+              left: 10,
+              top: 10,
+              bottom: 10,
+            ),
             child: Text(
               "Uiterlijk",
               style: TextStyle(color: userdata.get("accentColor")),
             ),
           ),
-          ListTile(
-            // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
-            trailing: Icon(Icons.brightness_4_outlined),
-            title: Text("Thema"),
-            subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
-            onTap: () {
-              return showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return AlertDialog(
-                        title: Text("Selecteer je thema"),
-                        actions: [
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.pop(context);
+          SeeCard(
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                  ),
+                  child: ListTile(
+                    // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
+                    trailing: Icon(Icons.brightness_4_outlined),
+                    title: Text("Thema"),
+                    subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
+                    onTap: () {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return StatefulBuilder(
+                            builder: (context, setState) {
+                              return AlertDialog(
+                                title: Text("Selecteer je thema"),
+                                actions: [
+                                  FlatButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Sluit",
+                                    ),
+                                  )
+                                ],
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      RadioListTile(
+                                        title: Text("Licht"),
+                                        activeColor: userdata.get('accentColor'),
+                                        value: "licht",
+                                        groupValue: userdata.get("theme"),
+                                        onChanged: (value) {
+                                          appState.setState(() {
+                                            setState(() {
+                                              userdata.put("theme", value);
+                                            });
+                                          });
+                                        },
+                                      ),
+                                      RadioListTile(
+                                        title: Text("Donker"),
+                                        activeColor: userdata.get('accentColor'),
+                                        value: "donker",
+                                        groupValue: userdata.get("theme"),
+                                        onChanged: (value) {
+                                          appState.setState(() {
+                                            setState(() {
+                                              userdata.put("theme", value);
+                                            });
+                                          });
+                                        },
+                                      ),
+                                      RadioListTile(
+                                        title: Text("Systeem kleur"),
+                                        activeColor: userdata.get('accentColor'),
+                                        value: "systeem",
+                                        groupValue: userdata.get("theme"),
+                                        onChanged: (value) {
+                                          appState.setState(() {
+                                            setState(() {
+                                              userdata.put("theme", value);
+                                            });
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
                             },
-                            child: Text(
-                              "Sluit",
-                            ),
-                          )
-                        ],
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              RadioListTile(
-                                title: Text("Licht"),
-                                activeColor: userdata.get('accentColor'),
-                                value: "licht",
-                                groupValue: userdata.get("theme"),
-                                onChanged: (value) {
-                                  appState.setState(() {
-                                    setState(() {
-                                      userdata.put("theme", value);
-                                    });
-                                  });
-                                },
-                              ),
-                              RadioListTile(
-                                title: Text("Donker"),
-                                activeColor: userdata.get('accentColor'),
-                                value: "donker",
-                                groupValue: userdata.get("theme"),
-                                onChanged: (value) {
-                                  appState.setState(() {
-                                    setState(() {
-                                      userdata.put("theme", value);
-                                    });
-                                  });
-                                },
-                              ),
-                              RadioListTile(
-                                title: Text("Systeem kleur"),
-                                activeColor: userdata.get('accentColor'),
-                                value: "systeem",
-                                groupValue: userdata.get("theme"),
-                                onChanged: (value) {
-                                  appState.setState(() {
-                                    setState(() {
-                                      userdata.put("theme", value);
-                                    });
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
-              );
-            },
-          ),
-          ListTile(
-            title: Text('Primaire kleur'),
-            subtitle: Text(
-              '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-            ),
-            onTap: () => _showColorPicker((color) => appState.setState(() {
-                  userdata.put("primaryColor", color);
-                })),
-            trailing: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: userdata.get("primaryColor"),
-                border: Border.all(
-                  color: Colors.black,
+                  ),
                 ),
-              ),
-            ),
-          ),
-          ListTile(
-            title: Text('Secundaire kleur'),
-            subtitle: Text(
-              '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-            ),
-            onTap: () => _showColorPicker((color) => appState.setState(() {
-                  userdata.put("accentColor", color);
-                })),
-            trailing: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: userdata.get("accentColor"),
-                border: Border.all(
-                  color: Colors.black,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text('Primaire kleur'),
+                    subtitle: Text(
+                      '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    ),
+                    onTap: () => _showColorPicker((color) => appState.setState(() {
+                          userdata.put("primaryColor", color);
+                        })),
+                    trailing: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: userdata.get("primaryColor"),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                ListTile(
+                  title: Text('Secundaire kleur'),
+                  subtitle: Text(
+                    '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                  ),
+                  onTap: () => _showColorPicker((color) => appState.setState(() {
+                        userdata.put("accentColor", color);
+                      })),
+                  trailing: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: userdata.get("accentColor"),
+                      border: Border.all(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Divider(),
           Padding(
-            padding: EdgeInsets.only(left: 15, top: 20),
+            padding: EdgeInsets.only(
+              left: 10,
+              top: 10,
+              bottom: 10,
+            ),
             child: Text(
               "Agenda",
               style: TextStyle(color: userdata.get("accentColor")),
             ),
           ),
-          ListTile(
-            title: Text("Aantal pixels per uur"),
-            subtitle: Text("Hoe hoog een uur is in de agenda"),
-            onTap: () => showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return NumberPickerDialog.integer(
-                    title: Text("Pixels per uur"),
-                    minValue: 50,
-                    maxValue: 500,
-                    initialIntegerValue: userdata.get("pixelsPerHour"),
-                  );
-                }).then((value) {
-              if (value != null) {
-                userdata.put("pixelsPerHour", value);
-              }
-            }),
-          ),
-          Divider(),
-          Padding(
-            padding: EdgeInsets.only(left: 15, top: 20),
-            child: Text(
-              "Meldingen",
-              style: TextStyle(color: userdata.get("accentColor")),
+          SeeCard(
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text("Aantal pixels per uur"),
+                  subtitle: Text("Hoe hoog een uur is in de agenda"),
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Pixels per uur"),
+                          minValue: 50,
+                          maxValue: 500,
+                          initialIntegerValue: userdata.get("pixelsPerHour"),
+                        );
+                      }).then((value) {
+                    if (value != null) {
+                      userdata.put("pixelsPerHour", value);
+                    }
+                  }),
+                ),
+              ],
             ),
+            margin: EdgeInsets.zero,
           ),
-          Divider(),
+          // Padding(
+          //   padding: EdgeInsets.only(
+          //     left: 10,
+          //     top: 10,
+          //     bottom: 10,
+          //   ),
+          //   child: Text(
+          //     "Meldingen",
+          //     style: TextStyle(color: userdata.get("accentColor")),
+          //   ),
+          // ),
+          //SeeCard(
+          //   child: Column(
+          //     children: [],
+          //   ),
+          //   margin: EdgeInsets.zero,
+          // ),
           Padding(
-            padding: EdgeInsets.only(left: 15, top: 20),
+            padding: EdgeInsets.only(
+              left: 10,
+              top: 10,
+              bottom: 10,
+            ),
             child: Text(
               "Overig",
               style: TextStyle(color: userdata.get("accentColor")),
             ),
           ),
-          CheckboxListTile(
-            title: Text("Zet je foto uit"),
-            activeColor: userdata.get("accentColor"),
-            subtitle: Text("Voor als die niet zo goed gelukt is."),
-            value: userdata.get("useIcon"),
-            onChanged: (value) {
-              userdata.put("useIcon", value);
-              setState(() {});
-              appState.setState(() {});
-            },
-          ),
-          CheckboxListTile(
-            title: Text("Terugknop"),
-            activeColor: userdata.get("accentColor"),
-            subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
-            value: userdata.get("backOpensDrawer"),
-            onChanged: (value) => setState(
-              () {
-                userdata.put("backOpensDrawer", value);
-              },
+          SeeCard(
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                  ),
+                  child: CheckboxListTile(
+                    title: Text("Zet je foto uit"),
+                    activeColor: userdata.get("accentColor"),
+                    subtitle: Text("Voor als die niet zo goed gelukt is."),
+                    value: userdata.get("useIcon"),
+                    onChanged: (value) {
+                      userdata.put("useIcon", value);
+                      setState(() {});
+                      appState.setState(() {});
+                    },
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                  ),
+                  child: CheckboxListTile(
+                    title: Text("Terugknop"),
+                    activeColor: userdata.get("accentColor"),
+                    subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
+                    value: userdata.get("backOpensDrawer"),
+                    onChanged: (value) => setState(
+                      () {
+                        userdata.put("backOpensDrawer", value);
+                      },
+                    ),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.input_outlined),
+                  title: Text('Open Introductie'),
+                  onTap: () {
+                    // Navigator.pushNamed(context, "Introduction");
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Introduction(),
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.input_outlined),
-            title: Text('Open Introductie'),
-            onTap: () {
-              // Navigator.pushNamed(context, "Introduction");
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Introduction(),
-                ),
-              );
-            },
-          )
         ],
       ),
     );

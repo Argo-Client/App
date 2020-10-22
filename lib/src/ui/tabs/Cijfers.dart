@@ -8,16 +8,6 @@ class Cijfers extends StatefulWidget {
 class _Cijfers extends State<Cijfers> {
   DateFormat formatDate = DateFormat("dd-MM-y");
   int jaar = 1;
-  _Cijfers() {
-    // if (account.id != 0) {
-    //   account.magister.cijfers.refresh().then((_) {
-    //     setState(() {});
-    //   }).catchError((e) {
-    //     FlushbarHelper.createError(message: "Fout tijdens verversen van cijfers:\n$e")..show(context);
-    //     throw (e);
-    //   });
-    // }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,38 +48,48 @@ class _Cijfers extends State<Cijfers> {
                 for (Periode periode in account.cijfers[jaar].perioden)
                   RefreshIndicator(
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for (Cijfer cijfer in account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id))
-                            ListTile(
-                              title: Text("${cijfer.vak.naam}"),
-                              subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
-                              trailing: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: userdata.get("accentColor")),
+                      child: SeeCard(
+                        child: Column(
+                          children: [
+                            for (Cijfer cijfer in account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id))
+                              Container(
+                                child: ListTile(
+                                  title: Text("${cijfer.vak.naam}"),
+                                  subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
+                                  trailing: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: userdata.get("accentColor")),
+                                    ),
+                                    width: 45,
+                                    height: 45,
+                                    child: Center(
+                                      child: Text(
+                                        "${cijfer.cijfer}",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        maxLines: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => CijferPagina(cijfer.vak.id, jaar),
+                                      ),
+                                    );
+                                  },
                                 ),
-                                width: 45,
-                                height: 45,
-                                child: Center(
-                                  child: Text(
-                                    "${cijfer.cijfer}",
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    maxLines: 1,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: greyBorderSide(),
+                                    bottom: greyBorderSide(),
                                   ),
                                 ),
                               ),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CijferPagina(cijfer.vak.id, jaar),
-                                  ),
-                                );
-                              },
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     onRefresh: () async {
@@ -114,25 +114,6 @@ class CijferPagina extends StatefulWidget {
 }
 
 class _CijferPagina extends State<CijferPagina> {
-  // static List<charts.Series<Map, DateTime>> _createCijfers() {
-  //   final data = [
-  //     {
-  //       "time": DateTime.now(),
-  //       "cijfer": "8.6",
-  //     }
-  //   ];
-
-  //   return [
-  //     new charts.Series<Map, DateTime>(
-  //       id: 'Cijfer',
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (Map cijfer, _) => cijfer["time"],
-  //       measureFn: (Map cijfer, _) => cijfer["cijfer"],
-  //       data: data,
-  //     )
-  //   ];
-  // }
-
   CijferJaar jaar;
   List<Cijfer> cijfers;
   Vak vak;
@@ -153,18 +134,20 @@ class _CijferPagina extends State<CijferPagina> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // charts.TimeSeriesChart(
-            //   _createCijfers(),
-            //   dateTimeFactory: const charts.LocalDateTimeFactory(),
-            // ),
+            Container(
+              constraints: BoxConstraints.tightForFinite(),
+            ),
+            SizedBox(
+              height: 300.0,
+              child: charts.LineChart(_createCijfers()),
+            ),
             Container(
               decoration: BoxDecoration(
                 border: Border.symmetric(
                   vertical: greyBorderSide(),
                 ),
               ),
-              child: Card(
-                margin: EdgeInsets.zero,
+              child: SeeCard(
                 child: ListTile(
                   leading: Icon(
                     Icons.book,
@@ -198,8 +181,7 @@ class _CijferPagina extends State<CijferPagina> {
                         style: TextStyle(color: userdata.get("accentColor")),
                       ),
                     ),
-                  Card(
-                    margin: EdgeInsets.zero,
+                  SeeCard(
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border(
@@ -231,15 +213,33 @@ class _CijferPagina extends State<CijferPagina> {
                                           children: [
                                             Text(
                                               cijfer.cijfer,
-                                              style: TextStyle(color: cijfer.voldoende ? null : Colors.red),
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                color: cijfer.voldoende ? null : Colors.red,
+                                              ),
                                             ),
                                             Transform.translate(
-                                              offset: Offset(10, -18),
-                                              child: Text("${cijfer.weging}", style: TextStyle(color: Colors.grey[400])),
+                                              offset: Offset(10, -15),
+                                              child: Text(
+                                                "${cijfer.weging}x",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[400],
+                                                ),
+                                              ),
                                             )
                                           ],
                                         ),
-                                  subtitle: cijfer.cijfer.length <= 4 ? null : Text(cijfer.cijfer),
+                                  subtitle: cijfer.cijfer.length <= 4
+                                      ? null
+                                      : Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                          ),
+                                          child: Text(
+                                            cijfer.cijfer,
+                                          ),
+                                        ),
                                   title: Text(cijfer.title),
                                 ),
                               ),
@@ -256,19 +256,24 @@ class _CijferPagina extends State<CijferPagina> {
     );
   }
 
-  // static List<charts.Series<Cijfer, DateTime>> _createCijfers() {
-  //   final data = [
-  //     new Cijfer(new DateTime(2017, 9, 19), 5),
-  //   ];
-
-  //   return [
-  //     new charts.Series<Cijfer, DateTime>(
-  //       id: 'Sales',
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (Cijfer sales, _) => sales.time,
-  //       measureFn: (Cijfer sales, _) => sales.sales,
-  //       data: data,
-  //     )
-  //   ];
-  // }
+  List<charts.Series<double, int>> _createCijfers() {
+    List<double> doubleCijfers = [];
+    cijfers.forEach(
+      (Cijfer cijfer) {
+        try {
+          double cijf = double.parse(cijfer.cijfer.replaceFirst(",", "."));
+          doubleCijfers.add(cijf);
+        } catch (e) {}
+      },
+    );
+    return [
+      new charts.Series<double, int>(
+        id: 'Cijfers',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (double cijfer, i) => i,
+        measureFn: (double cijfer, _) => cijfer,
+        data: doubleCijfers,
+      )
+    ];
+  }
 }

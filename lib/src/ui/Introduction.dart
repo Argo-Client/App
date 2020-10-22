@@ -89,7 +89,7 @@ class _Introduction extends State<Introduction> {
                               width: MediaQuery.of(context).size.width / 2 - 70,
                               child: Column(
                                 children: [
-                                  Card(
+                                  SeeCard(
                                     margin: EdgeInsets.symmetric(
                                       vertical: 25,
                                     ),
@@ -101,7 +101,7 @@ class _Introduction extends State<Introduction> {
                                     count: 3,
                                     color: Colors.white,
                                   ),
-                                  Card(
+                                  SeeCard(
                                     margin: EdgeInsets.symmetric(
                                       vertical: 25,
                                     ),
@@ -153,27 +153,23 @@ class _Introduction extends State<Introduction> {
                               width: MediaQuery.of(context).size.width / 2 - 70,
                               child: Column(
                                 children: [
-                                  Card(
+                                  Container(
                                     color: Colors.grey[800],
                                     margin: EdgeInsets.symmetric(
                                       vertical: 25,
                                     ),
-                                    child: Container(
-                                      height: 75,
-                                    ),
+                                    height: 75,
                                   ),
                                   PlaceholderLines(
                                     count: 3,
                                     color: Colors.grey[800],
                                   ),
-                                  Card(
+                                  Container(
                                     color: Colors.grey[800],
                                     margin: EdgeInsets.symmetric(
                                       vertical: 25,
                                     ),
-                                    child: Container(
-                                      height: 75,
-                                    ),
+                                    height: 75,
                                   ),
                                   PlaceholderLines(
                                     count: 3,

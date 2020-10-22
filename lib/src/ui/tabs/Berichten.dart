@@ -56,8 +56,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
               }
               berichten.add(
                 Container(
-                  child: Card(
-                    margin: EdgeInsets.zero,
+                  child: SeeCard(
                     child: ListTile(
                       trailing: Padding(
                         child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
@@ -160,7 +159,7 @@ class BerichtPagina extends StatelessWidget {
         dataBuilder: (context, ber) => SingleChildScrollView(
           child: Column(
             children: [
-              Card(
+              SeeCard(
                 margin: EdgeInsets.only(
                   bottom: 20,
                   top: 0,
@@ -245,8 +244,7 @@ class BerichtPagina extends StatelessWidget {
                 ),
               ),
               if (ber.inhoud != null)
-                Card(
-                  margin: EdgeInsets.zero,
+                SeeCard(
                   child: Container(
                     padding: EdgeInsets.all(
                       20,
@@ -281,8 +279,7 @@ class NieuwBerichtPagina extends StatelessWidget {
         child: Form(
           child: Column(
             children: [
-              Card(
-                margin: EdgeInsets.zero,
+              SeeCard(
                 child: Column(
                   children: [
                     Container(
@@ -321,6 +318,26 @@ class NieuwBerichtPagina extends StatelessWidget {
                             enabledBorder: InputBorder.none,
                             disabledBorder: InputBorder.none,
                             hintText: 'CC',
+                          ),
+                          initialValue: ber != null ? ber.cc : null,
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: ListTile(
+                        leading: Icon(Icons.people_outlined),
+                        title: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: 'BCC',
                           ),
                           initialValue: ber != null ? ber.cc : null,
                         ),

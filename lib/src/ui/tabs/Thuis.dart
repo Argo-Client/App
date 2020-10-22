@@ -55,7 +55,7 @@ class _Thuis extends State<Thuis> {
             child: Column(
               children: [
                 if (account.lessons[weekslug][DateTime.now().weekday - 1].isNotEmpty)
-                  Card(
+                  SeeCard(
                     margin: EdgeInsets.only(
                       bottom: 20,
                     ),
@@ -153,7 +153,7 @@ class _Thuis extends State<Thuis> {
                       ),
                     ),
                   ),
-                Card(
+                SeeCard(
                   margin: EdgeInsets.only(
                     bottom: 20,
                   ),
@@ -195,7 +195,7 @@ class _Thuis extends State<Thuis> {
                   ),
                 ),
                 if (account.berichten.isNotEmpty)
-                  Card(
+                  SeeCard(
                     margin: EdgeInsets.only(
                       bottom: 20,
                     ),

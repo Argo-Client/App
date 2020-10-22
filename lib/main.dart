@@ -22,8 +22,8 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:filesize/filesize.dart';
 // import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:back_button_interceptor/back_button_interceptor.dart';
-// import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:purchases_flutter/purchases_flutter.dart';
 // import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
 import 'package:hive/hive.dart';
@@ -51,6 +51,26 @@ part 'src/ui/tabs/Info.dart';
 
 extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
+}
+
+class SeeCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets margin;
+  final Color color;
+
+  SeeCard({this.margin, this.child, this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: margin ?? EdgeInsets.zero,
+      elevation: 0.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      color: color ?? null,
+      child: child,
+    );
+  }
 }
 
 Account account;

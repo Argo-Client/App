@@ -209,119 +209,125 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               ),
                               width: MediaQuery.of(context).size.width - 30,
                               height: les.duration * timeFactor,
-                              child: Card(
-                                color: les.uitval
-                                    ? theme == Brightness.dark
-                                        ? Color.fromARGB(255, 119, 66, 62)
-                                        : Color.fromARGB(255, 255, 205, 210)
-                                    : null,
-                                // shape: BorderRadius.all(),
-                                margin: EdgeInsets.only(
-                                  top: .75,
-                                ),
-                                shape: Border(bottom: greyBorderSide()),
-                                child: InkWell(
-                                  child: Stack(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: 5,
-                                            left: 5,
-                                          ),
-                                          child: Text(
-                                            les.hour,
-                                            style: TextStyle(
-                                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                              child: Container(
+                                child: SeeCard(
+                                  color: les.uitval
+                                      ? theme == Brightness.dark
+                                          ? Color.fromARGB(255, 119, 66, 62)
+                                          : Color.fromARGB(255, 255, 205, 210)
+                                      : null,
+                                  // shape: BorderRadius.all(),
+                                  margin: EdgeInsets.only(
+                                    top: .75,
+                                  ),
+                                  child: InkWell(
+                                    child: Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              top: 5,
+                                              left: 5,
+                                            ),
+                                            child: Text(
+                                              les.hour,
+                                              style: TextStyle(
+                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.topRight,
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                            top: 5,
-                                            right: 5,
-                                          ),
-                                          child: les.huiswerk != null
-                                              ? !les.huiswerkAf
-                                                  ? Icon(
-                                                      Icons.assignment_outlined,
-                                                      size: 23,
-                                                      color: Colors.grey,
-                                                    )
-                                                  : Icon(
-                                                      Icons.assignment_turned_in_outlined,
-                                                      size: 23,
-                                                      color: Colors.green,
-                                                    )
-                                              : null,
-                                        ),
-                                      ),
-                                      // Align(
-                                      //   alignment: Alignment.bottomRight,
-                                      //   child: Padding(
-                                      //     padding: EdgeInsets.only(
-                                      //       top: 5,
-                                      //       right: 5,
-                                      //     ),
-                                      //     child: les["huiswerk"] != null
-                                      //         ? !les["huiswerkAf"]
-                                      //             ? Icon(
-                                      //                 Icons.assignment,
-                                      //                 size: 23,
-                                      //                 color: Colors.grey,
-                                      //               )
-                                      //             : Icon(
-                                      //                 Icons.check,
-                                      //                 size: 23,
-                                      //                 color: Colors.greenAccent,
-                                      //               )
-                                      //         : null,
-                                      //   ),
-                                      // ),
-                                      Padding(
-                                        padding: EdgeInsets.only(top: 20, left: 20),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  les.title,
-                                                  style: TextStyle(
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              top: 5,
+                                              right: 5,
                                             ),
-                                            Row(
-                                              children: [
-                                                Flexible(
-                                                  child: Text(
-                                                    les.information,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 1,
+                                            child: les.huiswerk != null
+                                                ? !les.huiswerkAf
+                                                    ? Icon(
+                                                        Icons.assignment_outlined,
+                                                        size: 23,
+                                                        color: Colors.grey,
+                                                      )
+                                                    : Icon(
+                                                        Icons.assignment_turned_in_outlined,
+                                                        size: 23,
+                                                        color: Colors.green,
+                                                      )
+                                                : null,
+                                          ),
+                                        ),
+                                        // Align(
+                                        //   alignment: Alignment.bottomRight,
+                                        //   child: Padding(
+                                        //     padding: EdgeInsets.only(
+                                        //       top: 5,
+                                        //       right: 5,
+                                        //     ),
+                                        //     child: les["huiswerk"] != null
+                                        //         ? !les["huiswerkAf"]
+                                        //             ? Icon(
+                                        //                 Icons.assignment,
+                                        //                 size: 23,
+                                        //                 color: Colors.grey,
+                                        //               )
+                                        //             : Icon(
+                                        //                 Icons.check,
+                                        //                 size: 23,
+                                        //                 color: Colors.greenAccent,
+                                        //               )
+                                        //         : null,
+                                        //   ),
+                                        // ),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 20, left: 20),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    les.title,
                                                     style: TextStyle(
-                                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                      fontSize: 16,
                                                     ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      les.information,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: TextStyle(
+                                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => LesPagina(les),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => LesPagina(les),
-                                      ),
-                                    );
-                                  },
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: greyBorderSide(),
+                                  ),
                                 ),
                               ),
                             ),
@@ -472,7 +478,7 @@ class _LesPagina extends State<LesPagina> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Card(
+            SeeCard(
               margin: EdgeInsets.only(
                 bottom: 20,
               ),
@@ -513,8 +519,7 @@ class _LesPagina extends State<LesPagina> {
             ),
             if (les.description.length != 0)
               Container(
-                child: Card(
-                  margin: EdgeInsets.zero,
+                child: SeeCard(
                   child: Padding(
                     padding: EdgeInsets.only(
                       top: 30,
@@ -580,8 +585,7 @@ class _AddLesPagina extends State<AddLesPagina> {
       appBar: AppBar(
         title: Text("Nieuwe afspraak"),
       ),
-      body: Card(
-        margin: EdgeInsets.zero,
+      body: SeeCard(
         child: Container(
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(

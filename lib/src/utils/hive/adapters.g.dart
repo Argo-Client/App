@@ -42,13 +42,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..lessons = (fields[22] as Map)?.map((dynamic k, dynamic v) => MapEntry(
           k as String,
           (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
-      ..bronnen = (fields[23] as List)?.cast<Bron>();
+      ..bronnen = (fields[23] as List)?.cast<Bron>()
+      ..studiewijzers = (fields[24] as List)?.cast<Wijzer>();
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(24)
+      ..writeByte(25)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -96,7 +97,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(22)
       ..write(obj.lessons)
       ..writeByte(23)
-      ..write(obj.bronnen);
+      ..write(obj.bronnen)
+      ..writeByte(24)
+      ..write(obj.studiewijzers);
   }
 
   @override
@@ -474,13 +477,14 @@ class BronAdapter extends TypeAdapter<Bron> {
       ..contentType = fields[2] as String
       ..isFolder = fields[3] as bool
       ..children = (fields[4] as List)?.cast<Bron>()
-      ..size = fields[5] as int;
+      ..size = fields[5] as int
+      ..downloadUrl = fields[6] as String;
   }
 
   @override
   void write(BinaryWriter writer, Bron obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.naam)
       ..writeByte(1)
@@ -492,7 +496,9 @@ class BronAdapter extends TypeAdapter<Bron> {
       ..writeByte(4)
       ..write(obj.children)
       ..writeByte(5)
-      ..write(obj.size);
+      ..write(obj.size)
+      ..writeByte(6)
+      ..write(obj.downloadUrl);
   }
 
   @override
@@ -502,6 +508,54 @@ class BronAdapter extends TypeAdapter<Bron> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is BronAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class WijzerAdapter extends TypeAdapter<Wijzer> {
+  @override
+  final int typeId = 10;
+
+  @override
+  Wijzer read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Wijzer()
+      ..naam = fields[0] as String
+      ..id = fields[1] as int
+      ..omschrijving = fields[2] as String
+      ..bronnen = (fields[3] as List)?.cast<Bron>()
+      ..children = (fields[4] as List)?.cast<Wijzer>()
+      ..tabUrl = fields[5] as String;
+  }
+
+  @override
+  void write(BinaryWriter writer, Wijzer obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(0)
+      ..write(obj.naam)
+      ..writeByte(1)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.omschrijving)
+      ..writeByte(3)
+      ..write(obj.bronnen)
+      ..writeByte(4)
+      ..write(obj.children)
+      ..writeByte(5)
+      ..write(obj.tabUrl);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WijzerAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

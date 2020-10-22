@@ -23,7 +23,7 @@ class Bronnen extends MagisterApi {
   }
 
   Future loadBron([int id]) async {
-    List bronmappen = (await api.dio.get("api/personen/${account.id}/bronnen?parentId=$id")).data["Items"];
+    List bronmappen = (await api.dio.get("api/personen/${account.id}/bronnen?parentId=${id ?? ''}")).data["Items"];
     return bronmappen.map((bron) => Bron(bron)).toList();
   }
 
@@ -36,7 +36,7 @@ class Bronnen extends MagisterApi {
       return;
     }
     await api.dio.download(
-      "api/personen/${account.id}/bronnen/${bron.id}/content",
+      bron.downloadUrl,
       savePath,
       onReceiveProgress: onReceiveProgress,
     );

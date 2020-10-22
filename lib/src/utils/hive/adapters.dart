@@ -66,6 +66,8 @@ class Account extends HiveObject {
   Map<String, List<List<Les>>> lessons;
   @HiveField(23)
   List<Bron> bronnen;
+  @HiveField(24)
+  List<Wijzer> studiewijzers;
 
   Magister magister;
   Account([Map tokenSet]) {
@@ -96,6 +98,7 @@ class Account extends HiveObject {
     this.afwezigheid = <Absentie>[];
     this.berichten = <Bericht>[];
     this.cijfers = <CijferJaar>[];
+    this.studiewijzers = <Wijzer>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
   void saveTokens(tokenSet) {
@@ -337,6 +340,8 @@ class Bron {
   List<Bron> children;
   @HiveField(5)
   int size;
+  @HiveField(6)
+  String downloadUrl;
   int downloadCount;
   Bron([Map bron]) {
     if (bron != null) {
@@ -345,6 +350,38 @@ class Bron {
       this.contentType = bron["ContentType"];
       this.isFolder = bron["BronSoort"] == 0;
       this.size = bron["Grootte"];
+      if (!this.isFolder) {
+        this.downloadUrl = bron["Links"].where((a) => a["Rel"] == "Contents").first["Href"];
+      }
+    }
+  }
+}
+
+@HiveType(typeId: 10)
+class Wijzer {
+  @HiveField(0)
+  String naam;
+  @HiveField(1)
+  int id;
+  @HiveField(2)
+  String omschrijving;
+  @HiveField(3)
+  List<Bron> bronnen;
+  @HiveField(4)
+  List<Wijzer> children;
+  @HiveField(5)
+  String tabUrl;
+  Wijzer([wijzer]) {
+    if (wijzer != null) {
+      this.naam = wijzer["Titel"];
+      this.id = wijzer["Id"];
+      this.omschrijving = wijzer["Omschrijving"];
+      if (wijzer["Links"] != null) {
+        this.tabUrl = wijzer["Links"].first["Href"];
+      }
+      if (wijzer["Bronnen"] != null) {
+        this.bronnen = wijzer["Bronnen"].map((bron) => Bron(bron)).toList().cast<Bron>();
+      }
     }
   }
 }

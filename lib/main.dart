@@ -24,6 +24,7 @@ import 'package:filesize/filesize.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 // import 'package:purchases_flutter/purchases_flutter.dart';
+// import 'package:charts_flutter/flutter.dart' as charts;
 // import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
 import 'package:hive/hive.dart';
@@ -89,6 +90,8 @@ Future handleError(Function fun, String msg, BuildContext context, [Function cb]
       String flush = "$msg:\n$e";
       try {
         flush = "$msg:\n${e.error}";
+
+        flush = "$msg:\n${e.response.data}";
       } catch (_) {
         throw (e);
       }
@@ -111,6 +114,7 @@ void main() async {
   Hive.registerAdapter(BerichtAdapter());
   Hive.registerAdapter(AbsentieAdapter());
   Hive.registerAdapter(BronAdapter());
+  Hive.registerAdapter(WijzerAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
   if (accounts.isEmpty) {

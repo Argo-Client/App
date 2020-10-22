@@ -35,9 +35,10 @@ final List _children = [
     "divider": true,
   },
   {
-    "name": Text("Studiewijzer"),
+    "name": Text("Studiewijzers"),
     "icon": Icon(Icons.school_outlined),
-    "page": Studiewijzer(),
+    "page": Studiewijzers(),
+    "overridePop": true,
   },
   {
     "name": Text("Opdrachten"),

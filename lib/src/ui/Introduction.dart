@@ -7,11 +7,41 @@ class Introduction extends StatefulWidget {
 
 class _Introduction extends State<Introduction> {
   List _colors = [
-    0xffA26769,
-    0xffBFB5AF,
-    0xffBFA6A0,
-    0xffD5B9B2,
+    0xff5BC3EB,
+    0xffDADAD9,
+    0xffF06449,
   ];
+
+  void _showColorPicker(Function cb) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Kies een kleur"),
+          content: BlockPicker(
+            pickerColor: Theme.of(context).primaryColor,
+            onColorChanged: (color) {
+              setState(() {
+                cb(color);
+              });
+            },
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                "Sluit",
+                textScaleFactor: 1.25,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void loginPress() {
     MagisterAuth().fullLogin().then((tokenSet) {
       account = Account(tokenSet);
@@ -55,8 +85,10 @@ class _Introduction extends State<Introduction> {
             Slide(
               title: "Argo",
               pathImage: "assets/images/splash.png",
-              description: "\nMagister is van gister, Argo is van vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
-              backgroundColor: Color(_colors[0]),
+              description: "\nMagister is gister, Argo is vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
+              backgroundColor: Color(
+                _colors[0],
+              ),
             ),
             Slide(
               widgetTitle: StatefulBuilder(
@@ -81,9 +113,11 @@ class _Introduction extends State<Introduction> {
                         children: [
                           InkWell(
                             onTap: () {
-                              setState(() {
-                                userdata.put("theme", "licht");
-                              });
+                              setState(
+                                () {
+                                  userdata.put("theme", "licht");
+                                },
+                              );
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width / 2 - 70,
@@ -99,6 +133,7 @@ class _Introduction extends State<Introduction> {
                                   ),
                                   PlaceholderLines(
                                     count: 3,
+                                    align: TextAlign.right,
                                     color: Colors.white,
                                   ),
                                   SeeCard(
@@ -112,7 +147,6 @@ class _Introduction extends State<Introduction> {
                                   PlaceholderLines(
                                     count: 3,
                                     color: Colors.white,
-                                    align: TextAlign.right,
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(
@@ -121,9 +155,6 @@ class _Introduction extends State<Introduction> {
                                     child: RadioListTile(
                                       title: Text(
                                         "Licht",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                        ),
                                         softWrap: false,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -145,9 +176,11 @@ class _Introduction extends State<Introduction> {
                           ),
                           InkWell(
                             onTap: () {
-                              setState(() {
-                                userdata.put("theme", "donker");
-                              });
+                              setState(
+                                () {
+                                  userdata.put("theme", "donker");
+                                },
+                              );
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width / 2 - 70,
@@ -184,9 +217,6 @@ class _Introduction extends State<Introduction> {
                                       value: "donker",
                                       title: Text(
                                         "Donker",
-                                        style: TextStyle(
-                                          color: Colors.grey[800],
-                                        ),
                                         softWrap: false,
                                         overflow: TextOverflow.visible,
                                       ),
@@ -206,6 +236,28 @@ class _Introduction extends State<Introduction> {
                             ),
                           ),
                         ],
+                      ),
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * (3 / 4),
+                          child: RadioListTile(
+                            title: Text(
+                              "Gebruik systeem standaard",
+                              softWrap: false,
+                              overflow: TextOverflow.visible,
+                            ),
+                            value: "systeem",
+                            activeColor: userdata.get("accentColor"),
+                            groupValue: userdata.get("theme"),
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  userdata.put("theme", value);
+                                },
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -233,8 +285,7 @@ class _Introduction extends State<Introduction> {
                   Center(
                     child: Container(
                       height: 50,
-                      child: RaisedButton(
-                        color: Color(_colors[2]),
+                      child: FlatButton(
                         child: Text(
                           "Log nu in!",
                           style: TextStyle(
@@ -248,7 +299,7 @@ class _Introduction extends State<Introduction> {
                   ),
                 ],
               ),
-              backgroundColor: Color(_colors[3]),
+              backgroundColor: Color(_colors[2]),
             ),
           ],
         ),

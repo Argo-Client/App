@@ -76,22 +76,20 @@ class SeeCard extends StatelessWidget {
 
 Account account;
 _AppState appState;
-Box userdata, accounts;
+Box userdata, accounts, custom;
 Brightness theme;
 ValueNotifier<bool> updateNotifier = ValueNotifier(false);
 void update() => updateNotifier.value = !updateNotifier.value;
 Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
   if (account.id != 0) {
-    await fun();
     try {
+      await fun();
       update();
       if (cb != null) cb();
     } catch (e) {
       String flush = "$msg:\n$e";
       try {
         flush = "$msg:\n${e.error}";
-
-        flush = "$msg:\n${e.response.data}";
       } catch (_) {
         throw (e);
       }
@@ -117,6 +115,7 @@ void main() async {
   Hive.registerAdapter(WijzerAdapter());
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
+  custom = await Hive.openBox("custom");
   if (accounts.isEmpty) {
     userdata.delete("introduction");
     userdata.putAll({

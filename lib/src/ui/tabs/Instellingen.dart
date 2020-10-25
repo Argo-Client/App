@@ -310,7 +310,16 @@ class _Instellingen extends State<Instellingen> {
                       ),
                     );
                   },
-                )
+                ),
+                if (custom.length != 0)
+                  ListTile(
+                    title: Text("Verwijder alle zelfbedachte namen."),
+                    leading: Icon(Icons.delete),
+                    onTap: () => setState(() {
+                      custom.clear();
+                      handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                    }),
+                  )
               ],
             ),
           ),

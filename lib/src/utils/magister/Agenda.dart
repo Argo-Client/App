@@ -25,6 +25,7 @@ class Agenda extends MagisterApi {
       DateTime end = DateTime.parse(les["Einde"]).toLocal();
       account.lessons[weekslug][end.weekday - 1].add(Les(les));
     });
+    account.save();
     return;
   }
 
@@ -70,39 +71,4 @@ class Agenda extends MagisterApi {
       return (e);
     }
   }
-
-  // Map lesFrom(var les) {
-  //   DateTime start = DateTime.parse(les["Start"]).toLocal();
-  //   DateTime end = DateTime.parse(les["Einde"]).toLocal();
-  //   int startHour = les['LesuurVan'];
-  //   int endHour = les["LesuurTotMet"];
-
-  //   DateFormat formatHour = DateFormat("HH:mm");
-  //   DateFormat formatDatum = DateFormat("EEEE dd MMMM");
-  //   var docent;
-  //   int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
-  //   var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
-  //   if (les["Docenten"] != null && !les["Docenten"].isEmpty) {
-  //     docent = les["Docenten"][0]["Naam"];
-  //   }
-  //   return {
-  //     "start": minFromMidnight ?? "",
-  //     "duration": end.difference(start).inMinutes ?? "",
-  //     "hour": hour == "null" ? "" : hour,
-  //     "startTime": formatHour.format(start),
-  //     "endTime": formatHour.format(end),
-  //     "description": les["Inhoud"] ?? "",
-  //     "title": les["Omschrijving"] ?? "",
-  //     "location": les["Lokatie"],
-  //     "date": formatDatum.format(end),
-  //     "vak": les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"],
-  //     "docent": docent,
-  //     "huiswerk": les["Inhoud"],
-  //     "huiswerkAf": les["Afgerond"],
-  //     "uitval": les["Status"] == 5,
-  //     "information": (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : ""),
-  //     "editable": les["Type"] == 1,
-  //     "id": les["Id"]
-  //   };
-  // }
 }

@@ -12,36 +12,6 @@ class _Introduction extends State<Introduction> {
     0xffF06449,
   ];
 
-  void _showColorPicker(Function cb) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Kies een kleur"),
-          content: BlockPicker(
-            pickerColor: Theme.of(context).primaryColor,
-            onColorChanged: (color) {
-              setState(() {
-                cb(color);
-              });
-            },
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                "Sluit",
-                textScaleFactor: 1.25,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void loginPress() {
     MagisterAuth().fullLogin().then((tokenSet) {
       account = Account(tokenSet);

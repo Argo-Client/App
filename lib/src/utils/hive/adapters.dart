@@ -4,6 +4,7 @@ import 'package:Argo/src/utils/magister/magister.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:Argo/main.dart';
 part 'adapters.g.dart';
 
 extension StringExtension on String {
@@ -131,7 +132,7 @@ class Les {
   @HiveField(8)
   String date;
   @HiveField(9)
-  String vak;
+  Vak vak;
   @HiveField(10)
   String docent;
   @HiveField(11)
@@ -146,7 +147,8 @@ class Les {
   bool uitval;
   @HiveField(16)
   bool editable;
-
+  @HiveField(17)
+  DateTime lastMonday;
   Les([Map les]) {
     if (les == null) return;
     DateTime start = DateTime.parse(les["Start"]).toLocal();
@@ -171,7 +173,7 @@ class Les {
     this.title = les["Omschrijving"] ?? "";
     this.location = les["Lokatie"];
     this.date = formatDatum.format(end);
-    this.vak = les["Vakken"].isEmpty ? les["Omschrijving"] : les["Vakken"][0]["Naam"];
+    this.vak = les["Vakken"].isEmpty ? Vak({"Omschrijving": les["Omschrijving"]}) : Vak(les["Vakken"][0]);
     this.docent = docent;
     this.huiswerk = les["Inhoud"];
     this.huiswerkAf = les["Afgerond"];
@@ -179,6 +181,14 @@ class Les {
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
     this.editable = les["Type"] == 1;
     this.id = les["Id"];
+    if (custom.containsKey("vak${this.vak.id}")) {
+      this.title = custom.get("vak${this.vak.id}");
+    }
+    this.lastMonday = start.subtract(
+      Duration(
+        days: start.weekday - 1,
+      ),
+    );
   }
 }
 
@@ -264,8 +274,8 @@ class Vak {
   int id;
   Vak([vak]) {
     if (vak != null) {
-      this.naam = (vak["Omschrijving"] as String).cap;
       this.id = vak["Id"];
+      this.naam = ((vak["Omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
     }
   }
 }

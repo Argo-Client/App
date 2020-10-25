@@ -184,7 +184,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
             for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
               RefreshIndicator(
                 onRefresh: () async {
-                  await handleError(account.magister.agenda.refresh, "Kon agenda niet verversen", context);
+                  await handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon agenda niet verversen", context);
                 },
                 child: SingleChildScrollView(
                   child: ValueListenableBuilder(
@@ -435,7 +435,6 @@ class LesPagina extends StatefulWidget {
 class _LesPagina extends State<LesPagina> {
   Les les;
   _LesPagina(this.les);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -494,10 +493,66 @@ class _LesPagina extends State<LesPagina> {
                     leading: Icon(Icons.event),
                     title: Text(les.date),
                   ),
-                  if (les.vak != null)
+                  ListTile(
+                    leading: Icon(Icons.book),
+                    title: Text(les.vak.naam),
+                  ),
+                  if (les.title.capitalize != les.vak.naam)
                     ListTile(
-                      leading: Icon(Icons.book),
-                      title: Text(les.vak),
+                      leading: Icon(Icons.title),
+                      title: Text(les.title),
+                      trailing: les.vak.id == null
+                          ? null
+                          : IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () {
+                                TextEditingController con = TextEditingController();
+                                Future updateLessons() async {
+                                  await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
+                                    setState(update);
+                                  });
+                                }
+
+                                showDialog(
+                                  context: context,
+                                  child: AlertDialog(
+                                    content: Row(children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: con,
+                                          autofocus: true,
+                                          decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
+                                        ),
+                                      ),
+                                    ]),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                          child: Text('RESET'),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                            custom.delete("vak${les.vak.id}");
+                                            await updateLessons();
+                                            Navigator.pop(context);
+                                          }),
+                                      FlatButton(
+                                          child: Text('CANCEL'),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          }),
+                                      FlatButton(
+                                          child: Text('SAVE'),
+                                          onPressed: () {
+                                            custom.put("vak${les.vak.id}", con.text);
+                                            les.title = con.text;
+                                            setState(() {});
+                                            updateLessons();
+                                            Navigator.pop(context);
+                                          })
+                                    ],
+                                  ),
+                                );
+                                // print(custom.toMap().toString());
+                              }),
                     ),
                   if (les.location != null)
                     ListTile(

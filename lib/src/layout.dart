@@ -136,7 +136,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
     return WillPopScope(
       onWillPop: () {
-        if (!userdata.get("backOpensDrawer") || child["overridePop"]) return Future.value(true);
+        if (!userdata.get("backOpensDrawer") || child["overridePop"] != null) return Future.value(true);
         if (_layoutKey.currentState.isDrawerOpen) {
           Navigator.of(context).pop();
         } else {

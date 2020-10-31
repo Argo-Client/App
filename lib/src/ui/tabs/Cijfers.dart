@@ -7,16 +7,20 @@ class Cijfers extends StatefulWidget {
 
 class _Cijfers extends State<Cijfers> {
   DateFormat formatDate = DateFormat("dd-MM-y");
-  int jaar = 1;
-
+  int jaar = 0;
   @override
   Widget build(BuildContext context) {
+    List<Periode> perioden = account.cijfers[jaar].perioden
+        .where(
+          (periode) => account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id).isNotEmpty,
+        )
+        .toList();
+
     return ValueListenableBuilder(
       valueListenable: updateNotifier,
-      // child: ,
       builder: (BuildContext context, _, _a) {
         return DefaultTabController(
-          length: account.cijfers[jaar].perioden.length,
+          length: perioden.length,
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -30,7 +34,7 @@ class _Cijfers extends State<Cijfers> {
               bottom: TabBar(
                 isScrollable: true,
                 tabs: [
-                  for (var periode in account.cijfers[jaar].perioden)
+                  for (Periode periode in perioden)
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 20,
@@ -45,7 +49,7 @@ class _Cijfers extends State<Cijfers> {
             ),
             body: TabBarView(
               children: [
-                for (Periode periode in account.cijfers[jaar].perioden)
+                for (Periode periode in perioden)
                   RefreshIndicator(
                     child: SingleChildScrollView(
                       child: SeeCard(

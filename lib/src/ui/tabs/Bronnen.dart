@@ -26,6 +26,50 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
               _layoutKey.currentState.openDrawer();
             },
           ),
+          bottom: PreferredSize(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: 10,
+                left: 10,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (int i = 0; i < breadcrumbs.length; i++)
+                        GestureDetector(
+                          child: Row(
+                            children: [
+                              Text(
+                                " ${breadcrumbs[i]} ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 10,
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            setState(
+                              () {
+                                breadcrumbs = breadcrumbs.take(i + 1).toList();
+                                bronnenView = bronnenView.take(i + 1).toList();
+                              },
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            preferredSize: Size.fromHeight(25),
+          ),
           title: Text("Bronnen"),
         ),
         body: RefreshIndicator(
@@ -34,16 +78,6 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
               builder: (BuildContext context, _, _a) {
                 return ListView(
                   children: [
-                    for (int i = 0; i < breadcrumbs.length; i++)
-                      InkWell(
-                        child: Text(breadcrumbs[i]),
-                        onTap: () {
-                          setState(() {
-                            breadcrumbs = breadcrumbs.take(i + 1).toList();
-                            bronnenView = bronnenView.take(i + 1).toList();
-                          });
-                        },
-                      ),
                     if (bronnenView.last == null)
                       CircularProgressIndicator()
                     else if (bronnenView.last.isEmpty)

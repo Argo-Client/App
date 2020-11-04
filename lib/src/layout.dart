@@ -51,6 +51,16 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                 msg..dismiss();
               } else {
                 accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+                if (accounts.isEmpty) {
+                  accounts.clear();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Introduction(),
+                    ),
+                  );
+                  return;
+                }
                 userdata.put("accountsIndex", accounts.toMap().entries.first.key);
                 setState(() {});
               }

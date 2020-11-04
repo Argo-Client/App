@@ -35,7 +35,7 @@ class Magister {
   void expiryAndTenant() {
     String parsed = base64.normalize(account.accessToken.split(".")[1]);
     Map data = json.decode(utf8.decode(base64Decode(parsed)));
-    account.expiry = data["exp"] * 1000;
+    account.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
     account.username = data["urn:magister:claims:iam:username"];
     account.tenant = data["urn:magister:claims:iam:tenant"];
     if (account.isInBox) account.save();

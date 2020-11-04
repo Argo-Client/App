@@ -100,19 +100,21 @@ Future handleError(Function fun, String msg, BuildContext context, [Function cb]
 
 void main() async {
   await Hive.initFlutter();
-  Hive.registerAdapter(AccountAdapter());
-  Hive.registerAdapter(ColorAdapter());
-  Hive.registerAdapter(MaterialColorAdapter());
-  // Hive.registerAdapter(IconAdapter());
-  Hive.registerAdapter(LesAdapter());
-  Hive.registerAdapter(CijferJaarAdapter());
-  Hive.registerAdapter(CijferAdapter());
-  Hive.registerAdapter(VakAdapter());
-  Hive.registerAdapter(PeriodeAdapter());
-  Hive.registerAdapter(BerichtAdapter());
-  Hive.registerAdapter(AbsentieAdapter());
-  Hive.registerAdapter(BronAdapter());
-  Hive.registerAdapter(WijzerAdapter());
+  try {
+    Hive.registerAdapter(AccountAdapter());
+    Hive.registerAdapter(ColorAdapter());
+    Hive.registerAdapter(MaterialColorAdapter());
+    // Hive.registerAdapter(IconAdapter());
+    Hive.registerAdapter(LesAdapter());
+    Hive.registerAdapter(CijferJaarAdapter());
+    Hive.registerAdapter(CijferAdapter());
+    Hive.registerAdapter(VakAdapter());
+    Hive.registerAdapter(PeriodeAdapter());
+    Hive.registerAdapter(BerichtAdapter());
+    Hive.registerAdapter(AbsentieAdapter());
+    Hive.registerAdapter(BronAdapter());
+    Hive.registerAdapter(WijzerAdapter());
+  } catch (e) {}
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");
   custom = await Hive.openBox("custom");

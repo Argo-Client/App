@@ -493,7 +493,7 @@ class _LesPagina extends State<LesPagina> {
                     leading: Icon(Icons.event),
                     title: Text(les.date),
                   ),
-                  if (les.title.capitalize != les.vak.naam)
+                  if (les.title == null || les.title.capitalize != les.vak.naam)
                     ListTile(
                       leading: Icon(Icons.book),
                       title: Text(les.vak.naam),

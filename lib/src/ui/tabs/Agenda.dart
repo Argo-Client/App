@@ -34,7 +34,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
-  DateFormat formatDate = DateFormat("yyyy-MM-dd");
   _Agenda() {
     now = DateTime.now();
     lastMonday = now.subtract(

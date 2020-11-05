@@ -45,7 +45,25 @@ class _Cijfers extends State<Cijfers> {
                     ),
                 ],
               ),
-              title: Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+              title: PopupMenuButton(
+                initialValue: jaar,
+                onSelected: (value) => setState(() => jaar = value),
+                itemBuilder: (BuildContext context) {
+                  return <PopupMenuEntry>[
+                    for (int i = 0; i < account.cijfers.length; i++)
+                      PopupMenuItem(
+                        value: i,
+                        child: Text('${account.cijfers[i].leerjaar}'),
+                      ),
+                  ];
+                },
+                child: Row(
+                  children: [
+                    Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+                    Icon(Icons.keyboard_arrow_down_outlined),
+                  ],
+                ),
+              ),
             ),
             body: TabBarView(
               children: [
@@ -121,10 +139,33 @@ class _CijferPagina extends State<CijferPagina> {
   CijferJaar jaar;
   List<Cijfer> cijfers;
   Vak vak;
+  double doubleCijfers;
+  List<double> avgCijfers;
+  double totalWeging;
   _CijferPagina(int id, int jaar) {
     this.jaar = account.cijfers[jaar];
     this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
     this.vak = cijfers.first.vak;
+    avgCijfers = [];
+    doubleCijfers = 0;
+    totalWeging = 0;
+    cijfers.reversed.forEach(
+      (Cijfer cijfer) {
+        if (cijfer.weging == 0 || cijfer.weging == null) return;
+        double cijf;
+        try {
+          cijf = double.parse(cijfer.cijfer.replaceFirst(",", "."));
+        } catch (e) {}
+        if (cijf != null) {
+          doubleCijfers += cijf * cijfer.weging;
+          print(doubleCijfers);
+          print(formatDate.format(cijfer.ingevoerd));
+          totalWeging += cijfer.weging;
+          avgCijfers.add(doubleCijfers / totalWeging);
+        }
+        print(avgCijfers);
+      },
+    );
   }
 
   @override
@@ -138,30 +179,13 @@ class _CijferPagina extends State<CijferPagina> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              constraints: BoxConstraints.tightForFinite(),
-            ),
-            SizedBox(
-              height: 300.0,
-              child: charts.LineChart(_createCijfers()),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.symmetric(
-                  vertical: greyBorderSide(),
+            if (avgCijfers.isNotEmpty)
+              SizedBox(
+                height: 200.0,
+                child: charts.LineChart(
+                  _createCijfers(),
                 ),
               ),
-              child: SeeCard(
-                child: ListTile(
-                  leading: Icon(
-                    Icons.book,
-                  ),
-                  title: Text(
-                    vak.naam,
-                  ),
-                ),
-              ),
-            ),
             for (Periode periode in jaar.perioden)
               Column(
                 children: [
@@ -235,7 +259,7 @@ class _CijferPagina extends State<CijferPagina> {
                                           ],
                                         ),
                                   subtitle: cijfer.cijfer.length <= 4
-                                      ? null
+                                      ? Text(formatDate.format(cijfer.ingevoerd))
                                       : Padding(
                                           padding: EdgeInsets.symmetric(
                                             vertical: 8,
@@ -261,22 +285,14 @@ class _CijferPagina extends State<CijferPagina> {
   }
 
   List<charts.Series<double, int>> _createCijfers() {
-    List<double> doubleCijfers = [];
-    cijfers.forEach(
-      (Cijfer cijfer) {
-        try {
-          double cijf = double.parse(cijfer.cijfer.replaceFirst(",", "."));
-          doubleCijfers.add(cijf);
-        } catch (e) {}
-      },
-    );
     return [
       new charts.Series<double, int>(
         id: 'Cijfers',
         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
         domainFn: (double cijfer, i) => i,
         measureFn: (double cijfer, _) => cijfer,
-        data: doubleCijfers,
+        displayName: "Gemiddelde",
+        data: avgCijfers,
       )
     ];
   }

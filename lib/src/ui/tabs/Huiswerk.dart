@@ -6,7 +6,6 @@ class Huiswerk extends StatefulWidget {
 }
 
 class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleTickerProviderStateMixin {
-  static DateFormat formatDate = DateFormat("yyyy-MM-dd");
   static DateTime date = DateTime.now();
 
   DateTime lastMonday = date.subtract(Duration(days: date.weekday - 1));

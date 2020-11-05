@@ -12,6 +12,7 @@ extension StringExtension on String {
 }
 
 DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+DateFormat formatDate = DateFormat("yyyy-MM-dd");
 
 @HiveType(typeId: 1)
 class Account extends HiveObject {

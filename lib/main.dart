@@ -127,6 +127,10 @@ void main() async {
       "useIcon": false,
       "accountIndex": 0,
       "pixelsPerHour": 75,
+      "agendaStartHour": 8,
+      "agendaEndHour": 17,
+      "agendaAutoBegin": true,
+      "agendaAutoEind": true,
       "backOpensDrawer": true,
     });
     accounts.put(0, Account());

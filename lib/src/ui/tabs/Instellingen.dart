@@ -212,6 +212,7 @@ class _Instellingen extends State<Instellingen> {
                 ListTile(
                   title: Text("Aantal pixels per uur"),
                   subtitle: Text("Hoe hoog een uur is in de agenda"),
+                  trailing: Text("${userdata.get("pixelsPerHour")}"),
                   onTap: () => showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -222,9 +223,57 @@ class _Instellingen extends State<Instellingen> {
                           initialIntegerValue: userdata.get("pixelsPerHour"),
                         );
                       }).then((value) {
-                    if (value != null) {
-                      userdata.put("pixelsPerHour", value);
-                    }
+                    if (value != null) userdata.put("pixelsPerHour", value);
+                  }),
+                ),
+                ListTile(
+                  title: Text("Standaard starttijd."),
+                  subtitle: Text("Hoelaat je agenda moet beginnen."),
+                  trailing: Text("${userdata.get("agendaStartHour")}"),
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Agenda starttijd"),
+                          minValue: 0,
+                          maxValue: userdata.get("agendaEndHour"),
+                          initialIntegerValue: userdata.get("agendaStartHour"),
+                        );
+                      }).then((value) {
+                    if (value != null) userdata.put("agendaStartHour", value);
+                  }),
+                ),
+                ListTile(
+                  title: Text("Standaard eindtijd."),
+                  subtitle: Text("Hoelaat je agenda moet eindigen."),
+                  trailing: Text("${userdata.get("agendaEndHour")}"),
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Agenda eindtijd"),
+                          minValue: userdata.get("agendaStartHour"),
+                          maxValue: 23,
+                          initialIntegerValue: userdata.get("agendaEndHour"),
+                        );
+                      }).then((value) {
+                    if (value != null) userdata.put("agendaEndHour", value);
+                  }),
+                ),
+                CheckboxListTile(
+                  title: Text("Niet automatisch begin uur"),
+                  subtitle: Text("Of je altijd op je starttijd wil beginnen of soms ook later."),
+                  value: userdata.get("agendaAutoBegin"),
+                  onChanged: (value) => setState(() {
+                    userdata.put("agendaAutoBegin", value);
+                  }),
+                ),
+                CheckboxListTile(
+                  title: Text("Niet automatisch eind uur"),
+                  subtitle: Text("Of je door wilt kunnen scrollen tot je eindtijd of bij je laatste les al stopt."),
+                  value: userdata.get("agendaAutoEind"),
+                  onChanged: (value) => setState(() {
+                    userdata.put("agendaAutoEind", value);
                   }),
                 ),
               ],

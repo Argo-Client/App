@@ -24,10 +24,15 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
   List dayAbbr;
   double timeFactor;
   String weekslug;
-  int endHour, defaultStartHour, pixelsPerHour, currentDay;
+  int pixelsPerHour, currentDay;
   int getStartHour(dag) {
-    if (account.lessons[weekslug] == null) return 0;
-    return account.lessons[weekslug][dag].isEmpty ? defaultStartHour : (account.lessons[weekslug][dag].first.start / 60).floor();
+    if (account.lessons[weekslug] == null || userdata.get("agendaAutoBegin")) return userdata.get("agendaStartHour");
+    return account.lessons[weekslug][dag].isEmpty ? userdata.get("agendaStartHour") : (account.lessons[weekslug][dag].first.start / 60).floor();
+  }
+
+  int getEndHour(dag) {
+    if (account.lessons[weekslug] == null || userdata.get("agendaAutoEind")) return userdata.get("agendaEndHour");
+    return account.lessons[weekslug][dag].isEmpty ? userdata.get("agendaEndHour") : (account.lessons[weekslug][dag].last.start / 60).floor() + 1;
   }
 
   void afterFirstLayout(BuildContext context) {
@@ -46,8 +51,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     weekslug = formatDate.format(lastMonday);
     dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
     timeFactor = userdata.get("pixelsPerHour") / 60;
-    endHour = 23;
-    defaultStartHour = 8;
     currentDay = now.weekday - 1;
   }
 
@@ -358,7 +361,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                                 ),
                               );
                             }),
-                          for (int uur = getStartHour(dag); uur <= endHour; uur++) // Lijnen op de achtergrond om uren aan te geven
+                          for (int uur = getStartHour(dag); uur <= getEndHour(dag); uur++) // Lijnen op de achtergrond om uren aan te geven
                             Positioned(
                               top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
                               child: Container(
@@ -376,7 +379,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               Column(
                                 // Balkje aan de zijkant van de uren
                                 children: [
-                                  for (int uur = getStartHour(dag); uur <= endHour; uur++)
+                                  for (int uur = getStartHour(dag); uur <= getEndHour(dag); uur++)
                                     Container(
                                       // Een uur van het balkje
                                       height: userdata.get("pixelsPerHour").toDouble(),

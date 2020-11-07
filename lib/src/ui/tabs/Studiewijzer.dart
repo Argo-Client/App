@@ -12,7 +12,9 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: Icon(
+            Icons.menu,
+          ),
           onPressed: () {
             _layoutKey.currentState.openDrawer();
           },
@@ -34,59 +36,64 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
         ),
       ),
       body: RefreshIndicator(
-        child: ValueListenableBuilder(
-          valueListenable: updateNotifier,
-          builder: (BuildContext context, _, _a) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Padding(
-                //   padding: EdgeInsets.only(
-                //     top: 10,
-                //     left: 10,
-                //   ),
-                //   child:
-                //   ),
-                // ),
-                for (Wijzer wijs in account.studiewijzers)
-                  Container(
-                    child: SeeCard(
-                      child: ListTile(
-                        title: Text(wijs.naam),
-                        onTap: () async {
-                          setState(() {});
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => StudiewijzerPagina(wijs),
-                            ),
-                          );
-                          // await handleError(
-                          //   () async => await account.magister.studiewijzers.loadChildren(wijs),
-                          //   "Kon ${wijs.naam} niet laden",
-                          //   context,
-                          //   () {
-                          //     setState(
-                          //       () {},
-                          //     );
-                          //   },
-                          // );
-                          // await handleError(() async => await account.magister.bronnen.loadChildren(bron), "Kon ${bron.naam} niet laden.", context, () {
-                          // });
-                        },
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: ValueListenableBuilder(
+            valueListenable: updateNotifier,
+            builder: (BuildContext context, _, _a) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Padding(
+                  //   padding: EdgeInsets.only(
+                  //     top: 10,
+                  //     left: 10,
+                  //   ),
+                  //   child:
+                  //   ),
+                  // ),
+                  for (Wijzer wijs in account.studiewijzers)
+                    Container(
+                      child: SeeCard(
+                        child: ListTile(
+                          title: Text(wijs.naam),
+                          onTap: () async {
+                            setState(
+                              () {},
+                            );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => StudiewijzerPagina(wijs),
+                              ),
+                            );
+                            // await handleError(
+                            //   () async => await account.magister.studiewijzers.loadChildren(wijs),
+                            //   "Kon ${wijs.naam} niet laden",
+                            //   context,
+                            //   () {
+                            //     setState(
+                            //       () {},
+                            //     );
+                            //   },
+                            // );
+                            // await handleError(() async => await account.magister.bronnen.loadChildren(bron), "Kon ${bron.naam} niet laden.", context, () {
+                            // });
+                          },
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
                       ),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
         onRefresh: () async {
-          await handleError(account.magister.bronnen.refresh, "Kon bronnen niet verversen", context);
+          await handleError(account.magister.studiewijzers.refresh, "Kon studiewijzer niet verversen", context);
         },
       ),
     );
@@ -102,6 +109,7 @@ class StudiewijzerPagina extends StatefulWidget {
 
 class _StudiewijzerPagina extends State<StudiewijzerPagina> {
   Wijzer wijs;
+  Bron currentlyDownloading;
   _StudiewijzerPagina(this.wijs);
 
   @override
@@ -111,6 +119,23 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
         title: Text(
           wijs.naam,
         ),
+        bottom: currentlyDownloading == null
+            ? null
+            : PreferredSize(
+                child: LinearProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(
+                      100,
+                      255,
+                      255,
+                      255,
+                    ),
+                  ),
+                  backgroundColor: Colors.transparent,
+                  value: currentlyDownloading.downloadCount / currentlyDownloading.size,
+                ),
+                preferredSize: Size.fromHeight(2),
+              ),
       ),
       body: Futuristic(
         autoStart: true,
@@ -167,36 +192,96 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                 for (Wijzer wijstab in wijs.children)
                   Container(
                     decoration: BoxDecoration(
-                      border: Border(bottom: greyBorderSide()),
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                     ),
                     child: SeeCard(
-                        child: Theme(
-                      data: Theme.of(context).copyWith(
-                        dividerColor: Colors.transparent,
-                      ),
-                      child: ExpansionTile(
-                        title: Text(wijstab.naam),
-                        children: [
-                          Padding(
-                            child: Futuristic(
-                              autoStart: true,
-                              futureBuilder: wijstab.bronnen.isNotEmpty ? () async {} : () async => await account.magister.studiewijzers.loadTab(wijstab),
-                              busyBuilder: (BuildContext context) => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              dataBuilder: (BuildContext context, _) {
-                                return Html(
-                                  data: wijstab.omschrijving,
-                                );
-                              },
-                            ),
-                            padding: EdgeInsets.only(
-                              bottom: 10,
-                            ),
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                          dividerColor: Colors.transparent,
+                        ),
+                        child: ExpansionTile(
+                          title: Text(
+                            wijstab.naam,
                           ),
-                        ],
+                          children: [
+                            Padding(
+                              child: Futuristic(
+                                autoStart: true,
+                                futureBuilder: wijstab.bronnen.isNotEmpty
+                                    ? () async {}
+                                    : () async => await account.magister.studiewijzers.loadTab(
+                                          wijstab,
+                                        ),
+                                busyBuilder: (BuildContext context) => Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                dataBuilder: (BuildContext context, _) {
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 10,
+                                        ),
+                                        child: Html(
+                                          data: wijstab.omschrijving,
+                                          onLinkTap: launch,
+                                        ),
+                                      ),
+                                      for (Bron wijsbron in wijstab.bronnen)
+                                        Container(
+                                          child: ListTile(
+                                            onTap: () {
+                                              if (currentlyDownloading != null) return;
+                                              currentlyDownloading = wijsbron;
+                                              account.magister.bronnen.downloadFile(
+                                                wijsbron,
+                                                (count, _) {
+                                                  setState(
+                                                    () {
+                                                      if (count >= currentlyDownloading.size) {
+                                                        currentlyDownloading = null;
+                                                      } else
+                                                        currentlyDownloading.downloadCount = count;
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            leading: Icon(
+                                              Icons.insert_drive_file_outlined,
+                                            ),
+                                            title: Padding(
+                                              child: Text(
+                                                wijsbron.naam,
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                            trailing: Text(
+                                              filesize(wijsbron.size),
+                                            ),
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: greyBorderSide(),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ),
+                              padding: EdgeInsets.only(
+                                bottom: 10,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    )),
+                    ),
                   ),
               ],
             ),

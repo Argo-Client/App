@@ -152,7 +152,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                   overflow: TextOverflow.visible,
                   softWrap: false,
                 ),
-                text: numFormatter.format(lastMonday.add(Duration(days: dag))),
+                text: numFormatter.format(
+                  lastMonday.add(
+                    Duration(
+                      days: dag,
+                    ),
+                  ),
+                ),
               )
           ],
         ),
@@ -186,7 +192,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
             for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
               RefreshIndicator(
                 onRefresh: () async {
-                  await handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon agenda niet verversen", context);
+                  await handleError(
+                    () async => account.magister.agenda.getLessen(lastMonday),
+                    "Kon agenda niet verversen",
+                    context,
+                  );
                 },
                 child: SingleChildScrollView(
                   child: ValueListenableBuilder(

@@ -8,10 +8,6 @@ class Agenda extends StatefulWidget {
   _Agenda createState() => _Agenda();
 }
 
-BorderSide greyBorderSide() {
-  return BorderSide(color: theme == Brightness.dark ? Color.fromARGB(255, 100, 100, 100) : Color.fromARGB(255, 205, 205, 205), width: 1);
-}
-
 Future huiswerkAf(hw) async {
   await account.magister.agenda.toggleHuiswerk(hw);
   hw.huiswerkAf = !hw.huiswerkAf;
@@ -221,125 +217,121 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               ),
                               width: MediaQuery.of(context).size.width - 30,
                               height: les.duration * timeFactor,
-                              child: Container(
-                                child: SeeCard(
-                                  color: les.uitval
-                                      ? theme == Brightness.dark
-                                          ? Color.fromARGB(255, 119, 66, 62)
-                                          : Color.fromARGB(255, 255, 205, 210)
-                                      : null,
-                                  // shape: BorderRadius.all(),
-                                  margin: EdgeInsets.only(
-                                    top: .75,
-                                  ),
-                                  child: InkWell(
-                                    child: Stack(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.topLeft,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 5,
-                                              left: 5,
-                                            ),
-                                            child: Text(
-                                              les.hour,
-                                              style: TextStyle(
-                                                color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: Alignment.topRight,
-                                          child: Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 5,
-                                              right: 5,
-                                            ),
-                                            child: les.huiswerk != null
-                                                ? !les.huiswerkAf
-                                                    ? Icon(
-                                                        Icons.assignment_outlined,
-                                                        size: 23,
-                                                        color: Colors.grey,
-                                                      )
-                                                    : Icon(
-                                                        Icons.assignment_turned_in_outlined,
-                                                        size: 23,
-                                                        color: Colors.green,
-                                                      )
-                                                : null,
-                                          ),
-                                        ),
-                                        // Align(
-                                        //   alignment: Alignment.bottomRight,
-                                        //   child: Padding(
-                                        //     padding: EdgeInsets.only(
-                                        //       top: 5,
-                                        //       right: 5,
-                                        //     ),
-                                        //     child: les["huiswerk"] != null
-                                        //         ? !les["huiswerkAf"]
-                                        //             ? Icon(
-                                        //                 Icons.assignment,
-                                        //                 size: 23,
-                                        //                 color: Colors.grey,
-                                        //               )
-                                        //             : Icon(
-                                        //                 Icons.check,
-                                        //                 size: 23,
-                                        //                 color: Colors.greenAccent,
-                                        //               )
-                                        //         : null,
-                                        //   ),
-                                        // ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 20, left: 20),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    les.title,
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      les.information,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                      style: TextStyle(
-                                                        color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => LesPagina(les),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                              child: SeeCard(
+                                border: Border(
+                                  bottom: greyBorderSide(),
                                 ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: greyBorderSide(),
+                                color: les.uitval
+                                    ? theme == Brightness.dark
+                                        ? Color.fromARGB(255, 119, 66, 62)
+                                        : Color.fromARGB(255, 255, 205, 210)
+                                    : null,
+                                // shape: BorderRadius.all(),
+                                margin: EdgeInsets.only(
+                                  top: .75,
+                                ),
+                                child: InkWell(
+                                  child: Stack(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                            left: 5,
+                                          ),
+                                          child: Text(
+                                            les.hour,
+                                            style: TextStyle(
+                                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.topRight,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                            top: 5,
+                                            right: 5,
+                                          ),
+                                          child: les.huiswerk != null
+                                              ? !les.huiswerkAf
+                                                  ? Icon(
+                                                      Icons.assignment_outlined,
+                                                      size: 23,
+                                                      color: Colors.grey,
+                                                    )
+                                                  : Icon(
+                                                      Icons.assignment_turned_in_outlined,
+                                                      size: 23,
+                                                      color: Colors.green,
+                                                    )
+                                              : null,
+                                        ),
+                                      ),
+                                      // Align(
+                                      //   alignment: Alignment.bottomRight,
+                                      //   child: Padding(
+                                      //     padding: EdgeInsets.only(
+                                      //       top: 5,
+                                      //       right: 5,
+                                      //     ),
+                                      //     child: les["huiswerk"] != null
+                                      //         ? !les["huiswerkAf"]
+                                      //             ? Icon(
+                                      //                 Icons.assignment,
+                                      //                 size: 23,
+                                      //                 color: Colors.grey,
+                                      //               )
+                                      //             : Icon(
+                                      //                 Icons.check,
+                                      //                 size: 23,
+                                      //                 color: Colors.greenAccent,
+                                      //               )
+                                      //         : null,
+                                      //   ),
+                                      // ),
+                                      Padding(
+                                        padding: EdgeInsets.only(top: 20, left: 20),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  les.title,
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    les.information,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                    style: TextStyle(
+                                                      color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => LesPagina(les),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -493,129 +485,125 @@ class _LesPagina extends State<LesPagina> {
               margin: EdgeInsets.only(
                 bottom: 20,
               ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.access_time),
-                    title: Text(
-                      (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
-                    ),
+              column: [
+                ListTile(
+                  leading: Icon(Icons.access_time),
+                  title: Text(
+                    (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
                   ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.event),
+                  title: Text(les.date),
+                ),
+                if (les.title == null || les.title.capitalize != les.vak.naam)
                   ListTile(
-                    leading: Icon(Icons.event),
-                    title: Text(les.date),
+                    leading: Icon(Icons.book),
+                    title: Text(les.vak.naam),
                   ),
-                  if (les.title == null || les.title.capitalize != les.vak.naam)
-                    ListTile(
-                      leading: Icon(Icons.book),
-                      title: Text(les.vak.naam),
-                    ),
-                  ListTile(
-                    leading: Icon(Icons.title),
-                    title: Text(les.title),
-                    trailing: les.vak.id == null
-                        ? null
-                        : IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              TextEditingController con = TextEditingController();
-                              Future updateLessons() async {
-                                await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
-                                  setState(update);
-                                });
-                              }
+                ListTile(
+                  leading: Icon(Icons.title),
+                  title: Text(les.title),
+                  trailing: les.vak.id == null
+                      ? null
+                      : IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            TextEditingController con = TextEditingController();
+                            Future updateLessons() async {
+                              await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
+                                setState(update);
+                              });
+                            }
 
-                              showDialog(
-                                context: context,
-                                child: AlertDialog(
-                                  content: Row(children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: con,
-                                        autofocus: true,
-                                        decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
-                                      ),
+                            showDialog(
+                              context: context,
+                              child: AlertDialog(
+                                content: Row(children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: con,
+                                      autofocus: true,
+                                      decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
                                     ),
-                                  ]),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        child: Text('RESET'),
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          custom.delete("vak${les.vak.id}");
-                                          await updateLessons();
-                                          Navigator.pop(context);
-                                        }),
-                                    FlatButton(
-                                        child: Text('CANCEL'),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        }),
-                                    FlatButton(
-                                        child: Text('SAVE'),
-                                        onPressed: () {
-                                          if (con.text == "") return;
+                                  ),
+                                ]),
+                                actions: <Widget>[
+                                  FlatButton(
+                                      child: Text('RESET'),
+                                      onPressed: () async {
+                                        Navigator.pop(context);
+                                        custom.delete("vak${les.vak.id}");
+                                        await updateLessons();
+                                        Navigator.pop(context);
+                                      }),
+                                  FlatButton(
+                                      child: Text('CANCEL'),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      }),
+                                  FlatButton(
+                                      child: Text('SAVE'),
+                                      onPressed: () {
+                                        if (con.text == "") return;
 
-                                          custom.put("vak${les.vak.id}", con.text);
-                                          les.title = con.text;
-                                          setState(() {});
-                                          updateLessons();
-                                          Navigator.pop(context);
-                                        })
-                                  ],
-                                ),
-                              );
-                              // print(custom.toMap().toString());
-                            }),
+                                        custom.put("vak${les.vak.id}", con.text);
+                                        les.title = con.text;
+                                        setState(() {});
+                                        updateLessons();
+                                        Navigator.pop(context);
+                                      })
+                                ],
+                              ),
+                            );
+                            // print(custom.toMap().toString());
+                          }),
+                ),
+                if (les.location != null)
+                  ListTile(
+                    leading: Icon(Icons.location_on),
+                    title: Text(les.location),
                   ),
-                  if (les.location != null)
-                    ListTile(
-                      leading: Icon(Icons.location_on),
-                      title: Text(les.location),
-                    ),
-                  if (les.docent != null)
-                    ListTile(
-                      leading: Icon(Icons.person),
-                      title: Text(les.docent),
-                    ),
-                  // if (les["description"].length != 0)
-                  //   ListTile(
-                  //     leading: Icon(Icons.edit),
-                  //     title: Text("Bewerkt op " + les["bewerkt"]),
-                  //   ),
-                ],
-              ),
+                if (les.docent != null)
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(les.docent),
+                  ),
+                // if (les["description"].length != 0)
+                //   ListTile(
+                //     leading: Icon(Icons.edit),
+                //     title: Text("Bewerkt op " + les["bewerkt"]),
+                //   ),
+              ],
             ),
             if (les.description.length != 0)
-              Container(
-                child: SeeCard(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: 30,
-                      left: 20,
-                      right: 20,
-                      bottom: 20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            bottom: 10,
-                          ),
-                          child: Text(
-                            "Huiswerk",
-                            style: TextStyle(
-                              fontSize: 23,
-                            ),
+              SeeCard(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 30,
+                    left: 20,
+                    right: 20,
+                    bottom: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 10,
+                        ),
+                        child: Text(
+                          "Huiswerk",
+                          style: TextStyle(
+                            fontSize: 23,
                           ),
                         ),
-                        Html(
-                          data: les.description,
-                          onLinkTap: launch,
-                        ),
-                      ],
-                    ),
+                      ),
+                      Html(
+                        data: les.description,
+                        onLinkTap: launch,
+                      ),
+                    ],
                   ),
                 ),
                 width: MediaQuery.of(context).size.width,
@@ -662,51 +650,43 @@ class _AddLesPagina extends State<AddLesPagina> {
               key: _formKey,
               child: Column(
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    child: ListTile(
-                      leading: Icon(Icons.title),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'Titel',
-                        ),
-                        validator: (String value) {
-                          if (value.isEmpty) {
-                            return 'Veld verplicht';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => titel = value,
+                    leading: Icon(Icons.title),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Titel',
                       ),
+                      validator: (String value) {
+                        if (value.isEmpty) {
+                          return 'Veld verplicht';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) => titel = value,
                     ),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    child: ListTile(
-                      leading: Icon(Icons.location_on),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'Locatie',
-                        ),
-                        // validator: validator,
-                        onChanged: (value) => locatie = value,
+                    leading: Icon(Icons.location_on),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Locatie',
                       ),
+                      // validator: validator,
+                      onChanged: (value) => locatie = value,
                     ),
                   ),
                   Container(
@@ -721,9 +701,11 @@ class _AddLesPagina extends State<AddLesPagina> {
                           activeColor: userdata.get("accentColor"),
                           title: Text("Hele dag"),
                           value: heleDag,
-                          onChanged: (value) => setState(() {
-                            heleDag = value;
-                          }),
+                          onChanged: (value) => setState(
+                            () {
+                              heleDag = value;
+                            },
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.only(

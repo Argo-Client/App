@@ -47,28 +47,10 @@ part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 part 'src/ui/tabs/Info.dart';
 
+part 'src/ui/CustomWidgets.dart';
+
 extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
-}
-
-class SeeCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets margin;
-  final Color color;
-
-  SeeCard({this.margin, this.child, this.color});
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: margin ?? EdgeInsets.zero,
-      elevation: 0.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-      ),
-      color: color ?? null,
-      child: child,
-    );
-  }
 }
 
 Account account;

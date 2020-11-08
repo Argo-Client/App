@@ -47,73 +47,77 @@ class _Info extends State<Info> {
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.verified_user_outlined),
-                  title: Text('Versie'),
-                  subtitle: Text('0.1'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.device_hub_outlined),
-                  title: Text('Github'),
-                  subtitle: Text("Source code"),
-                  onTap: () => launch("https://argo-magister.net/github/"),
-                ),
-                ListTile(
-                  leading: Icon(Icons.chat_outlined),
-                  title: Text('Discord'),
-                  subtitle: Text("Gezelligheid"),
-                  onTap: () => launch("https://argo-magister.net/discord/"),
-                ),
-                ListTile(
-                  leading: Icon(Icons.feedback_outlined),
-                  title: Text('Feedback'),
-                  subtitle: Text("Klik hier als je feedback wil geven over deze app"),
-                  onTap: () => {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        bool checked = false;
-                        return AlertDialog(
-                          title: Text("Schrijf je feedback"),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TextField(
-                                  decoration: InputDecoration(labelText: 'Feedback'),
-                                  maxLines: 1,
+                SeeCard(
+                  column: [
+                    ListTile(
+                      leading: Icon(Icons.verified_user_outlined),
+                      title: Text('Versie'),
+                      subtitle: Text('0.1'),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.device_hub_outlined),
+                      title: Text('Github'),
+                      subtitle: Text("Source code"),
+                      onTap: () => launch("https://argo-magister.net/github/"),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.chat_outlined),
+                      title: Text('Discord'),
+                      subtitle: Text("Gezelligheid"),
+                      onTap: () => launch("https://argo-magister.net/discord/"),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.feedback_outlined),
+                      title: Text('Feedback'),
+                      subtitle: Text("Klik hier als je feedback wil geven over deze app"),
+                      onTap: () => {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            bool checked = false;
+                            return AlertDialog(
+                              title: Text("Schrijf je feedback"),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      decoration: InputDecoration(labelText: 'Feedback'),
+                                      maxLines: 1,
+                                    ),
+                                    CheckboxListTile(
+                                      activeColor: userdata.get('accentColor'),
+                                      title: Text('Anoniem'),
+                                      value: checked,
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          checked = value;
+                                        });
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                CheckboxListTile(
-                                  activeColor: userdata.get('accentColor'),
-                                  title: Text('Anoniem'),
-                                  value: checked,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      checked = value;
-                                    });
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: new Text("Sluit"),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.send_outlined),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                               ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: new Text("Sluit"),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.send_outlined),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
+                            );
+                          },
+                        ),
                       },
                     ),
-                  },
+                  ],
                 ),
                 Padding(
                   padding: EdgeInsets.only(
@@ -128,11 +132,13 @@ class _Info extends State<Info> {
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.android_outlined),
-                  title: Text('Flutter'),
-                  subtitle: Text("Platform gebruikt om de app te maken"),
-                  onTap: () => launch("https://flutter.dev/"),
+                SeeCard(
+                  child: ListTile(
+                    leading: Icon(Icons.android_outlined),
+                    title: Text('Flutter'),
+                    subtitle: Text("Platform gebruikt om de app te maken"),
+                    onTap: () => launch("https://flutter.dev/"),
+                  ),
                 ),
               ],
             ),

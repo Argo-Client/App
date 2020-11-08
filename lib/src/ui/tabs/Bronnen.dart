@@ -94,75 +94,71 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                       )
                     else
                       for (Bron bron in bronnenView.last)
-                        Container(
-                          child: SeeCard(
-                            child: ListTile(
-                              leading: Icon(bron.isFolder ? Icons.folder_outlined : Icons.insert_drive_file_outlined),
-                              title: Text(bron.naam),
-                              subtitle: bron.downloadCount == null
-                                  ? null
-                                  : LinearProgressIndicator(
-                                      value: bron.downloadCount / bron.size,
+                        SeeCard(
+                          border: Border(
+                            bottom: greyBorderSide(),
+                          ),
+                          child: ListTile(
+                            leading: Icon(bron.isFolder ? Icons.folder_outlined : Icons.insert_drive_file_outlined),
+                            title: Text(bron.naam),
+                            subtitle: bron.downloadCount == null
+                                ? null
+                                : LinearProgressIndicator(
+                                    value: bron.downloadCount / bron.size,
+                                  ),
+                            trailing: bron.isFolder
+                                ? null
+                                : Text(
+                                    filesize(
+                                      bron.size,
                                     ),
-                              trailing: bron.isFolder
-                                  ? null
-                                  : Text(
-                                      filesize(
-                                        bron.size,
-                                      ),
-                                    ),
-                              onTap: () async {
-                                if (bron.isFolder) {
-                                  breadcrumbs.add(
-                                    bron.naam,
-                                  );
-                                  bronnenView.add(
-                                    bron.children,
-                                  );
-                                  setState(
-                                    () {},
-                                  );
-                                  if (bron.children == null) {
-                                    await handleError(
-                                      () async => await account.magister.bronnen.loadChildren(bron),
-                                      "Kon ${bron.naam} niet laden.",
-                                      context,
-                                      () {
-                                        setState(
-                                          () {},
-                                        );
-                                        bronnenView = bronnenView
-                                            .where(
-                                              (list) => list != null,
-                                            )
-                                            .toList();
-                                        bronnenView.add(
-                                          bron.children,
-                                        );
-                                      },
-                                    );
-                                  }
-                                } else {
-                                  account.magister.bronnen.downloadFile(
-                                    bron,
-                                    (count, total) {
+                                  ),
+                            onTap: () async {
+                              if (bron.isFolder) {
+                                breadcrumbs.add(
+                                  bron.naam,
+                                );
+                                bronnenView.add(
+                                  bron.children,
+                                );
+                                setState(
+                                  () {},
+                                );
+                                if (bron.children == null) {
+                                  await handleError(
+                                    () async => await account.magister.bronnen.loadChildren(bron),
+                                    "Kon ${bron.naam} niet laden.",
+                                    context,
+                                    () {
                                       setState(
-                                        () {
-                                          bron.downloadCount = count;
-                                        },
+                                        () {},
+                                      );
+                                      bronnenView = bronnenView
+                                          .where(
+                                            (list) => list != null,
+                                          )
+                                          .toList();
+                                      bronnenView.add(
+                                        bron.children,
                                       );
                                     },
                                   );
                                 }
-                              },
-                            ),
+                              } else {
+                                account.magister.bronnen.downloadFile(
+                                  bron,
+                                  (count, total) {
+                                    setState(
+                                      () {
+                                        bron.downloadCount = count;
+                                      },
+                                    );
+                                  },
+                                );
+                              }
+                            },
                           ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: greyBorderSide(),
-                            ),
-                          ),
-                        )
+                        ),
                   ],
                 );
               },

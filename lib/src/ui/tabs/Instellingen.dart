@@ -61,140 +61,139 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           SeeCard(
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
-                  ),
-                  child: ListTile(
-                    // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
-                    trailing: Icon(Icons.brightness_4_outlined),
-                    title: Text("Thema"),
-                    subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
-                    onTap: () {
-                      return showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return StatefulBuilder(
-                            builder: (context, setState) {
-                              return AlertDialog(
-                                title: Text("Selecteer je thema"),
-                                actions: [
-                                  FlatButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      "Sluit",
-                                    ),
-                                  )
-                                ],
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      RadioListTile(
-                                        title: Text("Licht"),
-                                        activeColor: userdata.get('accentColor'),
-                                        value: "licht",
-                                        groupValue: userdata.get("theme"),
-                                        onChanged: (value) {
-                                          appState.setState(() {
-                                            setState(() {
-                                              userdata.put("theme", value);
-                                            });
-                                          });
-                                        },
-                                      ),
-                                      RadioListTile(
-                                        title: Text("Donker"),
-                                        activeColor: userdata.get('accentColor'),
-                                        value: "donker",
-                                        groupValue: userdata.get("theme"),
-                                        onChanged: (value) {
-                                          appState.setState(() {
-                                            setState(() {
-                                              userdata.put("theme", value);
-                                            });
-                                          });
-                                        },
-                                      ),
-                                      RadioListTile(
-                                        title: Text("Systeem kleur"),
-                                        activeColor: userdata.get('accentColor'),
-                                        value: "systeem",
-                                        groupValue: userdata.get("theme"),
-                                        onChanged: (value) {
-                                          appState.setState(() {
-                                            setState(() {
-                                              userdata.put("theme", value);
-                                            });
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
+            column: [
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
+                trailing: Icon(Icons.brightness_4_outlined),
+                title: Text("Thema"),
+                subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
+                onTap: () {
+                  return showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return AlertDialog(
+                            title: Text("Selecteer je thema"),
+                            actions: [
+                              FlatButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  "Sluit",
                                 ),
-                              );
-                            },
+                              )
+                            ],
+                            content: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  RadioListTile(
+                                    title: Text("Licht"),
+                                    activeColor: userdata.get('accentColor'),
+                                    value: "licht",
+                                    groupValue: userdata.get("theme"),
+                                    onChanged: (value) {
+                                      appState.setState(() {
+                                        setState(() {
+                                          userdata.put("theme", value);
+                                        });
+                                      });
+                                    },
+                                  ),
+                                  RadioListTile(
+                                    title: Text("Donker"),
+                                    activeColor: userdata.get('accentColor'),
+                                    value: "donker",
+                                    groupValue: userdata.get("theme"),
+                                    onChanged: (value) {
+                                      appState.setState(() {
+                                        setState(() {
+                                          userdata.put("theme", value);
+                                        });
+                                      });
+                                    },
+                                  ),
+                                  RadioListTile(
+                                    title: Text("Systeem kleur"),
+                                    activeColor: userdata.get('accentColor'),
+                                    value: "systeem",
+                                    groupValue: userdata.get("theme"),
+                                    onChanged: (value) {
+                                      appState.setState(
+                                        () {
+                                          setState(
+                                            () {
+                                              userdata.put("theme", value);
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         },
                       );
                     },
+                  );
+                },
+              ),
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                title: Text('Primaire kleur'),
+                subtitle: Text(
+                  '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                ),
+                onTap: () => _showColorPicker(
+                  (color) => appState.setState(
+                    () {
+                      userdata.put("primaryColor", color);
+                    },
                   ),
                 ),
-                Container(
+                trailing: Container(
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
-                  ),
-                  child: ListTile(
-                    title: Text('Primaire kleur'),
-                    subtitle: Text(
-                      '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-                    ),
-                    onTap: () => _showColorPicker((color) => appState.setState(() {
-                          userdata.put("primaryColor", color);
-                        })),
-                    trailing: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: userdata.get("primaryColor"),
-                        border: Border.all(
-                          color: Colors.black,
-                        ),
-                      ),
+                    shape: BoxShape.circle,
+                    color: userdata.get("primaryColor"),
+                    border: Border.all(
+                      color: Colors.black,
                     ),
                   ),
                 ),
-                ListTile(
-                  title: Text('Secundaire kleur'),
-                  subtitle: Text(
-                    '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-                  ),
-                  onTap: () => _showColorPicker((color) => appState.setState(() {
-                        userdata.put("accentColor", color);
-                      })),
-                  trailing: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: userdata.get("accentColor"),
-                      border: Border.all(
-                        color: Colors.black,
-                      ),
+              ),
+              ListTile(
+                title: Text('Secundaire kleur'),
+                subtitle: Text(
+                  '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                ),
+                onTap: () => _showColorPicker((color) => appState.setState(() {
+                      userdata.put("accentColor", color);
+                    })),
+                trailing: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: userdata.get("accentColor"),
+                    border: Border.all(
+                      color: Colors.black,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+
           Padding(
             padding: EdgeInsets.only(
               left: 10,
@@ -207,77 +206,116 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           SeeCard(
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text("Aantal pixels per uur"),
-                  subtitle: Text("Hoe hoog een uur is in de agenda"),
-                  trailing: Text("${userdata.get("pixelsPerHour")}"),
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return NumberPickerDialog.integer(
-                          title: Text("Pixels per uur"),
-                          minValue: 50,
-                          maxValue: 500,
-                          initialIntegerValue: userdata.get("pixelsPerHour"),
-                        );
-                      }).then((value) {
+            column: [
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                title: Text("Aantal pixels per uur"),
+                subtitle: Text("Hoe hoog een uur is in de agenda"),
+                trailing: Text("${userdata.get("pixelsPerHour")}"),
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return NumberPickerDialog.integer(
+                      title: Text("Pixels per uur"),
+                      minValue: 50,
+                      maxValue: 500,
+                      initialIntegerValue: userdata.get("pixelsPerHour"),
+                    );
+                  },
+                ).then(
+                  (value) {
                     if (value != null) userdata.put("pixelsPerHour", value);
-                  }),
+                  },
                 ),
-                ListTile(
-                  title: Text("Standaard starttijd."),
-                  subtitle: Text("Hoelaat je agenda moet beginnen."),
-                  trailing: Text("${userdata.get("agendaStartHour")}"),
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return NumberPickerDialog.integer(
-                          title: Text("Agenda starttijd"),
-                          minValue: 0,
-                          maxValue: userdata.get("agendaEndHour"),
-                          initialIntegerValue: userdata.get("agendaStartHour"),
-                        );
-                      }).then((value) {
+              ),
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                title: Text("Standaard starttijd."),
+                subtitle: Text("Hoelaat je agenda moet beginnen."),
+                trailing: Text("${userdata.get("agendaStartHour")}"),
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return NumberPickerDialog.integer(
+                      title: Text("Agenda starttijd"),
+                      minValue: 0,
+                      maxValue: userdata.get("agendaEndHour"),
+                      initialIntegerValue: userdata.get("agendaStartHour"),
+                    );
+                  },
+                ).then(
+                  (value) {
                     if (value != null) userdata.put("agendaStartHour", value);
-                  }),
+                  },
                 ),
-                ListTile(
-                  title: Text("Standaard eindtijd."),
-                  subtitle: Text("Hoelaat je agenda moet eindigen."),
-                  trailing: Text("${userdata.get("agendaEndHour")}"),
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return NumberPickerDialog.integer(
-                          title: Text("Agenda eindtijd"),
-                          minValue: userdata.get("agendaStartHour"),
-                          maxValue: 23,
-                          initialIntegerValue: userdata.get("agendaEndHour"),
-                        );
-                      }).then((value) {
+              ),
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                title: Text("Standaard eindtijd."),
+                subtitle: Text("Hoelaat je agenda moet eindigen."),
+                trailing: Text("${userdata.get("agendaEndHour")}"),
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return NumberPickerDialog.integer(
+                      title: Text("Agenda eindtijd"),
+                      minValue: userdata.get("agendaStartHour"),
+                      maxValue: 23,
+                      initialIntegerValue: userdata.get("agendaEndHour"),
+                    );
+                  },
+                ).then(
+                  (value) {
                     if (value != null) userdata.put("agendaEndHour", value);
-                  }),
+                  },
                 ),
-                CheckboxListTile(
+              ),
+              Container(
+                child: CheckboxListTile(
                   title: Text("Niet automatisch begin uur"),
-                  subtitle: Text("Of je altijd op je starttijd wil beginnen of soms ook later."),
+                  subtitle: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    child: Text("Of je altijd op je starttijd wil beginnen of soms ook later."),
+                  ),
+                  activeColor: userdata.get("accentColor"),
                   value: userdata.get("agendaAutoBegin"),
-                  onChanged: (value) => setState(() {
-                    userdata.put("agendaAutoBegin", value);
-                  }),
+                  onChanged: (value) => setState(
+                    () {
+                      userdata.put("agendaAutoBegin", value);
+                    },
+                  ),
                 ),
-                CheckboxListTile(
-                  title: Text("Niet automatisch eind uur"),
-                  subtitle: Text("Of je door wilt kunnen scrollen tot je eindtijd of bij je laatste les al stopt."),
-                  value: userdata.get("agendaAutoEind"),
-                  onChanged: (value) => setState(() {
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: greyBorderSide(),
+                  ),
+                ),
+              ),
+              CheckboxListTile(
+                title: Text("Niet automatisch eind uur"),
+                subtitle: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
+                  child: Text("Of je door wilt kunnen scrollen tot je eindtijd of bij je laatste les al stopt."),
+                ),
+                activeColor: userdata.get("accentColor"),
+                value: userdata.get("agendaAutoEind"),
+                onChanged: (value) => setState(
+                  () {
                     userdata.put("agendaAutoEind", value);
-                  }),
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
             margin: EdgeInsets.zero,
           ),
           // Padding(
@@ -309,68 +347,66 @@ class _Instellingen extends State<Instellingen> {
             ),
           ),
           SeeCard(
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+            column: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: greyBorderSide(),
                   ),
-                  child: CheckboxListTile(
-                    title: Text("Zet je foto uit"),
-                    activeColor: userdata.get("accentColor"),
-                    subtitle: Text("Voor als die niet zo goed gelukt is."),
-                    value: userdata.get("useIcon"),
-                    onChanged: (value) {
-                      userdata.put("useIcon", value);
-                      setState(() {});
-                      appState.setState(() {});
+                ),
+                child: CheckboxListTile(
+                  title: Text("Zet je foto uit"),
+                  activeColor: userdata.get("accentColor"),
+                  subtitle: Text("Voor als die niet zo goed gelukt is."),
+                  value: userdata.get("useIcon"),
+                  onChanged: (value) {
+                    userdata.put("useIcon", value);
+                    setState(() {});
+                    appState.setState(() {});
+                  },
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: greyBorderSide(),
+                  ),
+                ),
+                child: CheckboxListTile(
+                  title: Text("Terugknop"),
+                  activeColor: userdata.get("accentColor"),
+                  subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
+                  value: userdata.get("backOpensDrawer"),
+                  onChanged: (value) => setState(
+                    () {
+                      userdata.put("backOpensDrawer", value);
                     },
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: greyBorderSide(),
+              ),
+              ListTile(
+                leading: Icon(Icons.input_outlined),
+                title: Text('Open Introductie'),
+                onTap: () {
+                  // Navigator.pushNamed(context, "Introduction");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Introduction(),
                     ),
-                  ),
-                  child: CheckboxListTile(
-                    title: Text("Terugknop"),
-                    activeColor: userdata.get("accentColor"),
-                    subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
-                    value: userdata.get("backOpensDrawer"),
-                    onChanged: (value) => setState(
-                      () {
-                        userdata.put("backOpensDrawer", value);
-                      },
-                    ),
-                  ),
-                ),
+                  );
+                },
+              ),
+              if (custom.length != 0)
                 ListTile(
-                  leading: Icon(Icons.input_outlined),
-                  title: Text('Open Introductie'),
-                  onTap: () {
-                    // Navigator.pushNamed(context, "Introduction");
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Introduction(),
-                      ),
-                    );
-                  },
-                ),
-                if (custom.length != 0)
-                  ListTile(
-                    title: Text("Verwijder alle zelfbedachte namen."),
-                    leading: Icon(Icons.delete),
-                    onTap: () => setState(() {
-                      custom.clear();
-                      handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
-                    }),
-                  )
-              ],
-            ),
+                  title: Text("Verwijder alle zelfbedachte namen."),
+                  leading: Icon(Icons.delete),
+                  onTap: () => setState(() {
+                    custom.clear();
+                    handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                  }),
+                )
+            ],
           ),
         ],
       ),

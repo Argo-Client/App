@@ -21,36 +21,44 @@ class _MijnGegevens extends State<MijnGegevens> {
       body: RefreshIndicator(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: EdgeInsets.symmetric(
+                  vertical: 20,
+                ),
                 child: Row(
                   children: <Widget>[
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Theme.of(context).backgroundColor,
-                            child: userdata.get("useIcon") || account.profilePicture == null
-                                ? Icon(
-                                    Icons.person,
-                                    size: 60,
-                                  )
-                                : Image.memory(base64Decode(account.profilePicture)),
-                          ),
-                        ),
-                      ],
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Theme.of(context).backgroundColor,
+                        child: userdata.get("useIcon") || account.profilePicture == null
+                            ? Icon(
+                                Icons.person,
+                                size: 60,
+                              )
+                            : Image.memory(
+                                base64Decode(
+                                  account.profilePicture,
+                                ),
+                              ),
+                      ),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          account.fullName,
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w300,
+                        Container(
+                          width: MediaQuery.of(context).size.width * (1 / 2),
+                          child: Text(
+                            account.fullName,
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
                         ),
                         Text(
@@ -67,129 +75,124 @@ class _MijnGegevens extends State<MijnGegevens> {
                 ),
               ),
               Divider(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 13, top: 10),
-                    child: Text(
-                      "School info",
-                      style: TextStyle(
-                        color: userdata.get("accentColor"),
-                      ),
-                    ),
+              Padding(
+                padding: EdgeInsets.only(left: 13, top: 10),
+                child: Text(
+                  "School info",
+                  style: TextStyle(
+                    color: userdata.get("accentColor"),
                   ),
-                  ListTile(
-                    title: Text(
-                      "Mentor(en)",
-                    ),
-                    subtitle: Text(
-                      account.mentor,
-                    ),
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  "Mentor(en)",
+                ),
+                subtitle: Text(
+                  account.mentor,
+                ),
+              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 15),
+              //   child: Divider(),
+              // ),
+              ListTile(
+                title: Text(
+                  "Stamnummer",
+                ),
+                subtitle: Text(
+                  account.username,
+                ),
+              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 15),
+              //   child: Divider(),
+              // ),
+              ListTile(
+                title: Text(
+                  "Profiel",
+                ),
+                subtitle: Text(
+                  account.profiel,
+                ),
+              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 15),
+              //   child: Divider(),
+              // ),
+              ListTile(
+                title: Text(
+                  "Studie",
+                ),
+                subtitle: Text(
+                  account.klas,
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 13, top: 10),
+                child: Text(
+                  "Persoonlijk info",
+                  style: TextStyle(
+                    color: userdata.get("accentColor"),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Stamnummer",
-                    ),
-                    subtitle: Text(
-                      account.username,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Profiel",
-                    ),
-                    subtitle: Text(
-                      account.profiel,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Studie",
-                    ),
-                    subtitle: Text(
-                      account.klas,
-                    ),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: EdgeInsets.only(left: 13, top: 10),
-                    child: Text(
-                      "Persoonlijk info",
-                      style: TextStyle(
-                        color: userdata.get("accentColor"),
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Officiële naam",
-                    ),
-                    subtitle: Text(
-                      account.officialFullName,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Geboortedatum",
-                    ),
-                    subtitle: Text(
-                      account.birthdate,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Mobiele nummer",
-                    ),
-                    subtitle: Text(
-                      account.phone,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Email Adres",
-                    ),
-                    subtitle: Text(
-                      account.email,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(),
-                  ),
-                  ListTile(
-                    title: Text(
-                      "Adres",
-                    ),
-                    subtitle: Text(
-                      account.address,
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              ListTile(
+                title: Text(
+                  "Officiële naam",
+                ),
+                subtitle: Text(
+                  account.officialFullName,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              ListTile(
+                title: Text(
+                  "Geboortedatum",
+                ),
+                subtitle: Text(
+                  account.birthdate,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              ListTile(
+                title: Text(
+                  "Mobiele nummer",
+                ),
+                subtitle: Text(
+                  account.phone,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              ListTile(
+                title: Text(
+                  "Email Adres",
+                ),
+                subtitle: Text(
+                  account.email,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Divider(),
+              ),
+              ListTile(
+                title: Text(
+                  "Adres",
+                ),
+                subtitle: Text(
+                  account.address,
+                ),
               ),
             ],
           ),

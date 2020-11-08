@@ -55,40 +55,36 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                 );
               }
               berichten.add(
-                Container(
-                  child: SeeCard(
-                    child: ListTile(
-                      trailing: Padding(
-                        child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      subtitle: Text(
-                        ber.afzender,
-                      ),
-                      title: Text(
-                        ber.onderwerp,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => BerichtPagina(ber),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  decoration: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.dag
+                SeeCard(
+                  border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.dag
                       ? null
-                      : BoxDecoration(
-                          border: Border(
-                            bottom: greyBorderSide(),
-                          ),
+                      : Border(
+                          bottom: greyBorderSide(),
                         ),
+                  child: ListTile(
+                    trailing: Padding(
+                      child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
+                      padding: EdgeInsets.only(
+                        top: 7,
+                        left: 7,
+                      ),
+                    ),
+                    subtitle: Text(
+                      ber.afzender,
+                    ),
+                    title: Text(
+                      ber.onderwerp,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => BerichtPagina(ber),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
               lastDay = ber.dag;
@@ -166,82 +162,80 @@ class BerichtPagina extends StatelessWidget {
                   left: 0,
                   right: 0,
                 ),
-                child: Column(
-                  children: [
-                    if (ber.afzender != null)
-                      ListTile(
-                        leading: Padding(
-                          child: Icon(
-                            Icons.person_outlined,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
+                column: [
+                  if (ber.afzender != null)
+                    ListTile(
+                      leading: Padding(
+                        child: Icon(
+                          Icons.person_outlined,
                         ),
-                        title: Text(
-                          ber.afzender,
-                        ),
-                        subtitle: Text(
-                          "Afzender",
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
                         ),
                       ),
-                    if (ber.dag != null)
-                      ListTile(
-                        leading: Padding(
-                          child: Icon(
-                            Icons.send,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
+                      title: Text(
+                        ber.afzender,
+                      ),
+                      subtitle: Text(
+                        "Afzender",
+                      ),
+                    ),
+                  if (ber.dag != null)
+                    ListTile(
+                      leading: Padding(
+                        child: Icon(
+                          Icons.send,
                         ),
-                        title: Text(
-                          ber.dag,
-                        ),
-                        subtitle: Text(
-                          "Verzonden",
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
                         ),
                       ),
-                    if (ber.ontvangers != null)
-                      ListTile(
-                        leading: Padding(
-                          child: Icon(
-                            Icons.people_outlined,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
+                      title: Text(
+                        ber.dag,
+                      ),
+                      subtitle: Text(
+                        "Verzonden",
+                      ),
+                    ),
+                  if (ber.ontvangers != null)
+                    ListTile(
+                      leading: Padding(
+                        child: Icon(
+                          Icons.people_outlined,
                         ),
-                        title: Text(
-                          ber.ontvangers,
-                        ),
-                        subtitle: Text(
-                          "Ontvanger(s)",
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
                         ),
                       ),
-                    if (ber.cc != null)
-                      ListTile(
-                        leading: Padding(
-                          child: Icon(
-                            Icons.people_outline,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
+                      title: Text(
+                        ber.ontvangers,
+                      ),
+                      subtitle: Text(
+                        "Ontvanger(s)",
+                      ),
+                    ),
+                  if (ber.cc != null)
+                    ListTile(
+                      leading: Padding(
+                        child: Icon(
+                          Icons.people_outline,
                         ),
-                        title: Text(
-                          ber.cc,
-                        ),
-                        subtitle: Text(
-                          "CC",
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
                         ),
                       ),
-                  ],
-                ),
+                      title: Text(
+                        ber.cc,
+                      ),
+                      subtitle: Text(
+                        "CC",
+                      ),
+                    ),
+                ],
               ),
               if (ber.inhoud != null)
                 SeeCard(
@@ -280,118 +274,116 @@ class NieuwBerichtPagina extends StatelessWidget {
           child: Column(
             children: [
               SeeCard(
-                child: Column(
-                  children: [
-                    Container(
-                      child: ListTile(
-                        leading: Icon(Icons.person_outlined),
-                        title: TextFormField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            hintText: 'Aan',
-                          ),
-                          initialValue: ber != null ? ber.afzender : null,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Veld verplicht';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: ListTile(
-                        leading: Icon(Icons.people_outlined),
-                        title: TextFormField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            hintText: 'CC',
-                          ),
-                          initialValue: ber != null ? ber.cc : null,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: ListTile(
-                        leading: Icon(Icons.people_outlined),
-                        title: TextFormField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            hintText: 'BCC',
-                          ),
-                          initialValue: ber != null ? ber.cc : null,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      child: ListTile(
-                        leading: Icon(Icons.subject),
-                        title: TextFormField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                            hintText: 'Onderwerp',
-                          ),
-                          initialValue: ber != null ? "RE: " + ber.onderwerp : null,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Veld verplicht';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.edit),
+                column: [
+                  Container(
+                    child: ListTile(
+                      leading: Icon(Icons.person_outlined),
                       title: TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 25,
-                        scrollPadding: EdgeInsets.all(20.0),
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           disabledBorder: InputBorder.none,
-                          hintText: 'Inhoud',
+                          hintText: 'Aan',
                         ),
-                        // validator: validator,
+                        initialValue: ber != null ? ber.afzender : null,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Veld verplicht';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                  ],
-                ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: ListTile(
+                      leading: Icon(Icons.people_outlined),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'CC',
+                        ),
+                        initialValue: ber != null ? ber.cc : null,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: ListTile(
+                      leading: Icon(Icons.people_outlined),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'BCC',
+                        ),
+                        initialValue: ber != null ? ber.cc : null,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: ListTile(
+                      leading: Icon(Icons.subject),
+                      title: TextFormField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: 'Onderwerp',
+                        ),
+                        initialValue: ber != null ? "RE: " + ber.onderwerp : null,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Veld verplicht';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.edit),
+                    title: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 25,
+                      scrollPadding: EdgeInsets.all(20.0),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Inhoud',
+                      ),
+                      // validator: validator,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

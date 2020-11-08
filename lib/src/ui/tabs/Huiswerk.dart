@@ -108,59 +108,55 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                 );
               }
               huiswerk.add(
-                Container(
-                  child: SeeCard(
-                    child: ExpansionTile(
-                      leading: hw.huiswerkAf
-                          ? IconButton(
-                              onPressed: () {
-                                huiswerkAf(hw);
-                              },
-                              icon: Icon(
-                                Icons.assignment_turned_in_outlined,
-                                color: Colors.green,
-                              ),
-                            )
-                          : IconButton(
-                              onPressed: () {
-                                huiswerkAf(hw);
-                              },
-                              icon: Icon(
-                                Icons.assignment_outlined,
-                              ),
+                SeeCard(
+                  border: huiswerkLessen.length - 1 == i || huiswerkLessen[i + 1].date != hw.date
+                      ? null
+                      : Border(
+                          bottom: greyBorderSide(),
+                        ),
+                  child: ExpansionTile(
+                    leading: hw.huiswerkAf
+                        ? IconButton(
+                            onPressed: () {
+                              huiswerkAf(hw);
+                            },
+                            icon: Icon(
+                              Icons.assignment_turned_in_outlined,
+                              color: Colors.green,
                             ),
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => LesPagina(hw),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            child: Html(
-                              data: hw.huiswerk,
-                              onLinkTap: launch,
-                            ),
-                            padding: EdgeInsets.only(
-                              left: 30,
+                          )
+                        : IconButton(
+                            onPressed: () {
+                              huiswerkAf(hw);
+                            },
+                            icon: Icon(
+                              Icons.assignment_outlined,
                             ),
                           ),
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => LesPagina(hw),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          child: Html(
+                            data: hw.huiswerk,
+                            onLinkTap: launch,
+                          ),
+                          padding: EdgeInsets.only(
+                            left: 30,
+                          ),
                         ),
-                      ],
-                      title: Text(
-                        hw.title,
                       ),
+                    ],
+                    title: Text(
+                      hw.title,
                     ),
                   ),
-                  decoration: huiswerkLessen.length - 1 == i || huiswerkLessen[i + 1].date != hw.date
-                      ? null
-                      : BoxDecoration(
-                          border: Border(
-                            bottom: greyBorderSide(),
-                          ),
-                        ),
                 ),
               );
               lastDay = hw.date;

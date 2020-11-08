@@ -73,47 +73,51 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                   );
                 }
                 absenties.add(
-                  Container(
-                    child: SeeCard(
-                      child: ListTile(
-                        leading: Padding(
-                          child: afw.geoorloofd ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error_outlined, color: Colors.redAccent),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
-                        ),
-                        subtitle: Text(hour + afw.les.title),
-                        title: Text(afw.type),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LesPagina(afw.les),
-                            ),
-                          );
-                        },
-                        trailing: afw.les.huiswerk != null
-                            ? !afw.les.huiswerkAf
-                                ? Icon(
-                                    Icons.assignment_outlined,
-                                    size: 23,
-                                    color: Colors.grey,
-                                  )
-                                : Icon(
-                                    Icons.assignment_turned_in_outlined,
-                                    size: 23,
-                                    color: Colors.green,
-                                  )
-                            : null,
-                      ),
-                    ),
-                    decoration: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afw.dag
+                  SeeCard(
+                    border: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afw.dag
                         ? null
-                        : BoxDecoration(
-                            border: Border(
-                              bottom: greyBorderSide(),
-                            ),
+                        : Border(
+                            bottom: greyBorderSide(),
                           ),
+                    child: ListTile(
+                      leading: Padding(
+                        child: afw.geoorloofd
+                            ? Icon(
+                                Icons.check,
+                                color: Colors.green,
+                              )
+                            : Icon(
+                                Icons.error_outlined,
+                                color: Colors.redAccent,
+                              ),
+                        padding: EdgeInsets.only(
+                          top: 7,
+                          left: 7,
+                        ),
+                      ),
+                      subtitle: Text(hour + afw.les.title),
+                      title: Text(afw.type),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LesPagina(afw.les),
+                          ),
+                        );
+                      },
+                      trailing: afw.les.huiswerk != null
+                          ? !afw.les.huiswerkAf
+                              ? Icon(
+                                  Icons.assignment_outlined,
+                                  size: 23,
+                                  color: Colors.grey,
+                                )
+                              : Icon(
+                                  Icons.assignment_turned_in_outlined,
+                                  size: 23,
+                                  color: Colors.green,
+                                )
+                          : null,
+                    ),
                   ),
                 );
                 lastDay = afw.dag;

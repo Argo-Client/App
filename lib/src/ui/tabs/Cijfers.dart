@@ -71,47 +71,43 @@ class _Cijfers extends State<Cijfers> {
                   RefreshIndicator(
                     child: SingleChildScrollView(
                       child: SeeCard(
-                        child: Column(
-                          children: [
-                            for (Cijfer cijfer in account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id))
-                              Container(
-                                child: ListTile(
-                                  title: Text("${cijfer.vak.naam}"),
-                                  subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
-                                  trailing: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: userdata.get("accentColor")),
-                                    ),
-                                    width: 45,
-                                    height: 45,
-                                    child: Center(
-                                      child: Text(
-                                        "${cijfer.cijfer}",
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.fade,
-                                        softWrap: false,
-                                        maxLines: 1,
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => CijferPagina(cijfer.vak.id, jaar),
-                                      ),
-                                    );
-                                  },
-                                ),
+                        column: [
+                          for (Cijfer cijfer in account.cijfers[jaar].cijfers.where(
+                            (cijfer) => cijfer.periode.id == periode.id,
+                          ))
+                            ListTileBorder(
+                              border: Border(
+                                right: greyBorderSide(),
+                                bottom: greyBorderSide(),
+                              ),
+                              title: Text("${cijfer.vak.naam}"),
+                              subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
+                              trailing: Container(
                                 decoration: BoxDecoration(
-                                  border: Border(
-                                    right: greyBorderSide(),
-                                    bottom: greyBorderSide(),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: userdata.get("accentColor")),
+                                ),
+                                width: 45,
+                                height: 45,
+                                child: Center(
+                                  child: Text(
+                                    "${cijfer.cijfer}",
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    maxLines: 1,
                                   ),
                                 ),
                               ),
-                          ],
-                        ),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => CijferPagina(cijfer.vak.id, jaar),
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
                       ),
                     ),
                     onRefresh: () async {
@@ -210,71 +206,65 @@ class _CijferPagina extends State<CijferPagina> {
                       ),
                     ),
                   SeeCard(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: greyBorderSide(),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          for (Cijfer cijfer in cijfers.where(
-                            (cijf) => cijf.periode.id == periode.id,
-                          ))
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: greyBorderSide(),
-                                ),
-                              ),
-                              child: Futuristic(
-                                autoStart: true,
-                                futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
-                                busyBuilder: (context) => CircularProgressIndicator(),
-                                errorBuilder: (context, error, retry) {
-                                  return Text("Error $error");
-                                },
-                                dataBuilder: (context, data) => ListTile(
-                                  trailing: cijfer.cijfer.length > 4
-                                      ? null
-                                      : Stack(
-                                          children: [
-                                            Text(
-                                              cijfer.cijfer,
-                                              style: TextStyle(
-                                                fontSize: 17,
-                                                color: cijfer.voldoende ? null : Colors.red,
-                                              ),
-                                            ),
-                                            Transform.translate(
-                                              offset: Offset(10, -15),
-                                              child: Text(
-                                                "${cijfer.weging}x",
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[400],
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                  subtitle: cijfer.cijfer.length <= 4
-                                      ? Text(formatDate.format(cijfer.ingevoerd))
-                                      : Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: Text(
-                                            cijfer.cijfer,
-                                          ),
-                                        ),
-                                  title: Text(cijfer.title),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                    border: Border(
+                      top: greyBorderSide(),
                     ),
+                    column: [
+                      for (Cijfer cijfer in cijfers.where(
+                        (cijf) => cijf.periode.id == periode.id,
+                      ))
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: greyBorderSide(),
+                            ),
+                          ),
+                          child: Futuristic(
+                            autoStart: true,
+                            futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                            busyBuilder: (context) => CircularProgressIndicator(),
+                            errorBuilder: (context, error, retry) {
+                              return Text("Error $error");
+                            },
+                            dataBuilder: (context, data) => ListTile(
+                              trailing: cijfer.cijfer.length > 4
+                                  ? null
+                                  : Stack(
+                                      children: [
+                                        Text(
+                                          cijfer.cijfer,
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            color: cijfer.voldoende ? null : Colors.red,
+                                          ),
+                                        ),
+                                        Transform.translate(
+                                          offset: Offset(10, -15),
+                                          child: Text(
+                                            "${cijfer.weging}x",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                              subtitle: cijfer.cijfer.length <= 4
+                                  ? Text(formatDate.format(cijfer.ingevoerd))
+                                  : Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 8,
+                                      ),
+                                      child: Text(
+                                        cijfer.cijfer,
+                                      ),
+                                    ),
+                              title: Text(cijfer.title),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),

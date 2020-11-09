@@ -34,33 +34,30 @@ class _Info extends State<Info> {
           children: [
             ListView(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 15,
-                    top: 20,
-                    bottom: 15,
-                  ),
-                  child: Text(
-                    "Algemeen",
-                    style: TextStyle(
-                      color: userdata.get("accentColor"),
-                    ),
-                  ),
-                ),
+                ContentHeader("Algemeen"),
                 SeeCard(
                   column: [
-                    ListTile(
+                    ListTileBorder(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                       leading: Icon(Icons.verified_user_outlined),
                       title: Text('Versie'),
                       subtitle: Text('0.1'),
                     ),
-                    ListTile(
+                    ListTileBorder(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
                       subtitle: Text("Source code"),
                       onTap: () => launch("https://argo-magister.net/github/"),
                     ),
-                    ListTile(
+                    ListTileBorder(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
                       subtitle: Text("Gezelligheid"),
@@ -119,19 +116,7 @@ class _Info extends State<Info> {
                     ),
                   ],
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 15,
-                    top: 20,
-                    bottom: 15,
-                  ),
-                  child: Text(
-                    "Tools",
-                    style: TextStyle(
-                      color: userdata.get("accentColor"),
-                    ),
-                  ),
-                ),
+                ContentHeader("Tools"),
                 SeeCard(
                   child: ListTile(
                     leading: Icon(Icons.android_outlined),
@@ -144,116 +129,114 @@ class _Info extends State<Info> {
             ),
             ListView(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 15,
-                    top: 20,
-                    bottom: 15,
-                  ),
-                  child: Text(
-                    "Makers",
-                    style: TextStyle(
-                      color: userdata.get("accentColor"),
+                ContentHeader("Makers"),
+                SeeCard(
+                  column: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                      child: ExpansionTile(
+                        leading: Icon(Icons.person_outlined),
+                        title: Text('Guus van Meerveld'),
+                        subtitle: Text('Bijdrage: UI'),
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.public_outlined),
+                            title: Text("Website"),
+                            onTap: () {
+                              launch("https://g-vm.nl");
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.device_hub_outlined),
+                            title: Text("Github"),
+                            onTap: () {
+                              launch("https://github.com/guusvanmeerveld");
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                ExpansionTile(
-                  leading: Icon(Icons.person_outlined),
-                  title: Text('Guus van Meerveld'),
-                  subtitle: Text('Bijdrage: UI'),
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.public_outlined),
-                      title: Text("Website"),
-                      onTap: () {
-                        launch("https://g-vm.nl");
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.device_hub_outlined),
-                      title: Text("Github"),
-                      onTap: () {
-                        launch("https://github.com/guusvanmeerveld");
-                      },
-                    ),
-                  ],
-                ),
-                ExpansionTile(
-                  leading: Icon(Icons.person_outlined),
-                  title: Text('Sam Taen'),
-                  subtitle: Text('Bijdrage: Backend'),
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.public_outlined),
-                      title: Text("Website"),
-                      onTap: () {
-                        launch("https://samtaen.nl");
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.device_hub_outlined),
-                      title: Text("Github"),
-                      onTap: () {
-                        launch("https://github.com/netfloex");
-                      },
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 15,
-                    top: 20,
-                    bottom: 15,
-                  ),
-                  child: Text(
-                    "Support",
-                    style: TextStyle(
-                      color: userdata.get("accentColor"),
-                    ),
-                  ),
-                ),
-                ExpansionTile(
-                  leading: Icon(Icons.person_outlined),
-                  title: Text('Martijn Oosterhuis'),
-                  subtitle: Text('Bijdrage: Emotionele support'),
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.public_outlined),
-                      title: Text("Website"),
-                      onTap: () {
-                        launch("https://mb-o.nl");
-                      },
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.device_hub_outlined),
-                      title: Text("Github"),
-                      onTap: () {
-                        launch("https://github.com/devostex");
-                      },
+                    ExpansionTile(
+                      leading: Icon(Icons.person_outlined),
+                      title: Text('Sam Taen'),
+                      subtitle: Text('Bijdrage: Backend'),
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.public_outlined),
+                          title: Text("Website"),
+                          onTap: () {
+                            launch("https://samtaen.nl");
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.device_hub_outlined),
+                          title: Text("Github"),
+                          onTap: () {
+                            launch("https://github.com/netfloex");
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                ExpansionTile(
-                  leading: Icon(Icons.person_outlined),
-                  title: Text('Sjoerd Bolten'),
-                  subtitle: Text('Bijdrage: Alles'),
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.public_outlined),
-                      title: Text("Website"),
-                      onTap: () {
-                        launch("https://netlob.dev");
-                      },
+                ContentHeader("Support"),
+                SeeCard(
+                  column: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                      child: ExpansionTile(
+                        leading: Icon(Icons.person_outlined),
+                        title: Text('Martijn Oosterhuis'),
+                        subtitle: Text('Bijdrage: Emotionele support'),
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.public_outlined),
+                            title: Text("Website"),
+                            onTap: () {
+                              launch("https://mb-o.nl");
+                            },
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.device_hub_outlined),
+                            title: Text("Github"),
+                            onTap: () {
+                              launch("https://github.com/devostex");
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    ListTile(
-                      leading: Icon(Icons.device_hub_outlined),
-                      title: Text("Github"),
-                      onTap: () {
-                        launch("https://github.com/netlob");
-                      },
+                    ExpansionTile(
+                      leading: Icon(Icons.person_outlined),
+                      title: Text('Sjoerd Bolten'),
+                      subtitle: Text('Bijdrage: Alles'),
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.public_outlined),
+                          title: Text("Website"),
+                          onTap: () {
+                            launch("https://netlob.dev");
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.device_hub_outlined),
+                          title: Text("Github"),
+                          onTap: () {
+                            launch("https://github.com/netlob");
+                          },
+                        ),
+                      ],
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ],

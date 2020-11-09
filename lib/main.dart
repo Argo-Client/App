@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'dart:developer';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:file_picker/file_picker.dart';
 // import 'package:purchases_flutter/purchases_flutter.dart';
 
 import 'package:hive/hive.dart';
@@ -29,6 +31,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/utils/magister/login.dart';
 import 'src/utils/hive/adapters.dart';
+
+import 'src/ui/CustomWidgets.dart';
+
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/layout.dart';
@@ -46,8 +51,6 @@ part 'src/ui/tabs/Bronnen.dart';
 part 'src/ui/tabs/MijnGegevens.dart';
 part 'src/ui/tabs/Instellingen.dart';
 part 'src/ui/tabs/Info.dart';
-
-part 'src/ui/CustomWidgets.dart';
 
 extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";

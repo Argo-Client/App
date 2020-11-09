@@ -41,17 +41,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
               Bericht ber = account.berichten[i];
               if (lastDay != ber.dag) {
                 berichten.add(
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 15,
-                      top: 20,
-                      bottom: 20,
-                    ),
-                    child: Text(
-                      ber.dag,
-                      style: TextStyle(color: userdata.get("accentColor")),
-                    ),
-                  ),
+                  ContentHeader(ber.dag),
                 );
               }
               berichten.add(
@@ -164,7 +154,10 @@ class BerichtPagina extends StatelessWidget {
                 ),
                 column: [
                   if (ber.afzender != null)
-                    ListTile(
+                    ListTileBorder(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                       leading: Padding(
                         child: Icon(
                           Icons.person_outlined,
@@ -182,7 +175,10 @@ class BerichtPagina extends StatelessWidget {
                       ),
                     ),
                   if (ber.dag != null)
-                    ListTile(
+                    ListTileBorder(
+                      border: Border(
+                        bottom: greyBorderSide(),
+                      ),
                       leading: Padding(
                         child: Icon(
                           Icons.send,
@@ -275,96 +271,80 @@ class NieuwBerichtPagina extends StatelessWidget {
             children: [
               SeeCard(
                 column: [
-                  Container(
-                    child: ListTile(
-                      leading: Icon(Icons.person_outlined),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'Aan',
-                        ),
-                        initialValue: ber != null ? ber.afzender : null,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Veld verplicht';
-                          }
-                          return null;
-                        },
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
+                    leading: Icon(Icons.person_outlined),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Aan',
                       ),
+                      initialValue: ber != null ? ber.afzender : null,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Veld verplicht';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                  Container(
-                    child: ListTile(
-                      leading: Icon(Icons.people_outlined),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'CC',
-                        ),
-                        initialValue: ber != null ? ber.cc : null,
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
+                    leading: Icon(Icons.people_outlined),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'CC',
                       ),
+                      initialValue: ber != null ? ber.cc : null,
                     ),
                   ),
-                  Container(
-                    child: ListTile(
-                      leading: Icon(Icons.people_outlined),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'BCC',
-                        ),
-                        initialValue: ber != null ? ber.cc : null,
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
+                    leading: Icon(Icons.people_outlined),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'BCC',
                       ),
+                      initialValue: ber != null ? ber.cc : null,
                     ),
                   ),
-                  Container(
-                    child: ListTile(
-                      leading: Icon(Icons.subject),
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: 'Onderwerp',
-                        ),
-                        initialValue: ber != null ? "RE: " + ber.onderwerp : null,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Veld verplicht';
-                          }
-                          return null;
-                        },
-                      ),
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
+                    leading: Icon(Icons.subject),
+                    title: TextFormField(
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: 'Onderwerp',
                       ),
+                      initialValue: ber != null ? "RE: " + ber.onderwerp : null,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Veld verplicht';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   ListTile(
@@ -389,14 +369,43 @@ class NieuwBerichtPagina extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          /// [SAM] fix dit
-        },
-        child: Icon(
-          Icons.send,
-          color: Colors.white,
-        ),
+      floatingActionButton: Column(
+        children: [
+          Spacer(
+            flex: 1,
+          ),
+          Padding(
+            child: FloatingActionButton(
+              onPressed: () async {
+                // FilePickerResult result = await FilePicker.platform.pickFiles(
+                //   allowMultiple: true,
+                // );
+
+                // if (result != null) {
+                //   List<File> files = result.paths.map((path) => File(path)).toList();
+                // } else {
+                //   // User canceled the picker
+                // }
+              },
+              child: Icon(
+                Icons.attach_file,
+                color: Colors.white,
+              ),
+            ),
+            padding: EdgeInsets.only(
+              bottom: 10,
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              /// [SAM] fix dit
+            },
+            child: Icon(
+              Icons.send,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

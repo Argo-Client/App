@@ -49,17 +49,7 @@ class _Instellingen extends State<Instellingen> {
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: EdgeInsets.only(
-              left: 10,
-              top: 10,
-              bottom: 10,
-            ),
-            child: Text(
-              "Uiterlijk",
-              style: TextStyle(color: userdata.get("accentColor")),
-            ),
-          ),
+          ContentHeader("Uiterlijk"),
           SeeCard(
             column: [
               ListTileBorder(
@@ -194,17 +184,8 @@ class _Instellingen extends State<Instellingen> {
             ],
           ),
 
-          Padding(
-            padding: EdgeInsets.only(
-              left: 10,
-              top: 10,
-              bottom: 10,
-            ),
-            child: Text(
-              "Agenda",
-              style: TextStyle(color: userdata.get("accentColor")),
-            ),
-          ),
+          ContentHeader("Agenda"),
+
           SeeCard(
             column: [
               ListTileBorder(
@@ -335,17 +316,8 @@ class _Instellingen extends State<Instellingen> {
           //   ),
           //   margin: EdgeInsets.zero,
           // ),
-          Padding(
-            padding: EdgeInsets.only(
-              left: 10,
-              top: 10,
-              bottom: 10,
-            ),
-            child: Text(
-              "Overig",
-              style: TextStyle(color: userdata.get("accentColor")),
-            ),
-          ),
+          ContentHeader("Overig"),
+
           SeeCard(
             column: [
               Container(

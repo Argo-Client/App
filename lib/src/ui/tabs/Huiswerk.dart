@@ -94,17 +94,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
               Les hw = huiswerkLessen[i];
               if (lastDay != hw.date) {
                 huiswerk.add(
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 15,
-                      top: 20,
-                      bottom: 20,
-                    ),
-                    child: Text(
-                      hw.date,
-                      style: TextStyle(color: userdata.get("accentColor")),
-                    ),
-                  ),
+                  ContentHeader(hw.date)
                 );
               }
               huiswerk.add(

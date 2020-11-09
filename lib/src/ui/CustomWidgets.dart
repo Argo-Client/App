@@ -1,10 +1,34 @@
-part of main;
+import 'package:flutter/material.dart';
+import 'package:Argo/main.dart';
 
 BorderSide greyBorderSide() {
   return BorderSide(color: theme == Brightness.dark ? Color.fromARGB(255, 100, 100, 100) : Color.fromARGB(255, 225, 225, 225), width: 1);
 }
 
-class SeeCard extends StatelessWidget {
+class ContentHeader extends StatelessWidget {
+  final String text;
+
+  ContentHeader(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 15,
+        top: 12.5,
+        bottom: 12.5,
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: userdata.get("accentColor"),
+        ),
+      ),
+    );
+  }
+}
+
+class SeeCard extends Card {
   final Widget child;
   final EdgeInsets margin;
   final Color color;

@@ -49,6 +49,7 @@ dependencies:
   open_file: ^3.0.1
   filesize: ^1.0.4
   back_button_interceptor: ^4.3.1
+  # file_picker: ^2.0.12
 
 dev_dependencies:
   flutter_native_splash: ^0.1.9

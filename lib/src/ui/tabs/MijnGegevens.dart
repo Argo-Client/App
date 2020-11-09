@@ -75,15 +75,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                 ),
               ),
               Divider(),
-              Padding(
-                padding: EdgeInsets.only(left: 13, top: 10),
-                child: Text(
-                  "School info",
-                  style: TextStyle(
-                    color: userdata.get("accentColor"),
-                  ),
-                ),
-              ),
+              ContentHeader("School info"),
               ListTile(
                 title: Text(
                   "Mentor(en)",
@@ -129,15 +121,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                 ),
               ),
               Divider(),
-              Padding(
-                padding: EdgeInsets.only(left: 13, top: 10),
-                child: Text(
-                  "Persoonlijk info",
-                  style: TextStyle(
-                    color: userdata.get("accentColor"),
-                  ),
-                ),
-              ),
+              ContentHeader("Persoonlijke info"),
               ListTile(
                 title: Text(
                   "Officiële naam",
@@ -186,12 +170,17 @@ class _MijnGegevens extends State<MijnGegevens> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Divider(),
               ),
-              ListTile(
-                title: Text(
-                  "Adres",
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: 10,
                 ),
-                subtitle: Text(
-                  account.address,
+                child: ListTile(
+                  title: Text(
+                    "Adres",
+                  ),
+                  subtitle: Text(
+                    account.address,
+                  ),
                 ),
               ),
             ],

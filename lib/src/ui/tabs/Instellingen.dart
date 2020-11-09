@@ -174,7 +174,10 @@ class _Instellingen extends State<Instellingen> {
                   ),
                 ),
               ),
-              ListTile(
+              ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
                 title: Text('Secundaire kleur'),
                 subtitle: Text(
                   '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
@@ -196,6 +199,24 @@ class _Instellingen extends State<Instellingen> {
               ),
             ],
           ),
+          SeeCard(
+            child: CheckboxListTile(
+              title: Text(
+                "Kleurtjes in de drawer",
+              ),
+              subtitle: Text(
+                "Maak je drawer wat vrolijker.",
+              ),
+              activeColor: userdata.get("accentColor"),
+              value: userdata.get("colorsInDrawer"),
+              onChanged: (value) => setState(
+                () {
+                  userdata.put("colorsInDrawer", value);
+                  appState.setState(() {});
+                },
+              ),
+            ),
+          ),
 
           ContentHeader("Agenda"),
 
@@ -206,7 +227,7 @@ class _Instellingen extends State<Instellingen> {
                   bottom: greyBorderSide(),
                 ),
                 title: Text("Aantal pixels per uur"),
-                subtitle: Text("Hoe hoog een uur is in de agenda"),
+                subtitle: Text("Hoe hoog een uur is in de agenda."),
                 trailing: Text("${userdata.get("pixelsPerHour")}"),
                 onTap: () => showDialog(
                   context: context,

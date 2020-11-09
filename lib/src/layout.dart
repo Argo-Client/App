@@ -134,7 +134,20 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         _drawer.add(
           ListTile(
             selected: i == _currentIndex,
-            leading: _children[i]["icon"],
+            leading: Material(
+              // padding: EdgeInsets.all(7.5),
+              child: Padding(
+                child: Icon(
+                  _children[i]["icon"],
+                  color: Colors.white,
+                ),
+                padding: EdgeInsets.all(5.5),
+              ),
+              shape: ContinuousRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              color: userdata.get("colorsInDrawer") ? _children[i]["color"] : null,
+            ),
             title: _children[i]["name"],
             onTap: () {
               changeIndex(i);

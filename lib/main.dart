@@ -114,6 +114,7 @@ void main() async {
       "agendaAutoBegin": true,
       "agendaAutoEind": true,
       "backOpensDrawer": true,
+      "colorsInDrawer": true,
     });
     accounts.put(0, Account());
   }

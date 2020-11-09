@@ -108,6 +108,19 @@ class _Instellingen extends State<Instellingen> {
                                     },
                                   ),
                                   RadioListTile(
+                                    title: Text("OLED"),
+                                    activeColor: userdata.get('accentColor'),
+                                    value: "OLED",
+                                    groupValue: userdata.get("theme"),
+                                    onChanged: (value) {
+                                      appState.setState(() {
+                                        setState(() {
+                                          userdata.put("theme", value);
+                                        });
+                                      });
+                                    },
+                                  ),
+                                  RadioListTile(
                                     title: Text("Systeem kleur"),
                                     activeColor: userdata.get('accentColor'),
                                     value: "systeem",

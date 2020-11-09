@@ -216,11 +216,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                                 top: ((les.start - startHour * 60) * timeFactor).toDouble(),
                               ),
                               width: MediaQuery.of(context).size.width - 30,
-                              height: les.duration * timeFactor,
+                              height: les.duration * timeFactor + 1,
                               child: SeeCard(
-                                border: Border(
-                                  bottom: greyBorderSide(),
-                                ),
+                                border: userdata.get("theme") == "OLED"
+                                    ? null
+                                    : Border.symmetric(
+                                        horizontal: greyBorderSide(),
+                                      ),
                                 color: les.uitval
                                     ? theme == Brightness.dark
                                         ? Color.fromARGB(255, 119, 66, 62)

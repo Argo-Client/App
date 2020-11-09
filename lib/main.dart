@@ -133,12 +133,17 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
+    Color backgroundColor;
     switch (userdata.get("theme")) {
       case "donker":
         theme = Brightness.dark;
         break;
       case "licht":
         theme = Brightness.light;
+        break;
+      case "OLED":
+        theme = Brightness.dark;
+        backgroundColor = Colors.black;
         break;
       default:
         theme = SchedulerBinding.instance.window.platformBrightness;
@@ -147,6 +152,7 @@ class _AppState extends State<App> {
       title: 'Argo',
       theme: ThemeData(
         brightness: theme,
+        scaffoldBackgroundColor: backgroundColor,
         primaryColor: userdata.get("primaryColor"),
         accentColor: userdata.get("accentColor"),
       ),

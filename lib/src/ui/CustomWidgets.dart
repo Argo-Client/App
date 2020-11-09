@@ -2,7 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:Argo/main.dart';
 
 BorderSide greyBorderSide() {
-  return BorderSide(color: theme == Brightness.dark ? Color.fromARGB(255, 100, 100, 100) : Color.fromARGB(255, 225, 225, 225), width: 1);
+  Color color;
+  if (theme == Brightness.dark) {
+    if (userdata.get("theme") == "OLED") {
+      color = Color.fromARGB(
+        255,
+        50,
+        50,
+        50,
+      );
+    } else {
+      color = Color.fromARGB(
+        255,
+        100,
+        100,
+        100,
+      );
+    }
+  } else {
+    color = Color.fromARGB(
+      255,
+      225,
+      225,
+      225,
+    );
+  }
+
+  return BorderSide(color: color, width: 1);
 }
 
 class ContentHeader extends StatelessWidget {
@@ -31,7 +57,7 @@ class ContentHeader extends StatelessWidget {
 class SeeCard extends Card {
   final Widget child;
   final EdgeInsets margin;
-  final Color color;
+  Color color;
   final Border border;
   final double width;
   final List<Widget> column;
@@ -44,8 +70,13 @@ class SeeCard extends Card {
     this.border,
     this.column,
   });
+
   @override
   Widget build(BuildContext context) {
+    if (color == null && userdata.get("theme") == "OLED") {
+      color = Colors.black;
+    }
+
     return Container(
       width: width,
       decoration: border == null

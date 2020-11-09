@@ -158,73 +158,76 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         key: _layoutKey,
         body: child["page"],
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.all(0),
-            children: [
-              UserAccountsDrawerHeader(
-                onDetailsPressed: () => {
-                  _drawerState.currentState.setState(
-                    () {
-                      _detailsPressed = !_detailsPressed;
-                    },
-                  ),
-                },
-                otherAccountsPictures: [
-                  for (Account acc in accounts.toMap().values)
-                    if (acc.id != account.id)
-                      InkWell(
-                        onTap: () => changeAccount(acc.id),
-                        child: CircleAvatar(
-                          backgroundColor: Theme.of(context).backgroundColor,
-                          backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
-                          child: useIcon
-                              ? Icon(
-                                  Icons.person,
-                                  size: 25,
-                                )
-                              : null,
-                        ),
-                      ),
-                ],
-                accountName: Text(account.fullName),
-                accountEmail: Text(account.klasCode),
-                currentAccountPicture: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Theme.of(context).backgroundColor,
-                      backgroundImage: !useIcon
-                          ? Image.memory(
-                              base64Decode(account.profilePicture),
-                            ).image
-                          : null,
-                      child: useIcon
-                          ? Icon(
-                              Icons.person_outline,
-                              size: 50,
-                            )
-                          : null,
+          child: Container(
+            color: userdata.get("theme") == "OLED" ? Colors.black : null,
+            child: ListView(
+              padding: EdgeInsets.all(0),
+              children: [
+                UserAccountsDrawerHeader(
+                  onDetailsPressed: () => {
+                    _drawerState.currentState.setState(
+                      () {
+                        _detailsPressed = !_detailsPressed;
+                      },
                     ),
-                    // Align(
-                    //   alignment: Alignment.bottomRight,
-                    //   child: Icon(
-                    //     Icons.star,
-                    //     size: 25,
-                    //     color: Color.fromARGB(255, 255, 223, 0),
-                    //   ),
-                    // ),
+                  },
+                  otherAccountsPictures: [
+                    for (Account acc in accounts.toMap().values)
+                      if (acc.id != account.id)
+                        InkWell(
+                          onTap: () => changeAccount(acc.id),
+                          child: CircleAvatar(
+                            backgroundColor: Theme.of(context).backgroundColor,
+                            backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                            child: useIcon
+                                ? Icon(
+                                    Icons.person,
+                                    size: 25,
+                                  )
+                                : null,
+                          ),
+                        ),
                   ],
+                  accountName: Text(account.fullName),
+                  accountEmail: Text(account.klasCode),
+                  currentAccountPicture: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Theme.of(context).backgroundColor,
+                        backgroundImage: !useIcon
+                            ? Image.memory(
+                                base64Decode(account.profilePicture),
+                              ).image
+                            : null,
+                        child: useIcon
+                            ? Icon(
+                                Icons.person_outline,
+                                size: 50,
+                              )
+                            : null,
+                      ),
+                      // Align(
+                      //   alignment: Alignment.bottomRight,
+                      //   child: Icon(
+                      //     Icons.star,
+                      //     size: 25,
+                      //     color: Color.fromARGB(255, 255, 223, 0),
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
-              ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return Column(
-                    children: _detailsPressed ? _accountsDrawer : _drawer,
-                  );
-                },
-                key: _drawerState,
-              ),
-            ],
+                StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    return Column(
+                      children: _detailsPressed ? _accountsDrawer : _drawer,
+                    );
+                  },
+                  key: _drawerState,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -217,9 +217,9 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                                       padding: EdgeInsets.only(
                                         left: 10,
                                       ),
-                                      child: Html(
-                                        data: wijstab.omschrijving,
-                                        onLinkTap: launch,
+                                      child: HtmlWidget(
+                                        wijstab.omschrijving,
+                                        onTapUrl: launch,
                                       ),
                                     ),
                                     for (Bron wijsbron in wijstab.bronnen)

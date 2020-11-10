@@ -13,7 +13,7 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
@@ -29,7 +29,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'src/utils/magister/login.dart';
+import 'src/utils/login.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'src/utils/hive/adapters.dart';
 
 import 'src/ui/CustomWidgets.dart';

@@ -239,9 +239,9 @@ class BerichtPagina extends StatelessWidget {
                     padding: EdgeInsets.all(
                       20,
                     ),
-                    child: Html(
-                      onLinkTap: launch,
-                      data: ber.inhoud,
+                    child: HtmlWidget(
+                      ber.inhoud,
+                      onTapUrl: launch,
                     ),
                   ),
                 ),

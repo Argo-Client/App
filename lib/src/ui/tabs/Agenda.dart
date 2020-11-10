@@ -601,9 +601,9 @@ class _LesPagina extends State<LesPagina> {
                           ),
                         ),
                       ),
-                      Html(
-                        data: les.description,
-                        onLinkTap: launch,
+                      HtmlWidget(
+                        les.description,
+                        onTapUrl: launch,
                       ),
                     ],
                   ),

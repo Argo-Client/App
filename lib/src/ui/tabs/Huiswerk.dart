@@ -133,9 +133,9 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                           );
                         },
                         child: Padding(
-                          child: Html(
-                            data: hw.huiswerk,
-                            onLinkTap: launch,
+                          child: HtmlWidget(
+                            hw.huiswerk,
+                            onTapUrl: launch,
                           ),
                           padding: EdgeInsets.only(
                             left: 30,

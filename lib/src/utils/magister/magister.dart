@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:Argo/main.dart' as main;
 import 'package:dio/dio.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/utils/magister/login.dart';
+import 'package:Argo/src/utils/login.dart';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
 import 'Cijfers.dart';
@@ -99,16 +100,11 @@ class MagisterApi {
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
               print("$account is uitgelogd");
-              // if (e.request.headers["refresh_token"] != account.refreshToken) {
-              //   print("$account zou uitgelogd zijn maar slim nieuw systeem werkt");
-              //   print("Account refreshtoken ${account.refreshToken}");
-              //   print("Request refreshtoken ${e.request.headers["refresh_token"]}");
-              //   return dio.request(e.request.path, options: e.request);
-              // }
-              Map tokenSet = await MagisterAuth().fullLogin({"username": account.username, "tenant": account.tenant});
-              account.saveTokens(tokenSet);
-              account.magister.expiryAndTenant();
-              account.save();
+              MagisterLogin().launch(main.appState.context, (tokenSet, _) {
+                account.saveTokens(tokenSet);
+                account.magister.expiryAndTenant();
+                account.save();
+              }, title: "Account is uitgelogd", theme: "oled");
               return dio.request(e.request.path, options: e.request);
             }
             return e;

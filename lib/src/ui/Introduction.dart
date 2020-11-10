@@ -11,31 +11,26 @@ class _Introduction extends State<Introduction> {
     0xffDADAD9,
     0xffF06449,
   ];
-
-  void loginPress() {
-    MagisterAuth().fullLogin().then((tokenSet) {
-      account = Account(tokenSet);
-      accounts.put(0, account);
-      account.save();
-      userdata.put("introduction", true);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-      appState = _AppState();
-      account.magister.refresh().then((_) async {
-        appState.setState(() {});
-        update();
-        FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(appState.context);
-        await account.magister.downloadProfilePicture();
-        appState.setState(() {});
-      }).catchError((e) {
-        FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(appState.context);
-        throw (e);
-      });
+  void onLoggedIn(tokenSet, context) {
+    account = Account(tokenSet);
+    accounts.put(0, account);
+    account.save();
+    userdata.put("introduction", true);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
+    appState = _AppState();
+    account.magister.refresh().then((_) async {
+      appState.setState(() {});
+      update();
+      FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(appState.context);
+      await account.magister.downloadProfilePicture();
+      appState.setState(() {});
     }).catchError((e) {
-      FlushbarHelper.createError(message: "Fout bij het inloggen:\n$e")..show(context);
+      FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(appState.context);
       throw (e);
     });
   }
 
+  void loginPress() => MagisterLogin().launch(context, onLoggedIn, theme: userdata.get("theme"));
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

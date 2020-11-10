@@ -98,7 +98,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         leading: Icon(Icons.add_outlined),
         title: Text("Voeg account toe"),
         onTap: () {
-          MagisterAuth().fullLogin().then((tokenSet) async {
+          MagisterLogin().launch(context, (tokenSet, _) async {
             Account newAccount = Account(tokenSet);
             newAccount.magister.expiryAndTenant();
             await newAccount.magister.profileInfo.profileInfo();
@@ -120,7 +120,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             } else {
               FlushbarHelper.createError(message: '$account bestaat al')..show(context);
             }
-          });
+          }, title: "Nieuw account", theme: userdata.get("theme"));
         },
       ),
     ];
@@ -156,7 +156,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         );
       }
     }
-
     return WillPopScope(
       onWillPop: () {
         if (!userdata.get("backOpensDrawer") || child["overridePop"] != null) return Future.value(true);

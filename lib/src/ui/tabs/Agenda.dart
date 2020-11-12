@@ -199,21 +199,20 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                     valueListenable: updateNotifier,
                     builder: (BuildContext context, _, Widget child) {
                       List<List> widgetRooster = [];
+                      int dagInt = 0;
                       for (List dag in account.lessons[weekslug] ?? []) {
                         List<Widget> widgetDag = [];
 
-                        if (dag.isEmpty) {
-                          widgetDag.add(Container());
-                          widgetRooster.add(widgetDag);
-                          continue;
-                        }
-                        int startHour = (dag.first.start / 60).floor();
-
+                        int startHour = getStartHour(dagInt++);
                         for (Les les in dag) {
+                          double mTop = ((les.start - startHour * 60) * timeFactor).toDouble();
+                          if (mTop <= 0) {
+                            continue;
+                          }
                           widgetDag.add(
                             Container(
                               margin: EdgeInsets.only(
-                                top: ((les.start - startHour * 60) * timeFactor).toDouble(),
+                                top: mTop,
                               ),
                               width: MediaQuery.of(context).size.width - 30,
                               height: les.duration * timeFactor + 1,
@@ -338,6 +337,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               ),
                             ),
                           );
+                        }
+                        if (dag.isEmpty) {
+                          widgetDag.add(Container());
                         }
                         widgetRooster.add(widgetDag);
                       }

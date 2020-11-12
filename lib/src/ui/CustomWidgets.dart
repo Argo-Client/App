@@ -90,7 +90,7 @@ class SeeCard extends Card {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.zero,
         ),
-        color: color ?? null,
+        color: color,
         child: column != null
             ? Column(
                 children: column,

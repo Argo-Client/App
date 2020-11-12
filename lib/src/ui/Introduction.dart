@@ -30,7 +30,7 @@ class _Introduction extends State<Introduction> {
     });
   }
 
-  void loginPress() => MagisterLogin().launch(context, onLoggedIn, theme: userdata.get("theme"));
+  void loginPress() => MagisterLogin().launch(context, onLoggedIn);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

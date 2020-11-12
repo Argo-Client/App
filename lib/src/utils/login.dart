@@ -14,10 +14,9 @@ import 'package:uni_links/uni_links.dart';
 class LoginView extends StatefulWidget {
   final MagisterLogin log;
   final String title;
-  final String theme;
-  LoginView(this.log, this.title, this.theme);
+  LoginView(this.log, this.title);
   @override
-  _LoginView createState() => _LoginView(log, title, theme);
+  _LoginView createState() => _LoginView(log, title);
 }
 
 class _LoginView extends State<LoginView> {
@@ -25,8 +24,7 @@ class _LoginView extends State<LoginView> {
   String redirectUrl;
   WebViewController controller;
   String title;
-  String theme;
-  _LoginView(this.magisterLogin, this.title, this.theme);
+  _LoginView(this.magisterLogin, this.title);
   Widget build(BuildContext context) {
     CookieManager().clearCookies();
     return Scaffold(
@@ -75,16 +73,6 @@ class _LoginView extends State<LoginView> {
                 }
                 return NavigationDecision.navigate;
               },
-              onPageFinished: (url) async {
-                if (theme == null || controller == null || url.contains("chrome") || url.contains("#code")) return;
-                String css = '.bottom,.top{display:none!important}[class*="splash"]{display:none!important}';
-                String bgcolor = theme != "OLED" ? "#303030" : "#000";
-                String fgcolor = theme != "OLED" ? "#424242" : "#000";
-                String border = theme != "OLED" ? "" : "border:1px white solid;border-radius:3px;";
-                String darkMode = 'body{background-color:$bgcolor!important}h1{color:#2196f3!important}h2{color:#fff}button#username_submit{background-color:#2196f3!important}[class\$="input-group"],[class\$="input-group-focused"],.completed-challenge{color:#fff!important;background-color:$fgcolor!important;$border}.completed-challenge a{color:#fff!important}.input-drop-down-list{background:$fgcolor!important;color:#fff}.selected.input-drop-down-list-item{background-color:$fgcolor}';
-                css += darkMode;
-                controller.evaluateJavascript('if(document.head){var el=document.createElement("style");el.innerHTML=`$css`;document.head.appendChild(el)}');
-              },
               onWebViewCreated: (controller) {
                 this.controller = controller;
               },
@@ -118,13 +106,13 @@ class MagisterLogin {
   String title;
   Function callback;
   Map preFill;
-  void launch(context, Function cb, {Map preFill, String title, String theme}) {
+  void launch(context, Function cb, {Map preFill, String title}) {
     this.preFill = preFill;
     this.callback = cb;
     this.title = title;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => LoginView(this, title, theme),
+        builder: (context) => LoginView(this, title),
       ),
     );
   }

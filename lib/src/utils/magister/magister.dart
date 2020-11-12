@@ -104,7 +104,7 @@ class MagisterApi {
                 account.saveTokens(tokenSet);
                 account.magister.expiryAndTenant();
                 account.save();
-              }, title: "Account is uitgelogd", theme: "oled");
+              }, title: "Account is uitgelogd");
               return dio.request(e.request.path, options: e.request);
             }
             return e;

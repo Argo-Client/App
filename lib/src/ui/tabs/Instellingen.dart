@@ -6,17 +6,17 @@ class Instellingen extends StatefulWidget {
 }
 
 class _Instellingen extends State<Instellingen> {
-  void _showColorPicker(Function cb) {
+  void _showColorPicker(pick) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Kies een kleur"),
           content: BlockPicker(
-            pickerColor: Theme.of(context).primaryColor,
+            pickerColor: userdata.get(pick),
             onColorChanged: (color) {
-              setState(() {
-                cb(color);
+              appState.setState(() {
+                userdata.put(pick, color);
               });
             },
           ),
@@ -155,13 +155,7 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text(
                   '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                 ),
-                onTap: () => _showColorPicker(
-                  (color) => appState.setState(
-                    () {
-                      userdata.put("primaryColor", color);
-                    },
-                  ),
-                ),
+                onTap: () => _showColorPicker("primaryColor"),
                 trailing: Container(
                   width: 40,
                   height: 40,
@@ -182,9 +176,7 @@ class _Instellingen extends State<Instellingen> {
                 subtitle: Text(
                   '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                 ),
-                onTap: () => _showColorPicker((color) => appState.setState(() {
-                      userdata.put("accentColor", color);
-                    })),
+                onTap: () => _showColorPicker("accentColor"),
                 trailing: Container(
                   width: 40,
                   height: 40,
@@ -209,12 +201,11 @@ class _Instellingen extends State<Instellingen> {
               ),
               activeColor: userdata.get("accentColor"),
               value: userdata.get("colorsInDrawer"),
-              onChanged: (value) => setState(
-                () {
+              onChanged: (value) => appState.setState(() {
+                setState(() {
                   userdata.put("colorsInDrawer", value);
-                  appState.setState(() {});
-                },
-              ),
+                });
+              }),
             ),
           ),
 
@@ -239,11 +230,12 @@ class _Instellingen extends State<Instellingen> {
                       initialIntegerValue: userdata.get("pixelsPerHour"),
                     );
                   },
-                ).then(
-                  (value) {
-                    if (value != null) userdata.put("pixelsPerHour", value);
-                  },
-                ),
+                ).then((value) {
+                  if (value != null)
+                    setState(() {
+                      userdata.put("pixelsPerHour", value);
+                    });
+                }),
               ),
               ListTileBorder(
                 border: Border(
@@ -262,11 +254,12 @@ class _Instellingen extends State<Instellingen> {
                       initialIntegerValue: userdata.get("agendaStartHour"),
                     );
                   },
-                ).then(
-                  (value) {
-                    if (value != null) userdata.put("agendaStartHour", value);
-                  },
-                ),
+                ).then((value) {
+                  if (value != null)
+                    setState(() {
+                      userdata.put("agendaStartHour", value);
+                    });
+                }),
               ),
               ListTileBorder(
                 border: Border(
@@ -285,11 +278,12 @@ class _Instellingen extends State<Instellingen> {
                       initialIntegerValue: userdata.get("agendaEndHour"),
                     );
                   },
-                ).then(
-                  (value) {
-                    if (value != null) userdata.put("agendaEndHour", value);
-                  },
-                ),
+                ).then((value) {
+                  if (value != null)
+                    setState(() {
+                      userdata.put("agendaEndHour", value);
+                    });
+                }),
               ),
               Container(
                 child: CheckboxListTile(
@@ -298,7 +292,7 @@ class _Instellingen extends State<Instellingen> {
                     padding: EdgeInsets.symmetric(
                       vertical: 5,
                     ),
-                    child: Text("Of je altijd op je starttijd wil beginnen of soms ook later."),
+                    child: Text("Of je agenda wilt laten startten wanneer je eerste les begint of je start tijd."),
                   ),
                   activeColor: userdata.get("accentColor"),
                   value: userdata.get("agendaAutoBegin"),

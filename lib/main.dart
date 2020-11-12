@@ -7,8 +7,6 @@ import 'package:flutter/scheduler.dart';
 import 'dart:developer';
 import 'dart:convert';
 import 'dart:async';
-import 'dart:io';
-
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
@@ -30,7 +28,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/utils/login.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'src/utils/hive/adapters.dart';
 
 import 'src/ui/CustomWidgets.dart';
@@ -112,8 +109,8 @@ void main() async {
       "pixelsPerHour": 75,
       "agendaStartHour": 8,
       "agendaEndHour": 17,
-      "agendaAutoBegin": true,
-      "agendaAutoEind": true,
+      "agendaAutoBegin": false,
+      "agendaAutoEind": false,
       "backOpensDrawer": true,
       "colorsInDrawer": true,
     });

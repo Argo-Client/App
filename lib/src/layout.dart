@@ -120,7 +120,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             } else {
               FlushbarHelper.createError(message: '$account bestaat al')..show(context);
             }
-          }, title: "Nieuw account", theme: userdata.get("theme"));
+          }, title: "Nieuw account");
         },
       ),
     ];

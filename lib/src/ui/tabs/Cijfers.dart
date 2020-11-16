@@ -20,7 +20,7 @@ class _Cijfers extends State<Cijfers> {
       valueListenable: updateNotifier,
       builder: (BuildContext context, _, _a) {
         return DefaultTabController(
-          length: perioden.length,
+          length: jaar == 0 ? 1 + perioden.length : perioden.length,
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -34,6 +34,15 @@ class _Cijfers extends State<Cijfers> {
               bottom: TabBar(
                 isScrollable: true,
                 tabs: [
+                  if (jaar == 0) // Recenst
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Tab(
+                        text: "Recent",
+                      ),
+                    ),
                   for (Periode periode in perioden)
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -67,8 +76,37 @@ class _Cijfers extends State<Cijfers> {
             ),
             body: TabBarView(
               children: [
+                if (jaar == 0) // Recenst
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: account.recenteCijfers.isEmpty
+                          ? Center(
+                              child: Text("Nog geen cijfers"),
+                            )
+                          : SeeCard(
+                              column: [
+                                for (Cijfer cijfer in account.recenteCijfers)
+                                  Container(
+                                    child: cijferTile(cijfer),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: greyBorderSide(),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                    ),
+                  ),
                 for (Periode periode in perioden)
                   RefreshIndicator(
+                    onRefresh: () async {
+                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
+                    },
                     child: SingleChildScrollView(
                       child: SeeCard(
                         column: [
@@ -110,9 +148,6 @@ class _Cijfers extends State<Cijfers> {
                         ],
                       ),
                     ),
-                    onRefresh: () async {
-                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
-                    },
                   ),
               ],
             ),
@@ -226,42 +261,7 @@ class _CijferPagina extends State<CijferPagina> {
                             errorBuilder: (context, error, retry) {
                               return Text("Error $error");
                             },
-                            dataBuilder: (context, data) => ListTile(
-                              trailing: cijfer.cijfer.length > 4
-                                  ? null
-                                  : Stack(
-                                      children: [
-                                        Text(
-                                          cijfer.cijfer,
-                                          style: TextStyle(
-                                            fontSize: 17,
-                                            color: cijfer.voldoende ? null : Colors.red,
-                                          ),
-                                        ),
-                                        Transform.translate(
-                                          offset: Offset(10, -15),
-                                          child: Text(
-                                            "${cijfer.weging}x",
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                              subtitle: cijfer.cijfer.length <= 4
-                                  ? Text(formatDate.format(cijfer.ingevoerd))
-                                  : Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 8,
-                                      ),
-                                      child: Text(
-                                        cijfer.cijfer,
-                                      ),
-                                    ),
-                              title: Text(cijfer.title),
-                            ),
+                            dataBuilder: (context, data) => cijferTile(cijfer),
                           ),
                         ),
                     ],
@@ -286,4 +286,43 @@ class _CijferPagina extends State<CijferPagina> {
       )
     ];
   }
+}
+
+ListTile cijferTile(Cijfer cijfer) {
+  return ListTile(
+    trailing: cijfer.cijfer.length > 4
+        ? null
+        : Stack(
+            children: [
+              Text(
+                cijfer.cijfer,
+                style: TextStyle(
+                  fontSize: 17,
+                  color: cijfer.voldoende ? null : Colors.red,
+                ),
+              ),
+              Transform.translate(
+                offset: Offset(10, -15),
+                child: Text(
+                  "${cijfer.weging}x",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              )
+            ],
+          ),
+    subtitle: cijfer.cijfer.length <= 4
+        ? Text(formatDate.format(cijfer.ingevoerd))
+        : Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 8,
+            ),
+            child: Text(
+              cijfer.cijfer,
+            ),
+          ),
+    title: Text(cijfer.title),
+  );
 }

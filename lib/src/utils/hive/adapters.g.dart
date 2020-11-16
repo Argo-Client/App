@@ -43,13 +43,14 @@ class AccountAdapter extends TypeAdapter<Account> {
           k as String,
           (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
       ..bronnen = (fields[23] as List)?.cast<Bron>()
-      ..studiewijzers = (fields[24] as List)?.cast<Wijzer>();
+      ..studiewijzers = (fields[24] as List)?.cast<Wijzer>()
+      ..recenteCijfers = (fields[25] as List)?.cast<Cijfer>();
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(25)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -99,7 +100,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(23)
       ..write(obj.bronnen)
       ..writeByte(24)
-      ..write(obj.studiewijzers);
+      ..write(obj.studiewijzers)
+      ..writeByte(25)
+      ..write(obj.recenteCijfers);
   }
 
   @override

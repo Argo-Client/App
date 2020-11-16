@@ -70,7 +70,8 @@ class Account extends HiveObject {
   List<Bron> bronnen;
   @HiveField(24)
   List<Wijzer> studiewijzers;
-
+  @HiveField(25)
+  List<Cijfer> recenteCijfers;
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
@@ -100,6 +101,7 @@ class Account extends HiveObject {
     this.afwezigheid = <Absentie>[];
     this.berichten = <Bericht>[];
     this.cijfers = <CijferJaar>[];
+    this.recenteCijfers = <Cijfer>[];
     this.studiewijzers = <Wijzer>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
@@ -255,13 +257,23 @@ class Cijfer {
   double weging;
   Cijfer([Map cijfer]) {
     if (cijfer != null) {
-      this.ingevoerd = DateTime.parse(cijfer["DatumIngevoerd"] ?? "1970-01-01T00:00:00.0000000Z");
-      this.cijfer = cijfer["CijferStr"];
-      this.periode = Periode(cijfer["CijferPeriode"]);
-      this.vak = Vak(cijfer["Vak"]);
-      this.kolomId = cijfer["CijferKolom"]["Id"];
-      this.id = cijfer["Id"];
-      this.voldoende = cijfer["IsVoldoende"];
+      if (cijfer["waarde"] == null) {
+        // Als je recente cijfers opvraagt krijg je deze zooi net even wat anders dan je zou hopen
+        this.ingevoerd = DateTime.parse(cijfer["DatumIngevoerd"] ?? "1970-01-01T00:00:00.0000000Z");
+        this.cijfer = cijfer["CijferStr"];
+        this.periode = Periode(cijfer["CijferPeriode"]);
+        this.vak = Vak(cijfer["Vak"]);
+        this.id = cijfer["Id"];
+        this.voldoende = cijfer["IsVoldoende"];
+        this.kolomId = cijfer["CijferKolom"]["Id"];
+      } else {
+        this.ingevoerd = DateTime.parse(cijfer["ingevoerdOp"] ?? "1970-01-01T00:00:00.0000000Z");
+        this.cijfer = cijfer["waarde"];
+        this.title = cijfer["omschrijving"];
+        this.vak = Vak(cijfer["vak"]);
+        this.voldoende = cijfer["isVoldoende"];
+        this.weging = cijfer["weegfactor"];
+      }
     }
   }
 }

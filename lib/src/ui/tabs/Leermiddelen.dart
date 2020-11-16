@@ -6,6 +6,7 @@ class Leermiddelen extends StatefulWidget {
 }
 
 class _Leermiddelen extends State<Leermiddelen> {
+  void afterFirstLayout(BuildContext context) => handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,8 +19,28 @@ class _Leermiddelen extends State<Leermiddelen> {
         ),
         title: Text("Leermiddelen"),
       ),
-      body: Center(
-        child: Text("3 online methodes beschikbaar"),
+      body: RefreshIndicator(
+        child: ValueListenableBuilder(
+            valueListenable: updateNotifier,
+            builder: (BuildContext context, _, _a) {
+              return Column(
+                children: [
+                  for (Leermiddel leermiddel in account.leermiddelen)
+                    SeeCard(
+                      child: ListTileBorder(
+                        onTap: () => account.magister.leermiddelen.launch(leermiddel),
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                        title: Text(leermiddel.title),
+                      ),
+                    ),
+                ],
+              );
+            }),
+        onRefresh: () async {
+          await handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
+        },
       ),
     );
   }

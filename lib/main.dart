@@ -94,6 +94,7 @@ void main() async {
     Hive.registerAdapter(AbsentieAdapter());
     Hive.registerAdapter(BronAdapter());
     Hive.registerAdapter(WijzerAdapter());
+    Hive.registerAdapter(LeermiddelAdapter());
   } catch (e) {}
   userdata = await Hive.openBox("userdata");
   accounts = await Hive.openBox<Account>("accounts");

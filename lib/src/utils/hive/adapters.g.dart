@@ -44,13 +44,14 @@ class AccountAdapter extends TypeAdapter<Account> {
           (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
       ..bronnen = (fields[23] as List)?.cast<Bron>()
       ..studiewijzers = (fields[24] as List)?.cast<Wijzer>()
-      ..recenteCijfers = (fields[25] as List)?.cast<Cijfer>();
+      ..recenteCijfers = (fields[25] as List)?.cast<Cijfer>()
+      ..leermiddelen = (fields[26] as List)?.cast<Leermiddel>();
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -102,7 +103,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(24)
       ..write(obj.studiewijzers)
       ..writeByte(25)
-      ..write(obj.recenteCijfers);
+      ..write(obj.recenteCijfers)
+      ..writeByte(26)
+      ..write(obj.leermiddelen);
   }
 
   @override
@@ -562,6 +565,42 @@ class WijzerAdapter extends TypeAdapter<Wijzer> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is WijzerAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class LeermiddelAdapter extends TypeAdapter<Leermiddel> {
+  @override
+  final int typeId = 11;
+
+  @override
+  Leermiddel read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Leermiddel()
+      ..title = fields[0] as String
+      ..ean = fields[1] as String;
+  }
+
+  @override
+  void write(BinaryWriter writer, Leermiddel obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.title)
+      ..writeByte(1)
+      ..write(obj.ean);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LeermiddelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

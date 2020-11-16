@@ -11,6 +11,7 @@ import 'Afwezigheid.dart';
 import 'Berichten.dart';
 import 'Bronnen.dart';
 import 'Studiewijzers.dart';
+import 'Leermiddelen.dart';
 
 class Magister {
   Account account;
@@ -22,6 +23,7 @@ class Magister {
   Berichten berichten;
   Bronnen bronnen;
   Studiewijzers studiewijzers;
+  Leermiddelen leermiddelen;
   Magister(Account acc) {
     this.account = acc;
     api = MagisterApi(acc);
@@ -32,6 +34,7 @@ class Magister {
     berichten = Berichten(MagisterApi(acc));
     bronnen = Bronnen(MagisterApi(acc));
     studiewijzers = Studiewijzers(MagisterApi(acc));
+    leermiddelen = Leermiddelen(MagisterApi(acc));
   }
   void expiryAndTenant() {
     String parsed = base64.normalize(account.accessToken.split(".")[1]);
@@ -53,6 +56,7 @@ class Magister {
       cijfers.refresh(),
       bronnen.refresh(),
       studiewijzers.refresh(),
+      leermiddelen.refresh(),
     ]);
   }
 

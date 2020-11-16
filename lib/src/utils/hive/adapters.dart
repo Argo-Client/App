@@ -72,6 +72,8 @@ class Account extends HiveObject {
   List<Wijzer> studiewijzers;
   @HiveField(25)
   List<Cijfer> recenteCijfers;
+  @HiveField(26)
+  List<Leermiddel> leermiddelen;
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
@@ -103,6 +105,7 @@ class Account extends HiveObject {
     this.cijfers = <CijferJaar>[];
     this.recenteCijfers = <Cijfer>[];
     this.studiewijzers = <Wijzer>[];
+    this.leermiddelen = <Leermiddel>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
   void saveTokens(tokenSet) {
@@ -405,6 +408,20 @@ class Wijzer {
       if (wijzer["Bronnen"] != null) {
         this.bronnen = wijzer["Bronnen"].map((bron) => Bron(bron)).toList().cast<Bron>();
       }
+    }
+  }
+}
+
+@HiveType(typeId: 11)
+class Leermiddel {
+  @HiveField(0)
+  String title;
+  @HiveField(1)
+  String ean;
+  Leermiddel([leermiddel]) {
+    if (leermiddel != null) {
+      this.title = leermiddel["Titel"];
+      this.ean = leermiddel["EAN"];
     }
   }
 }

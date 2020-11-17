@@ -155,7 +155,6 @@ class MagisterLogin {
       body: utf8.encode("code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier"),
     );
     callback(jsonDecode(res.body), context);
-    Navigator.of(context);
     return jsonDecode(res.body);
   }
 }

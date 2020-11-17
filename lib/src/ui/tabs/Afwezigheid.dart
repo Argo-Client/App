@@ -19,34 +19,42 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
           ),
           title: Text("Afwezigheid"),
           actions: [
-            Tooltip(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: 15,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.check),
-                    Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
-                  ],
-                ),
-              ),
-              message: "Geoorloofd",
-            ),
-            Tooltip(
-              message: "Ongeoorloofd",
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: 15,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.error),
-                    Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
-                  ],
-                ),
-              ),
-            ),
+            ValueListenableBuilder(
+                valueListenable: updateNotifier,
+                builder: (context, _, _a) {
+                  return Row(
+                    children: [
+                      Tooltip(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            right: 15,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.check),
+                              Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
+                            ],
+                          ),
+                        ),
+                        message: "Geoorloofd",
+                      ),
+                      Tooltip(
+                        message: "Ongeoorloofd",
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            right: 15,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.error),
+                              Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  );
+                }),
           ]),
       body: RefreshIndicator(
         child: ValueListenableBuilder(

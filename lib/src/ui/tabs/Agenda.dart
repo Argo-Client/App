@@ -195,6 +195,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                   );
                 },
                 child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
                   child: ValueListenableBuilder(
                     valueListenable: updateNotifier,
                     builder: (BuildContext context, _, Widget child) {

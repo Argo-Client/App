@@ -16,6 +16,7 @@ class _Introduction extends State<Introduction> {
     accounts.put(0, account);
     account.save();
     userdata.put("introduction", true);
+    Navigator.of(context).pop();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
     appState = _AppState();
     account.magister.refresh().then((_) async {

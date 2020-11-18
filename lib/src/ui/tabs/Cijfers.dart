@@ -91,7 +91,7 @@ class _Cijfers extends State<Cijfers> {
                               column: [
                                 for (Cijfer cijfer in account.recenteCijfers)
                                   Container(
-                                    child: cijferTile(cijfer),
+                                    child: cijferTile(cijfer, true),
                                     decoration: BoxDecoration(
                                       border: Border(
                                         top: greyBorderSide(),
@@ -288,7 +288,7 @@ class _CijferPagina extends State<CijferPagina> {
   }
 }
 
-ListTile cijferTile(Cijfer cijfer) {
+ListTile cijferTile(Cijfer cijfer, [bool isRecent]) {
   return ListTile(
     trailing: cijfer.cijfer.length > 4
         ? null
@@ -314,7 +314,7 @@ ListTile cijferTile(Cijfer cijfer) {
             ],
           ),
     subtitle: cijfer.cijfer.length <= 4
-        ? Text(formatDate.format(cijfer.ingevoerd))
+        ? Text(isRecent == null ? formatDate.format(cijfer.ingevoerd) : cijfer.vak.naam)
         : Padding(
             padding: EdgeInsets.symmetric(
               vertical: 8,

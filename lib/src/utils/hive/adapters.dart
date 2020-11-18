@@ -291,7 +291,7 @@ class Vak {
   Vak([vak]) {
     if (vak != null) {
       this.id = vak["Id"];
-      this.naam = ((vak["Omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
+      this.naam = ((vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
     }
   }
 }

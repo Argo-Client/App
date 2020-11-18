@@ -347,12 +347,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                       return Stack(
                         children: [
                           if (dag + 1 == now.weekday) // Balkje van de tijd nu
-                            StatefulBuilder(builder: (BuildContext context, StateSetter rebuildMinute) {
-                              Future.delayed(const Duration(seconds: 10), () {
-                                try {
-                                  rebuildMinute(() {});
-                                } catch (e) {}
-                              });
+                            TimerBuilder.periodic(Duration(seconds: 10), builder: (c) {
                               return Positioned(
                                 top: (((now.hour - getStartHour(dag)) * 60 + now.minute) * timeFactor).toDouble(),
                                 child: Container(

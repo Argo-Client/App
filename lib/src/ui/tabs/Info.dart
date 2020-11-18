@@ -6,6 +6,8 @@ class Info extends StatefulWidget {
 }
 
 class _Info extends State<Info> {
+  String url = "https://argo-magister.net/links?";
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,7 +54,7 @@ class _Info extends State<Info> {
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
                       subtitle: Text("Source code"),
-                      onTap: () => launch("https://argo-magister.net/github/"),
+                      onTap: () => launch("$url?u=argo&type=website"),
                     ),
                     ListTileBorder(
                       border: Border(
@@ -61,7 +63,7 @@ class _Info extends State<Info> {
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
                       subtitle: Text("Gezelligheid"),
-                      onTap: () => launch("https://argo-magister.net/discord/"),
+                      onTap: () => launch("$url?u=argo&type=discord"),
                     ),
                     ListTile(
                       leading: Icon(Icons.feedback_outlined),
@@ -147,14 +149,14 @@ class _Info extends State<Info> {
                             leading: Icon(Icons.public_outlined),
                             title: Text("Website"),
                             onTap: () {
-                              launch("https://g-vm.nl");
+                              launch("${url}u=guus&type=website");
                             },
                           ),
                           ListTile(
                             leading: Icon(Icons.device_hub_outlined),
                             title: Text("Github"),
                             onTap: () {
-                              launch("https://github.com/guusvanmeerveld");
+                              launch("${url}u=guus&type=github");
                             },
                           ),
                         ],
@@ -169,14 +171,14 @@ class _Info extends State<Info> {
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
                           onTap: () {
-                            launch("https://samtaen.nl");
+                            launch("${url}u=sam&type=website");
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.device_hub_outlined),
                           title: Text("Github"),
                           onTap: () {
-                            launch("https://github.com/netfloex");
+                            launch("${url}u=sam&type=github");
                           },
                         ),
                       ],
@@ -201,14 +203,14 @@ class _Info extends State<Info> {
                             leading: Icon(Icons.public_outlined),
                             title: Text("Website"),
                             onTap: () {
-                              launch("https://mb-o.nl");
+                              launch("${url}u=martijn&type=website");
                             },
                           ),
                           ListTile(
                             leading: Icon(Icons.device_hub_outlined),
                             title: Text("Github"),
                             onTap: () {
-                              launch("https://github.com/devostex");
+                              launch("${url}u=martijn&type=github");
                             },
                           ),
                         ],
@@ -223,14 +225,14 @@ class _Info extends State<Info> {
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
                           onTap: () {
-                            launch("https://netlob.dev");
+                            launch("${url}u=sjoerd&type=website");
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.device_hub_outlined),
                           title: Text("Github"),
                           onTap: () {
-                            launch("https://github.com/netlob");
+                            launch("${url}u=sjoerd&type=github");
                           },
                         ),
                       ],

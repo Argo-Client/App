@@ -201,11 +201,15 @@ class _Instellingen extends State<Instellingen> {
               ),
               activeColor: userdata.get("accentColor"),
               value: userdata.get("colorsInDrawer"),
-              onChanged: (value) => appState.setState(() {
-                setState(() {
-                  userdata.put("colorsInDrawer", value);
-                });
-              }),
+              onChanged: (value) => appState.setState(
+                () {
+                  setState(
+                    () {
+                      userdata.put("colorsInDrawer", value);
+                    },
+                  );
+                },
+              ),
             ),
           ),
 
@@ -254,12 +258,16 @@ class _Instellingen extends State<Instellingen> {
                       initialIntegerValue: userdata.get("agendaStartHour"),
                     );
                   },
-                ).then((value) {
-                  if (value != null)
-                    setState(() {
-                      userdata.put("agendaStartHour", value);
-                    });
-                }),
+                ).then(
+                  (value) {
+                    if (value != null)
+                      setState(
+                        () {
+                          userdata.put("agendaStartHour", value);
+                        },
+                      );
+                  },
+                ),
               ),
               ListTileBorder(
                 border: Border(

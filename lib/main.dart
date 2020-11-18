@@ -11,7 +11,6 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:intro_slider/dot_animation_enum.dart';

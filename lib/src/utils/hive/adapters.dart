@@ -403,7 +403,7 @@ class Wijzer {
       this.id = wijzer["Id"];
       this.omschrijving = wijzer["Omschrijving"];
       if (wijzer["Links"] != null) {
-        this.tabUrl = wijzer["Links"].first["Href"];
+        this.tabUrl = wijzer["Links"].where((a) => a["Rel"] == "Self").first["Href"];
       }
       if (wijzer["Bronnen"] != null) {
         this.bronnen = wijzer["Bronnen"].map((bron) => Bron(bron)).toList().cast<Bron>();

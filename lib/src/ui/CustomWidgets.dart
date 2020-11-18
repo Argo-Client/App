@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Argo/main.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 BorderSide greyBorderSide() {
   Color color;
@@ -29,6 +31,28 @@ BorderSide greyBorderSide() {
   }
 
   return BorderSide(color: color, width: 1);
+}
+
+class WebContent extends StatelessWidget {
+  final String htmlText;
+
+  WebContent(this.htmlText);
+
+  @override
+  Widget build(BuildContext context) {
+    return HtmlWidget(
+      htmlText,
+      onTapUrl: launch,
+      customStylesBuilder: (e) {
+        // print(e.localName);
+        if (e.localName == "a") {
+          return {'color': '#44b4fe'};
+        }
+
+        return null;
+      },
+    );
+  }
 }
 
 class ContentHeader extends StatelessWidget {

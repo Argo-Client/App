@@ -93,9 +93,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
             for (int i = 0; i < huiswerkLessen.length; i++) {
               Les hw = huiswerkLessen[i];
               if (lastDay != hw.date) {
-                huiswerk.add(
-                  ContentHeader(hw.date)
-                );
+                huiswerk.add(ContentHeader(hw.date));
               }
               huiswerk.add(
                 SeeCard(
@@ -133,12 +131,12 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                           );
                         },
                         child: Padding(
-                          child: HtmlWidget(
+                          child: WebContent(
                             hw.huiswerk,
-                            onTapUrl: launch,
                           ),
                           padding: EdgeInsets.only(
                             left: 30,
+                            bottom: 10,
                           ),
                         ),
                       ),

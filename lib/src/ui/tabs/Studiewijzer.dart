@@ -199,77 +199,96 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                           wijstab.naam,
                         ),
                         children: [
-                          Padding(
-                            child: Futuristic(
-                              autoStart: true,
-                              futureBuilder: wijstab.bronnen.isNotEmpty
-                                  ? () async {}
-                                  : () async => await account.magister.studiewijzers.loadTab(
-                                        wijstab,
-                                      ),
-                              busyBuilder: (BuildContext context) => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              dataBuilder: (BuildContext context, _) {
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        left: 10,
-                                      ),
-                                      child: HtmlWidget(
-                                        wijstab.omschrijving,
-                                        onTapUrl: launch,
-                                      ),
+                          Futuristic(
+                            autoStart: true,
+                            errorBuilder: (BuildContext context, error, retry) {
+                              return Text(error);
+                            },
+                            futureBuilder: () async {
+                              await account.magister.studiewijzers.loadTab(
+                                wijstab,
+                              );
+                            },
+                            busyBuilder: (BuildContext context) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            dataBuilder: (BuildContext context, _) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 17.5,
+                                      bottom: 10,
                                     ),
-                                    for (Bron wijsbron in wijstab.bronnen)
-                                      Container(
-                                        child: ListTile(
-                                          onTap: () {
-                                            if (currentlyDownloading != null) return;
-                                            currentlyDownloading = wijsbron;
-                                            account.magister.bronnen.downloadFile(
-                                              wijsbron,
-                                              (count, _) {
-                                                setState(
-                                                  () {
-                                                    if (count >= currentlyDownloading.size) {
-                                                      currentlyDownloading = null;
-                                                    } else
-                                                      currentlyDownloading.downloadCount = count;
-                                                  },
-                                                );
-                                              },
-                                            );
-                                          },
-                                          leading: Icon(
-                                            Icons.insert_drive_file_outlined,
-                                          ),
-                                          title: Padding(
-                                            child: Text(
-                                              wijsbron.naam,
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                          ),
-                                          trailing: Text(
+                                    child: WebContent(
+                                      wijstab.omschrijving,
+                                    ),
+                                  ),
+                                  for (Bron wijsbron in wijstab.bronnen)
+                                    Tooltip(
+                                      child: ListTileBorder(
+                                        onTap: () {
+                                          if (currentlyDownloading != null) return;
+                                          currentlyDownloading = wijsbron;
+                                          account.magister.bronnen.downloadFile(
+                                            wijsbron,
+                                            (count, _) {
+                                              setState(
+                                                () {
+                                                  wijsbron.downloadCount = count;
+                                                  // print(wijsbron.downloadCount);
+                                                  if (count >= currentlyDownloading.size) {
+                                                    currentlyDownloading = null;
+                                                  }
+                                                  // print("klaar ${wijsbron.downloadCount} | ${wijsbron.size}");
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        leading: Icon(
+                                          Icons.insert_drive_file_outlined,
+                                        ),
+                                        subtitle: Padding(
+                                          child: Text(
                                             filesize(wijsbron.size),
                                           ),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            top: greyBorderSide(),
+                                          padding: EdgeInsets.only(
+                                            bottom: 5,
                                           ),
                                         ),
+                                        title: Padding(
+                                          child: Text(
+                                            wijsbron.naam,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                        ),
+                                        trailing: wijsbron.downloadCount == wijsbron.size
+                                            ? Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 18,
+                                              )
+                                            : wijsbron.downloadCount == null
+                                                ? Icon(
+                                                    Icons.cloud_download,
+                                                    size: 22,
+                                                  )
+                                                : CircularProgressIndicator(),
+                                        border: Border(
+                                          top: greyBorderSide(),
+                                        ),
                                       ),
-                                  ],
-                                );
-                              },
-                            ),
-                            padding: EdgeInsets.only(
-                              bottom: 10,
-                            ),
+                                      padding: EdgeInsets.all(
+                                        5,
+                                      ),
+                                      message: wijsbron.naam,
+                                    ),
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),

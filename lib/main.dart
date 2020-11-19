@@ -102,26 +102,32 @@ void main() async {
   custom = await Hive.openBox("custom");
   if (accounts.isEmpty) {
     userdata.delete("introduction");
-    userdata.putAll({
-      "theme": "systeem",
-      "primaryColor": Colors.blue,
-      "accentColor": Colors.orange,
-      "useIcon": false,
-      "accountIndex": 0,
-      "pixelsPerHour": 75,
-      "agendaStartHour": 8,
-      "agendaEndHour": 17,
-      "agendaAutoBegin": false,
-      "agendaAutoEind": false,
-      "backOpensDrawer": true,
-      "colorsInDrawer": true,
-    });
     accounts.put(0, Account());
   }
+  Map standardSettings = {
+    "theme": "systeem",
+    "primaryColor": Colors.blue,
+    "accentColor": Colors.orange,
+    "useIcon": false,
+    "accountIndex": 0,
+    "pixelsPerHour": 75,
+    "agendaStartHour": 8,
+    "agendaEndHour": 17,
+    "agendaAutoBegin": false,
+    "agendaAutoEind": false,
+    "backOpensDrawer": true,
+    "colorsInDrawer": true,
+    "alwaysPrimary": true,
+  };
+  standardSettings.entries.forEach((element) {
+    if (!userdata.containsKey(element.key)) userdata.put(element.key, element.value);
+  });
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
   int accountIndex = userdata.get("accountIndex");
-  account = accounts.get(accountIndex) ?? accounts.get(accounts.toMap().entries.first.key);
+  Account firstAccount = accounts.get(accounts.toMap().entries.first.key);
+  account = accounts.get(accountIndex) ?? firstAccount;
+  if (userdata.get("alwaysPrimary")) account = firstAccount;
   appState = _AppState();
   runApp(App());
 }

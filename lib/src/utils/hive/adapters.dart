@@ -187,8 +187,13 @@ class Les {
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
     this.editable = les["Type"] == 1;
     this.id = les["Id"];
+
     if (custom.containsKey("vak${this.vak.id}")) {
-      this.title = custom.get("vak${this.vak.id}");
+      if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
+        this.uitval = true;
+      } else {
+        this.title = custom.get("vak${this.vak.id}");
+      }
     }
     this.lastMonday = start.subtract(
       Duration(

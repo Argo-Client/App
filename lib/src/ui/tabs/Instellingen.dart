@@ -385,26 +385,28 @@ class _Instellingen extends State<Instellingen> {
                   activeColor: userdata.get("accentColor"),
                   subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
                   value: userdata.get("backOpensDrawer"),
-                  onChanged: (value) => setState(
-                    () {
-                      userdata.put("backOpensDrawer", value);
-                    },
-                  ),
+                  onChanged: (value) => setState(() {
+                    userdata.put("backOpensDrawer", value);
+                  }),
                 ),
               ),
-              ListTile(
-                leading: Icon(Icons.input_outlined),
-                title: Text('Open Introductie'),
-                onTap: () {
-                  // Navigator.pushNamed(context, "Introduction");
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Introduction(),
+              if (accounts.length > 1)
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: greyBorderSide(),
                     ),
-                  );
-                },
-              ),
+                  ),
+                  child: CheckboxListTile(
+                    title: Text("Open altijd je hoofdaccount"),
+                    activeColor: userdata.get("accentColor"),
+                    subtitle: Text("Open altijd je eerste account als je de app opstart."),
+                    value: userdata.get("alwaysPrimary"),
+                    onChanged: (value) => setState(() {
+                      userdata.put("alwaysPrimary", value);
+                    }),
+                  ),
+                ),
               if (custom.length != 0)
                 ListTile(
                   title: Text("Verwijder alle zelfbedachte namen."),

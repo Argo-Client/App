@@ -295,12 +295,12 @@ class _Instellingen extends State<Instellingen> {
               ),
               Container(
                 child: CheckboxListTile(
-                  title: Text("Niet automatisch begin uur"),
+                  title: Text("Automatisch begin uur"),
                   subtitle: Padding(
                     padding: EdgeInsets.symmetric(
                       vertical: 5,
                     ),
-                    child: Text("Of je agenda wilt laten startten wanneer je eerste les begint of je start tijd."),
+                    child: Text("Of je agenda wilt laten startten wanneer je eerste les begint of bij je start tijd."),
                   ),
                   activeColor: userdata.get("accentColor"),
                   value: userdata.get("agendaAutoBegin"),
@@ -317,7 +317,7 @@ class _Instellingen extends State<Instellingen> {
                 ),
               ),
               CheckboxListTile(
-                title: Text("Niet automatisch eind uur"),
+                title: Text("Automatisch eind uur"),
                 subtitle: Padding(
                   padding: EdgeInsets.symmetric(
                     vertical: 5,

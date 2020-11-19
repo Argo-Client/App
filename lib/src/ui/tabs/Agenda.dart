@@ -22,13 +22,23 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
   String weekslug;
   int pixelsPerHour, currentDay;
   int getStartHour(dag) {
-    if (account.lessons[weekslug] == null || userdata.get("agendaAutoBegin")) return userdata.get("agendaStartHour");
-    return account.lessons[weekslug][dag].isEmpty ? userdata.get("agendaStartHour") : (account.lessons[weekslug][dag].first.start / 60).floor();
+    int startHour = userdata.get("agendaStartHour");
+    if (account.lessons[weekslug] == null || account.lessons[weekslug][dag].isEmpty) return startHour;
+    int firstLessonHour = (account.lessons[weekslug][dag].first.start / 60).floor();
+    if (firstLessonHour < startHour) {
+      return firstLessonHour;
+    }
+    return userdata.get("agendaAutoBegin") ? firstLessonHour : startHour;
   }
 
   int getEndHour(dag) {
-    if (account.lessons[weekslug] == null || userdata.get("agendaAutoEind")) return userdata.get("agendaEndHour");
-    return account.lessons[weekslug][dag].isEmpty ? userdata.get("agendaEndHour") : (account.lessons[weekslug][dag].last.start / 60).floor() + 1;
+    int startHour = userdata.get("agendaEndHour");
+    if (account.lessons[weekslug] == null || account.lessons[weekslug][dag].isEmpty) return startHour;
+    int endLessonHour = (account.lessons[weekslug][dag].last.start / 60).ceil();
+    if (endLessonHour > startHour) {
+      return endLessonHour;
+    }
+    return userdata.get("agendaAutoEind") ? endLessonHour : startHour;
   }
 
   void afterFirstLayout(BuildContext context) {
@@ -207,7 +217,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                         int startHour = getStartHour(dagInt++);
                         for (Les les in dag) {
                           double mTop = ((les.start - startHour * 60) * timeFactor).toDouble();
-                          if (mTop <= 0) {
+                          if (mTop < 0) {
                             continue;
                           }
                           widgetDag.add(

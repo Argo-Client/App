@@ -111,8 +111,8 @@ void main() async {
       "pixelsPerHour": 75,
       "agendaStartHour": 8,
       "agendaEndHour": 17,
-      "agendaAutoBegin": true,
-      "agendaAutoEind": true,
+      "agendaAutoBegin": false,
+      "agendaAutoEind": false,
       "backOpensDrawer": true,
       "colorsInDrawer": true,
     });

@@ -155,6 +155,8 @@ class Les {
   bool editable;
   @HiveField(17)
   DateTime lastMonday;
+  @HiveField(18)
+  String infoType;
   Les([Map les]) {
     if (les == null) return;
     DateTime start = DateTime.parse(les["Start"]).toLocal();
@@ -187,7 +189,15 @@ class Les {
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
     this.editable = les["Type"] == 1;
     this.id = les["Id"];
-
+    this.infoType = [
+      "", // Geen Informatie
+      "", // Huiswerk
+      "PW", // Toets
+      "TT", // Tentamen
+      "SO", // Schriftelijke Overhoring
+      "", // Informatie
+      "", // Aantekening
+    ][les["InfoType"]];
     if (custom.containsKey("vak${this.vak.id}")) {
       if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
         this.uitval = true;

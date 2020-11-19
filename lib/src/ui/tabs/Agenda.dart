@@ -335,6 +335,21 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                                           ],
                                         ),
                                       ),
+                                      if (les.infoType != "")
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Material(
+                                            // padding: EdgeInsets.all(7.5),
+                                            child: Padding(
+                                              child: Text(les.infoType),
+                                              padding: EdgeInsets.all(5.5),
+                                            ),
+                                            shape: ContinuousRectangleBorder(
+                                              borderRadius: BorderRadius.circular(30.0),
+                                            ),
+                                            color: userdata.get("accentColor"),
+                                          ),
+                                        ),
                                     ],
                                   ),
                                   onTap: () {

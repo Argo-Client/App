@@ -140,7 +140,7 @@ class Les {
   @HiveField(9)
   Vak vak;
   @HiveField(10)
-  String docent;
+  List<Docent> docenten;
   @HiveField(11)
   String huiswerk;
   @HiveField(12)
@@ -168,12 +168,8 @@ class Les {
 
     DateFormat formatHour = DateFormat("HH:mm");
     DateFormat formatDatum = DateFormat("EEEE dd MMMM");
-    var docent;
     int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
     var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
-    if (les["Docenten"] != null && !les["Docenten"].isEmpty) {
-      docent = les["Docenten"][0]["Naam"];
-    }
     this.start = minFromMidnight ?? "";
     this.duration = end.difference(start).inMinutes ?? "";
     this.hour = hour == "null" ? "" : hour;
@@ -184,9 +180,10 @@ class Les {
     this.location = les["Lokatie"];
     this.date = formatDatum.format(end);
     this.vak = les["Vakken"].isEmpty ? Vak({"Omschrijving": les["Omschrijving"]}) : Vak(les["Vakken"][0]);
-    this.docent = docent;
+    this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Docent(doc)).toList().cast<Docent>() : null;
     this.huiswerk = les["Inhoud"];
     this.huiswerkAf = les["Afgerond"];
+
     this.heleDag = les["DuurtHeleDag"];
     this.uitval = les["Status"] == 5;
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
@@ -442,6 +439,22 @@ class Leermiddel {
       this.ean = leermiddel["EAN"];
     }
   }
+}
+
+@HiveType(typeId: 12)
+class Docent {
+  @HiveField(0)
+  String naam;
+  @HiveField(1)
+  String code;
+  Docent([docent]) {
+    if (docent != null) {
+      this.naam = docent["Naam"];
+      this.code = docent["Docentcode"];
+    }
+  }
+
+  String toString() => this.naam;
 }
 
 class MaterialColorAdapter extends TypeAdapter<MaterialColor> {

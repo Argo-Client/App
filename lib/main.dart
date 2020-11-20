@@ -96,10 +96,21 @@ void main() async {
     Hive.registerAdapter(BronAdapter());
     Hive.registerAdapter(WijzerAdapter());
     Hive.registerAdapter(LeermiddelAdapter());
-  } catch (e) {}
-  userdata = await Hive.openBox("userdata");
-  accounts = await Hive.openBox<Account>("accounts");
-  custom = await Hive.openBox("custom");
+    Hive.registerAdapter(DocentAdapter());
+  } catch (_) {}
+  try {
+    List<Box> boxes = await Future.wait([
+      Hive.openBox("userdata"),
+      Hive.openBox("custom"),
+      Hive.openBox<Account>("accounts"),
+    ]);
+    userdata = boxes.removeAt(0);
+    custom = boxes.removeAt(0);
+    accounts = boxes.removeAt(0);
+  } catch (e) {
+    Hive.deleteBoxFromDisk("accounts");
+    return main();
+  }
   if (accounts.isEmpty) {
     userdata.delete("introduction");
     accounts.put(0, Account());

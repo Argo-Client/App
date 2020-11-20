@@ -381,6 +381,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               for (Les heleDagLes in account.lessons[weekslug][dag].where((les) => les.heleDag))
                                 SeeCard(
                                   child: InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => LesPagina(heleDagLes),
+                                        ),
+                                      );
+                                    },
                                     child: Container(
                                       width: MediaQuery.of(context).size.width,
                                       child: Padding(
@@ -616,10 +623,14 @@ class _LesPagina extends State<LesPagina> {
                     leading: Icon(Icons.location_on),
                     title: Text(les.location),
                   ),
-                if (les.docent != null)
+                if (les.docenten != null)
                   ListTile(
                     leading: Icon(Icons.person),
-                    title: Text(les.docent),
+                    title: Text(
+                      les.docenten.join(", "),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
                   ),
                 // if (les["description"].length != 0)
                 //   ListTile(

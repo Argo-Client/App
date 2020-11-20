@@ -21,7 +21,6 @@ class Agenda extends MagisterApi {
     String weekslug = formatDate.format(lastMonday);
     account.lessons[weekslug] = <List<Les>>[[], [], [], [], [], [], []];
     body["Items"].forEach((les) {
-      if (les["DuurtHeleDag"]) return;
       DateTime end = DateTime.parse(les["Einde"]).toLocal();
       account.lessons[weekslug][end.weekday - 1].add(Les(les));
     });

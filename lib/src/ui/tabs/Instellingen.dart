@@ -390,6 +390,22 @@ class _Instellingen extends State<Instellingen> {
                   }),
                 ),
               ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: greyBorderSide(),
+                  ),
+                ),
+                child: CheckboxListTile(
+                  title: Text("Dubbele Terugknop voor agenda"),
+                  activeColor: userdata.get("accentColor"),
+                  subtitle: Text("Als je twee keer snel op de terugknop klikt, open dan je agenda."),
+                  value: userdata.get("doubleBackAgenda"),
+                  onChanged: (value) => setState(() {
+                    userdata.put("doubleBackAgenda", value);
+                  }),
+                ),
+              ),
               if (accounts.length > 1)
                 Container(
                   decoration: BoxDecoration(

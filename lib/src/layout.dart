@@ -156,8 +156,19 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         );
       }
     }
+    DateTime lastPopped;
     return WillPopScope(
       onWillPop: () {
+        if (lastPopped != null && userdata.get("doubleBackAgenda")) {
+          if (lastPopped.isAfter(DateTime.now().subtract(Duration(milliseconds: 500)))) {
+            changeIndex(1);
+            if (_layoutKey.currentState.isDrawerOpen) {
+              Navigator.of(context).pop();
+            }
+            return Future.value(false);
+          }
+        }
+        lastPopped = DateTime.now();
         if (!userdata.get("backOpensDrawer") || child["overridePop"] != null) return Future.value(true);
         if (_layoutKey.currentState.isDrawerOpen) {
           Navigator.of(context).pop();

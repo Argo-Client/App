@@ -20,7 +20,28 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
   List dayAbbr;
   double timeFactor;
   String weekslug;
-  int pixelsPerHour, currentDay;
+  int pixelsPerHour;
+  TabController _tabController;
+  ValueNotifier currentDay = ValueNotifier(DateTime.now().weekday - 1);
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      vsync: this,
+      length: 7,
+      initialIndex: currentDay.value,
+    )..addListener(() {
+        currentDay.value = _tabController.index;
+      });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   int getStartHour(dag) {
     int startHour = userdata.get("agendaStartHour");
     if (account.lessons[weekslug] == null) return startHour;
@@ -62,7 +83,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     weekslug = formatDate.format(lastMonday);
     dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
     timeFactor = userdata.get("pixelsPerHour") / 60;
-    currentDay = now.weekday - 1;
   }
 
   Future openDatePicker() async {
@@ -70,7 +90,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
       context: context,
       initialDate: lastMonday.add(
         Duration(
-          days: currentDay,
+          days: currentDay.value,
         ),
       ),
       firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
@@ -87,35 +107,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     }
 
     setState(() {
-      currentDay = pickDate.weekday - 1;
+      currentDay.value = pickDate.weekday - 1;
       _tabController.index = pickDate.weekday - 1;
     });
-  }
-
-  TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      vsync: this,
-      length: 7,
-      initialIndex: currentDay,
-    )..addListener(
-        () {
-          setState(
-            () {
-              currentDay = _tabController.index;
-            },
-          );
-        },
-      );
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -131,21 +125,22 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Agenda",
-              ),
-              Text(
-                formatDatum.format(
-                  lastMonday.add(
-                    Duration(
-                      days: currentDay,
+              Text("Agenda"),
+              ValueListenableBuilder(
+                valueListenable: currentDay,
+                builder: (context, _, _a) => Text(
+                  formatDatum.format(
+                    lastMonday.add(
+                      Duration(
+                        days: currentDay.value,
+                      ),
                     ),
                   ),
-                ),
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey[300],
-                  fontWeight: FontWeight.w400,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[300],
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ],
@@ -186,7 +181,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                   builder: (context) => AddLesPagina(
                     lastMonday.add(
                       Duration(
-                        days: currentDay,
+                        days: currentDay.value,
                       ),
                     ),
                   ),

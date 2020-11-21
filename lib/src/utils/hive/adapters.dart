@@ -159,6 +159,9 @@ class Les {
   String infoType;
   @HiveField(19)
   bool heleDag;
+  @HiveField(20)
+  DateTime startDateTime;
+
   Les([Map les]) {
     if (les == null) return;
     DateTime start = DateTime.parse(les["Start"]).toLocal();
@@ -183,7 +186,7 @@ class Les {
     this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Docent(doc)).toList().cast<Docent>() : null;
     this.huiswerk = les["Inhoud"];
     this.huiswerkAf = les["Afgerond"];
-
+    this.startDateTime = start;
     this.heleDag = les["DuurtHeleDag"];
     this.uitval = les["Status"] == 5;
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");

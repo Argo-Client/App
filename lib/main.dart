@@ -4,7 +4,7 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/scheduler.dart' as scheduler;
 import 'dart:developer';
 import 'dart:convert';
 import 'dart:async';
@@ -22,6 +22,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:Argo/src/utils/notifications.dart';
 
 // import 'package:file_picker/file_picker.dart';
 // import 'package:purchases_flutter/purchases_flutter.dart';
@@ -33,7 +34,6 @@ import 'src/utils/login.dart';
 import 'src/utils/hive/adapters.dart';
 
 import 'src/ui/CustomWidgets.dart';
-
 part 'src/ui/Introduction.dart';
 part 'src/utils/tabs.dart';
 part 'src/layout.dart';
@@ -61,6 +61,8 @@ _AppState appState;
 Box userdata, accounts, custom;
 Brightness theme;
 ValueNotifier<bool> updateNotifier = ValueNotifier(false);
+
+Notifications notifications = Notifications();
 void update() => updateNotifier.value = !updateNotifier.value;
 Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
   if (account.id != 0) {
@@ -143,6 +145,7 @@ void main() async {
   if (userdata.get("alwaysPrimary")) account = firstAccount;
   appState = _AppState();
   runApp(App());
+  notifications.showNotification(account.lessons);
 }
 
 class App extends StatefulWidget {
@@ -166,7 +169,7 @@ class _AppState extends State<App> {
         backgroundColor = Colors.black;
         break;
       default:
-        theme = SchedulerBinding.instance.window.platformBrightness;
+        theme = scheduler.SchedulerBinding.instance.window.platformBrightness;
     }
     return MaterialApp(
       title: 'Argo',

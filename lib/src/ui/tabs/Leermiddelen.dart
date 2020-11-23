@@ -27,12 +27,27 @@ class _Leermiddelen extends State<Leermiddelen> {
                 children: [
                   for (Leermiddel leermiddel in account.leermiddelen)
                     SeeCard(
-                      child: ListTileBorder(
-                        onTap: () => account.magister.leermiddelen.launch(leermiddel),
-                        border: Border(
-                          bottom: greyBorderSide(),
+                      child: Tooltip(
+                        message: leermiddel.title,
+                        child: ListTileBorder(
+                          onTap: () => account.magister.leermiddelen.launch(leermiddel),
+                          border: Border(
+                            bottom: greyBorderSide(),
+                          ),
+                          title: Text(
+                            leermiddel.title,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            leermiddel?.uitgeverij,
+                          ),
+                          trailing: Text(
+                            leermiddel?.vak?.code ?? "",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                        title: Text(leermiddel.title),
                       ),
                     ),
                 ],

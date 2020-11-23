@@ -3,6 +3,9 @@ import 'package:Argo/main.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:clipboard/clipboard.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 BorderSide greyBorderSide() {
   Color color;
   if (theme == Brightness.dark) {
@@ -50,6 +53,27 @@ class ShowPeopleList extends StatelessWidget {
           title,
         ),
         actions: [
+          IconButton(
+            tooltip: "Kopieer lijst",
+            icon: Icon(
+              Icons.copy,
+            ),
+            onPressed: () {
+              FlutterClipboard.copy(
+                people.join(" \r\n"),
+              ).then((value) => {
+                    Fluttertoast.showToast(
+                      msg: "Gekopieerd ;)",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.white,
+                      textColor: Colors.black,
+                      fontSize: 16.0,
+                    ),
+                  });
+            },
+          ),
           Padding(
             padding: EdgeInsets.only(
               right: 5,

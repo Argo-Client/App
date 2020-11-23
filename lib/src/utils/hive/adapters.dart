@@ -306,8 +306,11 @@ class Vak {
   String naam;
   @HiveField(1)
   int id;
+  @HiveField(2)
+  String code;
   Vak([vak]) {
     if (vak != null) {
+      this.code = vak["Afkorting"];
       this.id = vak["Id"];
       this.naam = ((vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
     }
@@ -436,8 +439,14 @@ class Leermiddel {
   String title;
   @HiveField(1)
   String ean;
+  @HiveField(2)
+  String uitgeverij;
+  @HiveField(3)
+  Vak vak;
   Leermiddel([leermiddel]) {
     if (leermiddel != null) {
+      this.uitgeverij = leermiddel["Uitgeverij"];
+      this.vak = Vak(leermiddel["Vak"]);
       this.title = leermiddel["Titel"];
       this.ean = leermiddel["EAN"];
     }

@@ -39,7 +39,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..afwezigheid = (fields[19] as List)?.cast<Absentie>()
       ..berichten = (fields[20] as List)?.cast<Bericht>()
       ..cijfers = (fields[21] as List)?.cast<CijferJaar>()
-      ..lessons = (fields[22] as Map)?.map((dynamic k, dynamic v) => MapEntry(k as String, (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
+      ..lessons = (fields[22] as Map)?.map((dynamic k, dynamic v) => MapEntry(
+          k as String,
+          (v as List)?.map((dynamic e) => (e as List)?.cast<Les>())?.toList()))
       ..bronnen = (fields[23] as List)?.cast<Bron>()
       ..studiewijzers = (fields[24] as List)?.cast<Wijzer>()
       ..recenteCijfers = (fields[25] as List)?.cast<Cijfer>()
@@ -110,7 +112,11 @@ class AccountAdapter extends TypeAdapter<Account> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AccountAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AccountAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class LesAdapter extends TypeAdapter<Les> {
@@ -199,7 +205,11 @@ class LesAdapter extends TypeAdapter<Les> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is LesAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LesAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class CijferJaarAdapter extends TypeAdapter<CijferJaar> {
@@ -240,7 +250,11 @@ class CijferJaarAdapter extends TypeAdapter<CijferJaar> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is CijferJaarAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CijferJaarAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class PeriodeAdapter extends TypeAdapter<Periode> {
@@ -275,7 +289,11 @@ class PeriodeAdapter extends TypeAdapter<Periode> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is PeriodeAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PeriodeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class CijferAdapter extends TypeAdapter<Cijfer> {
@@ -328,7 +346,11 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is CijferAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CijferAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class VakAdapter extends TypeAdapter<Vak> {
@@ -343,24 +365,31 @@ class VakAdapter extends TypeAdapter<Vak> {
     };
     return Vak()
       ..naam = fields[0] as String
-      ..id = fields[1] as int;
+      ..id = fields[1] as int
+      ..code = fields[2] as String;
   }
 
   @override
   void write(BinaryWriter writer, Vak obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.naam)
       ..writeByte(1)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.code);
   }
 
   @override
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is VakAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VakAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class BerichtAdapter extends TypeAdapter<Bericht> {
@@ -404,7 +433,11 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is BerichtAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BerichtAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class AbsentieAdapter extends TypeAdapter<Absentie> {
@@ -442,7 +475,11 @@ class AbsentieAdapter extends TypeAdapter<Absentie> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is AbsentieAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AbsentieAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class BronAdapter extends TypeAdapter<Bron> {
@@ -489,7 +526,11 @@ class BronAdapter extends TypeAdapter<Bron> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is BronAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BronAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class WijzerAdapter extends TypeAdapter<Wijzer> {
@@ -533,7 +574,11 @@ class WijzerAdapter extends TypeAdapter<Wijzer> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is WijzerAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WijzerAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class LeermiddelAdapter extends TypeAdapter<Leermiddel> {
@@ -548,24 +593,34 @@ class LeermiddelAdapter extends TypeAdapter<Leermiddel> {
     };
     return Leermiddel()
       ..title = fields[0] as String
-      ..ean = fields[1] as String;
+      ..ean = fields[1] as String
+      ..uitgeverij = fields[2] as String
+      ..vak = fields[3] as Vak;
   }
 
   @override
   void write(BinaryWriter writer, Leermiddel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
-      ..write(obj.ean);
+      ..write(obj.ean)
+      ..writeByte(2)
+      ..write(obj.uitgeverij)
+      ..writeByte(3)
+      ..write(obj.vak);
   }
 
   @override
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is LeermiddelAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LeermiddelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 class DocentAdapter extends TypeAdapter<Docent> {
@@ -597,5 +652,9 @@ class DocentAdapter extends TypeAdapter<Docent> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) => identical(this, other) || other is DocentAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DocentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

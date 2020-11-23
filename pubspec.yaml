@@ -53,6 +53,8 @@ dependencies:
   timer_builder: ^1.3.0
   flutter_local_notifications: ^3.0.1+4
   # get_version: ^0.2.2
+  clipboard: ^0.1.2+8
+  fluttertoast: ^7.1.4
 
 dev_dependencies:
   flutter_native_splash: ^0.1.9

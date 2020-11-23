@@ -45,7 +45,7 @@ class _Info extends State<Info> {
                       ),
                       leading: Icon(Icons.verified_user_outlined),
                       title: Text('Versie'),
-                      subtitle: Text('0.1'),
+                      subtitle: Text("0.1.2"),
                     ),
                     ListTileBorder(
                       border: Border(

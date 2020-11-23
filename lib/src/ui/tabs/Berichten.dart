@@ -196,7 +196,12 @@ class BerichtPagina extends StatelessWidget {
                       ),
                     ),
                   if (ber.ontvangers != null)
-                    ListTile(
+                    ListTileBorder(
+                      border: ber.cc == null
+                          ? null
+                          : Border(
+                              bottom: greyBorderSide(),
+                            ),
                       leading: Padding(
                         child: Icon(
                           Icons.people_outlined,
@@ -207,8 +212,21 @@ class BerichtPagina extends StatelessWidget {
                         ),
                       ),
                       title: Text(
-                        ber.ontvangers,
+                        ber.ontvangers.take(10).join(", "),
+                        overflow: TextOverflow.ellipsis,
                       ),
+                      onTap: ber.ontvangers.length > 3
+                          ? () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ShowPeopleList(
+                                    ber.ontvangers,
+                                    title: "Ontvangers",
+                                  ),
+                                ),
+                              );
+                            }
+                          : null,
                       subtitle: Text(
                         "Ontvanger(s)",
                       ),
@@ -225,11 +243,24 @@ class BerichtPagina extends StatelessWidget {
                         ),
                       ),
                       title: Text(
-                        ber.cc,
+                        ber.cc.take(5).join(', '),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
                         "CC",
                       ),
+                      onTap: ber.cc.length > 3
+                          ? () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ShowPeopleList(
+                                    ber.cc,
+                                    title: "Ontvangers",
+                                  ),
+                                ),
+                              );
+                            }
+                          : null,
                     ),
                 ],
               ),
@@ -305,7 +336,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                         disabledBorder: InputBorder.none,
                         hintText: 'CC',
                       ),
-                      initialValue: ber != null ? ber.cc : null,
+                      initialValue: ber?.cc?.join(', '),
                     ),
                   ),
                   ListTileBorder(
@@ -321,7 +352,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                         disabledBorder: InputBorder.none,
                         hintText: 'BCC',
                       ),
-                      initialValue: ber != null ? ber.cc : null,
+                      initialValue: ber?.cc?.join(', '),
                     ),
                   ),
                   ListTileBorder(

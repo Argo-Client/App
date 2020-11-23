@@ -330,8 +330,8 @@ class Bericht {
   String afzender;
 
   String inhoud;
-  String ontvangers;
-  String cc;
+  List<String> ontvangers;
+  List<String> cc;
   Bericht([Map ber]) {
     if (ber != null) {
       this.dag = formatDatum.format(DateTime.parse(ber["verzondenOp"]));
@@ -343,8 +343,8 @@ class Bericht {
 
       if (ber["inhoud"] != null) {
         this.inhoud = ber["inhoud"];
-        this.ontvangers = ber["ontvangers"].take(10).map((ont) => ont["weergavenaam"]).join(", ");
-        this.cc = ber["kopieOntvangers"].isEmpty ? null : ber["kopieOntvangers"].take(10).map((ont) => ont["weergavenaam"]).join(", ");
+        this.ontvangers = ber["ontvangers"].map((ont) => ont["weergavenaam"]).toList().cast<String>();
+        this.cc = ber["kopieOntvangers"].isEmpty ? null : ber["kopieOntvangers"].map((ont) => ont["weergavenaam"]).toList().cast<String>();
       }
     }
   }

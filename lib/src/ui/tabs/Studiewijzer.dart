@@ -19,20 +19,8 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
             _layoutKey.currentState.openDrawer();
           },
         ),
-        title: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                right: 10,
-              ),
-              child: Icon(
-                Icons.book,
-              ),
-            ),
-            Text(
-              "Studiewijzers",
-            ),
-          ],
+        title: Text(
+          "Studiewijzers",
         ),
       ),
       body: RefreshIndicator(

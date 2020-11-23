@@ -139,7 +139,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
               child: Padding(
                 child: Icon(
                   _children[i]["icon"],
-                  color: Colors.white,
+                  color: userdata.get("colorsInDrawer") ? Colors.white : null,
                 ),
                 padding: EdgeInsets.all(5.5),
               ),

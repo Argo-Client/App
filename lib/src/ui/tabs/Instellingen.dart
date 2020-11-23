@@ -300,7 +300,7 @@ class _Instellingen extends State<Instellingen> {
                     padding: EdgeInsets.symmetric(
                       vertical: 5,
                     ),
-                    child: Text("Of je agenda wilt laten startten wanneer je eerste les begint of bij je start tijd."),
+                    child: Text("Of je agenda wilt laten starten wanneer je eerste les begint of bij je start tijd."),
                   ),
                   activeColor: userdata.get("accentColor"),
                   value: userdata.get("agendaAutoBegin"),

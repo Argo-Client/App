@@ -33,6 +33,70 @@ BorderSide greyBorderSide() {
   return BorderSide(color: color, width: 1);
 }
 
+class ShowPeopleList extends StatelessWidget {
+  final List people;
+  final String title;
+
+  ShowPeopleList(
+    this.people, {
+    this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          title,
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(
+              right: 5,
+            ),
+            child: Tooltip(
+              message: "Lengte van de lijst",
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.people,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 5,
+                    ),
+                    child: Text(
+                      people.length.toString(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: ListView(
+        children: [
+          for (int i = 0; i < people.length; i++)
+            SeeCard(
+              child: ListTileBorder(
+                border: Border(
+                  bottom: greyBorderSide(),
+                ),
+                leading: Icon(
+                  Icons.person,
+                ),
+                title: Text(
+                  people[i].toString(),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class WebContent extends StatelessWidget {
   final String htmlText;
 

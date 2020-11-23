@@ -31,9 +31,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
       vsync: this,
       length: 7,
       initialIndex: currentDay.value,
-    )..addListener(() {
-        currentDay.value = _tabController.index;
-      });
+    )..addListener(
+        () {
+          currentDay.value = _tabController.index;
+        },
+      );
   }
 
   @override
@@ -172,6 +174,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
           IconButton(
             icon: Icon(Icons.calendar_today_outlined),
             onPressed: openDatePicker,
+            tooltip: "Open datum kiezer",
           ),
           IconButton(
             icon: Icon(Icons.add),
@@ -188,6 +191,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                 ),
               );
             },
+            tooltip: "Voeg een afspraak toe",
           ),
         ],
       ),
@@ -214,7 +218,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                     width: MediaQuery.of(context).size.width - 30,
                     height: les.duration * timeFactor + 1,
                     child: SeeCard(
-                      border: userdata.get("theme") == "OLED"
+                      border: userdata.get("theme") == "OLED" || les.uitval
                           ? null
                           : Border.symmetric(
                               horizontal: greyBorderSide(),
@@ -251,53 +255,51 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                               child: Padding(
                                 padding: EdgeInsets.only(
                                   top: 5,
-                                  right: 5,
+                                  right: 7.5,
                                 ),
-                                child: les.huiswerk != null
-                                    ? !les.huiswerkAf
-                                        ? Icon(
-                                            Icons.assignment_outlined,
-                                            size: 23,
-                                            color: Colors.grey,
-                                          )
-                                        : Icon(
-                                            Icons.assignment_turned_in_outlined,
-                                            size: 23,
-                                            color: Colors.green,
-                                          )
-                                    : null,
+                                child: les.infoType != ""
+                                    ? Material(
+                                        child: Padding(
+                                          child: Text(
+                                            les.infoType,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.all(4.5),
+                                        ),
+                                        shape: ContinuousRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30.0),
+                                        ),
+                                        color: userdata.get("accentColor"),
+                                      )
+                                    : les.huiswerk != null
+                                        ? !les.huiswerkAf
+                                            ? Icon(
+                                                Icons.assignment_outlined,
+                                                size: 23,
+                                                color: Colors.grey,
+                                              )
+                                            : Icon(
+                                                Icons.assignment_turned_in_outlined,
+                                                size: 23,
+                                                color: Colors.green,
+                                              )
+                                        : null,
                               ),
                             ),
-                            // Align(
-                            //   alignment: Alignment.bottomRight,
-                            //   child: Padding(
-                            //     padding: EdgeInsets.only(
-                            //       top: 5,
-                            //       right: 5,
-                            //     ),
-                            //     child: les["huiswerk"] != null
-                            //         ? !les["huiswerkAf"]
-                            //             ? Icon(
-                            //                 Icons.assignment,
-                            //                 size: 23,
-                            //                 color: Colors.grey,
-                            //               )
-                            //             : Icon(
-                            //                 Icons.check,
-                            //                 size: 23,
-                            //                 color: Colors.greenAccent,
-                            //               )
-                            //         : null,
-                            //   ),
-                            // ),
                             Padding(
-                              padding: EdgeInsets.only(top: 20, left: 20),
+                              padding: EdgeInsets.only(
+                                top: 20,
+                                left: 20,
+                              ),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
                                       Text(
                                         les.title,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: 16,
                                         ),
@@ -321,21 +323,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                                 ],
                               ),
                             ),
-                            if (les.infoType != "")
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Material(
-                                  // padding: EdgeInsets.all(7.5),
-                                  child: Padding(
-                                    child: Text(les.infoType),
-                                    padding: EdgeInsets.all(5.5),
-                                  ),
-                                  shape: ContinuousRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  color: userdata.get("accentColor"),
-                                ),
-                              ),
                           ],
                         ),
                         onTap: () {
@@ -373,29 +360,50 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
                         children: [
                           if (account.lessons[weekslug] != null)
                             if (account.lessons[weekslug][dag].where((les) => les.heleDag).isNotEmpty)
-                              for (Les heleDagLes in account.lessons[weekslug][dag].where((les) => les.heleDag))
-                                SeeCard(
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => LesPagina(heleDagLes),
+                              Row(
+                                children: [
+                                  for (Les heleDagLes in account.lessons[weekslug][dag].where((les) => les.heleDag))
+                                    Expanded(
+                                      child: Tooltip(
+                                        message: heleDagLes.title,
+                                        child: SeeCard(
+                                          border: Border(
+                                            top: userdata.get("theme") != "OLED"
+                                                ? BorderSide(
+                                                    width: 0,
+                                                  )
+                                                : greyBorderSide(),
+                                            right: heleDagLes == account.lessons[weekslug][dag].where((les) => les.heleDag).last
+                                                ? BorderSide(
+                                                    width: 0,
+                                                  )
+                                                : greyBorderSide(),
+                                          ),
+                                          child: InkWell(
+                                            child: Padding(
+                                              // width: MediaQuery.of(context).size.width,
+                                              padding: EdgeInsets.all(
+                                                15,
+                                              ),
+                                              child: Text(
+                                                heleDagLes.title,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => LesPagina(heleDagLes),
+                                                ),
+                                              );
+                                            },
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          left: 20,
-                                          top: 10,
-                                          bottom: 20,
-                                        ),
-                                        child: Text(heleDagLes.title),
                                       ),
                                     ),
-                                  ),
-                                ),
+                                ],
+                              ),
                           Stack(
                             children: [
                               if (dag + 1 == now.weekday) // Balkje van de tijd nu
@@ -540,63 +548,82 @@ class _LesPagina extends State<LesPagina> {
                 bottom: 20,
               ),
               column: [
-                ListTile(
-                  leading: Icon(Icons.access_time),
-                  title: Text(
-                    (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
+                if (les.hour != null)
+                  ListTileBorder(
+                    subtitle: Text("Tijd"),
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                    leading: Icon(Icons.access_time),
+                    title: Text(
+                      (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
+                    ),
                   ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.event),
-                  title: Text(les.date),
-                ),
+                if (les.date.isNotEmpty)
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                    leading: Icon(Icons.event),
+                    subtitle: Text("Datum"),
+                    title: Text(les.date),
+                  ),
                 if (les.title == null || les.title.capitalize != les.vak.naam)
-                  ListTile(
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                    subtitle: Text("Vak"),
                     leading: Icon(Icons.book),
                     title: Text(les.vak.naam),
                   ),
-                ListTile(
-                  leading: Icon(Icons.title),
-                  title: Text(les.title),
-                  trailing: les.vak.id == null
-                      ? null
-                      : IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            TextEditingController con = TextEditingController();
-                            Future updateLessons() async {
-                              await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
-                                setState(update);
-                              });
-                            }
+                if (les.title.isNotEmpty)
+                  ListTileBorder(
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
+                    leading: Icon(Icons.title),
+                    subtitle: Text("Les"),
+                    title: Text(les.title),
+                    trailing: les.vak.id == null
+                        ? null
+                        : IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              TextEditingController con = TextEditingController();
+                              Future updateLessons() async {
+                                await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
+                                  setState(update);
+                                });
+                              }
 
-                            showDialog(
-                              context: context,
-                              child: AlertDialog(
-                                content: Row(children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: con,
-                                      autofocus: true,
-                                      decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
+                              showDialog(
+                                context: context,
+                                child: AlertDialog(
+                                  content: Row(children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: con,
+                                        autofocus: true,
+                                        decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
+                                      ),
                                     ),
-                                  ),
-                                ]),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      child: Text('RESET'),
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                        custom.delete("vak${les.vak.id}");
-                                        await updateLessons();
-                                        Navigator.pop(context);
-                                      }),
-                                  FlatButton(
-                                      child: Text('CANCEL'),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      }),
-                                  FlatButton(
+                                  ]),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                        child: Text('RESET'),
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          custom.delete("vak${les.vak.id}");
+                                          await updateLessons();
+                                          Navigator.pop(context);
+                                        }),
+                                    FlatButton(
+                                        child: Text('CANCEL'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        }),
+                                    FlatButton(
                                       child: Text('SAVE'),
                                       onPressed: () {
                                         if (con.text == "") return;
@@ -606,25 +633,42 @@ class _LesPagina extends State<LesPagina> {
                                         setState(() {});
                                         updateLessons();
                                         Navigator.pop(context);
-                                      })
-                                ],
-                              ),
-                            );
-                            // print(custom.toMap().toString());
-                          }),
-                ),
-                if (les.location != null)
-                  ListTile(
+                                      },
+                                    )
+                                  ],
+                                ),
+                              );
+                              // print(custom.toMap().toString());
+                            }),
+                  ),
+                if (les.location.isNotEmpty)
+                  ListTileBorder(
+                    subtitle: Text("Locatie"),
+                    border: Border(
+                      bottom: greyBorderSide(),
+                    ),
                     leading: Icon(Icons.location_on),
                     title: Text(les.location),
                   ),
                 if (les.docenten != null)
                   ListTile(
+                    subtitle: Text("Docent(en)"),
+                    onTap: les.docenten.length > 5
+                        ? () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ShowPeopleList(
+                                  les.docenten,
+                                  title: "Docenten",
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
                     leading: Icon(Icons.person),
                     title: Text(
                       les.docenten.join(", "),
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
                     ),
                   ),
                 // if (les["description"].length != 0)

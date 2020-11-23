@@ -14,8 +14,17 @@ class Agenda extends MagisterApi {
 
   Future getLessen([DateTime lastM]) async {
     DateTime now = DateTime.now();
-    DateTime lastMonday = lastM ?? now.subtract(Duration(days: now.weekday - 1));
-    DateTime lastSunday = lastMonday.add(Duration(days: 6));
+    DateTime lastMonday = lastM ??
+        now.subtract(
+          Duration(
+            days: now.weekday - 1,
+          ),
+        );
+    DateTime lastSunday = lastMonday.add(
+      Duration(
+        days: 6,
+      ),
+    );
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     Map body = (await api.dio.get('api/personen/${account.id}/afspraken?van=${formatDate.format(lastMonday)}&tot=${formatDate.format(lastSunday)}')).data;
     String weekslug = formatDate.format(lastMonday);

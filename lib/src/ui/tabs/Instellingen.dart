@@ -59,7 +59,8 @@ class _Instellingen extends State<Instellingen> {
                 // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
                 trailing: Icon(Icons.brightness_4_outlined),
                 title: Text("Thema"),
-                subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
+                subtitle: Text(
+                    userdata.get("theme").toString().capitalize + " thema"),
                 onTap: () {
                   return showDialog(
                     context: context,
@@ -300,7 +301,8 @@ class _Instellingen extends State<Instellingen> {
                     padding: EdgeInsets.symmetric(
                       vertical: 5,
                     ),
-                    child: Text("Of je agenda wilt laten starten wanneer je eerste les begint of bij je start tijd."),
+                    child: Text(
+                        "Of je agenda wilt laten starten wanneer je eerste les begint of bij je start tijd."),
                   ),
                   activeColor: userdata.get("accentColor"),
                   value: userdata.get("agendaAutoBegin"),
@@ -322,7 +324,8 @@ class _Instellingen extends State<Instellingen> {
                   padding: EdgeInsets.symmetric(
                     vertical: 5,
                   ),
-                  child: Text("Of je door wilt kunnen scrollen tot je eindtijd of bij je laatste les al stopt."),
+                  child: Text(
+                      "Of je door wilt kunnen scrollen tot je eindtijd of bij je laatste les al stopt."),
                 ),
                 activeColor: userdata.get("accentColor"),
                 value: userdata.get("agendaAutoEind"),
@@ -383,7 +386,8 @@ class _Instellingen extends State<Instellingen> {
                 child: CheckboxListTile(
                   title: Text("Terugknop"),
                   activeColor: userdata.get("accentColor"),
-                  subtitle: Text("Als je op de terugknop klikt, open dan de drawer."),
+                  subtitle:
+                      Text("Als je op de terugknop klikt, open dan de drawer."),
                   value: userdata.get("backOpensDrawer"),
                   onChanged: (value) => setState(() {
                     userdata.put("backOpensDrawer", value);
@@ -399,7 +403,8 @@ class _Instellingen extends State<Instellingen> {
                 child: CheckboxListTile(
                   title: Text("Dubbele Terugknop voor agenda"),
                   activeColor: userdata.get("accentColor"),
-                  subtitle: Text("Als je twee keer snel op de terugknop klikt, open dan je agenda."),
+                  subtitle: Text(
+                      "Als je twee keer snel op de terugknop klikt, open dan je agenda."),
                   value: userdata.get("doubleBackAgenda"),
                   onChanged: (value) => setState(() {
                     userdata.put("doubleBackAgenda", value);
@@ -416,7 +421,8 @@ class _Instellingen extends State<Instellingen> {
                   child: CheckboxListTile(
                     title: Text("Open altijd je hoofdaccount"),
                     activeColor: userdata.get("accentColor"),
-                    subtitle: Text("Open altijd je eerste account als je de app opstart."),
+                    subtitle: Text(
+                        "Open altijd je eerste account als je de app opstart."),
                     value: userdata.get("alwaysPrimary"),
                     onChanged: (value) => setState(() {
                       userdata.put("alwaysPrimary", value);
@@ -429,7 +435,8 @@ class _Instellingen extends State<Instellingen> {
                   leading: Icon(Icons.delete),
                   onTap: () => setState(() {
                     custom.clear();
-                    handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                    handleError(account.magister.agenda.refresh,
+                        "Kon agenda niet herladen", context);
                   }),
                 )
             ],

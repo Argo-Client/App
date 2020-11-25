@@ -44,7 +44,7 @@ final List _children = [
     "name": Text("Studiewijzers"),
     "icon": Icons.school_outlined,
     "page": Studiewijzers(),
-    "overridePop": true,
+    // "overridePop": true,
     "color": Colors.amber,
   },
   {

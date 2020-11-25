@@ -9,7 +9,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   void afterFirstLayout(BuildContext context) {
     if (!userdata.containsKey("introduction")) {
       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Introduction()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Introduction()));
     }
   }
 
@@ -25,7 +26,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     var child = _children[_currentIndex];
     bool useIcon = account.profilePicture == null || userdata.get("useIcon");
     void changeAccount(int id) {
-      int index = accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
+      int index =
+          accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
       if (userdata.get("accountIndex") != index) {
         setState(() {
           userdata.put("accountIndex", index);
@@ -41,16 +43,25 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           trailing: PopupMenuButton(
             onSelected: (result) async {
               if (result == "herlaad") {
-                Flushbar msg = FlushbarHelper.createInformation(message: 'Laden')..show(context);
-                await handleError(acc.magister.refresh, "Fout tijdens verversen", context, () async {
-                  FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
+                Flushbar msg =
+                    FlushbarHelper.createInformation(message: 'Laden')
+                      ..show(context);
+                await handleError(
+                    acc.magister.refresh, "Fout tijdens verversen", context,
+                    () async {
+                  FlushbarHelper.createSuccess(message: "$acc is ververst!")
+                    ..show(context);
                   update();
                   await acc.magister.downloadProfilePicture();
                   setState(() {});
                 });
                 msg..dismiss();
               } else {
-                accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+                accounts.delete(accounts
+                    .toMap()
+                    .entries
+                    .firstWhere((a) => a.value.id == acc.id)
+                    .key);
                 if (accounts.isEmpty) {
                   accounts.clear();
                   Navigator.pushReplacement(
@@ -61,7 +72,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   );
                   return;
                 }
-                userdata.put("accountsIndex", accounts.toMap().entries.first.key);
+                userdata.put(
+                    "accountsIndex", accounts.toMap().entries.first.key);
                 setState(() {});
               }
             },
@@ -78,7 +90,9 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           ),
           leading: CircleAvatar(
             backgroundColor: Theme.of(context).backgroundColor,
-            backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+            backgroundImage: !useIcon && acc.profilePicture != null
+                ? Image.memory(base64Decode(acc.profilePicture)).image
+                : null,
             child: useIcon
                 ? Icon(
                     Icons.person,
@@ -102,23 +116,28 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             Account newAccount = Account(tokenSet);
             newAccount.magister.expiryAndTenant();
             await newAccount.magister.profileInfo.profileInfo();
-            if (newAccount.id != null && !accounts.values.any((acc) => acc.id == newAccount.id)) {
+            if (newAccount.id != null &&
+                !accounts.values.any((acc) => acc.id == newAccount.id)) {
               account = newAccount;
               accounts.add(account);
               account.saveTokens(tokenSet);
               account.magister.refresh().then((_) async {
                 userdata.put("accountIndex", accounts.length - 1);
                 setState(() {});
-                FlushbarHelper.createSuccess(message: '$account is toegevoegd')..show(context);
+                FlushbarHelper.createSuccess(message: '$account is toegevoegd')
+                  ..show(context);
                 update();
                 await account.magister.downloadProfilePicture();
                 setState(() {});
               }).catchError((e) {
-                FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(_agendaKey.currentContext);
+                FlushbarHelper.createError(
+                    message: "Fout bij ophalen van gegevens:\n$e")
+                  ..show(_agendaKey.currentContext);
                 throw (e);
               });
             } else {
-              FlushbarHelper.createError(message: '$account bestaat al')..show(context);
+              FlushbarHelper.createError(message: '$account bestaat al')
+                ..show(context);
             }
           }, title: "Nieuw account");
         },
@@ -146,7 +165,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
               shape: ContinuousRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
-              color: userdata.get("colorsInDrawer") ? _children[i]["color"] : null,
+              color:
+                  userdata.get("colorsInDrawer") ? _children[i]["color"] : null,
             ),
             title: _children[i]["name"],
             onTap: () {
@@ -160,7 +180,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     return WillPopScope(
       onWillPop: () {
         if (lastPopped != null && userdata.get("doubleBackAgenda")) {
-          if (lastPopped.isAfter(DateTime.now().subtract(Duration(milliseconds: 500)))) {
+          if (lastPopped
+              .isAfter(DateTime.now().subtract(Duration(milliseconds: 500)))) {
             changeIndex(1);
             if (_layoutKey.currentState.isDrawerOpen) {
               Navigator.of(context).pop();
@@ -169,7 +190,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
           }
         }
         lastPopped = DateTime.now();
-        if (!userdata.get("backOpensDrawer") || child["overridePop"] != null) return Future.value(true);
+        if (!userdata.get("backOpensDrawer") || child["overridePop"] != null)
+          return Future.value(true);
         if (_layoutKey.currentState.isDrawerOpen) {
           Navigator.of(context).pop();
         } else {
@@ -201,7 +223,11 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                           onTap: () => changeAccount(acc.id),
                           child: CircleAvatar(
                             backgroundColor: Theme.of(context).backgroundColor,
-                            backgroundImage: !useIcon && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                            backgroundImage: !useIcon &&
+                                    acc.profilePicture != null
+                                ? Image.memory(base64Decode(acc.profilePicture))
+                                    .image
+                                : null,
                             child: useIcon
                                 ? Icon(
                                     Icons.person,

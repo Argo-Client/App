@@ -36,6 +36,8 @@ BorderSide greyBorderSide() {
   return BorderSide(color: color, width: 1);
 }
 
+// class StudieWijzer extends StatelessWidget {}
+
 class ShowPeopleList extends StatelessWidget {
   final List people;
   final String title;

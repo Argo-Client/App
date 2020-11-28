@@ -5,12 +5,8 @@ class Studiewijzers extends StatefulWidget {
   _Studiewijzers createState() => _Studiewijzers();
 }
 
-class _Studiewijzers extends State<Studiewijzers>
-    with AfterLayoutMixin<Studiewijzers> {
-  void afterFirstLayout(BuildContext context) => handleError(
-      account.magister.studiewijzers.refresh,
-      "Fout tijdens verversen van studiewijzers",
-      context);
+class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewijzers> {
+  void afterFirstLayout(BuildContext context) => handleError(account.magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,8 +42,7 @@ class _Studiewijzers extends State<Studiewijzers>
                   // ),
                   for (Wijzer wijs in account.studiewijzers)
                     SeeCard(
-                      border: account.studiewijzers.length - 1 ==
-                              account.studiewijzers.indexOf(wijs)
+                      border: account.studiewijzers.length - 1 == account.studiewijzers.indexOf(wijs)
                           ? null
                           : Border(
                               bottom: greyBorderSide(),
@@ -84,8 +79,7 @@ class _Studiewijzers extends State<Studiewijzers>
           ),
         ),
         onRefresh: () async {
-          await handleError(account.magister.studiewijzers.refresh,
-              "Kon studiewijzer niet verversen", context);
+          await handleError(account.magister.studiewijzers.refresh, "Kon studiewijzer niet verversen", context);
         },
       ),
     );
@@ -103,20 +97,44 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
   Wijzer wijs;
   _StudiewijzerPagina(this.wijs);
 
+  ValueNotifier<Wijzer> selected = ValueNotifier(null);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          wijs.naam,
+      appBar: PreferredSize(
+        preferredSize: AppBar().preferredSize,
+        child: ValueListenableBuilder(
+          valueListenable: selected,
+          builder: (context, _, _a) {
+            return AppBar(
+              leading: selected.value != null
+                  ? IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        selected.value = null;
+                      },
+                    )
+                  : null,
+              title: selected.value != null
+                  ? Text(selected.value.naam)
+                  : Text(
+                      wijs.naam,
+                    ),
+              actions: [
+                if (selected.value != null)
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.push_pin),
+                  ),
+              ],
+            );
+          },
         ),
       ),
       body: Futuristic(
         autoStart: true,
-        futureBuilder: wijs.children != null
-            ? () async {}
-            : () async =>
-                await account.magister.studiewijzers.loadChildren(wijs),
+        futureBuilder: wijs.children != null ? () async {} : () async => await account.magister.studiewijzers.loadChildren(wijs),
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),
         ),
@@ -126,8 +144,7 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               child: Container(
-                height: MediaQuery.of(context).size.height -
-                    80, // Hier ga ik hard van huilen, houden zo.
+                height: MediaQuery.of(context).size.height - 80, // Hier ga ik hard van huilen, houden zo.
                 child: Column(
                   children: [
                     Center(
@@ -146,8 +163,7 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             child: Text(
-                              "Fout tijdens het laden van studiewijzer: \n\n" +
-                                  (error as dynamic).error,
+                              "Fout tijdens het laden van studiewijzer: \n\n" + (error as dynamic).error,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 17.5,
@@ -169,26 +185,42 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
             child: Column(
               children: [
                 for (Wijzer wijstab in wijs.children)
-                  SeeCard(
-                    border: wijs.children.length - 1 ==
-                            wijs.children.indexOf(wijstab)
-                        ? null
-                        : Border(
-                            bottom: greyBorderSide(),
+                  ValueListenableBuilder(
+                    valueListenable: selected,
+                    builder: (context, _, _a) {
+                      return GestureDetector(
+                        child: SeeCard(
+                          border: wijs.children.length - 1 == wijs.children.indexOf(wijstab)
+                              ? null
+                              : Border(
+                                  bottom: greyBorderSide(),
+                                ),
+                          child: ListTile(
+                            title: Text(
+                              wijstab.naam,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onLongPress: () {
+                              selected.value = wijstab;
+                            },
+                            trailing: selected?.value?.id == wijstab.id ? Icon(Icons.check) : null,
+                            onTap: () {
+                              if (selected.value != null) {
+                                selected.value = null;
+                                return;
+                              }
+
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => StudiewijzerTab(wijstab),
+                                ),
+                              );
+                            },
                           ),
-                    child: ListTile(
-                      title: Text(
-                        wijstab.naam,
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => StudiewijzerTab(wijstab),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      );
+                    },
+                  )
               ],
             ),
           );
@@ -232,8 +264,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                     ),
                   ),
                   backgroundColor: Colors.transparent,
-                  value: currentlyDownloading.downloadCount /
-                      currentlyDownloading.size,
+                  value: currentlyDownloading.downloadCount / currentlyDownloading.size,
                 ),
                 preferredSize: Size.fromHeight(2),
               ),
@@ -255,8 +286,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           return ListView(
             children: [
               if (wijstab.omschrijving
-                  .replaceAll(RegExp("<[^>]*>"),
-                      "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
+                  .replaceAll(RegExp("<[^>]*>"), "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
                   .isNotEmpty)
                 SeeCard(
                   child: Padding(
@@ -270,8 +300,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                 StatefulBuilder(
                   builder: (BuildContext context, _) {
                     List<String> splittedNaam = wijsbron.naam.split(".");
-                    bool hasExtension =
-                        wijsbron.naam.contains(".") && !wijsbron.isFolder;
+                    bool hasExtension = wijsbron.naam.contains(".") && !wijsbron.isFolder;
 
                     return Tooltip(
                       child: SeeCard(
@@ -310,9 +339,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                                   top: 7.5,
                                 ),
                                 child: Text(
-                                  hasExtension
-                                      ? splittedNaam.removeLast().toUpperCase()
-                                      : wijsbron.naam,
+                                  hasExtension ? splittedNaam.removeLast().toUpperCase() : wijsbron.naam,
                                   style: TextStyle(
                                     fontSize: 12.5,
                                   ),

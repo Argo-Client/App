@@ -989,6 +989,7 @@ class _AddLesPagina extends State<AddLesPagina> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "AddAfspraak",
         onPressed: () async {
           if (startTime.hour * 60 + startTime.minute > endTime.hour * 60 + endTime.minute) {
             FlushbarHelper.createError(message: "Eind tijd kan niet eerder zijn dan start tijd.")..show(context);

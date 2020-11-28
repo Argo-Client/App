@@ -144,9 +144,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                         ),
                       ],
                     )
-                  : ListView(
-                      children: absenties,
-                    );
+                  : buildLiveList(absenties, 10);
             }),
         onRefresh: () async {
           await handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);

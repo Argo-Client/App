@@ -3,7 +3,7 @@ part of main;
 final List _children = [
   {
     "page": Thuis(),
-    "name": Text("Home"),
+    "name": Text("Vandaag"),
     "icon": Icons.home_outlined,
     "color": Colors.orange,
   },

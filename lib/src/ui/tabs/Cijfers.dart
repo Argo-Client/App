@@ -91,7 +91,7 @@ class _Cijfers extends State<Cijfers> {
                               column: [
                                 for (Cijfer cijfer in account.recenteCijfers)
                                   Container(
-                                    child: cijferTile(cijfer, true),
+                                    child: CijferTile(cijfer, isRecent: true),
                                     decoration: BoxDecoration(
                                       border: Border(
                                         top: greyBorderSide(),
@@ -261,7 +261,7 @@ class _CijferPagina extends State<CijferPagina> {
                             errorBuilder: (context, error, retry) {
                               return Text("Error $error");
                             },
-                            dataBuilder: (context, data) => cijferTile(cijfer),
+                            dataBuilder: (context, data) => CijferTile(cijfer),
                           ),
                         ),
                     ],
@@ -286,43 +286,4 @@ class _CijferPagina extends State<CijferPagina> {
       )
     ];
   }
-}
-
-ListTile cijferTile(Cijfer cijfer, [bool isRecent]) {
-  return ListTile(
-    trailing: cijfer.cijfer.length > 4
-        ? null
-        : Stack(
-            children: [
-              Text(
-                cijfer.cijfer,
-                style: TextStyle(
-                  fontSize: 17,
-                  color: cijfer.voldoende ? null : Colors.red,
-                ),
-              ),
-              Transform.translate(
-                offset: Offset(10, -15),
-                child: Text(
-                  "${cijfer.weging}x",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              )
-            ],
-          ),
-    subtitle: cijfer.cijfer.length <= 4
-        ? Text(isRecent == null ? formatDate.format(cijfer.ingevoerd) : cijfer.vak.naam)
-        : Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 8,
-            ),
-            child: Text(
-              cijfer.cijfer,
-            ),
-          ),
-    title: Text(cijfer.title),
-  );
 }

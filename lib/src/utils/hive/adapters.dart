@@ -331,18 +331,24 @@ class Bericht {
   String onderwerp;
   @HiveField(5)
   String afzender;
+  @HiveField(6)
+  DateTime date;
+  @HiveField(7)
+  bool read;
 
   String inhoud;
   List<String> ontvangers;
   List<String> cc;
   Bericht([Map ber]) {
     if (ber != null) {
-      this.dag = formatDatum.format(DateTime.parse(ber["verzondenOp"]));
+      this.date = DateTime.parse(ber["verzondenOp"]);
+      this.dag = formatDatum.format(this.date);
       this.id = ber["id"];
       this.prioriteit = ber["heeftPrioriteit"];
       this.bijlagen = ber["heeftBijlagen"];
       this.onderwerp = ber["onderwerp"];
       this.afzender = ber["afzender"]["naam"];
+      this.read = ber["isGelezen"];
 
       if (ber["inhoud"] != null) {
         this.inhoud = ber["inhoud"];
@@ -358,14 +364,17 @@ class Absentie {
   @HiveField(0)
   String dag;
   @HiveField(1)
-  String type;
+  DateTime date;
   @HiveField(2)
-  Les les;
+  String type;
   @HiveField(3)
+  Les les;
+  @HiveField(4)
   bool geoorloofd;
   Absentie([Map afw]) {
     if (afw != null) {
       this.dag = formatDatum.format(DateTime.parse(afw["Afspraak"]["Einde"]));
+      this.date = DateTime.parse(afw["Afspraak"]["Einde"]);
       this.type = afw["Omschrijving"];
       this.les = Les(afw["Afspraak"]);
       this.geoorloofd = afw["Geoorloofd"];

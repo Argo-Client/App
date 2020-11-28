@@ -5,6 +5,17 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:auto_animated/auto_animated.dart';
+
+import 'package:Argo/src/utils/hive/adapters.dart';
+
+final options = LiveOptions(
+  // delay: Duration(milliseconds: 1),
+  showItemInterval: Duration(milliseconds: 10),
+  showItemDuration: Duration(milliseconds: 200),
+  visibleFraction: 0.5,
+  reAnimateOnVisibility: false,
+);
 
 BorderSide greyBorderSide() {
   Color color;
@@ -215,6 +226,234 @@ class SeeCard extends Card {
   }
 }
 
+class PopoutFloat extends StatefulWidget {
+  final List<PopoutButton> children;
+  final AnimatedIconData icon;
+  final ColorTween color;
+
+  PopoutFloat({this.children, this.icon, this.color});
+
+  @override
+  _PopoutFloatState createState() => _PopoutFloatState(icon: icon, children: children, color: color);
+}
+
+class _PopoutFloatState extends State<PopoutFloat> with SingleTickerProviderStateMixin {
+  final List<PopoutButton> children;
+  final AnimatedIconData icon;
+  final ColorTween color;
+
+  _PopoutFloatState({this.children, this.icon, this.color});
+
+  bool isOpened = false;
+  AnimationController _animationController;
+  Animation<double> _translateButton;
+  Animation<Color> _buttonColor;
+  Animation<double> _animateIcon;
+  Animation<double> _textOpacity;
+  Curve _curve = Curves.easeOut;
+  double _fabHeight = 56.0;
+
+  @override
+  initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(
+      _animationController,
+    );
+
+    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      _animationController,
+    );
+
+    _buttonColor = color.animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.00,
+        1.00,
+        curve: Curves.linear,
+      ),
+    ));
+
+    _translateButton = Tween<double>(
+      begin: _fabHeight,
+      end: -14.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.0,
+        0.75,
+        curve: _curve,
+      ),
+    ));
+
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  animate() {
+    if (!isOpened) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+    isOpened = !isOpened;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        if (children != null)
+          for (int i = children.length - 1; i >= 0; i--)
+            Transform(
+              transform: Matrix4.translationValues(
+                0.0,
+                _translateButton.value * (i + 1),
+                0.0,
+              ),
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      child: FadeTransition(
+                        opacity: _textOpacity,
+                        child: Text(
+                          children[i].text,
+                        ),
+                      ),
+                      padding: EdgeInsets.only(
+                        right: 15,
+                      ),
+                    ),
+                    FloatingActionButton(
+                      heroTag: "PopoutButton-$i",
+                      onPressed: children[i].onPressed,
+                      child: Icon(
+                        children[i].icon,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: "PopoutFloat",
+              onPressed: animate,
+              backgroundColor: _buttonColor.value,
+              child: AnimatedIcon(
+                icon: icon,
+                progress: _animateIcon,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class PopoutButton {
+  final Function onPressed;
+  final IconData icon;
+  final String text;
+
+  PopoutButton(this.text, {this.onPressed, this.icon});
+}
+
+class CijferTile extends StatelessWidget {
+  final Cijfer cijfer;
+  final bool isRecent;
+
+  CijferTile(this.cijfer, {this.isRecent});
+
+  @override
+  Widget build(BuildContext build) {
+    return ListTile(
+      trailing: cijfer.cijfer.length > 4
+          ? null
+          : Stack(
+              children: [
+                Text(
+                  cijfer.cijfer,
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: cijfer.voldoende ? null : Colors.red,
+                  ),
+                ),
+                Transform.translate(
+                  offset: Offset(10, -15),
+                  child: Text(
+                    "${cijfer.weging}x",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                )
+              ],
+            ),
+      subtitle: cijfer.cijfer.length <= 4
+          ? Text(isRecent == null ? formatDate.format(cijfer.ingevoerd) : cijfer.vak.naam)
+          : Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 8,
+              ),
+              child: Text(
+                cijfer.cijfer,
+              ),
+            ),
+      title: Text(cijfer.title),
+    );
+  }
+}
+
+class FeedItem extends StatelessWidget {
+  final List children;
+  final String header;
+  final Widget title;
+  final Widget subtitle;
+  final Widget trailing;
+  final Function onTap;
+
+  FeedItem({
+    this.children,
+    this.header,
+    this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ContentHeader(header),
+        for (Widget child in children)
+          Card(
+            child: child,
+          )
+      ],
+    );
+  }
+}
+
 class ListTileBorder extends StatelessWidget {
   final Widget title;
   final Widget subtitle;
@@ -246,4 +485,32 @@ class ListTileBorder extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildLiveList(list, loaded) {
+  return LiveList.options(
+      itemCount: list.length,
+      options: options,
+      itemBuilder: (
+        BuildContext context,
+        int index,
+        Animation<double> animation,
+      ) {
+        if (index <= loaded)
+          return list[index];
+        else
+          return FadeTransition(
+            opacity: Tween<double>(
+              begin: 0,
+              end: 1,
+            ).animate(animation),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset(0, -0.1),
+                end: Offset.zero,
+              ).animate(animation),
+              child: list[index],
+            ),
+          );
+      });
 }

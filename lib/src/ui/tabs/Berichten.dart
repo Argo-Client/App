@@ -51,37 +51,56 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                       : Border(
                           bottom: greyBorderSide(),
                         ),
-                  child: ListTile(
-                    trailing: Padding(
-                      child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
-                      padding: EdgeInsets.only(
-                        top: 7,
-                        left: 7,
-                      ),
-                    ),
-                    subtitle: Text(
-                      ber.afzender,
-                    ),
-                    title: Text(
-                      ber.onderwerp,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => BerichtPagina(ber),
+                  child: Stack(
+                    children: [
+                      if (!ber.read ?? false)
+                        Padding(
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: userdata.get("accentColor"),
+                              ),
+                            ),
+                          ),
+                          padding: EdgeInsets.all(
+                            10,
+                          ),
                         ),
-                      );
-                    },
+                      ListTile(
+                        trailing: Padding(
+                          child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        subtitle: Text(
+                          ber.afzender,
+                        ),
+                        title: Text(
+                          ber.onderwerp,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BerichtPagina(ber),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               );
               lastDay = ber.dag;
             }
-            return ListView(
-              children: berichten,
-            );
+            return buildLiveList(berichten, 10);
           },
         ),
         onRefresh: () async {
@@ -264,7 +283,7 @@ class BerichtPagina extends StatelessWidget {
                     ),
                 ],
               ),
-              if (ber.inhoud != null)
+              if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
                 SeeCard(
                   child: Container(
                     padding: EdgeInsets.all(
@@ -427,6 +446,7 @@ class NieuwBerichtPagina extends StatelessWidget {
             ),
           ),
           FloatingActionButton(
+            heroTag: "VerzendBericht",
             onPressed: () {
               /// [SAM] fix dit
             },

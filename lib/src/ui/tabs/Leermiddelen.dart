@@ -31,9 +31,11 @@ class _Leermiddelen extends State<Leermiddelen> {
                         message: leermiddel.title,
                         child: ListTileBorder(
                           onTap: () => account.magister.leermiddelen.launch(leermiddel),
-                          border: Border(
-                            bottom: greyBorderSide(),
-                          ),
+                          border: account.leermiddelen.last == leermiddel
+                              ? null
+                              : Border(
+                                  bottom: greyBorderSide(),
+                                ),
                           title: Text(
                             leermiddel.title,
                             overflow: TextOverflow.ellipsis,
@@ -44,6 +46,7 @@ class _Leermiddelen extends State<Leermiddelen> {
                           trailing: Text(
                             leermiddel?.vak?.code ?? "",
                             style: TextStyle(
+                              color: Colors.grey[400],
                               fontSize: 16,
                             ),
                           ),

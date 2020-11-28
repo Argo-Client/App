@@ -408,13 +408,15 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..prioriteit = fields[2] as bool
       ..bijlagen = fields[3] as bool
       ..onderwerp = fields[4] as String
-      ..afzender = fields[5] as String;
+      ..afzender = fields[5] as String
+      ..date = fields[6] as DateTime
+      ..read = fields[7] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Bericht obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.dag)
       ..writeByte(1)
@@ -426,7 +428,11 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..writeByte(4)
       ..write(obj.onderwerp)
       ..writeByte(5)
-      ..write(obj.afzender);
+      ..write(obj.afzender)
+      ..writeByte(6)
+      ..write(obj.date)
+      ..writeByte(7)
+      ..write(obj.read);
   }
 
   @override
@@ -452,22 +458,25 @@ class AbsentieAdapter extends TypeAdapter<Absentie> {
     };
     return Absentie()
       ..dag = fields[0] as String
-      ..type = fields[1] as String
-      ..les = fields[2] as Les
-      ..geoorloofd = fields[3] as bool;
+      ..date = fields[1] as DateTime
+      ..type = fields[2] as String
+      ..les = fields[3] as Les
+      ..geoorloofd = fields[4] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Absentie obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.dag)
       ..writeByte(1)
-      ..write(obj.type)
+      ..write(obj.date)
       ..writeByte(2)
-      ..write(obj.les)
+      ..write(obj.type)
       ..writeByte(3)
+      ..write(obj.les)
+      ..writeByte(4)
       ..write(obj.geoorloofd);
   }
 

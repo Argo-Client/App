@@ -22,6 +22,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:filesize/filesize.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:Argo/src/utils/notifications.dart';
 // import 'package:get_version/get_version.dart';
 

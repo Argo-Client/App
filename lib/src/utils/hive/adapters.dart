@@ -171,7 +171,7 @@ class Les {
 
     DateFormat formatHour = DateFormat("HH:mm");
     DateFormat formatDatum = DateFormat("EEEE dd MMMM");
-    int minFromMidnight = start.difference(DateTime(end.year, end.month, end.day)).inMinutes;
+    int minFromMidnight = start.difference(DateTime(start.year, start.month, start.day)).inMinutes;
     var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
     this.start = minFromMidnight ?? "";
     this.duration = end.difference(start).inMinutes ?? "";
@@ -181,7 +181,7 @@ class Les {
     this.description = les["Inhoud"] ?? "";
     this.title = les["Omschrijving"] ?? "";
     this.location = les["Lokatie"];
-    this.date = formatDatum.format(end);
+    this.date = formatDatum.format(start);
     this.vak = les["Vakken"].isEmpty ? Vak({"Omschrijving": les["Omschrijving"]}) : Vak(les["Vakken"][0]);
     this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Docent(doc)).toList().cast<Docent>() : null;
     this.huiswerk = les["Inhoud"];

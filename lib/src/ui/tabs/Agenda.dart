@@ -14,41 +14,58 @@ Future huiswerkAf(hw) async {
   update();
 }
 
-class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerProviderStateMixin {
-  DateTime now, lastMonday;
-  DateFormat numFormatter, dayFormatter;
-  List dayAbbr;
-  double timeFactor;
-  String weekslug;
-  int pixelsPerHour;
-  TabController _tabController;
-  ValueNotifier currentDay = ValueNotifier(DateTime.now().weekday - 1);
+class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
+  void afterFirstLayout(BuildContext context) {
+    handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
+  }
+
+  InfinityPageController infinityPageController;
+  InfinityPageController appBarPageController;
+  DateTime startDay = DateTime.now();
+  DateTime startMonday;
+  final int infinityPageCount = 1000;
+  ValueNotifier<DateTime> currentDay;
+  int initialPage;
+  void initVariables() {
+    initialPage = (infinityPageCount / 2).floor();
+    currentDay = ValueNotifier(startDay);
+    infinityPageController = InfinityPageController(
+      initialPage: initialPage,
+    );
+    appBarPageController = InfinityPageController(
+      initialPage: initialPage,
+    );
+    startMonday = currentDay.value.subtract(
+      Duration(
+        days: currentDay.value.weekday - 1,
+      ),
+    );
+
+    currentDay.addListener(() {
+      int days = currentDay.value.difference(startMonday).inDays;
+      jumpOrAnimate(appBarPageController, (days / 7).floor() + initialPage, fast: true);
+    });
+  }
 
   @override
   void initState() {
+    initVariables();
     super.initState();
-    _tabController = TabController(
-      vsync: this,
-      length: 7,
-      initialIndex: currentDay.value,
-    )..addListener(
-        () {
-          currentDay.value = _tabController.index;
-        },
-      );
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    appBarPageController.dispose();
+    infinityPageController.dispose();
     super.dispose();
   }
 
-  int getStartHour(dag) {
+  int relative(int index) => index - initialPage;
+  int getStartHour(List<Les> dag) {
     int startHour = userdata.get("agendaStartHour");
-    if (account.lessons[weekslug] == null) return startHour;
+    if (dag == null) return startHour;
 
-    List<Les> normalLessons = (account.lessons[weekslug][dag].where((les) => !les.heleDag)).toList();
+    List<Les> normalLessons = (dag.where((les) => !les.heleDag)).toList();
     if (normalLessons.isEmpty) return startHour;
     int firstLessonHour = (normalLessons.first.start / 60).floor();
     if (firstLessonHour < startHour) {
@@ -57,10 +74,10 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     return userdata.get("agendaAutoBegin") ? firstLessonHour : startHour;
   }
 
-  int getEndHour(dag) {
+  int getEndHour(List<Les> dag) {
     int startHour = userdata.get("agendaEndHour");
-    if (account.lessons[weekslug] == null) return startHour;
-    List<Les> normalLessons = (account.lessons[weekslug][dag].where((les) => !les.heleDag)).toList();
+    if (dag == null) return startHour;
+    List<Les> normalLessons = (dag.where((les) => !les.heleDag)).toList();
     if (normalLessons.isEmpty) return startHour;
     int endLessonHour = (normalLessons.last.start / 60).ceil();
     if (endLessonHour > startHour) {
@@ -69,422 +86,480 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, SingleTickerP
     return userdata.get("agendaAutoEind") ? endLessonHour : startHour;
   }
 
-  void afterFirstLayout(BuildContext context) {
-    handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
-  }
-
-  _Agenda() {
-    now = DateTime.now();
-    lastMonday = now.subtract(
-      Duration(
-        days: now.weekday - 1,
-      ),
-    );
-    numFormatter = DateFormat('dd');
-    dayFormatter = DateFormat('E');
-    weekslug = formatDate.format(lastMonday);
-    dayAbbr = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
-    timeFactor = userdata.get("pixelsPerHour") / 60;
-  }
-
-  Future openDatePicker() async {
-    DateTime pickDate = await showDatePicker(
-      context: context,
-      initialDate: lastMonday.add(
-        Duration(
-          days: currentDay.value,
-        ),
-      ),
-      firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-      lastDate: DateTime(DateTime.now().year + 100),
-    );
-
-    if (pickDate == null) return;
-    weekslug = formatDate.format(pickDate.subtract(Duration(days: pickDate.weekday - 1)));
-    lastMonday = DateTime.parse(weekslug);
-
-    if (!account.lessons.containsKey(weekslug)) {
-      handleError(() async => account.magister.agenda.getLessen(lastMonday), "Kon gekozen week niet laden", context, account.save);
-      account.save();
+  double pixelsFromTop(int minutes, startHour) => ((minutes - startHour * 60) * userdata.get("pixelsPerHour") / 60).toDouble();
+  void jumpOrAnimate(InfinityPageController controller, int page, {bool fast}) {
+    if ((controller.page - page).abs() > 7) {
+      return controller.jumpToPage(page);
     }
-
-    setState(() {
-      currentDay.value = pickDate.weekday - 1;
-      _tabController.index = pickDate.weekday - 1;
-    });
+    try {
+      controller.animateToPage(
+        page,
+        duration: Duration(
+          milliseconds: fast == null ? 600 : 300,
+        ),
+        curve: Curves.ease,
+      );
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _agendaKey,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.menu),
-          onPressed: () => _layoutKey.currentState.openDrawer(),
-        ),
-        title: GestureDetector(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Agenda"),
-              ValueListenableBuilder(
-                valueListenable: currentDay,
-                builder: (context, _, _a) => Text(
-                  formatDatum.format(
-                    lastMonday.add(
-                      Duration(
-                        days: currentDay.value,
-                      ),
-                    ),
-                  ),
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey[300],
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          onTap: openDatePicker,
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          // Dag kiezer bovenaan
-          tabs: <Widget>[
-            for (int dag = 0; dag < 7; dag++)
-              Tab(
-                icon: Text(
-                  dayAbbr[dag],
-                  overflow: TextOverflow.visible,
-                  softWrap: false,
-                ),
-                text: numFormatter.format(
-                  lastMonday.add(
-                    Duration(
-                      days: dag,
-                    ),
-                  ),
-                ),
-              )
-          ],
+          onPressed: () {
+            _layoutKey.currentState.openDrawer();
+          },
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.calendar_today_outlined),
-            onPressed: openDatePicker,
-            tooltip: "Open datum kiezer",
-          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => AddLesPagina(
-                    lastMonday.add(
-                      Duration(
-                        days: currentDay.value,
-                      ),
-                    ),
+                    currentDay.value,
                   ),
                 ),
               );
             },
-            tooltip: "Voeg een afspraak toe",
           ),
         ],
-      ),
-      body: Container(
-        child: ValueListenableBuilder(
-          valueListenable: updateNotifier,
-          builder: (BuildContext context, _, Widget child) {
-            List<List> widgetRooster = [];
-            int dagInt = 0;
-            for (List dag in account.lessons[weekslug] ?? []) {
-              List<Widget> widgetDag = [];
-
-              int startHour = getStartHour(dagInt++);
-              for (Les les in dag) {
-                double mTop = ((les.start - startHour * 60) * timeFactor).toDouble();
-                if (mTop < 0 || les.heleDag) {
-                  continue;
-                }
-                widgetDag.add(
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: mTop,
-                    ),
-                    width: MediaQuery.of(context).size.width - 30,
-                    height: les.duration * timeFactor + 1,
-                    child: SeeCard(
-                      border: userdata.get("theme") == "OLED" || les.uitval
-                          ? null
-                          : Border.symmetric(
-                              horizontal: greyBorderSide(),
-                            ),
-                      color: les.uitval
-                          ? theme == Brightness.dark
-                              ? Color.fromARGB(255, 119, 66, 62)
-                              : Color.fromARGB(255, 255, 205, 210)
-                          : null,
-                      // shape: BorderRadius.all(),
-                      margin: EdgeInsets.only(
-                        top: .75,
-                      ),
-                      child: InkWell(
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: 5,
-                                  left: 5,
-                                ),
-                                child: Text(
-                                  les.hour,
-                                  style: TextStyle(
-                                    color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: 5,
-                                  right: 7.5,
-                                ),
-                                child: les.infoType != ""
-                                    ? Material(
-                                        child: Padding(
-                                          child: Text(
-                                            les.infoType,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                          padding: EdgeInsets.all(4.5),
-                                        ),
-                                        shape: ContinuousRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30.0),
-                                        ),
-                                        color: userdata.get("accentColor"),
-                                      )
-                                    : les.huiswerk != null
-                                        ? !les.huiswerkAf
-                                            ? Icon(
-                                                Icons.assignment_outlined,
-                                                size: 23,
-                                                color: Colors.grey,
-                                              )
-                                            : Icon(
-                                                Icons.assignment_turned_in_outlined,
-                                                size: 23,
-                                                color: Colors.green,
-                                              )
-                                        : null,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: 20,
-                                left: 20,
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        les.title,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          les.information,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: TextStyle(
-                                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => LesPagina(les),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
+        title: GestureDetector(
+          onTap: () {
+            showDatePicker(
+              context: context,
+              initialDate: currentDay.value,
+              firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+              lastDate: DateTime(DateTime.now().year + 100),
+            ).then((value) {
+              if (value != null) {
+                startDay = value;
+                initVariables();
+                setState(() {});
               }
-              if (dag.isEmpty) {
-                widgetDag.add(Container());
-              }
-              widgetRooster.add(widgetDag);
-            }
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                for (int dag = 0; dag < 7; dag++) // 1 Tabje van de week
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await handleError(
-                        () async => account.magister.agenda.getLessen(lastMonday),
-                        "Kon agenda niet verversen",
-                        context,
-                      );
-                    },
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Column(
-                        children: [
-                          if (account.lessons[weekslug] != null)
-                            if (account.lessons[weekslug][dag].where((les) => les.heleDag).isNotEmpty)
-                              Row(
-                                children: [
-                                  for (Les heleDagLes in account.lessons[weekslug][dag].where((les) => les.heleDag))
-                                    Expanded(
-                                      child: Tooltip(
-                                        message: heleDagLes.title,
-                                        child: SeeCard(
+            });
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Agenda"),
+              ValueListenableBuilder(
+                  valueListenable: currentDay,
+                  builder: (context, _, _a) {
+                    String text = formatDatum.format(
+                      currentDay.value,
+                    );
+                    if (text == formatDatum.format(DateTime.now())) {
+                      text = "Vandaag";
+                    }
+                    return Text(
+                      text,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey[300],
+                        fontWeight: FontWeight.w400,
+                      ),
+                    );
+                  }),
+            ],
+          ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: AppBar().preferredSize,
+          child: Container(
+            height: AppBar().preferredSize.height,
+            child: InfinityPageView(
+              itemCount: infinityPageCount,
+              controller: appBarPageController,
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                  children: [
+                    for (int dag = 0; dag < 7; dag++)
+                      () {
+                        DateTime tabDag = startMonday.add(
+                          Duration(days: relative(index) * 7 + dag),
+                        );
+                        DateFormat numFormatter = DateFormat('dd');
+                        return Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
+                              jumpOrAnimate(infinityPageController, page);
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
+                                  overflow: TextOverflow.visible,
+                                  softWrap: false,
+                                ),
+                                Text(numFormatter.format(tabDag)),
+                                ValueListenableBuilder(
+                                  valueListenable: currentDay,
+                                  builder: (c, _, _a) {
+                                    if (currentDay.value == tabDag) {
+                                      return Container(
+                                        padding: EdgeInsets.only(top: 5),
+                                        decoration: BoxDecoration(
                                           border: Border(
-                                            top: userdata.get("theme") != "OLED"
-                                                ? BorderSide(
-                                                    width: 0,
-                                                  )
-                                                : greyBorderSide(),
-                                            right: heleDagLes == account.lessons[weekslug][dag].where((les) => les.heleDag).last
-                                                ? BorderSide(
-                                                    width: 0,
-                                                  )
-                                                : greyBorderSide(),
-                                          ),
-                                          child: InkWell(
-                                            child: Padding(
-                                              // width: MediaQuery.of(context).size.width,
-                                              padding: EdgeInsets.all(
-                                                15,
-                                              ),
-                                              child: Text(
-                                                heleDagLes.title,
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
-                                              ),
+                                            bottom: BorderSide(
+                                              color: userdata.get("accentColor"),
+                                              width: 3,
                                             ),
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) => LesPagina(heleDagLes),
-                                                ),
-                                              );
-                                            },
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                          Stack(
+                                      );
+                                    }
+                                    return Container();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }()
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+      body: InfinityPageView(
+        itemCount: infinityPageCount,
+        onPageChanged: (int index) {
+          currentDay.value = startDay.add(
+            Duration(
+              days: relative(index),
+            ),
+          );
+        },
+        controller: infinityPageController,
+        itemBuilder: (BuildContext context, int index) {
+          DateTime buildDay = startDay.add(
+            Duration(
+              days: relative(index),
+            ),
+          );
+          DateTime buildWeekMonday = buildDay.subtract(
+            Duration(
+              days: buildDay.weekday - 1,
+            ),
+          );
+          String buildWeekslug = formatDate.format(buildWeekMonday);
+          return RefreshIndicator(
+            onRefresh: () async => await handleError(
+              () async => account.magister.agenda.getLessen(buildWeekMonday),
+              "Kon agenda niet verversen",
+              context,
+            ),
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: ValueListenableBuilder(
+                // Hele Dag lessen
+                valueListenable: updateNotifier,
+                builder: (context, _, _a) {
+                  bool gotLessons = false;
+                  List<Les> dag;
+                  if (account.lessons[buildWeekslug] != null) {
+                    dag = account.lessons[buildWeekslug][buildDay.weekday - 1];
+                    gotLessons = true;
+                  } else {
+                    handleError(
+                      () async => account.magister.agenda.getLessen(buildWeekMonday),
+                      "Kon deze week niet ophalen:",
+                      context,
+                      () {
+                        gotLessons = true;
+                      },
+                    );
+                  }
+                  int startHour = getStartHour(dag);
+                  int endHour = getEndHour(dag);
+                  return Column(
+                    children: [
+                      /// [ Hele Dag lessen ]
+                      if (gotLessons)
+                        (() {
+                          List<Les> heleDagLessen = dag.where((les) => les.heleDag).toList();
+                          if (heleDagLessen.isEmpty) {
+                            return Container();
+                          }
+                          return Row(
                             children: [
-                              if (dag + 1 == now.weekday) // Balkje van de tijd nu
-                                TimerBuilder.periodic(Duration(seconds: 10), builder: (c) {
-                                  return Positioned(
-                                    top: (((now.hour - getStartHour(dag)) * 60 + now.minute) * timeFactor).toDouble(),
-                                    child: Container(
-                                      height: 0,
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: userdata.get('accentColor'),
+                              for (Les les in heleDagLessen)
+                                Expanded(
+                                  child: Tooltip(
+                                    message: les.title,
+                                    child: SeeCard(
+                                      border: Border(
+                                        top: userdata.get("theme") != "OLED"
+                                            ? BorderSide(
+                                                width: 0,
+                                              )
+                                            : greyBorderSide(),
+                                        right: les == dag.where((les) => les.heleDag).last
+                                            ? BorderSide(
+                                                width: 0,
+                                              )
+                                            : greyBorderSide(),
+                                      ),
+                                      child: InkWell(
+                                        child: Padding(
+                                          // width: MediaQuery.of(context).size.width,
+                                          padding: EdgeInsets.all(
+                                            15,
+                                          ),
+                                          child: Text(
+                                            les.title,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) => LesPagina(les),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
-                                  );
-                                }),
-                              for (int uur = getStartHour(dag); uur <= getEndHour(dag); uur++) // Lijnen op de achtergrond om uren aan te geven
-                                Positioned(
-                                  top: ((uur - getStartHour(dag)) * userdata.get("pixelsPerHour")).toDouble(),
+                                  ),
+                                ),
+                            ],
+                          );
+                        })(),
+                      Stack(
+                        children: [
+                          /// [ Balkje van de tijd nu ]
+                          if (formatDate.format(buildDay) == formatDate.format(DateTime.now()))
+                            TimerBuilder.periodic(
+                              Duration(seconds: 10),
+                              builder: (c) {
+                                DateTime now = DateTime.now();
+                                return Positioned(
+                                  top: ((now.hour - startHour) * 60 + now.minute) * (userdata.get("pixelsPerHour") / 60).toDouble(),
                                   child: Container(
+                                    height: 0,
                                     width: MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
                                       border: Border(
-                                        bottom: greyBorderSide(),
+                                        bottom: BorderSide(
+                                          color: userdata.get('accentColor'),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    // Balkje aan de zijkant van de uren
-                                    children: [
-                                      for (int uur = getStartHour(dag); uur <= getEndHour(dag); uur++)
-                                        Container(
-                                          // Een uur van het balkje
-                                          height: userdata.get("pixelsPerHour").toDouble(),
-                                          width: 30,
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              top: greyBorderSide(),
-                                              right: greyBorderSide(),
-                                              left: greyBorderSide(),
-                                            ),
-                                          ),
+                                );
+                              },
+                            ),
 
-                                          child: Center(
-                                            child: Text(
+                          /// [ Lijnen op de achtergrond om uren aan te geven ]
+                          for (int uur = startHour; uur <= endHour; uur++)
+                            Positioned(
+                              top: ((uur - startHour) * userdata.get("pixelsPerHour")).toDouble(),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: greyBorderSide(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// [ Balkje aan de zijkant van de uren ]
+                              Column(
+                                children: [
+                                  for (int uur = startHour; uur <= endHour; uur++)
+                                    Container(
+                                      // Een uur van het balkje
+                                      height: userdata.get("pixelsPerHour").toDouble(),
+                                      width: 30,
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          top: greyBorderSide(),
+                                          right: greyBorderSide(),
+                                          left: greyBorderSide(),
+                                        ),
+                                      ),
+
+                                      child: Center(
+                                        child: TimerBuilder.periodic(
+                                          Duration(seconds: 10),
+                                          builder: (c) {
+                                            Color color = Color.fromARGB(255, 100, 100, 100);
+                                            if (formatDate.format(buildDay) == formatDate.format(DateTime.now())) {
+                                              if (uur == DateTime.now().hour) {
+                                                color = Colors.white;
+                                              }
+                                            }
+                                            return Text(
                                               uur.toString(),
                                               style: TextStyle(
                                                 fontSize: 15,
-                                                color: uur == now.hour && dag + 1 == now.weekday ? Colors.white : Color.fromARGB(255, 100, 100, 100),
+                                                color: color,
                                               ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              // Container van alle lessen
+                              if (gotLessons)
+                                Stack(
+                                  children: () {
+                                    List<Les> lessen = dag.where((les) => pixelsFromTop(les.start, startHour) > 0).toList();
+                                    if (lessen.isEmpty) {
+                                      return <Widget>[Container()];
+                                    }
+                                    return <Widget>[
+                                      for (Les les in lessen)
+                                        Container(
+                                          margin: EdgeInsets.only(
+                                            top: pixelsFromTop(les.start, startHour),
+                                          ),
+                                          width: MediaQuery.of(context).size.width - 30,
+                                          height: les.duration * userdata.get("pixelsPerHour") / 60,
+                                          child: SeeCard(
+                                            border: userdata.get("theme") == "OLED" || les.uitval
+                                                ? null
+                                                : Border.symmetric(
+                                                    horizontal: greyBorderSide(),
+                                                  ),
+                                            color: les.uitval
+                                                ? theme == Brightness.dark
+                                                    ? Color.fromARGB(255, 119, 66, 62)
+                                                    : Color.fromARGB(255, 255, 205, 210)
+                                                : null,
+                                            // shape: BorderRadius.all(),
+                                            margin: EdgeInsets.only(
+                                              top: .75,
+                                            ),
+                                            child: InkWell(
+                                              child: Stack(
+                                                children: [
+                                                  Align(
+                                                    alignment: Alignment.topLeft,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                        top: 5,
+                                                        left: 5,
+                                                      ),
+                                                      child: Text(
+                                                        les.hour,
+                                                        style: TextStyle(
+                                                          color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Align(
+                                                    alignment: Alignment.topRight,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.only(
+                                                        top: 5,
+                                                        right: 7.5,
+                                                      ),
+                                                      child: les.infoType != ""
+                                                          ? Material(
+                                                              child: Padding(
+                                                                child: Text(
+                                                                  les.infoType,
+                                                                  style: TextStyle(
+                                                                    fontSize: 12,
+                                                                  ),
+                                                                ),
+                                                                padding: EdgeInsets.all(4.5),
+                                                              ),
+                                                              shape: ContinuousRectangleBorder(
+                                                                borderRadius: BorderRadius.circular(30.0),
+                                                              ),
+                                                              color: userdata.get("accentColor"),
+                                                            )
+                                                          : les.huiswerk != null
+                                                              ? !les.huiswerkAf
+                                                                  ? Icon(
+                                                                      Icons.assignment_outlined,
+                                                                      size: 23,
+                                                                      color: Colors.grey,
+                                                                    )
+                                                                  : Icon(
+                                                                      Icons.assignment_turned_in_outlined,
+                                                                      size: 23,
+                                                                      color: Colors.green,
+                                                                    )
+                                                              : null,
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                      top: 20,
+                                                      left: 20,
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              les.title,
+                                                              overflow: TextOverflow.ellipsis,
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Flexible(
+                                                              child: Text(
+                                                                les.information,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                maxLines: 1,
+                                                                style: TextStyle(
+                                                                  color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) => LesPagina(les),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           ),
                                         ),
-                                    ],
-                                  ),
-                                  // Container van alle lessen
-
-                                  widgetRooster.isEmpty || widgetRooster[dag].isEmpty
-                                      ? Container()
-                                      : Stack(
-                                          children: widgetRooster[dag],
-                                        ),
-                                ],
-                              ),
+                                    ];
+                                  }(),
+                                )
                             ],
                           )
                         ],
                       ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -641,7 +716,7 @@ class _LesPagina extends State<LesPagina> {
                               // print(custom.toMap().toString());
                             }),
                   ),
-                if (les.location.isNotEmpty)
+                if (les.location != null && les.location.isNotEmpty)
                   ListTileBorder(
                     subtitle: Text("Locatie"),
                     border: Border(

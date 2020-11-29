@@ -57,6 +57,7 @@ extension StringExtension on String {
   String get capitalize => "${this[0].toUpperCase()}${this.substring(1)}";
 }
 
+double bodyHeight(context) => MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top - kToolbarHeight;
 Account account;
 _AppState appState;
 Box userdata, accounts, custom;
@@ -140,10 +141,11 @@ void main() async {
   });
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
-  int accountIndex = userdata.get("accountIndex");
-  Account firstAccount = accounts.get(accounts.toMap().entries.first.key);
-  account = accounts.get(accountIndex) ?? firstAccount;
-  if (userdata.get("alwaysPrimary")) account = firstAccount;
+  int firstAccIndex = accounts.toMap().entries.first.key;
+  if (userdata.get("alwaysPrimary")) {
+    userdata.put("accountIndex", firstAccIndex);
+  }
+  account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
   appState = _AppState();
   runApp(App());
   notifications.showNotification(account.lessons);

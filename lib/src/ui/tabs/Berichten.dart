@@ -148,7 +148,7 @@ class BerichtPagina extends StatelessWidget {
             child: Center(
               child: Container(
                 width: MediaQuery.of(context).size.width - 50,
-                height: MediaQuery.of(context).size.height - 80,
+                height: bodyHeight(context),
                 child: Text(
                   "Kon geen verbinding maken met Magister:\n${(error as dynamic).error.toString()}",
                   style: TextStyle(

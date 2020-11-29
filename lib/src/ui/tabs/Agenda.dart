@@ -146,23 +146,24 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
             children: [
               Text("Agenda"),
               ValueListenableBuilder(
-                  valueListenable: currentDay,
-                  builder: (context, _, _a) {
-                    String text = formatDatum.format(
-                      currentDay.value,
-                    );
-                    if (text == formatDatum.format(DateTime.now())) {
-                      text = "Vandaag";
-                    }
-                    return Text(
-                      text,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey[300],
-                        fontWeight: FontWeight.w400,
-                      ),
-                    );
-                  }),
+                valueListenable: currentDay,
+                builder: (context, _, _a) {
+                  String text = formatDatum.format(
+                    currentDay.value,
+                  );
+                  if (text == formatDatum.format(DateTime.now())) {
+                    text = "Vandaag";
+                  }
+                  return Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey[300],
+                      fontWeight: FontWeight.w400,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -266,15 +267,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                   if (account.lessons[buildWeekslug] != null) {
                     dag = account.lessons[buildWeekslug][buildDay.weekday - 1];
                     gotLessons = true;
-                  } else {
-                    handleError(
-                      () async => account.magister.agenda.getLessen(buildWeekMonday),
-                      "Kon deze week niet ophalen:",
-                      context,
-                      () {
-                        gotLessons = true;
-                      },
-                    );
                   }
                   int startHour = getStartHour(dag);
                   int endHour = getEndHour(dag);
@@ -412,8 +404,27 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                     ),
                                 ],
                               ),
-                              // Container van alle lessen
-                              if (gotLessons)
+                              if (!gotLessons)
+                                Futuristic(
+                                  autoStart: true,
+                                  futureBuilder: () async => account.magister.agenda.getLessen(buildWeekMonday),
+                                  busyBuilder: (c) => Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorBuilder: (c, dynamic error, retry) {
+                                    return Stack(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.center,
+                                          child: Text("${error.error}"),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  onData: (_) => update(),
+                                )
+                              else
+                                // Container van alle lessen
                                 Stack(
                                   children: () {
                                     List<Les> lessen = dag.where((les) => pixelsFromTop(les.start, startHour) > 0).toList();

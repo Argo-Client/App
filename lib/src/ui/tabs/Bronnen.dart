@@ -80,14 +80,14 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                   children: [
                     if (bronnenView.last == null)
                       Container(
-                        height: MediaQuery.of(context).size.height - 80, // Hier ga ik hard van huilen, houden zo.)
+                        height: bodyHeight(context),
                         child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       )
                     else if (bronnenView.last.isEmpty)
                       Container(
-                        height: MediaQuery.of(context).size.height - 80, // Hier ga ik hard van huilen, houden zo.)
+                        height: bodyHeight(context),
                         child: Center(
                           child: Text("Deze map is leeg"),
                         ),

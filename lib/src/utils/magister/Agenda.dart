@@ -12,7 +12,7 @@ class Agenda extends MagisterApi {
     return await api.wait([getLessen()]);
   }
 
-  Future getLessen([DateTime lastM]) async {
+  Future<List<List<Les>>> getLessen([DateTime lastM]) async {
     DateTime now = DateTime.now();
     DateTime lastMonday = lastM ??
         now.subtract(
@@ -34,7 +34,7 @@ class Agenda extends MagisterApi {
       account.lessons[weekslug][end.weekday - 1].add(Les(les));
     });
     account.save();
-    return;
+    return account.lessons[weekslug];
   }
 
   Future addAfspraak(Map les) async {

@@ -138,13 +138,13 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),
         ),
-        errorBuilder: (BuildContext context, error, retry) {
+        errorBuilder: (BuildContext context, dynamic error, retry) {
           return RefreshIndicator(
             onRefresh: () async => retry(),
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               child: Container(
-                height: MediaQuery.of(context).size.height - 80, // Hier ga ik hard van huilen, houden zo.
+                height: bodyHeight(context),
                 child: Column(
                   children: [
                     Center(
@@ -163,7 +163,7 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                           Container(
                             width: MediaQuery.of(context).size.width / 2,
                             child: Text(
-                              "Fout tijdens het laden van studiewijzer: \n\n" + (error as dynamic).error,
+                              "Fout tijdens het laden van studiewijzer: \n\n" + error.error,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 17.5,

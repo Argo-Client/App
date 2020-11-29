@@ -135,6 +135,7 @@ void main() async {
     "doubleBackAgenda": true,
     "colorsInDrawer": true,
     "alwaysPrimary": true,
+    "preNotificationMinutes": 20,
   };
   standardSettings.entries.forEach((element) {
     if (!userdata.containsKey(element.key)) userdata.put(element.key, element.value);
@@ -148,7 +149,7 @@ void main() async {
   account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
   appState = _AppState();
   runApp(App());
-  notifications.showNotification(account.lessons);
+  notifications.lessonNotifications(account.lessons);
 }
 
 class App extends StatefulWidget {

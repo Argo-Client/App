@@ -3,6 +3,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/main.dart';
 
 // Notificatie zooi:
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -23,7 +24,8 @@ class Notifications {
     });
   }
 
-  void showNotification(Map<String, List<List<Les>>> lessons) {
+  void lessonNotifications(Map<String, List<List<Les>>> lessons) async {
+    await flutterLocalNotificationsPlugin.cancel(0);
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     DateTime now = DateTime.now();
     DateTime lastMonday = now.subtract(
@@ -33,16 +35,18 @@ class Notifications {
     );
     String weekslug = formatDate.format(lastMonday);
     if (lessons[weekslug] != null)
-      for (List dag in lessons[weekslug]) {
-        for (int i = 0; i < dag.length; i++) {
+      for (int d = lessons[weekslug].length - 1; d >= 0; d--) {
+        // in reverse zodat de dichtsbijzijnde als laatst is en dus de anderen overwrite (indien nodig)
+        List<Les> dag = lessons[weekslug][d];
+        for (int i = dag.length - 1; i >= 0; i--) {
           Les les = dag[i];
-          if (les.startDateTime.isBefore(DateTime.now())) continue;
+          if (les.startDateTime.subtract(Duration(minutes: userdata.get("preNotificationMinutes"))).isBefore(DateTime.now())) continue;
           if (les.uitval) continue;
           flutterLocalNotificationsPlugin.zonedSchedule(
-            les.id,
+            0,
             lesString(les),
             dag.length > i + 1 ? lesString(dag[i + 1]) : null,
-            tz.TZDateTime.from(les.startDateTime, tz.local),
+            tz.TZDateTime.from(les.startDateTime.subtract(Duration(minutes: userdata.get("preNotificationMinutes"))), tz.local),
             NotificationDetails(
               android: AndroidNotificationDetails(
                 '0',

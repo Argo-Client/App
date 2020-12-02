@@ -40,9 +40,11 @@ class _Leermiddelen extends State<Leermiddelen> {
                             leermiddel.title,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          subtitle: Text(
-                            leermiddel?.uitgeverij,
-                          ),
+                          subtitle: leermiddel?.uitgeverij == null
+                              ? null
+                              : Text(
+                                  leermiddel?.uitgeverij,
+                                ),
                           trailing: Text(
                             leermiddel?.vak?.code ?? "",
                             style: TextStyle(

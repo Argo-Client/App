@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -24,7 +27,11 @@ class _LoginView extends State<LoginView> {
   String redirectUrl;
   WebViewController controller;
   String title;
+
+  Account account;
+  Box<Account> accounts = Hive.box("accounts");
   _LoginView(this.magisterLogin, this.title);
+
   Widget build(BuildContext context) {
     CookieManager().clearCookies();
     return Scaffold(
@@ -41,7 +48,7 @@ class _LoginView extends State<LoginView> {
                 StreamSubscription _sub;
                 _sub = getLinksStream().listen((String link) async {
                   _sub.cancel();
-                  await magisterLogin.getTokenSet(link, context);
+                  setState(() => redirectUrl = link);
                 });
               }
             },
@@ -77,23 +84,208 @@ class _LoginView extends State<LoginView> {
                 this.controller = controller;
               },
             )
-          : Center(
+          : Container(
+              height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top - kToolbarHeight,
               child: Futuristic(
                 autoStart: true,
                 futureBuilder: () async => magisterLogin.getTokenSet(redirectUrl, context),
-                onData: (value) => Navigator.pop(context),
-                busyBuilder: (context) {
-                  return Center(
-                    child: Column(
+                busyBuilder: (c) => Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Inlog Verifiëren"),
+                      CircularProgressIndicator(),
+                    ],
+                  ),
+                ),
+                dataBuilder: (c, Map tokenSet) => Futuristic(
+                  autoStart: true,
+                  futureBuilder: () {
+                    account = Account(tokenSet);
+                    account.magister.expiryAndTenant();
+                    if (account.id == 0) return account.magister.profileInfo.profileInfo();
+                    return Future.value(true);
+                  },
+                  busyBuilder: (c) => Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text("Account Id Ophalen"),
                         CircularProgressIndicator(),
-                        Text("Token Exchange"),
                       ],
                     ),
-                  );
-                },
+                  ),
+                  onData: (_) {
+                    if (accounts.values.any((acc) => acc.id == account.id && account != acc)) {
+                      Navigator.pop(context);
+                      MagisterLogin().launch(
+                        context,
+                        magisterLogin.callback,
+                        title: magisterLogin.title,
+                        preFill: magisterLogin.preFill,
+                      );
+                    } else {
+                      accounts.add(account);
+                    }
+                  },
+                  dataBuilder: (context, _) {
+                    if (accounts.values.any((acc) => acc.id == account.id && account != acc)) {
+                      Fluttertoast.showToast(
+                        msg: "$account is al ingelogd!",
+                      );
+                      return Center(
+                        child: Text("$account is al ingelogd!"),
+                      );
+                    }
+                    return RefreshAccountView(account, context, magisterLogin.callback);
+                  },
+                ),
               ),
             ),
+    );
+  }
+}
+
+class MagisterLoader extends StatelessWidget {
+  final String name;
+  final Future Function() future;
+  final ValueNotifier<int> count;
+  final ValueNotifier<List<List>> errors;
+  MagisterLoader({this.name, this.future, this.count, this.errors});
+  @override
+  Widget build(c) => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(name),
+          Futuristic(
+            autoStart: true,
+            futureBuilder: future,
+            busyBuilder: (context) => CircularProgressIndicator(),
+            onData: (_) {
+              count.value++;
+            },
+            onError: (error, retry) {
+              errors.value.add([error, retry]);
+              errors.notifyListeners();
+            },
+            errorBuilder: (context, error, retry) => Icon(
+              Icons.clear,
+              color: Colors.red,
+            ),
+            dataBuilder: (c, d) => Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          )
+        ],
+      );
+}
+
+class RefreshAccountView extends StatelessWidget {
+  final ValueNotifier<int> totalLoaded = ValueNotifier(0);
+
+  final ValueNotifier<List<List>> errors = ValueNotifier([]);
+  static List<Widget> loaders;
+  final Account account;
+  final BuildContext context;
+  final Function callback;
+  RefreshAccountView(this.account, this.context, this.callback) {
+    loaders = [
+      MagisterLoader(
+        name: "Agenda",
+        future: account.magister.agenda.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Afwezigheid",
+        future: account.magister.afwezigheid.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Berichten",
+        future: account.magister.berichten.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Bronnen",
+        future: account.magister.bronnen.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Cijfers",
+        future: account.magister.cijfers.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Leermiddelen",
+        future: account.magister.leermiddelen.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Studiewijzers",
+        future: account.magister.studiewijzers.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Profiel Info",
+        future: account.magister.profileInfo.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
+      MagisterLoader(
+        name: "Profiel Foto",
+        future: account.magister.downloadProfilePicture,
+        count: totalLoaded,
+        errors: errors,
+      ),
+    ];
+    totalLoaded.addListener(() {
+      if (totalLoaded.value == loaders.length) {
+        Navigator.pop(context);
+        callback(account, context);
+      }
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Dit word binnenkort mooier gemaakt door Guus, ik heb alleen even de basis neergezet"),
+        for (MagisterLoader loader in loaders) loader,
+        ValueListenableBuilder(
+          valueListenable: totalLoaded,
+          builder: (c, loaded, _) => LinearProgressIndicator(
+            value: loaded / loaders.length,
+          ),
+        ),
+        ValueListenableBuilder(
+            valueListenable: errors,
+            builder: (context, _, _a) {
+              print(errors.value.length);
+              return errors.value.isEmpty
+                  ? Container()
+                  : Row(
+                      children: [
+                        Text(errors.value.first.first.error),
+                        RaisedButton(
+                            child: Text("Retry"),
+                            onPressed: () {
+                              errors.value.forEach(
+                                (error) => error.last(),
+                              );
+                              errors.value = [];
+                            }),
+                      ],
+                    );
+            }),
+      ],
     );
   }
 }
@@ -154,7 +346,7 @@ class MagisterLogin {
       },
       body: utf8.encode("code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier"),
     );
-    callback(jsonDecode(res.body), context);
+    // callback(jsonDecode(res.body), context);
     return jsonDecode(res.body);
   }
 }

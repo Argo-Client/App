@@ -11,24 +11,15 @@ class _Introduction extends State<Introduction> {
     0xffDADAD9,
     0xffF06449,
   ];
-  void onLoggedIn(tokenSet, context) {
-    account = Account(tokenSet);
-    accounts.put(0, account);
-    account.save();
+  void onLoggedIn(Account acc, BuildContext context, {String error}) {
+    if (acc == null) {
+      return;
+    }
+    print("onlogged in met: $acc");
+    account = acc;
     userdata.put("introduction", true);
-    Navigator.of(context).pop();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
     appState = _AppState();
-    account.magister.refresh().then((_) async {
-      appState.setState(() {});
-      update();
-      FlushbarHelper.createSuccess(message: "$account is succesvol ingelogd")..show(appState.context);
-      await account.magister.downloadProfilePicture();
-      appState.setState(() {});
-    }).catchError((e) {
-      FlushbarHelper.createError(message: "Fout bij ophalen van gegevens:\n$e")..show(appState.context);
-      throw (e);
-    });
   }
 
   void loginPress() => MagisterLogin().launch(context, onLoggedIn);

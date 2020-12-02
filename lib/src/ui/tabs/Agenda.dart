@@ -1,6 +1,5 @@
 part of main;
 
-final GlobalKey<ScaffoldState> _agendaKey = new GlobalKey<ScaffoldState>();
 final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
 class Agenda extends StatefulWidget {

@@ -188,7 +188,7 @@ class Les {
     this.huiswerkAf = les["Afgerond"];
     this.startDateTime = start;
     this.heleDag = les["DuurtHeleDag"];
-    this.uitval = les["Status"] == 5;
+    this.uitval = [4, 5].contains(les["Status"]);
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
     this.editable = les["Type"] == 1;
     this.id = les["Id"];

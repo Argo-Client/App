@@ -118,7 +118,6 @@ void main() async {
   }
   if (accounts.isEmpty) {
     userdata.delete("introduction");
-    accounts.put(0, Account());
   }
   Map standardSettings = {
     "theme": "systeem",
@@ -142,14 +141,18 @@ void main() async {
   });
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
-  int firstAccIndex = accounts.toMap().entries.first.key;
-  if (userdata.get("alwaysPrimary")) {
-    userdata.put("accountIndex", firstAccIndex);
+  if (accounts.isNotEmpty) {
+    // Als je de app voor het eerst opent heb je nog geen account
+    int firstAccIndex = accounts.toMap().entries.first.key;
+    if (userdata.get("alwaysPrimary")) {
+      userdata.put("accountIndex", firstAccIndex);
+    }
+    account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
+    notifications.lessonNotifications(account.lessons);
   }
-  account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
+  // Hive.deleteFromDisk();
   appState = _AppState();
   runApp(App());
-  notifications.lessonNotifications(account.lessons);
 }
 
 class App extends StatefulWidget {

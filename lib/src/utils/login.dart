@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,8 @@ import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
+
+Box<Account> accounts = Hive.box("accounts");
 
 class LoginView extends StatefulWidget {
   final MagisterLogin log;
@@ -29,7 +32,6 @@ class _LoginView extends State<LoginView> {
   String title;
 
   Account account;
-  Box<Account> accounts = Hive.box("accounts");
   _LoginView(this.magisterLogin, this.title);
 
   Widget build(BuildContext context) {
@@ -124,8 +126,6 @@ class _LoginView extends State<LoginView> {
                         title: magisterLogin.title,
                         preFill: magisterLogin.preFill,
                       );
-                    } else {
-                      accounts.add(account);
                     }
                   },
                   dataBuilder: (context, _) {
@@ -166,6 +166,7 @@ class MagisterLoader extends StatelessWidget {
             },
             onError: (error, retry) {
               errors.value.add([error, retry]);
+              // ignore: invalid_use_of_protected_member,invalid_use_of_visible_for_testing_member
               errors.notifyListeners();
             },
             errorBuilder: (context, error, retry) => Icon(
@@ -248,6 +249,7 @@ class RefreshAccountView extends StatelessWidget {
     ];
     totalLoaded.addListener(() {
       if (totalLoaded.value == loaders.length) {
+        accounts.add(account);
         Navigator.pop(context);
         callback(account, context);
       }
@@ -268,20 +270,35 @@ class RefreshAccountView extends StatelessWidget {
         ValueListenableBuilder(
             valueListenable: errors,
             builder: (context, _, _a) {
-              print(errors.value.length);
               return errors.value.isEmpty
                   ? Container()
-                  : Row(
+                  : Column(
                       children: [
-                        Text(errors.value.first.first.error),
+                        SelectableText(
+                          errors.value.first.first.toString(),
+                          maxLines: 10,
+                        ),
+                        if (errors.value.first.first.runtimeType == dio.DioError && errors.value.first.first.response != null)
+                          SelectableText(
+                            errors.value.first.first.response.data.toString(),
+                            maxLines: 10,
+                          ),
                         RaisedButton(
-                            child: Text("Retry"),
-                            onPressed: () {
-                              errors.value.forEach(
-                                (error) => error.last(),
-                              );
-                              errors.value = [];
-                            }),
+                          child: Text("Retry"),
+                          onPressed: () {
+                            errors.value.forEach(
+                              (error) => error.last(),
+                            );
+                            errors.value = [];
+                          },
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            totalLoaded.value = loaders.length;
+                          },
+                          child: Text("Boeie gewoon door"),
+                        ),
+                        Text("Argo is in beta, mocht er hier iets anders staan dan 'Geen Internet' stuur even een screenshot. Dan kunnen we het zo snel mogelijk oplossen"),
                       ],
                     );
             }),

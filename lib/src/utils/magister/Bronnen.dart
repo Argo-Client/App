@@ -14,12 +14,12 @@ class Bronnen extends MagisterApi {
 
   Future bronmappen() async {
     account.bronnen = await loadBron();
-    account.save();
+    if (account.isInBox) account.save();
   }
 
   Future loadChildren(Bron bron) async {
     bron.children = await loadBron(bron.id);
-    account.save();
+    if (account.isInBox) account.save();
   }
 
   Future loadBron([int id]) async {

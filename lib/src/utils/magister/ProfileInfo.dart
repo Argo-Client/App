@@ -27,7 +27,6 @@ class ProfileInfo extends MagisterApi {
     Map body = (await api.dio.get('api/leerlingen/${account.id}/aanmeldingen')).data["items"][0];
     account.klasCode = body["groep"]["code"];
     account.klas = body["studie"]["code"];
-    account.mentor = '${body["persoonlijkeMentor"]["voorletters"]} ${body["persoonlijkeMentor"]["achternaam"]}';
     account.profiel = body["profielen"][0]["code"];
   }
 

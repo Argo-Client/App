@@ -179,6 +179,7 @@ class ContentHeader extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SeeCard extends Card {
   final Widget child;
   final EdgeInsets margin;

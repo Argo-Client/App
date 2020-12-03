@@ -24,7 +24,6 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..initials = fields[4] as String
       ..klas = fields[5] as String
       ..klasCode = fields[6] as String
-      ..mentor = fields[7] as String
       ..name = fields[8] as String
       ..officialFullName = fields[9] as String
       ..phone = fields[10] as String
@@ -51,7 +50,7 @@ class AccountAdapter extends TypeAdapter<Account> {
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(27)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -66,8 +65,6 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..write(obj.klas)
       ..writeByte(6)
       ..write(obj.klasCode)
-      ..writeByte(7)
-      ..write(obj.mentor)
       ..writeByte(8)
       ..write(obj.name)
       ..writeByte(9)

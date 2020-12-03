@@ -81,30 +81,6 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ContentHeader("School info"),
                     ListTile(
                       title: Text(
-                        "Mentor(en)",
-                      ),
-                      subtitle: Text(
-                        account.mentor,
-                      ),
-                    ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(horizontal: 15),
-                    //   child: Divider(),
-                    // ),
-                    ListTile(
-                      title: Text(
-                        "Stamnummer",
-                      ),
-                      subtitle: Text(
-                        account.username,
-                      ),
-                    ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(horizontal: 15),
-                    //   child: Divider(),
-                    // ),
-                    ListTile(
-                      title: Text(
                         "Profiel",
                       ),
                       subtitle: Text(

@@ -30,8 +30,7 @@ class Account extends HiveObject {
   String klas;
   @HiveField(6)
   String klasCode;
-  @HiveField(7)
-  String mentor;
+  // 7 Was mentor
   @HiveField(8)
   String name;
   @HiveField(9)
@@ -82,30 +81,29 @@ class Account extends HiveObject {
       this.refreshToken = tokenSet["refresh_token"];
     }
 
-    this.address = "";
-    this.birthdate = "";
-    this.email = "";
-    this.fullName = "";
+    // this.address = "";
+    // this.birthdate = "";
+    // this.email = "";
+    // this.fullName = "";
     this.id = 0;
-    this.initials = "";
-    this.klas = "";
-    this.klasCode = "";
-    this.mentor = "";
-    this.name = "";
-    this.officialFullName = "";
-    this.phone = "-";
-    this.profiel = "";
-    this.username = "";
+    // this.initials = "";
+    // this.klas = "";
+    // this.klasCode = "";
+    // this.name = "";
+    // this.officialFullName = "";
+    // this.phone = "-";
+    // this.profiel = "";
+    this.username = "Unset";
     this.accessToken = tokenSet != null ? tokenSet["access_token"] : "";
     this.refreshToken = tokenSet != null ? tokenSet["refresh_token"] : "";
-    this.tenant = "";
-    this.expiry = 8640000000000000;
-    this.afwezigheid = <Absentie>[];
-    this.berichten = <Bericht>[];
-    this.cijfers = <CijferJaar>[];
-    this.recenteCijfers = <Cijfer>[];
-    this.studiewijzers = <Wijzer>[];
-    this.leermiddelen = <Leermiddel>[];
+    // this.tenant = "";
+    // this.expiry = 8640000000000000;
+    // this.afwezigheid = <Absentie>[];
+    // this.berichten = <Bericht>[];
+    // this.cijfers = <CijferJaar>[];
+    // this.recenteCijfers = <Cijfer>[];
+    // this.studiewijzers = <Wijzer>[];
+    // this.leermiddelen = <Leermiddel>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
   void saveTokens(tokenSet) {

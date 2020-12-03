@@ -64,7 +64,7 @@ class Magister {
     var img = (await api.dio.get("api/leerlingen/${account.id}/foto", options: Options(responseType: ResponseType.bytes)));
     String image = base64Encode(img.data);
     account.profilePicture = image;
-    account.save();
+    if (account.isInBox) account.save();
   }
 }
 
@@ -107,7 +107,7 @@ class MagisterApi {
               MagisterLogin().launch(main.appState.context, (tokenSet, _) {
                 account.saveTokens(tokenSet);
                 account.magister.expiryAndTenant();
-                account.save();
+                if (account.isInBox) account.save();
               }, title: "Account is uitgelogd");
               return dio.request(e.request.path, options: e.request);
             }
@@ -157,7 +157,7 @@ class MagisterApi {
 
   Future wait(List<Future> runList) {
     var values = Future.wait(runList);
-    account.save();
+    if (account.isInBox) account.save();
     return values;
   }
 }

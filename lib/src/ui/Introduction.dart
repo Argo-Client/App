@@ -12,10 +12,6 @@ class _Introduction extends State<Introduction> {
     0xffF06449,
   ];
   void onLoggedIn(Account acc, BuildContext context, {String error}) {
-    if (acc == null) {
-      return;
-    }
-    print("onlogged in met: $acc");
     account = acc;
     userdata.put("introduction", true);
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));

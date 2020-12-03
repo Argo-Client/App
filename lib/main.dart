@@ -13,7 +13,6 @@ import 'package:intro_slider/slide_object.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
 import 'package:futuristic/futuristic.dart';

@@ -24,7 +24,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => NieuwBerichtPagina(null),
+                  builder: (context) => NieuwBerichtPagina(),
                 ),
               );
             },
@@ -38,51 +38,58 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
             List<Widget> berichten = [];
             String lastDay;
             for (int i = 0; i < account.berichten.length; i++) {
-              Bericht ber = account.berichten[i];
-              if (lastDay != ber.dag) {
+              ValueNotifier<Bericht> ber = ValueNotifier(account.berichten[i]);
+              if (lastDay != ber.value.dag) {
                 berichten.add(
-                  ContentHeader(ber.dag),
+                  ContentHeader(ber.value.dag),
                 );
               }
               berichten.add(
                 SeeCard(
-                  border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.dag
+                  border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
                       ? null
                       : Border(
                           bottom: greyBorderSide(),
                         ),
                   child: Stack(
                     children: [
-                      if (!ber.read ?? false)
-                        Padding(
-                          child: Align(
-                            alignment: Alignment.topRight,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: userdata.get("accentColor"),
+                      ValueListenableBuilder(
+                        valueListenable: ber,
+                        builder: (c, ber, _) {
+                          if (ber.read)
+                            return Container();
+                          else
+                            return Padding(
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: userdata.get("accentColor"),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          padding: EdgeInsets.all(
-                            10,
-                          ),
-                        ),
+                              padding: EdgeInsets.all(
+                                10,
+                              ),
+                            );
+                        },
+                      ),
                       ListTile(
                         trailing: Padding(
-                          child: ber.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
+                          child: ber.value.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
                           padding: EdgeInsets.only(
                             top: 7,
                             left: 7,
                           ),
                         ),
                         subtitle: Text(
-                          ber.afzender,
+                          ber.value.afzender,
                         ),
                         title: Text(
-                          ber.onderwerp,
+                          ber.value.onderwerp,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
@@ -98,7 +105,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
                   ),
                 ),
               );
-              lastDay = ber.dag;
+              lastDay = ber.value.dag;
             }
             return buildLiveList(berichten, 10);
           },
@@ -112,7 +119,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
 }
 
 class BerichtPagina extends StatelessWidget {
-  final Bericht ber;
+  final ValueNotifier<Bericht> ber;
   const BerichtPagina(this.ber);
 
   @override
@@ -120,7 +127,7 @@ class BerichtPagina extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ber.onderwerp,
+          ber.value.onderwerp,
         ),
         actions: [
           IconButton(
@@ -128,7 +135,7 @@ class BerichtPagina extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => NieuwBerichtPagina(ber),
+                  builder: (context) => NieuwBerichtPagina(ber.value),
                 ),
               );
             },
@@ -137,7 +144,12 @@ class BerichtPagina extends StatelessWidget {
       ),
       body: Futuristic(
         autoStart: true,
-        futureBuilder: () => account.magister.berichten.getBerichtFromId(ber.id),
+        futureBuilder: () => account.magister.berichten.getBerichtFromId(ber.value.id),
+        onData: (bericht) {
+          ber.value.read = bericht.read;
+          // ignore: invalid_use_of_visible_for_testing_member,invalid_use_of_protected_member
+          ber.notifyListeners();
+        },
         busyBuilder: (context) => Center(
           child: CircularProgressIndicator(),
         ),
@@ -304,7 +316,7 @@ class BerichtPagina extends StatelessWidget {
 
 class NieuwBerichtPagina extends StatelessWidget {
   final Bericht ber;
-  const NieuwBerichtPagina(this.ber);
+  const NieuwBerichtPagina([this.ber]);
 
   @override
   Widget build(BuildContext context) {

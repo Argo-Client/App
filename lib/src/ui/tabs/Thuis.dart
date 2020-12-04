@@ -226,7 +226,7 @@ class _Thuis extends State<Thuis> {
                                     onTap: () {
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => BerichtPagina(ber),
+                                          builder: (context) => BerichtPagina(ValueNotifier(ber)),
                                         ),
                                       );
                                     },

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:dio/dio.dart';
 
 class Berichten extends MagisterApi {
   MagisterApi api;
@@ -17,8 +18,26 @@ class Berichten extends MagisterApi {
     account.berichten = body["items"].map((ber) => Bericht(ber)).toList().cast<Bericht>();
   }
 
-  Future<Bericht> getBerichtFromId(id) async {
-    Map body = (await api.dio.get("api/berichten/berichten/$id")).data;
-    return Bericht(body);
+  Future<Bericht> getBerichtFromId(int id) async {
+    Bericht bericht = Bericht((await api.dio.get("api/berichten/berichten/$id")).data);
+    if (!bericht.read) {
+      markAsRead(id);
+      bericht.read = true;
+    }
+    return bericht;
+  }
+
+  Future<void> markAsRead(int id) async {
+    Response res = await api.dio.patch("api/berichten/berichten", data: {
+      "berichten": [
+        {
+          "berichtId": id,
+          "operations": [
+            {"op": "replace", "path": "/IsGelezen", "value": true}
+          ]
+        }
+      ]
+    });
+    print(res.statusCode);
   }
 }

@@ -70,10 +70,9 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
         },
         itemBuilder: (context, index) {
           DateTime buildMonday = startMonday.add(
-            Duration(days: index - initialPage),
+            Duration(days: (index - initialPage) * 7),
           );
           String buildSlug = formatDate.format(buildMonday);
-
           return ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (context, _, _a) {

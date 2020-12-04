@@ -249,7 +249,7 @@ class RefreshAccountView extends StatelessWidget {
     ];
     totalLoaded.addListener(() {
       if (totalLoaded.value == loaders.length) {
-        accounts.add(account);
+        if (!account.isInBox) accounts.add(account);
         Navigator.pop(context);
         callback(account, context);
       }

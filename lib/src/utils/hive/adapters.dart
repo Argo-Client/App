@@ -159,6 +159,8 @@ class Les {
   bool heleDag;
   @HiveField(20)
   DateTime startDateTime;
+  @HiveField(21)
+  bool onlineLes;
 
   Les([Map les]) {
     if (les == null) return;
@@ -199,6 +201,7 @@ class Les {
       "", // Informatie
       "", // Aantekening
     ][les["InfoType"]];
+    this.onlineLes = les["IsOnlineDeelname"];
     if (custom.containsKey("vak${this.vak.id}")) {
       if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
         this.uitval = true;

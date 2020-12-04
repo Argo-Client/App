@@ -147,13 +147,14 @@ class LesAdapter extends TypeAdapter<Les> {
       ..lastMonday = fields[17] as DateTime
       ..infoType = fields[18] as String
       ..heleDag = fields[19] as bool
-      ..startDateTime = fields[20] as DateTime;
+      ..startDateTime = fields[20] as DateTime
+      ..onlineLes = fields[21] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Les obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.start)
       ..writeByte(1)
@@ -195,7 +196,9 @@ class LesAdapter extends TypeAdapter<Les> {
       ..writeByte(19)
       ..write(obj.heleDag)
       ..writeByte(20)
-      ..write(obj.startDateTime);
+      ..write(obj.startDateTime)
+      ..writeByte(21)
+      ..write(obj.onlineLes);
   }
 
   @override

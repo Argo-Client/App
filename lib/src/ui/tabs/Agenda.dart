@@ -13,7 +13,7 @@ Future huiswerkAf(hw) async {
   update();
 }
 
-class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
+class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProviderStateMixin {
   void afterFirstLayout(BuildContext context) {
     handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
@@ -22,6 +22,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
   InfinityPageController appBarPageController;
   DateTime startDay = DateTime.now();
   DateTime startMonday;
+  double _tabBarHeight = 55;
   final int infinityPageCount = 1000;
   ValueNotifier<DateTime> currentDay;
   int initialPage;
@@ -101,6 +102,19 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
     } catch (e) {}
   }
 
+  void datePicker() => showDatePicker(
+        context: context,
+        initialDate: currentDay.value,
+        firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+        lastDate: DateTime(DateTime.now().year + 100),
+      ).then((value) {
+        if (value != null) {
+          startDay = value;
+          initVariables();
+          setState(() {});
+        }
+      });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +126,10 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
           },
         ),
         actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: datePicker,
+          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
@@ -126,20 +144,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
           ),
         ],
         title: GestureDetector(
-          onTap: () {
-            showDatePicker(
-              context: context,
-              initialDate: currentDay.value,
-              firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-              lastDate: DateTime(DateTime.now().year + 100),
-            ).then((value) {
-              if (value != null) {
-                startDay = value;
-                initVariables();
-                setState(() {});
-              }
-            });
-          },
+          onTap: datePicker,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -167,61 +172,78 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: AppBar().preferredSize,
+          preferredSize: Size.fromHeight(_tabBarHeight),
           child: Container(
-            height: AppBar().preferredSize.height,
+            height: _tabBarHeight,
             child: InfinityPageView(
               itemCount: infinityPageCount,
               controller: appBarPageController,
               itemBuilder: (BuildContext context, int index) {
-                return Row(
-                  children: [
-                    for (int dag = 0; dag < 7; dag++)
-                      () {
-                        DateTime tabDag = startMonday.add(
-                          Duration(days: relative(index) * 7 + dag),
-                        );
-                        DateFormat numFormatter = DateFormat('dd');
-                        return Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
-                              jumpOrAnimate(infinityPageController, page);
-                            },
-                            child: Column(
+                return ValueListenableBuilder(
+                    valueListenable: currentDay,
+                    builder: (c, _, _a) => Stack(
+                          children: [
+                            Positioned(
+                              left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
+                              bottom: 0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 7,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: userdata.get("accentColor"),
+                                      width: 3,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
                               children: [
-                                Text(
-                                  ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
-                                  overflow: TextOverflow.visible,
-                                  softWrap: false,
-                                ),
-                                Text(numFormatter.format(tabDag)),
-                                ValueListenableBuilder(
-                                  valueListenable: currentDay,
-                                  builder: (c, _, _a) {
-                                    if (currentDay.value == tabDag) {
-                                      return Container(
-                                        padding: EdgeInsets.only(top: 5),
-                                        decoration: BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(
-                                              color: userdata.get("accentColor"),
-                                              width: 3,
-                                            ),
-                                          ),
+                                for (int dag = 0; dag < 7; dag++)
+                                  () {
+                                    DateTime tabDag = startMonday.add(
+                                      Duration(days: relative(index) * 7 + dag),
+                                    );
+                                    DateFormat numFormatter = DateFormat('dd');
+                                    return Expanded(
+                                      child: InkWell(
+                                        onTap: () {
+                                          int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
+                                          jumpOrAnimate(infinityPageController, page);
+                                        },
+                                        child: Column(
+                                          children: (() {
+                                            return [
+                                              Padding(
+                                                child: Text(
+                                                  ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
+                                                  overflow: TextOverflow.visible,
+                                                  softWrap: false,
+                                                  style: TextStyle(
+                                                    color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                                  ),
+                                                ),
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 5,
+                                                ),
+                                              ),
+                                              Text(
+                                                numFormatter.format(tabDag),
+                                                style: TextStyle(
+                                                  color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                                ),
+                                              ),
+                                            ];
+                                          })(),
                                         ),
-                                      );
-                                    }
-                                    return Container();
-                                  },
-                                ),
+                                      ),
+                                    );
+                                  }()
                               ],
                             ),
-                          ),
-                        );
-                      }()
-                  ],
-                );
+                          ],
+                        ));
               },
             ),
           ),
@@ -407,17 +429,37 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                 Futuristic(
                                   autoStart: true,
                                   futureBuilder: () async => account.magister.agenda.getLessen(buildWeekMonday),
-                                  busyBuilder: (c) => Center(
-                                    child: CircularProgressIndicator(),
+                                  busyBuilder: (c) => Container(
+                                    width: MediaQuery.of(context).size.width - 30,
+                                    height: bodyHeight(context),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
                                   ),
                                   errorBuilder: (c, dynamic error, retry) {
-                                    return Stack(
-                                      children: [
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: Text("${error.error}"),
-                                        )
-                                      ],
+                                    return Container(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.wifi_off_outlined,
+                                            size: 150,
+                                            color: Colors.grey[400],
+                                          ),
+                                          Container(
+                                            width: MediaQuery.of(context).size.width / 2,
+                                            child: Text(
+                                              "Fout tijdens het laden van de dag: \n\n" + error.error,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 17.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      width: MediaQuery.of(context).size.width - 30,
+                                      height: bodyHeight(context) - _tabBarHeight,
                                     );
                                   },
                                   onData: (_) => update(),
@@ -437,7 +479,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                             top: pixelsFromTop(les.start, startHour),
                                           ),
                                           width: MediaQuery.of(context).size.width - 30,
-                                          height: les.duration * userdata.get("pixelsPerHour") / 60,
+                                          height: les.duration * userdata.get("pixelsPerHour") / 60 + 1,
                                           child: SeeCard(
                                             border: userdata.get("theme") == "OLED" || les.uitval
                                                 ? null
@@ -510,11 +552,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: 20,
-                                                      left: 20,
-                                                    ),
+                                                    padding: EdgeInsets.only(left: 20),
                                                     child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
                                                       children: [
                                                         Row(
                                                           children: [
@@ -525,6 +565,15 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda> {
                                                                 fontSize: 16,
                                                               ),
                                                             ),
+                                                            if (les.onlineLes)
+                                                              Padding(
+                                                                child: Icon(
+                                                                  Icons.videocam,
+                                                                  color: Colors.grey[400],
+                                                                  size: 20,
+                                                                ),
+                                                                padding: EdgeInsets.only(left: 5),
+                                                              ),
                                                           ],
                                                         ),
                                                         Row(

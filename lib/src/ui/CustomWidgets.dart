@@ -186,10 +186,12 @@ class SeeCard extends Card {
   Color color;
   final Border border;
   final double width;
+  final double height;
   final List<Widget> column;
 
   SeeCard({
     this.width,
+    this.height,
     this.margin,
     this.child,
     this.color,
@@ -205,6 +207,7 @@ class SeeCard extends Card {
 
     return Container(
       width: width,
+      height: height,
       decoration: border == null
           ? null
           : BoxDecoration(

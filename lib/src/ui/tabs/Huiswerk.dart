@@ -74,87 +74,84 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
           );
           String buildSlug = formatDate.format(buildMonday);
 
-          return SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: ValueListenableBuilder(
-              valueListenable: updateNotifier,
-              builder: (context, _, _a) {
-                return Futuristic(
-                  autoStart: true,
-                  futureBuilder: () {
-                    if (account.lessons[buildSlug] == null) {
-                      return account.magister.agenda.getLessen(buildMonday);
-                    }
-                    return Future.value(account.lessons[buildSlug]);
-                  },
-                  errorBuilder: (c, dynamic error, retry) => Container(
-                    height: bodyHeight(context),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: 25,
-                            ),
-                            child: Icon(
-                              Icons.wifi_off_outlined,
-                              size: 150,
-                              color: Colors.grey[400],
-                            ),
+          return ValueListenableBuilder(
+            valueListenable: updateNotifier,
+            builder: (context, _, _a) {
+              return Futuristic(
+                autoStart: true,
+                futureBuilder: () {
+                  if (account.lessons[buildSlug] == null) {
+                    return account.magister.agenda.getLessen(buildMonday);
+                  }
+                  return Future.value(account.lessons[buildSlug]);
+                },
+                errorBuilder: (c, dynamic error, retry) => Container(
+                  height: bodyHeight(context),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            bottom: 25,
                           ),
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Text(
-                              "Fout tijdens het laden van huiswerk: \n\n" + error.error,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 17.5,
-                              ),
+                          child: Icon(
+                            Icons.wifi_off_outlined,
+                            size: 150,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Text(
+                            "Fout tijdens het laden van huiswerk: \n\n" + error.error,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 17.5,
                             ),
                           ),
-                          RaisedButton(
-                            onPressed: retry,
-                            child: Text("Probeer Opnieuw"),
-                          ),
-                        ],
+                        ),
+                        RaisedButton(
+                          onPressed: retry,
+                          child: Text("Probeer Opnieuw"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                busyBuilder: (context) => Container(
+                  height: bodyHeight(context),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                dataBuilder: (c, week) {
+                  List<Les> huiswerkLessen = week.expand((List<Les> x) => x).where((les) => les.huiswerk != null).toList().cast<Les>();
+                  List<Widget> huiswerk = [];
+                  if (huiswerkLessen.isEmpty) {
+                    return Container(
+                      height: bodyHeight(context),
+                      child: Center(
+                        child: Text("Geen Huiswerk deze week."),
                       ),
-                    ),
-                  ),
-                  busyBuilder: (context) => Container(
-                    height: bodyHeight(context),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  dataBuilder: (c, week) => Column(
-                    children: () {
-                      List<Les> huiswerkLessen = week.expand((List<Les> x) => x).where((les) => les.huiswerk != null).toList().cast<Les>();
-                      List<Widget> huiswerk = [];
-                      if (huiswerkLessen.isEmpty) {
-                        return [
-                          Container(
-                            height: bodyHeight(context),
-                            child: Center(
-                              child: Text("Geen Huiswerk deze week."),
-                            ),
-                          )
-                        ];
-                      }
-                      String lastDay;
-                      int i = 0;
-                      for (Les les in huiswerkLessen) {
-                        if (lastDay != les.date) {
-                          huiswerk.add(ContentHeader(les.date));
-                        }
-                        lastDay = les.date;
-                        huiswerk.add(
-                          SeeCard(
-                            border: huiswerkLessen.last == les || huiswerkLessen[++i].date != lastDay
-                                ? null
-                                : Border(
-                                    bottom: greyBorderSide(),
-                                  ),
-                            child: ExpansionTile(
+                    );
+                  }
+                  String lastDay;
+                  int i = 0;
+                  for (Les les in huiswerkLessen) {
+                    if (lastDay != les.date) {
+                      huiswerk.add(ContentHeader(les.date));
+                    }
+                    lastDay = les.date;
+                    huiswerk.add(
+                      SeeCard(
+                        border: huiswerkLessen.last == les || huiswerkLessen[++i].date != lastDay
+                            ? null
+                            : Border(
+                                bottom: greyBorderSide(),
+                              ),
+                        child: Column(
+                          children: [
+                            ListTile(
                               leading: les.huiswerkAf
                                   ? IconButton(
                                       onPressed: () {
@@ -171,41 +168,40 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                                       },
                                       icon: Icon(
                                         Icons.assignment_outlined,
+                                        color: Colors.grey[400],
                                       ),
                                     ),
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => LesPagina(les),
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    child: WebContent(
-                                      les.huiswerk,
-                                    ),
-                                    padding: EdgeInsets.only(
-                                      left: 30,
-                                      bottom: 10,
-                                    ),
-                                  ),
-                                ),
-                              ],
                               title: Text(
                                 les.title,
                               ),
                             ),
-                          ),
-                        );
-                      }
-                      return huiswerk;
-                    }(),
-                  ),
-                );
-              },
-            ),
+                            Padding(
+                              child: WebContent(
+                                les.huiswerk,
+                              ),
+                              padding: EdgeInsets.only(
+                                left: 30,
+                                right: 30,
+                                bottom: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                        horizontal: greyBorderSide(),
+                      ),
+                    ),
+                    child: buildLiveList(huiswerk, 4),
+                  );
+                },
+              );
+            },
           );
         },
       ),

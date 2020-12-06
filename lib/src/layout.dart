@@ -61,20 +61,38 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   ),
                 );
               } else {
-                accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
-                if (accounts.isEmpty) {
-                  accounts.clear();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Introduction(),
-                    ),
-                  );
-                  return;
-                }
-                userdata.put("accountsIndex", accounts.toMap().entries.first.key);
-                account = accounts.get(userdata.get("accountsIndex"));
-                setState(() {});
+                showDialog(
+                  builder: (BuildContext context) => AlertDialog(
+                    title: Text("Weet je het zeker?"),
+                    content: Text("Als je het account verwijderd, moet je weer opnieuw inloggen om hem te kunnen gebruiken."),
+                    actions: [
+                      FlatButton(
+                        child: Text("Annuleer"),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      FlatButton(
+                        child: Text("Verwijder"),
+                        onPressed: () {
+                          accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+                          if (accounts.isEmpty) {
+                            accounts.clear();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Introduction(),
+                              ),
+                            );
+                            return;
+                          }
+                          userdata.put("accountsIndex", accounts.toMap().entries.first.key);
+                          account = accounts.get(userdata.get("accountsIndex"));
+                          setState(() {});
+                        },
+                      )
+                    ],
+                  ),
+                  context: context,
+                );
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[

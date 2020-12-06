@@ -109,25 +109,28 @@ class _Cijfers extends State<Cijfers> {
                     },
                     child: SingleChildScrollView(
                       child: SeeCard(
-                        column: [
-                          for (Cijfer cijfer in account.cijfers[jaar].cijfers.where(
-                            (cijfer) => cijfer.periode.id == periode.id,
-                          ))
-                            ListTileBorder(
-                              border: Border(
-                                right: greyBorderSide(),
-                                bottom: greyBorderSide(),
-                              ),
-                              title: Text("${cijfer.vak.naam}"),
-                              subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
-                              trailing: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: userdata.get("accentColor")),
+                        column: () {
+                          List cijfersInPeriode = account.cijfers[jaar].cijfers
+                              .where(
+                                (cijfer) => cijfer.periode.id == periode.id,
+                              )
+                              .toList();
+
+                          return [
+                            for (Cijfer cijfer in cijfersInPeriode)
+                              ListTileBorder(
+                                border: Border(
+                                  left: greyBorderSide(),
+                                  bottom: cijfersInPeriode.last == cijfer
+                                      ? BorderSide(
+                                          width: 0,
+                                          color: Colors.transparent,
+                                        )
+                                      : greyBorderSide(),
                                 ),
-                                width: 45,
-                                height: 45,
-                                child: Center(
+                                title: Text("${cijfer.vak.naam}"),
+                                subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
+                                trailing: CircleShape(
                                   child: Text(
                                     "${cijfer.cijfer}",
                                     textAlign: TextAlign.center,
@@ -136,16 +139,16 @@ class _Cijfers extends State<Cijfers> {
                                     maxLines: 1,
                                   ),
                                 ),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => CijferPagina(cijfer.vak.id, jaar),
+                                    ),
+                                  );
+                                },
                               ),
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => CijferPagina(cijfer.vak.id, jaar),
-                                  ),
-                                );
-                              },
-                            ),
-                        ],
+                          ];
+                        }(),
                       ),
                     ),
                   ),
@@ -206,6 +209,20 @@ class _CijferPagina extends State<CijferPagina> {
         title: Text(
           vak.naam,
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.flag,
+            ),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.calculate,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -219,54 +236,41 @@ class _CijferPagina extends State<CijferPagina> {
               ),
             for (Periode periode in jaar.perioden)
               Column(
-                children: [
-                  if (cijfers
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: () {
+                  List<Cijfer> periodecijfers = cijfers
                       .where(
                         (cijf) => cijf.periode.id == periode.id,
                       )
-                      .isNotEmpty)
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.only(
-                        left: 10,
-                        top: 15,
-                        bottom: 15,
-                      ),
-                      child: Text(
-                        periode.naam,
-                        // maxLines: 1,
-                        // overflow: TextOverflow.visible,
-                        // softWrap: false,
-                        style: TextStyle(color: userdata.get("accentColor")),
-                      ),
-                    ),
-                  SeeCard(
-                    border: Border(
-                      top: greyBorderSide(),
-                    ),
-                    column: [
-                      for (Cijfer cijfer in cijfers.where(
-                        (cijf) => cijf.periode.id == periode.id,
-                      ))
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: greyBorderSide(),
+                      .toList();
+                  if (periodecijfers.isEmpty)
+                    return <Widget>[];
+                  else
+                    return [
+                      ContentHeader(periode.naam),
+                      SeeCard(
+                        column: [
+                          for (Cijfer cijfer in periodecijfers)
+                            Futuristic(
+                              autoStart: true,
+                              futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                              busyBuilder: (context) => CircularProgressIndicator(),
+                              errorBuilder: (context, error, retry) {
+                                return Text("Error $error");
+                              },
+                              dataBuilder: (context, data) => CijferTile(
+                                cijfer,
+                                border: periodecijfers.last != cijfer
+                                    ? Border(
+                                        bottom: greyBorderSide(),
+                                      )
+                                    : null,
+                              ),
                             ),
-                          ),
-                          child: Futuristic(
-                            autoStart: true,
-                            futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
-                            busyBuilder: (context) => CircularProgressIndicator(),
-                            errorBuilder: (context, error, retry) {
-                              return Text("Error $error");
-                            },
-                            dataBuilder: (context, data) => CijferTile(cijfer),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
+                        ],
+                      ),
+                    ];
+                }(),
               ),
           ],
         ),

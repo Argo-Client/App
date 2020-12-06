@@ -6,11 +6,14 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
-  List _colors = [
-    0xff5BC3EB,
-    0xffDADAD9,
-    0xffF06449,
+  List<Color> _colors = [
+    Colors.blue,
+    Colors.amber,
+    Colors.green,
   ];
+
+  ValueNotifier<bool> akkoord = ValueNotifier(false);
+
   void onLoggedIn(Account acc, BuildContext context, {String error}) {
     account = acc;
     userdata.put("introduction", true);
@@ -25,6 +28,12 @@ class _Introduction extends State<Introduction> {
       home: Builder(
         builder: (context) => new IntroSlider(
           isShowSkipBtn: false,
+          renderPrevBtn: Icon(
+            Icons.navigate_before,
+            color: Colors.white,
+          ),
+          isShowPrevBtn: true,
+          isScrollable: false,
           colorDot: Color.fromRGBO(255, 255, 255, .5),
           sizeDot: 13.0,
           renderNextBtn: Icon(
@@ -36,31 +45,81 @@ class _Introduction extends State<Introduction> {
           onDonePress: loginPress,
           slides: [
             Slide(
-              title: "Argo",
-              pathImage: "assets/images/splash.png",
-              description: "\nMagister is gister, Argo is vandaag.\n\n Deze app is niet alleen mooi, hij is ook nog is zeer zwaar in de bèta dus verwacht niet veel.",
-              backgroundColor: Color(
-                _colors[0],
-              ),
-            ),
-            Slide(
-              widgetTitle: StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return Column(
-                    children: [
-                      Container(
-                        child: Text(
-                          "Kies je thema",
+              title: "Welkom",
+              widgetDescription: Column(
+                children: [
+                  Text(
+                    "Bedankt voor het downloaden van Argo!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 17.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Text(
+                      "Voordat je deze app gebruikt, moet je eerst akkoord gaan met ons beleid:",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 17.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 15),
+                    child: FlatButton(
+                      child: Text(
+                        "Bekijk hier ons beleid",
+                        style: TextStyle(
+                          fontSize: 17.5,
+                          color: Colors.white,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onPressed: () => launch("https://argo-magister.net/beleid"),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      akkoord.value = !akkoord.value;
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ValueListenableBuilder(
+                          valueListenable: akkoord,
+                          builder: (context, _, _a) {
+                            return Checkbox(
+                              activeColor: Colors.orange,
+                              value: akkoord.value,
+                              onChanged: (value) {
+                                akkoord.value = value;
+                              },
+                            );
+                          },
+                        ),
+                        Text(
+                          "Ik ga akkoord",
                           style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 17.5,
                             color: Colors.white,
                           ),
                         ),
-                        padding: EdgeInsets.only(
-                          bottom: 30,
-                        ),
-                      ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              backgroundColor: _colors[0],
+            ),
+            Slide(
+              title: "Kies je thema",
+              widgetDescription: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return Column(
+                    children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -87,18 +146,6 @@ class _Introduction extends State<Introduction> {
                                   PlaceholderLines(
                                     count: 3,
                                     align: TextAlign.right,
-                                    color: Colors.white,
-                                  ),
-                                  SeeCard(
-                                    margin: EdgeInsets.symmetric(
-                                      vertical: 25,
-                                    ),
-                                    child: Container(
-                                      height: 75,
-                                    ),
-                                  ),
-                                  PlaceholderLines(
-                                    count: 3,
                                     color: Colors.white,
                                   ),
                                   Padding(
@@ -148,18 +195,6 @@ class _Introduction extends State<Introduction> {
                                   ),
                                   PlaceholderLines(
                                     count: 3,
-                                    color: Colors.grey[800],
-                                  ),
-                                  Container(
-                                    color: Colors.grey[800],
-                                    margin: EdgeInsets.symmetric(
-                                      vertical: 25,
-                                    ),
-                                    height: 75,
-                                  ),
-                                  PlaceholderLines(
-                                    count: 3,
-                                    align: TextAlign.right,
                                     color: Colors.grey[800],
                                   ),
                                   Padding(
@@ -216,10 +251,10 @@ class _Introduction extends State<Introduction> {
                   );
                 },
               ),
-              backgroundColor: Color(_colors[1]),
+              backgroundColor: _colors[1],
             ),
             Slide(
-              title: "Login",
+              title: "Inloggen",
               widgetDescription: Column(
                 children: [
                   Padding(
@@ -227,32 +262,29 @@ class _Introduction extends State<Introduction> {
                       bottom: 150,
                     ),
                     child: Text(
-                      "Om de app te kunnen gebruiken, moet je eerst even inloggen.\n\n Je logt in via Magister dus je wachtwoord is helemaal veilig.",
+                      "Om de app te kunnen gebruiken, moet je eerst even inloggen.",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 17.5,
                         color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Center(
-                    child: Container(
-                      height: 50,
-                      child: FlatButton(
-                        child: Text(
-                          "Log nu in!",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                          ),
+                    child: FlatButton(
+                      child: Text(
+                        "Log nu in!",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
                         ),
-                        onPressed: loginPress,
                       ),
+                      onPressed: loginPress,
                     ),
                   ),
                 ],
               ),
-              backgroundColor: Color(_colors[2]),
+              backgroundColor: _colors[2],
             ),
           ],
         ),

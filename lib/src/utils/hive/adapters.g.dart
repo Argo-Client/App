@@ -508,13 +508,14 @@ class BronAdapter extends TypeAdapter<Bron> {
       ..isFolder = fields[3] as bool
       ..children = (fields[4] as List)?.cast<Bron>()
       ..size = fields[5] as int
-      ..downloadUrl = fields[6] as String;
+      ..downloadUrl = fields[6] as String
+      ..uri = fields[7] as String;
   }
 
   @override
   void write(BinaryWriter writer, Bron obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.naam)
       ..writeByte(1)
@@ -528,7 +529,9 @@ class BronAdapter extends TypeAdapter<Bron> {
       ..writeByte(5)
       ..write(obj.size)
       ..writeByte(6)
-      ..write(obj.downloadUrl);
+      ..write(obj.downloadUrl)
+      ..writeByte(7)
+      ..write(obj.uri);
   }
 
   @override

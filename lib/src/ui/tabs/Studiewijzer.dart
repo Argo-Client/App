@@ -304,81 +304,92 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
 
                     return Tooltip(
                       child: SeeCard(
-                        child: ListTileBorder(
-                          onTap: () {
-                            if (currentlyDownloading != null) return;
-                            currentlyDownloading = wijsbron;
-                            account.magister.bronnen.downloadFile(
-                              wijsbron,
-                              (count, _) {
-                                setState(
-                                  () {
-                                    wijsbron.downloadCount = count;
-                                    // print(wijsbron.downloadCount);
-                                    if (count >= currentlyDownloading.size) {
-                                      currentlyDownloading = null;
-                                    }
-                                    // print("klaar ${wijsbron.downloadCount} | ${wijsbron.size}");
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          leading: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 5,
+                        child: wijsbron.uri == null
+                            ? ListTileBorder(
+                                onTap: () {
+                                  if (currentlyDownloading != null) return;
+                                  currentlyDownloading = wijsbron;
+                                  account.magister.bronnen.downloadFile(
+                                    wijsbron,
+                                    (count, _) {
+                                      setState(
+                                        () {
+                                          wijsbron.downloadCount = count;
+                                          // print(wijsbron.downloadCount);
+                                          if (count >= currentlyDownloading.size) {
+                                            currentlyDownloading = null;
+                                          }
+                                          // print("klaar ${wijsbron.downloadCount} | ${wijsbron.size}");
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                leading: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: 5,
+                                      ),
+                                      child: Icon(
+                                        Icons.insert_drive_file_outlined,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: 7.5,
+                                      ),
+                                      child: Text(
+                                        hasExtension ? splittedNaam.removeLast().toUpperCase() : wijsbron.naam,
+                                        style: TextStyle(
+                                          fontSize: 12.5,
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                child: Icon(
-                                  Icons.insert_drive_file_outlined,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 7.5,
-                                ),
-                                child: Text(
-                                  hasExtension ? splittedNaam.removeLast().toUpperCase() : wijsbron.naam,
-                                  style: TextStyle(
-                                    fontSize: 12.5,
+                                subtitle: Padding(
+                                  child: Text(
+                                    filesize(wijsbron.size),
+                                  ),
+                                  padding: EdgeInsets.only(
+                                    bottom: 5,
                                   ),
                                 ),
+                                title: Padding(
+                                  child: Text(
+                                    hasExtension ? splittedNaam.first : wijsbron.naam,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                ),
+                                trailing: wijsbron.downloadCount == wijsbron.size
+                                    ? Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 18,
+                                      )
+                                    : wijsbron.downloadCount == null
+                                        ? Icon(
+                                            Icons.cloud_download,
+                                            size: 22,
+                                          )
+                                        : CircularProgressIndicator(),
+                                border: Border(
+                                  top: greyBorderSide(),
+                                ),
                               )
-                            ],
-                          ),
-                          subtitle: Padding(
-                            child: Text(
-                              filesize(wijsbron.size),
-                            ),
-                            padding: EdgeInsets.only(
-                              bottom: 5,
-                            ),
-                          ),
-                          title: Padding(
-                            child: Text(
-                              hasExtension ? splittedNaam.first : wijsbron.naam,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10,
-                            ),
-                          ),
-                          trailing: wijsbron.downloadCount == wijsbron.size
-                              ? Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 18,
-                                )
-                              : wijsbron.downloadCount == null
-                                  ? Icon(
-                                      Icons.cloud_download,
-                                      size: 22,
-                                    )
-                                  : CircularProgressIndicator(),
-                          border: Border(
-                            top: greyBorderSide(),
-                          ),
-                        ),
+                            : ListTileBorder(
+                                border: Border(
+                                  top: greyBorderSide(),
+                                ),
+                                leading: Icon(Icons.link),
+                                title: Text(wijsbron.naam),
+                                onTap: () {
+                                  launch(wijsbron.uri);
+                                },
+                              ),
                       ),
                       padding: EdgeInsets.all(
                         5,

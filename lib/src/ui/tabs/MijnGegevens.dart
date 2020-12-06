@@ -87,10 +87,10 @@ class _MijnGegevens extends State<MijnGegevens> {
                         account.profiel,
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(horizontal: 15),
-                    //   child: Divider(),
-                    // ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: Divider(),
+                    ),
                     ListTile(
                       title: Text(
                         "Studie",

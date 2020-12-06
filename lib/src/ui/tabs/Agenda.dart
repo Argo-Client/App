@@ -179,6 +179,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               itemCount: infinityPageCount,
               controller: appBarPageController,
               itemBuilder: (BuildContext context, int index) {
+                DateTime buildMonday = startMonday.add(
+                  Duration(days: relative(index) * 7),
+                );
                 return ValueListenableBuilder(
                     valueListenable: currentDay,
                     builder: (c, _, _a) => Stack(
@@ -202,8 +205,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                               children: [
                                 for (int dag = 0; dag < 7; dag++)
                                   () {
-                                    DateTime tabDag = startMonday.add(
-                                      Duration(days: relative(index) * 7 + dag),
+                                    DateTime tabDag = buildMonday.add(
+                                      Duration(days: dag),
                                     );
                                     DateFormat numFormatter = DateFormat('dd');
                                     return Expanded(
@@ -221,7 +224,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                                   overflow: TextOverflow.visible,
                                                   softWrap: false,
                                                   style: TextStyle(
-                                                    color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                                    color: currentDay.value.weekday != dag ? Colors.grey[300] : Colors.white,
                                                   ),
                                                 ),
                                                 padding: EdgeInsets.symmetric(

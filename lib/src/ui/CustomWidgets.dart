@@ -382,12 +382,14 @@ class PopoutButton {
 class CijferTile extends StatelessWidget {
   final Cijfer cijfer;
   final bool isRecent;
+  final Border border;
 
-  CijferTile(this.cijfer, {this.isRecent});
+  CijferTile(this.cijfer, {this.isRecent, this.border});
 
   @override
   Widget build(BuildContext build) {
-    return ListTile(
+    return ListTileBorder(
+      border: border,
       trailing: cijfer.cijfer.length > 4
           ? null
           : Stack(
@@ -486,6 +488,27 @@ class ListTileBorder extends StatelessWidget {
         subtitle: subtitle,
         trailing: trailing,
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+class CircleShape extends StatelessWidget {
+  final Widget child;
+
+  CircleShape({this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: userdata.get("accentColor")),
+      ),
+      width: 45,
+      height: 45,
+      child: Center(
+        child: child,
       ),
     );
   }

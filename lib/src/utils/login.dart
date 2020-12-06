@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:Argo/main.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:fluttertoast/fluttertoast.dart';
@@ -153,11 +155,19 @@ class MagisterLoader extends StatelessWidget {
   final ValueNotifier<List<List>> errors;
   MagisterLoader({this.name, this.future, this.count, this.errors});
   @override
-  Widget build(c) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(name),
-          Futuristic(
+  Widget build(c) => SeeCard(
+        child: ListTileBorder(
+          border: Border(
+            bottom: greyBorderSide(),
+          ),
+          leading: Container(
+            padding: EdgeInsets.only(top: 4.5),
+            child: Text(
+              name,
+              style: TextStyle(fontSize: 17.5),
+            ),
+          ),
+          trailing: Futuristic(
             autoStart: true,
             futureBuilder: future,
             busyBuilder: (context) => CircularProgressIndicator(),
@@ -177,8 +187,8 @@ class MagisterLoader extends StatelessWidget {
               Icons.check,
               color: Colors.green,
             ),
-          )
-        ],
+          ),
+        ),
       );
 }
 
@@ -259,14 +269,22 @@ class RefreshAccountView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Dit word binnenkort mooier gemaakt door Guus, ik heb alleen even de basis neergezet"),
-        for (MagisterLoader loader in loaders) loader,
         ValueListenableBuilder(
           valueListenable: totalLoaded,
           builder: (c, loaded, _) => LinearProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Color.fromARGB(
+                100,
+                255,
+                255,
+                255,
+              ),
+            ),
+            backgroundColor: userdata.get("primaryColor"),
             value: loaded / loaders.length,
           ),
         ),
+        for (MagisterLoader loader in loaders) loader,
         ValueListenableBuilder(
             valueListenable: errors,
             builder: (context, _, _a) {

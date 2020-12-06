@@ -221,7 +221,9 @@ class _Instellingen extends State<Instellingen> {
                 ),
                 title: Text("Aantal pixels per uur"),
                 subtitle: Text("Hoe hoog een uur is in de agenda."),
-                trailing: Text("${userdata.get("pixelsPerHour")}"),
+                trailing: CircleShape(
+                  child: Text("${userdata.get("pixelsPerHour")}"),
+                ),
                 onTap: () => showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -245,7 +247,9 @@ class _Instellingen extends State<Instellingen> {
                 ),
                 title: Text("Standaard starttijd."),
                 subtitle: Text("Hoelaat je agenda moet beginnen."),
-                trailing: Text("${userdata.get("agendaStartHour")}"),
+                trailing: CircleShape(
+                  child: Text("${userdata.get("agendaStartHour")}"),
+                ),
                 onTap: () => showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -273,7 +277,9 @@ class _Instellingen extends State<Instellingen> {
                 ),
                 title: Text("Standaard eindtijd."),
                 subtitle: Text("Hoelaat je agenda moet eindigen."),
-                trailing: Text("${userdata.get("agendaEndHour")}"),
+                trailing: CircleShape(
+                  child: Text("${userdata.get("agendaEndHour")}"),
+                ),
                 onTap: () => showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -336,13 +342,12 @@ class _Instellingen extends State<Instellingen> {
           ContentHeader("Meldingen"),
           SeeCard(
             column: [
-              ListTileBorder(
-                border: Border(
-                  bottom: greyBorderSide(),
-                ),
+              ListTile(
                 title: Text("Notificatie Tijd"),
                 subtitle: Text("Hoeveel minuten je voor een les een notificatie krijgt."),
-                trailing: Text("${userdata.get("preNotificationMinutes")}"),
+                trailing: CircleShape(
+                  child: Text("${userdata.get("preNotificationMinutes")}"),
+                ),
                 onTap: () => showDialog(
                   context: context,
                   builder: (BuildContext context) {

@@ -100,9 +100,11 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                             bool hasExtension = bron.naam.contains(".") && !bron.isFolder;
 
                             return SeeCard(
-                              border: Border(
-                                bottom: greyBorderSide(),
-                              ),
+                              border: bronnenView.last.last != bron
+                                  ? Border(
+                                      bottom: greyBorderSide(),
+                                    )
+                                  : null,
                               child: Tooltip(
                                 child: ListTile(
                                   leading: bron.isFolder

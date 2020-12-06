@@ -399,6 +399,8 @@ class Bron {
   int size;
   @HiveField(6)
   String downloadUrl;
+  @HiveField(7)
+  String uri;
   int downloadCount;
   Bron([Map bron]) {
     if (bron != null) {
@@ -407,6 +409,7 @@ class Bron {
       this.contentType = bron["ContentType"];
       this.isFolder = bron["BronSoort"] == 0;
       this.size = bron["Grootte"];
+      this.uri = bron["Uri"];
       if (!this.isFolder) {
         this.downloadUrl = bron["Links"].where((a) => a["Rel"] == "Contents").first["Href"];
       }

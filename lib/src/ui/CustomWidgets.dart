@@ -188,16 +188,9 @@ class SeeCard extends Card {
   final double width;
   final double height;
   final List<Widget> column;
+  final EdgeInsets padding;
 
-  SeeCard({
-    this.width,
-    this.height,
-    this.margin,
-    this.child,
-    this.color,
-    this.border,
-    this.column,
-  });
+  SeeCard({this.width, this.height, this.margin, this.child, this.color, this.border, this.column, this.padding});
 
   @override
   Widget build(BuildContext context) {
@@ -220,11 +213,14 @@ class SeeCard extends Card {
           borderRadius: BorderRadius.zero,
         ),
         color: color,
-        child: column != null
-            ? Column(
-                children: column,
-              )
-            : child,
+        child: Container(
+          padding: padding,
+          child: column != null
+              ? Column(
+                  children: column,
+                )
+              : child,
+        ),
       ),
     );
   }

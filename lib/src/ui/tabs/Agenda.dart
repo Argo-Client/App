@@ -224,7 +224,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                                   overflow: TextOverflow.visible,
                                                   softWrap: false,
                                                   style: TextStyle(
-                                                    color: currentDay.value.weekday != dag ? Colors.grey[300] : Colors.white,
+                                                    color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
                                                   ),
                                                 ),
                                                 padding: EdgeInsets.symmetric(
@@ -477,137 +477,162 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                     }
                                     return <Widget>[
                                       for (Les les in lessen)
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                            top: pixelsFromTop(les.start, startHour),
-                                          ),
-                                          width: MediaQuery.of(context).size.width - 30,
-                                          height: les.duration * userdata.get("pixelsPerHour") / 60 + 1,
-                                          child: SeeCard(
-                                            border: userdata.get("theme") == "OLED" || les.uitval
-                                                ? null
-                                                : Border.symmetric(
-                                                    horizontal: greyBorderSide(),
-                                                  ),
-                                            color: les.uitval
-                                                ? theme == Brightness.dark
-                                                    ? Color.fromARGB(255, 119, 66, 62)
-                                                    : Color.fromARGB(255, 255, 205, 210)
-                                                : null,
-                                            // shape: BorderRadius.all(),
+                                        () {
+                                          List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
+                                          return Container(
                                             margin: EdgeInsets.only(
-                                              top: .75,
+                                              top: pixelsFromTop(les.start, startHour),
                                             ),
-                                            child: InkWell(
-                                              child: Stack(
-                                                children: [
-                                                  Align(
-                                                    alignment: Alignment.topLeft,
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                        top: 5,
-                                                        left: 5,
-                                                      ),
-                                                      child: Text(
-                                                        les.hour,
-                                                        style: TextStyle(
-                                                          color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                            width: MediaQuery.of(context).size.width - 30,
+                                            height: les.duration * userdata.get("pixelsPerHour") / 60 + 1,
+                                            child: SeeCard(
+                                              border: userdata.get("theme") == "OLED" || les.uitval
+                                                  ? null
+                                                  : Border.symmetric(
+                                                      horizontal: greyBorderSide(),
+                                                    ),
+                                              color: les.uitval
+                                                  ? theme == Brightness.dark
+                                                      ? Color.fromARGB(255, 119, 66, 62)
+                                                      : Color.fromARGB(255, 255, 205, 210)
+                                                  : null,
+                                              // shape: BorderRadius.all(),
+                                              margin: EdgeInsets.only(
+                                                top: .75,
+                                              ),
+                                              child: InkWell(
+                                                child: Stack(
+                                                  children: [
+                                                    Align(
+                                                      alignment: Alignment.topLeft,
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                          top: 5,
+                                                          left: 5,
+                                                        ),
+                                                        child: Text(
+                                                          les.hour,
+                                                          style: TextStyle(
+                                                            color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  Align(
-                                                    alignment: Alignment.topRight,
-                                                    child: Padding(
-                                                      padding: EdgeInsets.only(
-                                                        top: 5,
-                                                        right: 7.5,
-                                                      ),
-                                                      child: les.infoType != ""
-                                                          ? Material(
-                                                              child: Padding(
-                                                                child: Text(
-                                                                  les.infoType,
-                                                                  style: TextStyle(
-                                                                    fontSize: 12,
+                                                    Align(
+                                                      alignment: Alignment.topRight,
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                          top: 5,
+                                                          right: 7.5,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.end,
+                                                          children: [
+                                                            if (afwezig.isNotEmpty)
+                                                              Container(
+                                                                margin: les.infoType.isNotEmpty || les.huiswerk != null ? EdgeInsets.only(right: 5) : null,
+                                                                child: Material(
+                                                                  color: afwezig.first.geoorloofd ? Colors.green : Colors.red,
+                                                                  shape: ContinuousRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(15.0),
+                                                                  ),
+                                                                  child: Padding(
+                                                                    padding: EdgeInsets.all(3.0),
+                                                                    child: Icon(
+                                                                      afwezig.first.geoorloofd ? Icons.check : Icons.error_outlined,
+                                                                      size: 17,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                                padding: EdgeInsets.all(4.5),
                                                               ),
-                                                              shape: ContinuousRectangleBorder(
-                                                                borderRadius: BorderRadius.circular(30.0),
-                                                              ),
-                                                              color: userdata.get("accentColor"),
-                                                            )
-                                                          : les.huiswerk != null
-                                                              ? !les.huiswerkAf
-                                                                  ? Icon(
-                                                                      Icons.assignment_outlined,
-                                                                      size: 23,
-                                                                      color: Colors.grey,
-                                                                    )
-                                                                  : Icon(
-                                                                      Icons.assignment_turned_in_outlined,
-                                                                      size: 23,
-                                                                      color: Colors.green,
-                                                                    )
-                                                              : null,
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(left: 20),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              les.title,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                              ),
-                                                            ),
-                                                            if (les.onlineLes)
-                                                              Padding(
-                                                                child: Icon(
-                                                                  Icons.videocam,
-                                                                  color: Colors.grey[400],
-                                                                  size: 20,
+                                                            if (les.infoType.isNotEmpty)
+                                                              Material(
+                                                                child: Padding(
+                                                                  child: Text(
+                                                                    les.infoType,
+                                                                    style: TextStyle(
+                                                                      fontSize: 12,
+                                                                    ),
+                                                                  ),
+                                                                  padding: EdgeInsets.all(4.5),
                                                                 ),
-                                                                padding: EdgeInsets.only(left: 5),
-                                                              ),
+                                                                shape: ContinuousRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(30.0),
+                                                                ),
+                                                                color: userdata.get("accentColor"),
+                                                              )
+                                                            else if (les.huiswerk != null)
+                                                              if (!les.huiswerkAf)
+                                                                Icon(
+                                                                  Icons.assignment_outlined,
+                                                                  size: 23,
+                                                                  color: Colors.grey,
+                                                                )
+                                                              else
+                                                                Icon(
+                                                                  Icons.assignment_turned_in_outlined,
+                                                                  size: 23,
+                                                                  color: Colors.green,
+                                                                )
                                                           ],
                                                         ),
-                                                        Row(
-                                                          children: [
-                                                            Flexible(
-                                                              child: Text(
-                                                                les.information,
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(left: 20),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Text(
+                                                                les.title,
                                                                 overflow: TextOverflow.ellipsis,
-                                                                maxLines: 1,
                                                                 style: TextStyle(
-                                                                  color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                                  fontSize: 16,
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
+                                                              if (les.onlineLes)
+                                                                Padding(
+                                                                  child: Icon(
+                                                                    Icons.videocam,
+                                                                    color: Colors.grey[400],
+                                                                    size: 20,
+                                                                  ),
+                                                                  padding: EdgeInsets.only(left: 5),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            children: [
+                                                              Flexible(
+                                                                child: Text(
+                                                                  les.information,
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                  maxLines: 1,
+                                                                  style: TextStyle(
+                                                                    color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) => LesPagina(les),
+                                                    ),
+                                                  );
+                                                },
                                               ),
-                                              onTap: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (context) => LesPagina(les),
-                                                  ),
-                                                );
-                                              },
                                             ),
-                                          ),
-                                        ),
+                                          );
+                                        }()
                                     ];
                                   }(),
                                 )
@@ -638,8 +663,10 @@ class LesPagina extends StatefulWidget {
 class _LesPagina extends State<LesPagina> {
   Les les;
   _LesPagina(this.les);
+
   @override
   Widget build(BuildContext context) {
+    List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(les.title),
@@ -681,9 +708,6 @@ class _LesPagina extends State<LesPagina> {
         child: Column(
           children: [
             SeeCard(
-              margin: EdgeInsets.only(
-                bottom: 20,
-              ),
               column: [
                 if (les.hour != null)
                   ListTileBorder(
@@ -788,7 +812,12 @@ class _LesPagina extends State<LesPagina> {
                     title: Text(les.location),
                   ),
                 if (les.docenten != null)
-                  ListTile(
+                  ListTileBorder(
+                    border: afwezig.isNotEmpty
+                        ? Border(
+                            bottom: greyBorderSide(),
+                          )
+                        : null,
                     subtitle: Text("Docent(en)"),
                     onTap: les.docenten.length > 5
                         ? () {
@@ -808,6 +837,24 @@ class _LesPagina extends State<LesPagina> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                if (afwezig.isNotEmpty)
+                  ListTileBorder(
+                    leading: Icon(Icons.check_circle_outline),
+                    title: Text(afwezig.first.type),
+                    subtitle: Text("Registraties"),
+                    trailing: Material(
+                      color: afwezig.first.geoorloofd ? Colors.green : Colors.red,
+                      shape: ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Icon(
+                          afwezig.first.geoorloofd ? Icons.check : Icons.error_outlined,
+                        ),
+                      ),
+                    ),
+                  ),
                 // if (les["description"].length != 0)
                 //   ListTile(
                 //     leading: Icon(Icons.edit),
@@ -817,35 +864,32 @@ class _LesPagina extends State<LesPagina> {
             ),
             if (les.description.length != 0)
               SeeCard(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 30,
-                    left: 20,
-                    right: 20,
-                    bottom: 20,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 10,
-                        ),
-                        child: Text(
-                          "Huiswerk",
-                          style: TextStyle(
-                            fontSize: 23,
-                          ),
+                margin: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom: 10,
+                      ),
+                      child: Text(
+                        "Huiswerk",
+                        style: TextStyle(
+                          fontSize: 23,
                         ),
                       ),
-                      WebContent(
-                        les.description,
-                      ),
-                    ],
-                  ),
+                    ),
+                    WebContent(
+                      les.description,
+                    ),
+                  ],
                 ),
                 width: MediaQuery.of(context).size.width,
               ),
+            // if (account.studiewijzers.where((wijzer) => wijzer.vakcode ==
+
+            // ).isEmpty)
           ],
         ),
       ),

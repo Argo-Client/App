@@ -115,6 +115,7 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                         selected.value = null;
                       },
                     )
+                  // : AnimatedIcon(icon: AnimatedIcons.),
                   : null,
               title: selected.value != null
                   ? Text(selected.value.naam)

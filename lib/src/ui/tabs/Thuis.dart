@@ -58,16 +58,39 @@ class _Thuis extends State<Thuis> {
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
-                title: Text(
-                  "Vandaag",
-                  style: TextStyle(
-                    fontSize: 16.0,
-                  ),
-                ),
-                background: Image.network(
-                  "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350",
-                  fit: BoxFit.cover,
+                // title: Text(
+                //   account.fullName,
+                //   style: TextStyle(
+                //     fontSize: 16.0,
+                //   ),
+                // ),
+                background: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 15.0),
+                      child: CircleAvatar(
+                        backgroundImage: Image.memory(
+                          base64Decode(account.profilePicture),
+                        ).image,
+                        radius: 35.0,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 7.5),
+                      child: Text(
+                        account.fullName,
+                        style: TextStyle(
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 20),
+                      child: Text("${account.klasCode} | ${account.username}"),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -540,6 +540,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                                                     padding: EdgeInsets.all(3.0),
                                                                     child: Icon(
                                                                       afwezig.first.geoorloofd ? Icons.check : Icons.error_outlined,
+                                                                      color: Colors.white,
                                                                       size: 17,
                                                                     ),
                                                                   ),

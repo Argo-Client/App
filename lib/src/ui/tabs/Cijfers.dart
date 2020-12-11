@@ -192,12 +192,9 @@ class _CijferPagina extends State<CijferPagina> {
         } catch (e) {}
         if (cijf != null) {
           doubleCijfers += cijf * cijfer.weging;
-          print(doubleCijfers);
-          print(formatDate.format(cijfer.ingevoerd));
           totalWeging += cijfer.weging;
           avgCijfers.add(doubleCijfers / totalWeging);
         }
-        print(avgCijfers);
       },
     );
   }

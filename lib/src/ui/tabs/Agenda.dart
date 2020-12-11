@@ -179,9 +179,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               itemCount: infinityPageCount,
               controller: appBarPageController,
               itemBuilder: (BuildContext context, int index) {
-                DateTime buildMonday = startMonday.add(
-                  Duration(days: relative(index) * 7),
-                );
                 return ValueListenableBuilder(
                     valueListenable: currentDay,
                     builder: (c, _, _a) => Stack(
@@ -205,8 +202,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                               children: [
                                 for (int dag = 0; dag < 7; dag++)
                                   () {
-                                    DateTime tabDag = buildMonday.add(
-                                      Duration(days: dag),
+                                    DateTime tabDag = startMonday.add(
+                                      Duration(days: relative(index) * 7 + dag),
                                     );
                                     DateFormat numFormatter = DateFormat('dd');
                                     return Expanded(
@@ -863,30 +860,119 @@ class _LesPagina extends State<LesPagina> {
                 //   ),
               ],
             ),
-            if (les.description.length != 0)
+            if (les.description.length != 0 || les.heeftBijlagen)
               SeeCard(
                 margin: EdgeInsets.only(top: 20),
                 padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: 10,
+                    if (les.description.length != 0)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom: 10,
+                            ),
+                            child: Text(
+                              "Huiswerk",
+                              style: TextStyle(
+                                fontSize: 23,
+                              ),
+                            ),
+                          ),
+                          WebContent(
+                            les.description,
+                          )
+                        ],
                       ),
-                      child: Text(
-                        "Huiswerk",
-                        style: TextStyle(
-                          fontSize: 23,
+                    if (les.heeftBijlagen)
+                      Futuristic(
+                        autoStart: true,
+                        futureBuilder: () => account.magister.agenda.getBijlagen(les),
+                        dataBuilder: (context, bijlagen) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: 10,
+                              ),
+                              child: Text(
+                                "Bijlagen",
+                                style: TextStyle(
+                                  fontSize: 23,
+                                ),
+                              ),
+                            ),
+                            for (Bron bijlage in bijlagen)
+                              () {
+                                List<String> splittedNaam = bijlage.naam.split(".");
+                                return ListTileBorder(
+                                  onTap: () {
+                                    account.magister.bronnen.downloadFile(bijlage, (_, _a) {});
+                                  },
+                                  leading: Column(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: 5,
+                                        ),
+                                        child: Icon(
+                                          Icons.insert_drive_file_outlined,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          top: 7.5,
+                                        ),
+                                        child: Text(
+                                          splittedNaam.length > 1 ? splittedNaam.removeLast().toUpperCase() : bijlage.naam,
+                                          style: TextStyle(
+                                            fontSize: 12.5,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  subtitle: Padding(
+                                    child: Text(
+                                      filesize(bijlage.size),
+                                    ),
+                                    padding: EdgeInsets.only(
+                                      bottom: 5,
+                                    ),
+                                  ),
+                                  title: Padding(
+                                    child: Text(
+                                      splittedNaam.length > 1 ? splittedNaam.join(".") : bijlage.naam,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
+                                  ),
+                                  trailing: bijlage.downloadCount == bijlage.size
+                                      ? Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                        )
+                                      : bijlage.downloadCount == null
+                                          ? Icon(
+                                              Icons.cloud_download,
+                                              size: 22,
+                                            )
+                                          : CircularProgressIndicator(),
+                                  border: Border(
+                                    top: greyBorderSide(),
+                                  ),
+                                );
+                              }()
+                          ],
                         ),
-                      ),
-                    ),
-                    WebContent(
-                      les.description,
-                    ),
+                      )
                   ],
                 ),
-                width: MediaQuery.of(context).size.width,
               ),
             // if (account.studiewijzers.where((wijzer) => wijzer.vakcode ==
 

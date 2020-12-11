@@ -79,4 +79,12 @@ class Agenda extends MagisterApi {
       return (e);
     }
   }
+
+  Future<List<Bron>> getBijlagen(Les les) async {
+    Map raw = (await api.dio.get("api/personen/${account.id}/afspraken/${les.id}")).data;
+    Les newLes = Les(raw);
+    les.bijlagen = newLes.bijlagen;
+    account.save();
+    return newLes.bijlagen;
+  }
 }

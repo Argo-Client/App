@@ -161,6 +161,10 @@ class Les {
   DateTime startDateTime;
   @HiveField(21)
   bool onlineLes;
+  @HiveField(22)
+  bool heeftBijlagen;
+  @HiveField(23)
+  List<Bron> bijlagen;
 
   Les([Map les]) {
     if (les == null) return;
@@ -202,6 +206,15 @@ class Les {
       "", // Aantekening
     ][les["InfoType"]];
     this.onlineLes = les["IsOnlineDeelname"];
+    this.lastMonday = start.subtract(
+      Duration(
+        days: start.weekday - 1,
+      ),
+    );
+    this.heeftBijlagen = les["HeeftBijlagen"];
+    if (les["Bijlagen"] != null) {
+      this.bijlagen = les["Bijlagen"].map((bij) => Bron(bij)).toList().cast<Bron>();
+    }
     if (custom.containsKey("vak${this.vak.id}")) {
       if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
         this.uitval = true;
@@ -209,11 +222,6 @@ class Les {
         this.title = custom.get("vak${this.vak.id}");
       }
     }
-    this.lastMonday = start.subtract(
-      Duration(
-        days: start.weekday - 1,
-      ),
-    );
   }
 }
 
@@ -327,7 +335,7 @@ class Bericht {
   @HiveField(2)
   bool prioriteit;
   @HiveField(3)
-  bool bijlagen;
+  bool heeftBijlagen;
   @HiveField(4)
   String onderwerp;
   @HiveField(5)
@@ -337,16 +345,23 @@ class Bericht {
   @HiveField(7)
   bool read;
 
+  // Specifiek ophalen:
+  @HiveField(8)
+  List<Bron> bijlagen;
+  @HiveField(9)
   String inhoud;
+  @HiveField(10)
   List<String> ontvangers;
+  @HiveField(11)
   List<String> cc;
+
   Bericht([Map ber]) {
     if (ber != null) {
       this.date = DateTime.parse(ber["verzondenOp"]);
       this.dag = formatDatum.format(this.date);
       this.id = ber["id"];
       this.prioriteit = ber["heeftPrioriteit"];
-      this.bijlagen = ber["heeftBijlagen"];
+      this.heeftBijlagen = ber["heeftBijlagen"];
       this.onderwerp = ber["onderwerp"];
       this.afzender = ber["afzender"]["naam"];
       this.read = ber["isGelezen"];
@@ -404,14 +419,20 @@ class Bron {
   int downloadCount;
   Bron([Map bron]) {
     if (bron != null) {
-      this.naam = bron["Naam"];
-      this.id = bron["Id"];
+      this.naam = bron["Naam"] ?? bron["naam"];
+      this.id = bron["Id"] ?? bron["id"];
       this.contentType = bron["ContentType"];
       this.isFolder = bron["BronSoort"] == 0;
-      this.size = bron["Grootte"];
+      this.size = bron["Grootte"] ?? bron["grootte"];
       this.uri = bron["Uri"];
-      if (!this.isFolder) {
-        this.downloadUrl = bron["Links"].where((a) => a["Rel"] == "Contents").first["Href"];
+      if (bron["Links"] != null) {
+        List downloadLink = bron["Links"].where((a) => a["Rel"] == "Contents").toList();
+        if (downloadLink.isNotEmpty) {
+          this.downloadUrl = downloadLink.first["Href"];
+        }
+      } else if (bron["links"] != null) {
+        // Bijlage in berichten
+        this.downloadUrl = bron["links"]["download"]["href"];
       }
     }
   }

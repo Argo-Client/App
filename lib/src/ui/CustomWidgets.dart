@@ -145,7 +145,6 @@ class WebContent extends StatelessWidget {
       htmlText,
       onTapUrl: launch,
       customStylesBuilder: (e) {
-        // print(e.localName);
         if (e.localName == "a") {
           return {'color': '#44b4fe'};
         }

@@ -148,13 +148,15 @@ class LesAdapter extends TypeAdapter<Les> {
       ..infoType = fields[18] as String
       ..heleDag = fields[19] as bool
       ..startDateTime = fields[20] as DateTime
-      ..onlineLes = fields[21] as bool;
+      ..onlineLes = fields[21] as bool
+      ..heeftBijlagen = fields[22] as bool
+      ..bijlagen = (fields[23] as List)?.cast<Bron>();
   }
 
   @override
   void write(BinaryWriter writer, Les obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.start)
       ..writeByte(1)
@@ -198,7 +200,11 @@ class LesAdapter extends TypeAdapter<Les> {
       ..writeByte(20)
       ..write(obj.startDateTime)
       ..writeByte(21)
-      ..write(obj.onlineLes);
+      ..write(obj.onlineLes)
+      ..writeByte(22)
+      ..write(obj.heeftBijlagen)
+      ..writeByte(23)
+      ..write(obj.bijlagen);
   }
 
   @override
@@ -406,17 +412,21 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..dag = fields[0] as String
       ..id = fields[1] as int
       ..prioriteit = fields[2] as bool
-      ..bijlagen = fields[3] as bool
+      ..heeftBijlagen = fields[3] as bool
       ..onderwerp = fields[4] as String
       ..afzender = fields[5] as String
       ..date = fields[6] as DateTime
-      ..read = fields[7] as bool;
+      ..read = fields[7] as bool
+      ..bijlagen = (fields[8] as List)?.cast<Bron>()
+      ..inhoud = fields[9] as String
+      ..ontvangers = (fields[10] as List)?.cast<String>()
+      ..cc = (fields[11] as List)?.cast<String>();
   }
 
   @override
   void write(BinaryWriter writer, Bericht obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.dag)
       ..writeByte(1)
@@ -424,7 +434,7 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..writeByte(2)
       ..write(obj.prioriteit)
       ..writeByte(3)
-      ..write(obj.bijlagen)
+      ..write(obj.heeftBijlagen)
       ..writeByte(4)
       ..write(obj.onderwerp)
       ..writeByte(5)
@@ -432,7 +442,15 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..writeByte(6)
       ..write(obj.date)
       ..writeByte(7)
-      ..write(obj.read);
+      ..write(obj.read)
+      ..writeByte(8)
+      ..write(obj.bijlagen)
+      ..writeByte(9)
+      ..write(obj.inhoud)
+      ..writeByte(10)
+      ..write(obj.ontvangers)
+      ..writeByte(11)
+      ..write(obj.cc);
   }
 
   @override

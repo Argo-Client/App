@@ -316,11 +316,9 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                                       setState(
                                         () {
                                           wijsbron.downloadCount = count;
-                                          // print(wijsbron.downloadCount);
                                           if (count >= currentlyDownloading.size) {
                                             currentlyDownloading = null;
                                           }
-                                          // print("klaar ${wijsbron.downloadCount} | ${wijsbron.size}");
                                         },
                                       );
                                     },
@@ -359,7 +357,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                                 ),
                                 title: Padding(
                                   child: Text(
-                                    hasExtension ? splittedNaam.first : wijsbron.naam,
+                                    hasExtension ? splittedNaam.join(".") : wijsbron.naam,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   padding: EdgeInsets.symmetric(

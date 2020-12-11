@@ -144,171 +144,273 @@ class BerichtPagina extends StatelessWidget {
       ),
       body: Futuristic(
         autoStart: true,
-        futureBuilder: () => account.magister.berichten.getBerichtFromId(ber.value.id),
+        futureBuilder: () async {
+          if (ber.value.inhoud != null) {
+            List returnable = [ber.value];
+            if (ber.value.heeftBijlagen && ber.value.bijlagen != null) {
+              returnable.add(ber.value.bijlagen);
+            }
+            return Future.value(returnable);
+          }
+          return Future.wait([
+            account.magister.berichten.getBerichtFrom(ber.value),
+            if (ber.value.heeftBijlagen) account.magister.berichten.bijlagen(ber.value),
+          ]);
+        },
         onData: (bericht) {
-          ber.value.read = bericht.read;
+          ber.value.read = bericht[0].read;
           // ignore: invalid_use_of_visible_for_testing_member,invalid_use_of_protected_member
           ber.notifyListeners();
         },
         busyBuilder: (context) => Center(
           child: CircularProgressIndicator(),
         ),
-        errorBuilder: (context, error, retry) => RefreshIndicator(
-          onRefresh: () async => retry(),
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width - 50,
-                height: bodyHeight(context),
-                child: Text(
-                  "Kon geen verbinding maken met Magister:\n${(error as dynamic).error.toString()}",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 20,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ),
-        ),
-        dataBuilder: (context, ber) => SingleChildScrollView(
-          child: Column(
-            children: [
-              SeeCard(
-                margin: EdgeInsets.only(
-                  bottom: 20,
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                ),
-                column: [
-                  if (ber.afzender != null)
-                    ListTileBorder(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
-                      leading: Padding(
-                        child: Icon(
-                          Icons.person_outlined,
-                        ),
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      title: Text(
-                        ber.afzender,
-                      ),
-                      subtitle: Text(
-                        "Afzender",
-                      ),
-                    ),
-                  if (ber.dag != null)
-                    ListTileBorder(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
-                      leading: Padding(
-                        child: Icon(
-                          Icons.send,
-                        ),
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      title: Text(
-                        ber.dag,
-                      ),
-                      subtitle: Text(
-                        "Verzonden",
-                      ),
-                    ),
-                  if (ber.ontvangers != null)
-                    ListTileBorder(
-                      border: ber.cc == null
-                          ? null
-                          : Border(
-                              bottom: greyBorderSide(),
-                            ),
-                      leading: Padding(
-                        child: Icon(
-                          Icons.people_outlined,
-                        ),
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      title: Text(
-                        ber.ontvangers.take(10).join(", "),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: ber.ontvangers.length > 3
-                          ? () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ShowPeopleList(
-                                    ber.ontvangers,
-                                    title: "Ontvangers",
-                                  ),
-                                ),
-                              );
-                            }
-                          : null,
-                      subtitle: Text(
-                        "Ontvanger(s)",
-                      ),
-                    ),
-                  if (ber.cc != null)
-                    ListTile(
-                      leading: Padding(
-                        child: Icon(
-                          Icons.people_outline,
-                        ),
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      title: Text(
-                        ber.cc.take(5).join(', '),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        "CC",
-                      ),
-                      onTap: ber.cc.length > 3
-                          ? () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ShowPeopleList(
-                                    ber.cc,
-                                    title: "Ontvangers",
-                                  ),
-                                ),
-                              );
-                            }
-                          : null,
-                    ),
-                ],
-              ),
-              if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
-                SeeCard(
+        onError: (error, retry) {
+          if (!(error is DioError)) throw (error);
+        },
+        errorBuilder: (context, error, retry) {
+          if (!(error is DioError))
+            return Text("Dit zou je nooit moeten zien, error: \n\n $error");
+          else
+            return RefreshIndicator(
+              onRefresh: () async => retry(),
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Center(
                   child: Container(
-                    padding: EdgeInsets.all(
-                      20,
-                    ),
-                    child: WebContent(
-                      ber.inhoud,
+                    width: MediaQuery.of(context).size.width - 50,
+                    height: bodyHeight(context),
+                    child: Text(
+                      "Kon geen verbinding maken met Magister:\n${(error as dynamic).error.toString()}",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-            ],
-          ),
-        ),
+              ),
+            );
+        },
+        dataBuilder: (context, data) {
+          Bericht ber = data[0];
+          List<Bron> bijlagen;
+          if (ber.heeftBijlagen) {
+            bijlagen = data[1];
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                SeeCard(
+                  margin: EdgeInsets.only(
+                    bottom: 20,
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                  ),
+                  column: [
+                    if (ber.afzender != null)
+                      ListTileBorder(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                        leading: Padding(
+                          child: Icon(
+                            Icons.person_outlined,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.afzender,
+                        ),
+                        subtitle: Text(
+                          "Afzender",
+                        ),
+                      ),
+                    if (ber.dag != null)
+                      ListTileBorder(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                        leading: Padding(
+                          child: Icon(
+                            Icons.send,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.dag,
+                        ),
+                        subtitle: Text(
+                          "Verzonden",
+                        ),
+                      ),
+                    if (ber.ontvangers != null)
+                      ListTileBorder(
+                        border: ber.cc == null
+                            ? null
+                            : Border(
+                                bottom: greyBorderSide(),
+                              ),
+                        leading: Padding(
+                          child: Icon(
+                            Icons.people_outlined,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.ontvangers.take(10).join(", "),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        onTap: ber.ontvangers.length > 3
+                            ? () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ShowPeopleList(
+                                      ber.ontvangers,
+                                      title: "Ontvangers",
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
+                        subtitle: Text(
+                          "Ontvanger(s)",
+                        ),
+                      ),
+                    if (ber.cc != null)
+                      ListTile(
+                        leading: Padding(
+                          child: Icon(
+                            Icons.people_outline,
+                          ),
+                          padding: EdgeInsets.only(
+                            top: 7,
+                            left: 7,
+                          ),
+                        ),
+                        title: Text(
+                          ber.cc.take(5).join(', '),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          "CC",
+                        ),
+                        onTap: ber.cc.length > 3
+                            ? () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ShowPeopleList(
+                                      ber.cc,
+                                      title: "Ontvangers",
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
+                      ),
+                  ],
+                ),
+                if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
+                  SeeCard(
+                    child: Container(
+                      padding: EdgeInsets.all(
+                        20,
+                      ),
+                      child: Column(
+                        children: [
+                          WebContent(
+                            ber.inhoud,
+                          ),
+                          if (ber.heeftBijlagen)
+                            Padding(
+                              padding: EdgeInsets.only(top: 40),
+                              child: Column(
+                                children: [
+                                  for (Bron bijlage in bijlagen)
+                                    () {
+                                      List<String> splittedNaam = bijlage.naam.split(".");
+                                      return ListTileBorder(
+                                        onTap: () {
+                                          account.magister.bronnen.downloadFile(bijlage, (_, _a) {});
+                                        },
+                                        leading: Column(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                top: 5,
+                                              ),
+                                              child: Icon(
+                                                Icons.insert_drive_file_outlined,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                top: 7.5,
+                                              ),
+                                              child: Text(
+                                                splittedNaam.length > 1 ? splittedNaam.removeLast().toUpperCase() : bijlage.naam,
+                                                style: TextStyle(
+                                                  fontSize: 12.5,
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        subtitle: Padding(
+                                          child: Text(
+                                            filesize(bijlage.size),
+                                          ),
+                                          padding: EdgeInsets.only(
+                                            bottom: 5,
+                                          ),
+                                        ),
+                                        title: Padding(
+                                          child: Text(
+                                            splittedNaam.length > 1 ? splittedNaam.join(".") : bijlage.naam,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                        ),
+                                        trailing: bijlage.downloadCount == bijlage.size
+                                            ? Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 18,
+                                              )
+                                            : bijlage.downloadCount == null
+                                                ? Icon(
+                                                    Icons.cloud_download,
+                                                    size: 22,
+                                                  )
+                                                : CircularProgressIndicator(),
+                                        border: Border(
+                                          top: greyBorderSide(),
+                                        ),
+                                      );
+                                    }()
+                                ],
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

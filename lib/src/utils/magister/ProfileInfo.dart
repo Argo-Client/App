@@ -16,7 +16,8 @@ class ProfileInfo extends MagisterApi {
   Future profileInfo() async {
     Map body = (await api.dio.get("api/account")).data["Persoon"];
     account.id = body["Id"];
-    account.officialFullName = body["OfficieleVoornamen"] + " " + (body["OfficieleTussenvoegsel"] != null ? body["OfficieleTussenvoegsel"] + " " : "") + body["OfficieleAchternaam"];
+    account.officialFullName = 
+    body["OfficieleVoornamen"] + " " + (body["OfficieleTussenvoegsels"] != null ? body["OfficieleTussenvoegsels"] + " " : "") + body["OfficieleAchternaam"];
     account.fullName = body["Roepnaam"] + " " + (body["Tussenvoegsel"] != null ? body["Tussenvoegsel"] + " " : "") + body["Achternaam"];
     account.name = body["Roepnaam"];
     account.initials = body["Voorletters"];

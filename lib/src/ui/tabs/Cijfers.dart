@@ -1,4 +1,13 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:intl/intl.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:futuristic/futuristic.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class Cijfers extends StatefulWidget {
   @override
@@ -28,7 +37,7 @@ class _Cijfers extends State<Cijfers> {
                   Icons.menu,
                 ),
                 onPressed: () {
-                  _layoutKey.currentState.openDrawer();
+                  DrawerStates.layoutKey.currentState.openDrawer();
                 },
               ),
               bottom: TabBar(

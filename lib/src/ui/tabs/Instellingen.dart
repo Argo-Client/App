@@ -1,4 +1,69 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:numberpicker/numberpicker.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
+
+import 'package:Argo/src/utils/instellingen.dart';
+
+enum InstellingType { checkBox, number, custom }
+
+class Instelling extends StatelessWidget {
+  final String title;
+  final String description;
+  final InstellingType type;
+  final bool value;
+  final Function onTap;
+  final Widget trailing;
+
+  Instelling({
+    this.title = "",
+    this.description = "",
+    this.trailing,
+    this.type,
+    this.onTap,
+    this.value,
+  });
+
+  Widget build(BuildContext context) {
+    return SeeCard(
+      child: ListTileBorder(
+        title: Text(title),
+        trailing: trailing,
+        subtitle: Text(description),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+class InstellingCategory extends StatelessWidget {
+  final String name;
+  final IconData icon;
+  final List<Instelling> children;
+
+  InstellingCategory({
+    this.name,
+    this.icon,
+    this.children,
+  });
+
+  Widget build(BuildContext context) {
+    return ListTileBorder(
+      title: Text(name),
+      leading: Icon(icon),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => InstellingPagina(this),
+          ),
+        );
+      },
+    );
+  }
+}
 
 class Instellingen extends StatefulWidget {
   @override
@@ -6,191 +71,21 @@ class Instellingen extends StatefulWidget {
 }
 
 class _Instellingen extends State<Instellingen> {
-  void _showColorPicker(pick) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Kies een kleur"),
-          content: BlockPicker(
-            pickerColor: userdata.get(pick),
-            onColorChanged: (color) {
-              appState.setState(() {
-                userdata.put(pick, color);
-              });
-            },
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                "Sluit",
-                textScaleFactor: 1.25,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
-            _layoutKey.currentState.openDrawer();
+            DrawerStates.layoutKey.currentState.openDrawer();
           },
         ),
         title: Text("Instellingen"),
       ),
       body: ListView(
         children: [
+          InstellingenList(),
           ContentHeader("Uiterlijk"),
-          SeeCard(
-            column: [
-              ListTileBorder(
-                border: Border(
-                  bottom: greyBorderSide(),
-                ),
-                // Geen icoontje want dat is lelijk // Je bent zelf lelijk we doen lekker wel icoontje // Dankuwel meneer
-                trailing: Icon(Icons.brightness_4_outlined),
-                title: Text("Thema"),
-                subtitle: Text(userdata.get("theme").toString().capitalize + " thema"),
-                onTap: () {
-                  return showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return AlertDialog(
-                            title: Text("Selecteer je thema"),
-                            actions: [
-                              FlatButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  "Sluit",
-                                ),
-                              )
-                            ],
-                            content: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  RadioListTile(
-                                    title: Text("Licht"),
-                                    activeColor: userdata.get('accentColor'),
-                                    value: "licht",
-                                    groupValue: userdata.get("theme"),
-                                    onChanged: (value) {
-                                      appState.setState(() {
-                                        setState(() {
-                                          userdata.put("theme", value);
-                                        });
-                                      });
-                                    },
-                                  ),
-                                  RadioListTile(
-                                    title: Text("Donker"),
-                                    activeColor: userdata.get('accentColor'),
-                                    value: "donker",
-                                    groupValue: userdata.get("theme"),
-                                    onChanged: (value) {
-                                      appState.setState(() {
-                                        setState(() {
-                                          userdata.put("theme", value);
-                                        });
-                                      });
-                                    },
-                                  ),
-                                  RadioListTile(
-                                    title: Text("OLED"),
-                                    activeColor: userdata.get('accentColor'),
-                                    value: "OLED",
-                                    groupValue: userdata.get("theme"),
-                                    onChanged: (value) {
-                                      appState.setState(() {
-                                        setState(() {
-                                          userdata.put("theme", value);
-                                        });
-                                      });
-                                    },
-                                  ),
-                                  RadioListTile(
-                                    title: Text("Systeem kleur"),
-                                    activeColor: userdata.get('accentColor'),
-                                    value: "systeem",
-                                    groupValue: userdata.get("theme"),
-                                    onChanged: (value) {
-                                      appState.setState(
-                                        () {
-                                          setState(
-                                            () {
-                                              userdata.put("theme", value);
-                                            },
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-              ListTileBorder(
-                border: Border(
-                  bottom: greyBorderSide(),
-                ),
-                title: Text('Primaire kleur'),
-                subtitle: Text(
-                  '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-                ),
-                onTap: () => _showColorPicker("primaryColor"),
-                trailing: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: userdata.get("primaryColor"),
-                    border: Border.all(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-              ListTileBorder(
-                border: Border(
-                  bottom: greyBorderSide(),
-                ),
-                title: Text('Secundaire kleur'),
-                subtitle: Text(
-                  '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-                ),
-                onTap: () => _showColorPicker("accentColor"),
-                trailing: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: userdata.get("accentColor"),
-                    border: Border.all(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
           SeeCard(
             child: CheckboxListTile(
               title: Text(
@@ -450,6 +345,24 @@ class _Instellingen extends State<Instellingen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class InstellingPagina extends StatelessWidget {
+  final InstellingCategory category;
+
+  InstellingPagina(this.category);
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          category.name,
+        ),
+      ),
+      body: ListView(
+        children: category?.children ?? [],
       ),
     );
   }

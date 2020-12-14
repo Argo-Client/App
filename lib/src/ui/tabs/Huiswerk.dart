@@ -1,4 +1,16 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:after_layout/after_layout.dart';
+import 'package:intl/intl.dart';
+import 'package:futuristic/futuristic.dart';
+import 'package:infinity_page_view/infinity_page_view.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
+
+import 'Agenda.dart';
 
 class Huiswerk extends StatefulWidget {
   @override
@@ -39,7 +51,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
-            _layoutKey.currentState.openDrawer();
+            DrawerStates.layoutKey.currentState.openDrawer();
           },
         ),
         title: Column(

@@ -1,8 +1,22 @@
-part of main;
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:after_layout/after_layout.dart';
+import 'package:flushbar/flushbar_helper.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+
+import 'ui/Introduction.dart';
+import 'utils/login.dart' as login;
+import 'utils/tabs.dart';
 
 int _currentIndex = 1;
-final GlobalKey<ScaffoldState> _layoutKey = new GlobalKey<ScaffoldState>();
-final GlobalKey<State> _drawerState = new GlobalKey<State>();
+
+class DrawerStates {
+  static GlobalKey<ScaffoldState> layoutKey = new GlobalKey<ScaffoldState>();
+  static GlobalKey<State> drawerState = new GlobalKey<State>();
+}
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   bool _detailsPressed = false;
@@ -25,7 +39,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     if (account == null) {
       return Scaffold();
     }
-    var child = _children[_currentIndex];
+    var child = Tabs.children[_currentIndex];
     bool useIcon = userdata.get("useIcon");
     void changeAccount(int id) {
       int index = accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
@@ -51,7 +65,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       appBar: AppBar(
                         title: Text("Verversen"),
                       ),
-                      body: RefreshAccountView(account, context, (account, context) async {
+                      body: login.RefreshAccountView(account, context, (account, context) async {
                         update();
                         FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
                         await acc.magister.downloadProfilePicture();
@@ -128,7 +142,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         leading: Icon(Icons.add_outlined),
         title: Text("Voeg account toe"),
         onTap: () {
-          MagisterLogin().launch(context, (Account newAccount, context, {String error}) async {
+          login.MagisterLogin().launch(context, (Account newAccount, context, {String error}) async {
             setState(() {});
           }, title: "Nieuw Account");
         },
@@ -137,8 +151,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
     final List<Widget> _drawer = [];
 
-    for (int i = 0; i < _children.length; i++) {
-      if (_children[i]["divider"] ?? false) {
+    for (int i = 0; i < Tabs.children.length; i++) {
+      if (Tabs.children[i]["divider"] ?? false) {
         _drawer.add(Divider());
       } else {
         _drawer.add(
@@ -149,7 +163,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     // padding: EdgeInsets.all(7.5),
                     child: Padding(
                       child: Icon(
-                        _children[i]["icon"],
+                        Tabs.children[i]["icon"],
                         color: userdata.get("colorsInDrawer") ? Colors.white : null,
                       ),
                       padding: EdgeInsets.all(5.5),
@@ -157,12 +171,12 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    color: _children[i]["color"],
+                    color: Tabs.children[i]["color"],
                   )
                 : Icon(
-                    _children[i]["icon"],
+                    Tabs.children[i]["icon"],
                   ),
-            title: _children[i]["name"],
+            title: Tabs.children[i]["name"],
             onTap: () {
               changeIndex(i);
             },
@@ -176,7 +190,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         if (lastPopped != null && userdata.get("doubleBackAgenda")) {
           if (lastPopped.isAfter(DateTime.now().subtract(Duration(milliseconds: 500)))) {
             changeIndex(1);
-            if (_layoutKey.currentState.isDrawerOpen) {
+            if (DrawerStates.layoutKey.currentState.isDrawerOpen) {
               Navigator.of(context).pop();
             }
             return Future.value(false);
@@ -184,15 +198,15 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         }
         lastPopped = DateTime.now();
         if (!userdata.get("backOpensDrawer") || child["overridePop"] != null) return Future.value(true);
-        if (_layoutKey.currentState.isDrawerOpen) {
+        if (DrawerStates.layoutKey.currentState.isDrawerOpen) {
           Navigator.of(context).pop();
         } else {
-          _layoutKey.currentState.openDrawer();
+          DrawerStates.layoutKey.currentState.openDrawer();
         }
         return Future.value(false);
       },
       child: Scaffold(
-        key: _layoutKey,
+        key: DrawerStates.layoutKey,
         body: child["page"],
         drawer: Drawer(
           child: Container(
@@ -202,7 +216,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
               children: [
                 UserAccountsDrawerHeader(
                   onDetailsPressed: () => {
-                    _drawerState.currentState.setState(
+                    DrawerStates.drawerState.currentState.setState(
                       () {
                         _detailsPressed = !_detailsPressed;
                       },
@@ -261,7 +275,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       children: _detailsPressed ? _accountsDrawer : _drawer,
                     );
                   },
-                  key: _drawerState,
+                  key: DrawerStates.drawerState,
                 ),
               ],
             ),

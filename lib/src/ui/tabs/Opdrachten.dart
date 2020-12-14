@@ -1,4 +1,5 @@
-part of main;
+import 'package:flutter/material.dart';
+import 'package:Argo/src/layout.dart';
 
 class Opdrachten extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _Opdrachten extends State<Opdrachten> {
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
-            _layoutKey.currentState.openDrawer();
+            DrawerStates.layoutKey.currentState.openDrawer();
           },
         ),
         title: Text("Opdrachten"),

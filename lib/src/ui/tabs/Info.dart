@@ -1,4 +1,10 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class Info extends StatefulWidget {
   @override
@@ -17,7 +23,7 @@ class _Info extends State<Info> {
           leading: IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              _layoutKey.currentState.openDrawer();
+              DrawerStates.layoutKey.currentState.openDrawer();
             },
           ),
           bottom: TabBar(

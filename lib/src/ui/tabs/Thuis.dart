@@ -1,4 +1,13 @@
-part of main;
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
+
+import 'Agenda.dart';
+import 'Berichten.dart';
 
 class Thuis extends StatefulWidget {
   @override
@@ -51,7 +60,7 @@ class _Thuis extends State<Thuis> {
               leading: IconButton(
                 icon: Icon(Icons.menu),
                 onPressed: () {
-                  _layoutKey.currentState.openDrawer();
+                  DrawerStates.layoutKey.currentState.openDrawer();
                 },
               ),
               expandedHeight: 200.0,

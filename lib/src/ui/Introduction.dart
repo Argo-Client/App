@@ -1,4 +1,16 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:intro_slider/dot_animation_enum.dart';
+import 'package:intro_slider/intro_slider.dart';
+import 'package:intro_slider/slide_object.dart';
+import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
+
+import 'package:Argo/src/utils/login.dart';
 
 class Introduction extends StatefulWidget {
   @override
@@ -17,8 +29,13 @@ class _Introduction extends State<Introduction> {
   void onLoggedIn(Account acc, BuildContext context, {String error}) {
     account = acc;
     userdata.put("introduction", true);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => App()));
-    appState = _AppState();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => App(),
+      ),
+    );
+    // appState = _AppState();
   }
 
   void loginPress() => MagisterLogin().launch(context, onLoggedIn);

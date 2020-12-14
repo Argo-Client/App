@@ -1,4 +1,13 @@
-part of main;
+import 'package:flutter/material.dart';
+
+import 'package:after_layout/after_layout.dart';
+import 'package:futuristic/futuristic.dart';
+import 'package:dio/dio.dart';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class Berichten extends StatefulWidget {
   @override
@@ -14,7 +23,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
-            _layoutKey.currentState.openDrawer();
+            DrawerStates.layoutKey.currentState.openDrawer();
           },
         ),
         title: Text("Berichten"),

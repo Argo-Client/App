@@ -1,4 +1,9 @@
-part of main;
+import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:Argo/main.dart';
+import 'package:Argo/src/layout.dart';
+import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class MijnGegevens extends StatefulWidget {
   @override
@@ -13,7 +18,7 @@ class _MijnGegevens extends State<MijnGegevens> {
         leading: IconButton(
           icon: Icon(Icons.menu),
           onPressed: () {
-            _layoutKey.currentState.openDrawer();
+            DrawerStates.layoutKey.currentState.openDrawer();
           },
         ),
         title: Text("Mijn Gegevens"),

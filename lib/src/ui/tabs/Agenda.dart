@@ -658,9 +658,63 @@ class LesPagina extends StatefulWidget {
   _LesPagina createState() => _LesPagina(les);
 }
 
-class _LesPagina extends State<LesPagina> {
+class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   Les les;
   _LesPagina(this.les);
+
+  AnimationController _animationController;
+  Animation<Color> _fabColor;
+  Animation<double> _fabProgress;
+  bool isChecked;
+  double _maxProgress = 20.0;
+  AnimatedIconData icon = AnimatedIcons.add_event;
+  ColorTween color = ColorTween(
+    begin: userdata.get("primaryColor"),
+    end: Colors.green,
+  );
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _fabProgress = Tween<double>(begin: 0.0, end: _maxProgress).animate(
+      _animationController,
+    );
+
+    _fabColor = color.animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.00,
+        1.00,
+        curve: Curves.linear,
+      ),
+    ));
+
+    // _animationController.
+
+    if (les.huiswerkAf != null) if (les.huiswerkAf) _animationController.forward();
+
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  animate() {
+    if (!les.huiswerkAf) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -694,13 +748,34 @@ class _LesPagina extends State<LesPagina> {
           ? null
           : FloatingActionButton(
               onPressed: () async {
+                animate();
                 await account.magister.agenda.toggleHuiswerk(les);
                 les.huiswerkAf = !les.huiswerkAf;
                 setState(() {});
                 update();
               },
-              backgroundColor: les.huiswerkAf ? Colors.green : userdata.get("accentColor"),
-              child: Icon(les.huiswerkAf ? Icons.check : Icons.refresh),
+              backgroundColor: _fabColor.value,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Transform.translate(
+                    offset: Offset(-_fabProgress.value, 0),
+                    child: Icon(
+                      Icons.assignment,
+                      color: Colors.white,
+                      size: _maxProgress - _fabProgress.value,
+                    ),
+                  ),
+                  Transform.translate(
+                    offset: Offset(-_fabProgress.value + _maxProgress, 0),
+                    child: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: _fabProgress.value,
+                    ),
+                  ),
+                ],
+              ),
             ),
       body: SingleChildScrollView(
         child: Column(
@@ -860,7 +935,7 @@ class _LesPagina extends State<LesPagina> {
                 //   ),
               ],
             ),
-            if (les.description.length != 0 || les.heeftBijlagen)
+            if (les.description.length != 0)
               SeeCard(
                 margin: EdgeInsets.only(top: 20),
                 padding: EdgeInsets.all(20),
@@ -887,93 +962,48 @@ class _LesPagina extends State<LesPagina> {
                           )
                         ],
                       ),
-                    if (les.heeftBijlagen)
-                      Futuristic(
-                        autoStart: true,
-                        futureBuilder: () => account.magister.agenda.getBijlagen(les),
-                        dataBuilder: (context, bijlagen) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                bottom: 10,
-                              ),
-                              child: Text(
-                                "Bijlagen",
-                                style: TextStyle(
-                                  fontSize: 23,
-                                ),
-                              ),
-                            ),
-                            for (Bron bijlage in bijlagen)
-                              () {
-                                List<String> splittedNaam = bijlage.naam.split(".");
-                                return ListTileBorder(
-                                  onTap: () {
-                                    account.magister.bronnen.downloadFile(bijlage, (_, _a) {});
-                                  },
-                                  leading: Column(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          top: 5,
-                                        ),
-                                        child: Icon(
-                                          Icons.insert_drive_file_outlined,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                          top: 7.5,
-                                        ),
-                                        child: Text(
-                                          splittedNaam.length > 1 ? splittedNaam.removeLast().toUpperCase() : bijlage.naam,
-                                          style: TextStyle(
-                                            fontSize: 12.5,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  subtitle: Padding(
-                                    child: Text(
-                                      filesize(bijlage.size),
-                                    ),
-                                    padding: EdgeInsets.only(
-                                      bottom: 5,
-                                    ),
-                                  ),
-                                  title: Padding(
-                                    child: Text(
-                                      splittedNaam.length > 1 ? splittedNaam.join(".") : bijlage.naam,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                  ),
-                                  trailing: bijlage.downloadCount == bijlage.size
-                                      ? Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 18,
-                                        )
-                                      : bijlage.downloadCount == null
-                                          ? Icon(
-                                              Icons.cloud_download,
-                                              size: 22,
-                                            )
-                                          : CircularProgressIndicator(),
-                                  border: Border(
-                                    top: greyBorderSide(),
-                                  ),
-                                );
-                              }()
-                          ],
-                        ),
-                      )
                   ],
                 ),
               ),
+            if (les.heeftBijlagen)
+              SeeCard(
+                margin: EdgeInsets.only(top: 20),
+                child: Futuristic(
+                  autoStart: true,
+                  futureBuilder: () => account.magister.agenda.getBijlagen(les),
+                  dataBuilder: (context, bijlagen) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: 20,
+                          left: 20,
+                          bottom: 10,
+                        ),
+                        child: Text(
+                          "Bijlagen",
+                          style: TextStyle(
+                            fontSize: 23,
+                          ),
+                        ),
+                      ),
+                      for (Bron bron in bijlagen)
+                        BijlageItem(
+                          bron,
+                          onTap: () {
+                            account.magister.bronnen.downloadFile(bron, (_, _a) {});
+                          },
+                          border: bijlagen.last != bron
+                              ? Border(
+                                  bottom: greyBorderSide(),
+                                )
+                              : null,
+                        )
+                    ],
+                  ),
+                ),
+              ),
+
             // if (account.studiewijzers.where((wijzer) => wijzer.vakcode ==
 
             // ).isEmpty)

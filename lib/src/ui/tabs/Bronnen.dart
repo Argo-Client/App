@@ -93,123 +93,63 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                         ),
                       )
                     else
-                      for (Bron bron in bronnenView.last)
-                        StatefulBuilder(
-                          builder: (BuildContext context, _) {
-                            List<String> splittedNaam = bron.naam.split(".");
-                            bool hasExtension = bron.naam.contains(".") && !bron.isFolder;
-
-                            return SeeCard(
+                      SeeCard(
+                        column: [
+                          for (Bron bron in bronnenView.last)
+                            BijlageItem(
+                              bron,
                               border: bronnenView.last.last != bron
                                   ? Border(
                                       bottom: greyBorderSide(),
                                     )
                                   : null,
-                              child: Tooltip(
-                                child: ListTile(
-                                  leading: bron.isFolder
-                                      ? Icon(Icons.folder_outlined)
-                                      : Column(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 5,
-                                              ),
-                                              child: Icon(
-                                                Icons.insert_drive_file_outlined,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 7.5,
-                                              ),
-                                              child: Text(
-                                                hasExtension ? splittedNaam.removeLast().toUpperCase() : bron.naam,
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                  title: Text(
-                                    hasExtension ? splittedNaam.join(".") : bron.naam,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: bron.isFolder
-                                      ? Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 18,
-                                        )
-                                      : bron.downloadCount == bron.size
-                                          ? Icon(
-                                              Icons.arrow_forward_ios,
-                                              size: 18,
-                                            )
-                                          : bron.downloadCount == null
-                                              ? Icon(
-                                                  Icons.cloud_download,
-                                                  size: 22,
-                                                )
-                                              : CircularProgressIndicator(),
-                                  subtitle: bron.isFolder
-                                      // ? Text("${bron.children.length} bestanden")
-                                      ? null
-                                      : Text(
-                                          filesize(
-                                            bron.size,
-                                          ),
-                                        ),
-                                  onTap: () async {
-                                    if (bron.isFolder) {
-                                      breadcrumbs.add(
-                                        bron.naam,
-                                      );
-                                      bronnenView.add(
-                                        bron.children,
-                                      );
-                                      setState(
-                                        () {},
-                                      );
-                                      if (bron.children == null) {
-                                        await handleError(
-                                          () async => await account.magister.bronnen.loadChildren(bron),
-                                          "Kon ${bron.naam} niet laden.",
-                                          context,
-                                          () {
-                                            setState(
-                                              () {},
-                                            );
-                                            bronnenView = bronnenView
-                                                .where(
-                                                  (list) => list != null,
-                                                )
-                                                .toList();
-                                            bronnenView.add(
-                                              bron.children,
-                                            );
-                                          },
+                              onTap: () async {
+                                if (bron.isFolder) {
+                                  breadcrumbs.add(
+                                    bron.naam,
+                                  );
+                                  bronnenView.add(
+                                    bron.children,
+                                  );
+                                  setState(
+                                    () {},
+                                  );
+                                  if (bron.children == null) {
+                                    await handleError(
+                                      () async => await account.magister.bronnen.loadChildren(bron),
+                                      "Kon ${bron.naam} niet laden.",
+                                      context,
+                                      () {
+                                        setState(
+                                          () {},
                                         );
-                                      }
-                                    } else {
-                                      account.magister.bronnen.downloadFile(
-                                        bron,
-                                        (count, total) {
-                                          setState(
-                                            () {
-                                              bron.downloadCount = count;
-                                            },
-                                          );
+                                        bronnenView = bronnenView
+                                            .where(
+                                              (list) => list != null,
+                                            )
+                                            .toList();
+                                        bronnenView.add(
+                                          bron.children,
+                                        );
+                                      },
+                                    );
+                                  }
+                                } else {
+                                  account.magister.bronnen.downloadFile(
+                                    bron,
+                                    (count, total) {
+                                      setState(
+                                        () {
+                                          bron.downloadCount = count;
                                         },
                                       );
-                                    }
-                                  },
-                                ),
-                                message: bron.naam,
-                              ),
-                            );
-                          },
-                        ),
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                        ],
+                      ),
                   ],
                 );
               },

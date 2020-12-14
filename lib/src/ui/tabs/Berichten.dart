@@ -332,80 +332,41 @@ class BerichtPagina extends StatelessWidget {
                           WebContent(
                             ber.inhoud,
                           ),
-                          if (ber.heeftBijlagen)
-                            Padding(
-                              padding: EdgeInsets.only(top: 40),
-                              child: Column(
-                                children: [
-                                  for (Bron bijlage in bijlagen)
-                                    () {
-                                      List<String> splittedNaam = bijlage.naam.split(".");
-                                      return ListTileBorder(
-                                        onTap: () {
-                                          account.magister.bronnen.downloadFile(bijlage, (_, _a) {});
-                                        },
-                                        leading: Column(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 5,
-                                              ),
-                                              child: Icon(
-                                                Icons.insert_drive_file_outlined,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 7.5,
-                                              ),
-                                              child: Text(
-                                                splittedNaam.length > 1 ? splittedNaam.removeLast().toUpperCase() : bijlage.naam,
-                                                style: TextStyle(
-                                                  fontSize: 12.5,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        subtitle: Padding(
-                                          child: Text(
-                                            filesize(bijlage.size),
-                                          ),
-                                          padding: EdgeInsets.only(
-                                            bottom: 5,
-                                          ),
-                                        ),
-                                        title: Padding(
-                                          child: Text(
-                                            splittedNaam.length > 1 ? splittedNaam.join(".") : bijlage.naam,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 10,
-                                          ),
-                                        ),
-                                        trailing: bijlage.downloadCount == bijlage.size
-                                            ? Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 18,
-                                              )
-                                            : bijlage.downloadCount == null
-                                                ? Icon(
-                                                    Icons.cloud_download,
-                                                    size: 22,
-                                                  )
-                                                : CircularProgressIndicator(),
-                                        border: Border(
-                                          top: greyBorderSide(),
-                                        ),
-                                      );
-                                    }()
-                                ],
-                              ),
-                            )
                         ],
                       ),
                     ),
+                  ),
+                if (ber.heeftBijlagen)
+                  SeeCard(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    margin: EdgeInsets.only(top: 20),
+                    column: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: 20,
+                          left: 20,
+                          bottom: 10,
+                        ),
+                        child: Text(
+                          "Bijlagen",
+                          style: TextStyle(
+                            fontSize: 23,
+                          ),
+                        ),
+                      ),
+                      for (Bron bron in bijlagen)
+                        BijlageItem(
+                          bron,
+                          onTap: () {
+                            account.magister.bronnen.downloadFile(bron, (_, _a) {});
+                          },
+                          border: bijlagen.last != bron
+                              ? Border(
+                                  bottom: greyBorderSide(),
+                                )
+                              : null,
+                        )
+                    ],
                   ),
               ],
             ),

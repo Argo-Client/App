@@ -63,6 +63,7 @@ void main() async {
     Hive.registerAdapter(WijzerAdapter());
     Hive.registerAdapter(LeermiddelAdapter());
     Hive.registerAdapter(DocentAdapter());
+    Hive.registerAdapter(PrivilegeAdapter());
   } catch (_) {}
   try {
     List<Box> boxes = await Future.wait([
@@ -111,14 +112,12 @@ void main() async {
     account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
     notifications.lessonNotifications(account.lessons);
   }
-  // Hive.deleteFromDisk();
-  appState = _AppState();
   runApp(App());
 }
 
 class App extends StatefulWidget {
   @override
-  _AppState createState() => appState;
+  _AppState createState() => appState = _AppState();
 }
 
 class _AppState extends State<App> {

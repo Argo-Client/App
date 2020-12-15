@@ -6,7 +6,7 @@ import 'package:Argo/main.dart';
 import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
-import 'package:Argo/src/utils/instellingen.dart';
+// import 'package:Argo/src/utils/instellingen.dart';
 
 enum InstellingType { checkBox, number, custom }
 
@@ -84,7 +84,7 @@ class _Instellingen extends State<Instellingen> {
       ),
       body: ListView(
         children: [
-          InstellingenList(),
+          // InstellingenList(),
           ContentHeader("Uiterlijk"),
           SeeCard(
             child: CheckboxListTile(

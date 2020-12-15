@@ -45,21 +45,6 @@ class Magister {
     if (account.isInBox) account.save();
   }
 
-  Future refresh() async {
-    expiryAndTenant();
-    if (account.id == 0) await account.magister.profileInfo.profileInfo();
-    return Future.wait([
-      agenda.refresh(),
-      profileInfo.refresh(),
-      afwezigheid.refresh(),
-      berichten.refresh(),
-      cijfers.refresh(),
-      bronnen.refresh(),
-      studiewijzers.refresh(),
-      leermiddelen.refresh(),
-    ]);
-  }
-
   Future downloadProfilePicture() async {
     var img = (await api.dio.get("api/leerlingen/${account.id}/foto", options: Options(responseType: ResponseType.bytes)));
     String image = base64Encode(img.data);

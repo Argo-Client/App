@@ -44,13 +44,14 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..bronnen = (fields[23] as List)?.cast<Bron>()
       ..studiewijzers = (fields[24] as List)?.cast<Wijzer>()
       ..recenteCijfers = (fields[25] as List)?.cast<Cijfer>()
-      ..leermiddelen = (fields[26] as List)?.cast<Leermiddel>();
+      ..leermiddelen = (fields[26] as List)?.cast<Leermiddel>()
+      ..privileges = (fields[27] as List)?.cast<Privilege>();
   }
 
   @override
   void write(BinaryWriter writer, Account obj) {
     writer
-      ..writeByte(26)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.address)
       ..writeByte(1)
@@ -102,7 +103,9 @@ class AccountAdapter extends TypeAdapter<Account> {
       ..writeByte(25)
       ..write(obj.recenteCijfers)
       ..writeByte(26)
-      ..write(obj.leermiddelen);
+      ..write(obj.leermiddelen)
+      ..writeByte(27)
+      ..write(obj.privileges);
   }
 
   @override
@@ -685,6 +688,42 @@ class DocentAdapter extends TypeAdapter<Docent> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DocentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PrivilegeAdapter extends TypeAdapter<Privilege> {
+  @override
+  final int typeId = 13;
+
+  @override
+  Privilege read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Privilege()
+      ..naam = fields[0] as String
+      ..permissions = (fields[1] as List)?.cast<String>();
+  }
+
+  @override
+  void write(BinaryWriter writer, Privilege obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.naam)
+      ..writeByte(1)
+      ..write(obj.permissions);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PrivilegeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

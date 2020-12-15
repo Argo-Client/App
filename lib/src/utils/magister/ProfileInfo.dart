@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:Argo/src/utils/hive/adapters.dart';
+
 import 'magister.dart';
 
 class ProfileInfo extends MagisterApi {
@@ -14,14 +16,15 @@ class ProfileInfo extends MagisterApi {
   }
 
   Future profileInfo() async {
-    Map body = (await api.dio.get("api/account")).data["Persoon"];
-    account.id = body["Id"];
-    account.officialFullName = 
-    body["OfficieleVoornamen"] + " " + (body["OfficieleTussenvoegsels"] != null ? body["OfficieleTussenvoegsels"] + " " : "") + body["OfficieleAchternaam"];
-    account.fullName = body["Roepnaam"] + " " + (body["Tussenvoegsel"] != null ? body["Tussenvoegsel"] + " " : "") + body["Achternaam"];
-    account.name = body["Roepnaam"];
-    account.initials = body["Voorletters"];
-    account.birthdate = body["Geboortedatum"];
+    Map body = (await api.dio.get("api/account")).data;
+    account.privileges = body["Groep"][0]["Privileges"].map((priv) => Privilege(priv)).toList().cast<Privilege>();
+    Map pers = body["Persoon"];
+    account.id = pers["Id"];
+    account.officialFullName = pers["OfficieleVoornamen"] + " " + (pers["OfficieleTussenvoegsels"] != null ? pers["OfficieleTussenvoegsels"] + " " : "") + pers["OfficieleAchternaam"];
+    account.fullName = pers["Roepnaam"] + " " + (pers["Tussenvoegsel"] != null ? pers["Tussenvoegsel"] + " " : "") + pers["Achternaam"];
+    account.name = pers["Roepnaam"];
+    account.initials = pers["Voorletters"];
+    account.birthdate = pers["Geboortedatum"];
   }
 
   Future schoolInfo() async {

@@ -73,6 +73,21 @@ class Account extends HiveObject {
   List<Cijfer> recenteCijfers;
   @HiveField(26)
   List<Leermiddel> leermiddelen;
+  @HiveField(27)
+  List<Privilege> privileges;
+
+  bool has(String type, String permission) => privileges
+      .where(
+        (privilege) =>
+            privilege.naam == type &&
+            privilege.permissions
+                .where(
+                  (perm) => perm == permission,
+                )
+                .isNotEmpty,
+      )
+      .isNotEmpty;
+
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
@@ -501,6 +516,20 @@ class Docent {
   }
 
   String toString() => this.naam;
+}
+
+@HiveType(typeId: 13)
+class Privilege {
+  @HiveField(0)
+  String naam;
+  @HiveField(1)
+  List<String> permissions;
+  Privilege([priv]) {
+    if (priv != null) {
+      this.naam = priv["Naam"];
+      this.permissions = priv["AccessType"].cast<String>();
+    }
+  }
 }
 
 class MaterialColorAdapter extends TypeAdapter<MaterialColor> {

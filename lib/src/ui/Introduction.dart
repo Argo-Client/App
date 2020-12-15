@@ -35,7 +35,6 @@ class _Introduction extends State<Introduction> {
         builder: (context) => App(),
       ),
     );
-    // appState = _AppState();
   }
 
   void loginPress() => MagisterLogin().launch(context, onLoggedIn);

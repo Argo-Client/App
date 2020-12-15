@@ -39,7 +39,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
     if (account == null) {
       return Scaffold();
     }
-    var child = Tabs.children[_currentIndex];
+    List<Map> children = Tabs(account).children;
+    var child = children[_currentIndex];
     bool useIcon = userdata.get("useIcon");
     void changeAccount(int id) {
       int index = accounts.toMap().entries.firstWhere((g) => g.value.id == id).key;
@@ -87,6 +88,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       FlatButton(
                         child: Text("Verwijder"),
                         onPressed: () {
+                          Navigator.pop(context);
                           accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
                           if (accounts.isEmpty) {
                             accounts.clear();
@@ -151,8 +153,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
     final List<Widget> _drawer = [];
 
-    for (int i = 0; i < Tabs.children.length; i++) {
-      if (Tabs.children[i]["divider"] ?? false) {
+    for (int i = 0; i < children.length; i++) {
+      if (children[i]["divider"] ?? false) {
         _drawer.add(Divider());
       } else {
         _drawer.add(
@@ -163,7 +165,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     // padding: EdgeInsets.all(7.5),
                     child: Padding(
                       child: Icon(
-                        Tabs.children[i]["icon"],
+                        children[i]["icon"],
                         color: userdata.get("colorsInDrawer") ? Colors.white : null,
                       ),
                       padding: EdgeInsets.all(5.5),
@@ -171,12 +173,12 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     shape: ContinuousRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
-                    color: Tabs.children[i]["color"],
+                    color: children[i]["color"],
                   )
                 : Icon(
-                    Tabs.children[i]["icon"],
+                    children[i]["icon"],
                   ),
-            title: Tabs.children[i]["name"],
+            title: children[i]["name"],
             onTap: () {
               changeIndex(i);
             },

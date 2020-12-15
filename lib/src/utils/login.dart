@@ -35,7 +35,24 @@ class _LoginView extends State<LoginView> {
 
   Account account;
   _LoginView(this.magisterLogin, this.title);
-
+  Widget errorBuilder(context, dynamic error, retry) => Column(
+        children: [
+          SelectableText(
+            error.toString(),
+            maxLines: 10,
+          ),
+          if (error.runtimeType == dio.DioError && error.response != null)
+            SelectableText(
+              error.toString(),
+              maxLines: 10,
+            ),
+          RaisedButton(
+            child: Text("Retry"),
+            onPressed: retry,
+          ),
+          Text("Argo is in beta, mocht er hier iets anders staan dan 'Geen Internet' stuur even een screenshot. Dan kunnen we het zo snel mogelijk oplossen"),
+        ],
+      );
   Widget build(BuildContext context) {
     CookieManager().clearCookies();
     return Scaffold(
@@ -45,8 +62,10 @@ class _LoginView extends State<LoginView> {
           PopupMenuButton(
             onSelected: (value) async {
               if (value == "herlaad") {
-                String url = await controller.currentUrl();
-                controller.loadUrl(url);
+                if (redirectUrl == null) {
+                  String url = await controller.currentUrl();
+                  controller.loadUrl(url);
+                }
               } else {
                 launch(magisterLogin.url);
                 StreamSubscription _sub;
@@ -92,6 +111,7 @@ class _LoginView extends State<LoginView> {
               height: MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).padding.top - kToolbarHeight,
               child: Futuristic(
                 autoStart: true,
+                errorBuilder: errorBuilder,
                 futureBuilder: () async => magisterLogin.getTokenSet(redirectUrl, context),
                 busyBuilder: (c) => Center(
                   child: Row(
@@ -104,6 +124,7 @@ class _LoginView extends State<LoginView> {
                 ),
                 dataBuilder: (c, Map tokenSet) => Futuristic(
                   autoStart: true,
+                  errorBuilder: errorBuilder,
                   futureBuilder: () {
                     account = Account(tokenSet);
                     account.magister.expiryAndTenant();
@@ -202,54 +223,62 @@ class RefreshAccountView extends StatelessWidget {
   final Function callback;
   RefreshAccountView(this.account, this.context, this.callback) {
     loaders = [
-      MagisterLoader(
-        name: "Agenda",
-        future: account.magister.agenda.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Afwezigheid",
-        future: account.magister.afwezigheid.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Berichten",
-        future: account.magister.berichten.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Bronnen",
-        future: account.magister.bronnen.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Cijfers",
-        future: account.magister.cijfers.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Leermiddelen",
-        future: account.magister.leermiddelen.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Studiewijzers",
-        future: account.magister.studiewijzers.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
-      MagisterLoader(
-        name: "Profiel Info",
-        future: account.magister.profileInfo.refresh,
-        count: totalLoaded,
-        errors: errors,
-      ),
+      if (account.has("Afspraken", "Read"))
+        MagisterLoader(
+          name: "Agenda",
+          future: account.magister.agenda.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Absenties", "Read"))
+        MagisterLoader(
+          name: "Afwezigheid",
+          future: account.magister.afwezigheid.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Berichten", "Read"))
+        MagisterLoader(
+          name: "Berichten",
+          future: account.magister.berichten.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Bronnen", "Read"))
+        MagisterLoader(
+          name: "Bronnen",
+          future: account.magister.bronnen.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Cijfers", "Read"))
+        MagisterLoader(
+          name: "Cijfers",
+          future: account.magister.cijfers.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("DigitaalLesmateriaal", "Read"))
+        MagisterLoader(
+          name: "Leermiddelen",
+          future: account.magister.leermiddelen.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Studiewijzers", "Read"))
+        MagisterLoader(
+          name: "Studiewijzers",
+          future: account.magister.studiewijzers.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
+      if (account.has("Profiel", "Read"))
+        MagisterLoader(
+          name: "Profiel Info",
+          future: account.magister.profileInfo.refresh,
+          count: totalLoaded,
+          errors: errors,
+        ),
       MagisterLoader(
         name: "Profiel Foto",
         future: account.magister.downloadProfilePicture,

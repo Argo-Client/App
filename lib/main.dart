@@ -76,6 +76,7 @@ void main() async {
     accounts = boxes.removeAt(0);
   } catch (e) {
     Hive.deleteBoxFromDisk("accounts");
+    print(e);
     return main();
   }
   if (accounts.isEmpty) {

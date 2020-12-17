@@ -82,16 +82,6 @@ class _MijnGegevens extends State<MijnGegevens> {
                         ],
                       ),
                     ),
-                    Divider(),
-                    ContentHeader("School info"),
-                    ListTile(
-                      title: Text(
-                        "Profiel",
-                      ),
-                      subtitle: Text(
-                        account.profiel,
-                      ),
-                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       child: Divider(),

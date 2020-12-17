@@ -37,8 +37,7 @@ class Account extends HiveObject {
   String officialFullName;
   @HiveField(10)
   String phone;
-  @HiveField(11)
-  String profiel;
+  // 11 Was Profiel
   @HiveField(12)
   String username;
   @HiveField(13)

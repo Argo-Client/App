@@ -192,70 +192,71 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               controller: appBarPageController,
               itemBuilder: (BuildContext context, int index) {
                 return ValueListenableBuilder(
-                    valueListenable: currentDay,
-                    builder: (c, _, _a) => Stack(
-                          children: [
-                            Positioned(
-                              left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
-                              bottom: 0,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 7,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: userdata.get("accentColor"),
-                                      width: 3,
-                                    ),
-                                  ),
-                                ),
+                  valueListenable: currentDay,
+                  builder: (c, _, _a) => Stack(
+                    children: [
+                      Positioned(
+                        left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
+                        bottom: 0,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width / 7,
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: userdata.get("accentColor"),
+                                width: 3,
                               ),
                             ),
-                            Row(
-                              children: [
-                                for (int dag = 0; dag < 7; dag++)
-                                  () {
-                                    DateTime tabDag = startMonday.add(
-                                      Duration(days: relative(index) * 7 + dag),
-                                    );
-                                    DateFormat numFormatter = DateFormat('dd');
-                                    return Expanded(
-                                      child: InkWell(
-                                        onTap: () {
-                                          int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
-                                          jumpOrAnimate(infinityPageController, page);
-                                        },
-                                        child: Column(
-                                          children: (() {
-                                            return [
-                                              Padding(
-                                                child: Text(
-                                                  ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
-                                                  overflow: TextOverflow.visible,
-                                                  softWrap: false,
-                                                  style: TextStyle(
-                                                    color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
-                                                  ),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: 5,
-                                                ),
-                                              ),
-                                              Text(
-                                                numFormatter.format(tabDag),
-                                                style: TextStyle(
-                                                  color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
-                                                ),
-                                              ),
-                                            ];
-                                          })(),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          for (int dag = 0; dag < 7; dag++)
+                            () {
+                              DateTime tabDag = startMonday.add(
+                                Duration(days: relative(index) * 7 + dag),
+                              );
+                              DateFormat numFormatter = DateFormat('dd');
+                              return Expanded(
+                                child: InkWell(
+                                  onTap: () {
+                                    int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
+                                    jumpOrAnimate(infinityPageController, page);
+                                  },
+                                  child: Column(
+                                    children: (() {
+                                      return [
+                                        Padding(
+                                          child: Text(
+                                            ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
+                                            overflow: TextOverflow.visible,
+                                            softWrap: false,
+                                            style: TextStyle(
+                                              color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 5,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }()
-                              ],
-                            ),
-                          ],
-                        ));
+                                        Text(
+                                          numFormatter.format(tabDag),
+                                          style: TextStyle(
+                                            color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                          ),
+                                        ),
+                                      ];
+                                    })(),
+                                  ),
+                                ),
+                              );
+                            }()
+                        ],
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ),
@@ -1015,10 +1016,9 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
-
-            // if (account.studiewijzers.where((wijzer) => wijzer.vakcode ==
-
-            // ).isEmpty)
+            Padding(
+              padding: EdgeInsets.only(bottom: 90),
+            )
           ],
         ),
       ),

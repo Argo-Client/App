@@ -46,7 +46,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                               backgroundColor: Theme.of(context).backgroundColor,
                               child: userdata.get("useIcon") || account.profilePicture == null
                                   ? Icon(
-                                      Icons.person,
+                                      Icons.person_outline,
                                       size: 60,
                                     )
                                   : Image.memory(

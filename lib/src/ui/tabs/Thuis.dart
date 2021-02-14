@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
@@ -43,11 +44,12 @@ class _Thuis extends State<Thuis> {
           PopoutButton(
             "Nieuw bericht",
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => NieuwBerichtPagina(null),
-                ),
-              );
+              FlushbarHelper.createInformation(message: "Ja excuses, dit werkt nog niet.")..show(context);
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (context) => NieuwBerichtPagina(null),
+              //   ),
+              // );
             },
             icon: Icons.email,
           ),
@@ -79,12 +81,24 @@ class _Thuis extends State<Thuis> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(bottom: 15.0),
-                      child: CircleAvatar(
-                        backgroundImage: Image.memory(
-                          base64Decode(account.profilePicture),
-                        ).image,
-                        radius: 35.0,
-                      ),
+                      child: () {
+                        bool useIcon = userdata.get("useIcon") || account.profilePicture == null;
+                        return CircleAvatar(
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          backgroundImage: useIcon
+                              ? null
+                              : Image.memory(
+                                  base64Decode(account.profilePicture),
+                                ).image,
+                          child: !useIcon
+                              ? null
+                              : Icon(
+                                  Icons.person_outline,
+                                  size: 50,
+                                ),
+                          radius: 35.0,
+                        );
+                      }(),
                     ),
                     Container(
                       margin: EdgeInsets.only(bottom: 7.5),

@@ -10,7 +10,6 @@ import 'package:Argo/src/ui/tabs/Info.dart';
 import 'package:Argo/src/ui/tabs/Instellingen.dart';
 import 'package:Argo/src/ui/tabs/Leermiddelen.dart';
 import 'package:Argo/src/ui/tabs/MijnGegevens.dart';
-import 'package:Argo/src/ui/tabs/Opdrachten.dart';
 import 'package:Argo/src/ui/tabs/Studiewijzer.dart';
 import 'package:Argo/src/ui/tabs/Thuis.dart';
 
@@ -72,12 +71,6 @@ class Tabs {
           // "overridePop": true,
           "color": Colors.amber,
         },
-      {
-        "name": Text("Opdrachten"),
-        "icon": Icons.assignment_late_outlined,
-        "page": Opdrachten(),
-        "color": Colors.grey,
-      },
       if (account.has("DigitaalLesmateriaal", "Read"))
         {
           "name": Text("Leermiddelen"),

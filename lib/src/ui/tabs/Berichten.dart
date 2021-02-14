@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -31,11 +32,12 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => NieuwBerichtPagina(),
-                ),
-              );
+              FlushbarHelper.createInformation(message: "Ja excuses, je kan op dit moment nog geen berichten sturen via Argo")..show(context);
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (context) => NieuwBerichtPagina(),
+              //   ),
+              // );
             },
           ),
         ],

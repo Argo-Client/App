@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:Argo/main.dart';
 import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -70,57 +69,6 @@ class _Info extends State<Info> {
                       title: Text('Discord'),
                       subtitle: Text("Gezelligheid"),
                       onTap: () => launch("$url?u=argo&type=discord"),
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.feedback_outlined),
-                      title: Text('Feedback'),
-                      subtitle: Text("Klik hier als je feedback wil geven over deze app"),
-                      onTap: () => {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            bool checked = false;
-                            return AlertDialog(
-                              title: Text("Schrijf je feedback"),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextField(
-                                      decoration: InputDecoration(labelText: 'Feedback'),
-                                      maxLines: 1,
-                                    ),
-                                    CheckboxListTile(
-                                      activeColor: userdata.get('accentColor'),
-                                      title: Text('Anoniem'),
-                                      value: checked,
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          checked = value;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: <Widget>[
-                                FlatButton(
-                                  child: new Text("Sluit"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.send_outlined),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      },
                     ),
                   ],
                 ),
@@ -223,9 +171,10 @@ class _Info extends State<Info> {
                       ),
                     ),
                     ExpansionTile(
+                      tilePadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sjoerd Bolten'),
-                      subtitle: Text('Bijdrage: Alles'),
+                      subtitle: Text('Bijdrage: Hulp met magister inlog, iOS versie'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),

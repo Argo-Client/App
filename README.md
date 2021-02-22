@@ -2,23 +2,23 @@
 
 # Argo
 
-Argo is a Magister 6 application built with material design.
+Argo is een Magister 6 applicatie gebouwd met material design.
 
-## Built With
+## Gemaakt met
 
-- [Flutter](https://flutter.dev) - UI toolkit for building applications
+- [Flutter](https://flutter.dev) - UI toolkit voor het maken van applicaties
 
-## Authors
+## Auteurs
 
-- **Guus van Meerveld** - _Main Developer_ - [Github](https://github.com/Guusvanmeerveld) - [Website](https://g-vm.nl)
-- **Sam Taen** - _Main Developer_ - [Github](https://github.com/Netfloex/) - [Website](https://samtaen.nl)
+- **Guus van Meerveld** - _Lead Developer_ - [Github](https://github.com/Guusvanmeerveld) - [Website](https://g-vm.nl)
+- **Sam Taen** - _Lead Developer_ - [Github](https://github.com/Netfloex/) - [Website](https://samtaen.nl)
 
-See also the list of [contributors](https://github.com/Netfloex/Argo/graphs/contributors) who participated in this project.
+Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/graphs/contributors) die mee hebbeng gewerkt aan dit project.
 
-## Important
+## Belangrijk
 
-This project is now Open Source, but we will ignore any pull requests (for now).
+Dit project is open source, maar pull requests worden genegeerd (voor nu).
 
-## License
+## Licentie
 
-This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
+Dit project is beschermd onder de MIT license - Bekijk het [LICENSE](LICENSE) bestand voor details.

@@ -2,7 +2,7 @@
 
 # Argo
 
-Argo is een Magister 6 applicatie gebouwd met material design.
+Argo is een Magister 6 applicatie met material design.
 
 ## Gemaakt met
 
@@ -13,7 +13,7 @@ Argo is een Magister 6 applicatie gebouwd met material design.
 - **Guus van Meerveld** - _Lead Developer_ - [Github](https://github.com/Guusvanmeerveld) - [Website](https://g-vm.nl)
 - **Sam Taen** - _Lead Developer_ - [Github](https://github.com/Netfloex/) - [Website](https://samtaen.nl)
 
-Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/graphs/contributors) die mee hebbeng gewerkt aan dit project.
+Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/graphs/contributors) die mee hebben gewerkt aan dit project.
 
 ## Belangrijk
 

@@ -6,7 +6,7 @@ Argo is een Magister 6 applicatie gebouwd met material design.
 
 ## Gemaakt met
 
-- [Flutter](https://flutter.dev) - UI toolkit voor het maken van applicaties
+- [Flutter](https://flutter.dev) - UI toolkit voor het maken van applicaties.
 
 ## Auteurs
 

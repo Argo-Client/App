@@ -1,3 +1,4 @@
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:intro_slider/dot_animation_enum.dart';
@@ -20,11 +21,12 @@ class Introduction extends StatefulWidget {
 class _Introduction extends State<Introduction> {
   List<Color> _colors = [
     Colors.blue,
-    Colors.amber,
+    Colors.red[400],
     Colors.green,
   ];
 
   ValueNotifier<bool> akkoord = ValueNotifier(false);
+  ValueNotifier<bool> showDot = ValueNotifier(false);
 
   void onLoggedIn(Account acc, BuildContext context, {String error}) {
     account = acc;
@@ -37,7 +39,16 @@ class _Introduction extends State<Introduction> {
     );
   }
 
-  void loginPress() => MagisterLogin().launch(context, onLoggedIn);
+  void loginPress() {
+    if (!akkoord.value) {
+      FlushbarHelper.createInformation(message: "Je moet eerst akkoord gaan met ons beleid.").show(context);
+      showDot.value = true;
+      return;
+    }
+
+    MagisterLogin().launch(context, onLoggedIn);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,7 +62,7 @@ class _Introduction extends State<Introduction> {
           isShowPrevBtn: true,
           isScrollable: false,
           colorDot: Color.fromRGBO(255, 255, 255, .5),
-          sizeDot: 13.0,
+          sizeDot: 10.0,
           renderNextBtn: Icon(
             Icons.navigate_next,
             color: Colors.white,
@@ -61,7 +72,33 @@ class _Introduction extends State<Introduction> {
           onDonePress: loginPress,
           slides: [
             Slide(
-              title: "Welkom",
+              widgetTitle: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Welkom",
+                    style: TextStyle(color: Colors.white, fontSize: 35),
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: showDot,
+                    builder: (BuildContext context, value, _a) {
+                      return !value
+                          ? Container()
+                          : Container(
+                              margin: EdgeInsets.only(bottom: 7.5, left: 2.5),
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: userdata.get("accentColor")),
+                              ),
+                              width: 7.5,
+                              height: 7.5,
+                            );
+                    },
+                  )
+                ],
+              ),
               widgetDescription: Column(
                 children: [
                   Text(
@@ -169,11 +206,12 @@ class _Introduction extends State<Introduction> {
                                       top: 15,
                                     ),
                                     child: RadioListTile(
-                                      title: Text(
-                                        "Licht",
-                                        softWrap: false,
-                                        overflow: TextOverflow.visible,
-                                      ),
+                                      title: Text("Licht",
+                                          softWrap: false,
+                                          overflow: TextOverflow.visible,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          )),
                                       value: "licht",
                                       groupValue: userdata.get("theme"),
                                       activeColor: Colors.white,
@@ -219,11 +257,12 @@ class _Introduction extends State<Introduction> {
                                     ),
                                     child: RadioListTile(
                                       value: "donker",
-                                      title: Text(
-                                        "Donker",
-                                        softWrap: false,
-                                        overflow: TextOverflow.visible,
-                                      ),
+                                      title: Text("Donker",
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          overflow: TextOverflow.visible),
                                       activeColor: Colors.grey[800],
                                       groupValue: userdata.get("theme"),
                                       onChanged: (value) {
@@ -245,13 +284,14 @@ class _Introduction extends State<Introduction> {
                         child: Container(
                           width: MediaQuery.of(context).size.width * (3 / 4),
                           child: RadioListTile(
-                            title: Text(
-                              "Gebruik systeem standaard",
-                              softWrap: false,
-                              overflow: TextOverflow.visible,
-                            ),
+                            title: Text("Gebruik systeem standaard",
+                                softWrap: false,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                                overflow: TextOverflow.visible),
                             value: "systeem",
-                            activeColor: userdata.get("accentColor"),
+                            activeColor: Colors.white,
                             groupValue: userdata.get("theme"),
                             onChanged: (value) {
                               setState(

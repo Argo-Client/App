@@ -454,6 +454,32 @@ class _Instellingen extends State<Instellingen> {
                 )
             ],
           ),
+          if (userdata.get("developerMode"))
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ContentHeader("Extra features"),
+                SeeCard(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  column: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
+                      ),
+                      child: ListTile(
+                        title: Text("Uitschakelen developer modus"),
+                        subtitle: Text("Houd ingedrukt om de developer modus weer uit te schakelen."),
+                        onLongPress: () => setState(() {
+                          userdata.put("developerMode", false);
+                        }),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            )
         ],
       ),
     );

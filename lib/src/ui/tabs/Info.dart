@@ -1,4 +1,6 @@
+import 'package:Argo/main.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,13 +46,23 @@ class _Info extends State<Info> {
                 ContentHeader("Algemeen"),
                 SeeCard(
                   column: [
-                    ListTileBorder(
-                      border: Border(
-                        bottom: greyBorderSide(),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: greyBorderSide(),
+                        ),
                       ),
-                      leading: Icon(Icons.verified_user_outlined),
-                      title: Text('Versie'),
-                      subtitle: Text("0.1.2"),
+                      child: ListTile(
+                        leading: Icon(Icons.verified_user_outlined),
+                        title: Text('Versie'),
+                        subtitle: Text("0.1.2"),
+                        onLongPress: () {
+                          Fluttertoast.showToast(
+                            msg: userdata.get("developerMode") ? "Developer modus was al ontgrendeld" : "Developer modus ontgrendeld",
+                          );
+                          userdata.put("developerMode", true);
+                        },
+                      ),
                     ),
                     ListTileBorder(
                       border: Border(
@@ -88,32 +100,32 @@ class _Info extends State<Info> {
                 ContentHeader("Makers"),
                 SeeCard(
                   column: [
+                    ExpansionTile(
+                      leading: Icon(Icons.person_outlined),
+                      title: Text('Guus van Meerveld'),
+                      subtitle: Text('Bijdrage: UI'),
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.public_outlined),
+                          title: Text("Website"),
+                          onTap: () {
+                            launch("${url}u=guus&type=website");
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.device_hub_outlined),
+                          title: Text("Github"),
+                          onTap: () {
+                            launch("${url}u=guus&type=github");
+                          },
+                        ),
+                      ],
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: greyBorderSide(),
                         ),
-                      ),
-                      child: ExpansionTile(
-                        leading: Icon(Icons.person_outlined),
-                        title: Text('Guus van Meerveld'),
-                        subtitle: Text('Bijdrage: UI'),
-                        children: [
-                          ListTile(
-                            leading: Icon(Icons.public_outlined),
-                            title: Text("Website"),
-                            onTap: () {
-                              launch("${url}u=guus&type=website");
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.device_hub_outlined),
-                            title: Text("Github"),
-                            onTap: () {
-                              launch("${url}u=guus&type=github");
-                            },
-                          ),
-                        ],
                       ),
                     ),
                     ExpansionTile(
@@ -137,39 +149,39 @@ class _Info extends State<Info> {
                         ),
                       ],
                     ),
-                  ],
-                ),
-                ContentHeader("Support"),
-                SeeCard(
-                  column: [
                     Container(
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: greyBorderSide(),
                         ),
                       ),
-                      child: ExpansionTile(
-                        leading: Icon(Icons.person_outlined),
-                        title: Text('Martijn Oosterhuis'),
-                        subtitle: Text('Bijdrage: Emotionele support'),
-                        children: [
-                          ListTile(
-                            leading: Icon(Icons.public_outlined),
-                            title: Text("Website"),
-                            onTap: () {
-                              launch("${url}u=martijn&type=website");
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.device_hub_outlined),
-                            title: Text("Github"),
-                            onTap: () {
-                              launch("${url}u=martijn&type=github");
-                            },
-                          ),
-                        ],
-                      ),
                     ),
+                    ExpansionTile(
+                      leading: Icon(Icons.person_outlined),
+                      title: Text('Martijn Oosterhuis'),
+                      subtitle: Text('Bijdrage: Developer Modus'),
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.public_outlined),
+                          title: Text("Website"),
+                          onTap: () {
+                            launch("${url}u=martijn&type=website");
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.device_hub_outlined),
+                          title: Text("Github"),
+                          onTap: () {
+                            launch("${url}u=martijn&type=website");
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                ContentHeader("Support"),
+                SeeCard(
+                  column: [
                     ExpansionTile(
                       tilePadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       leading: Icon(Icons.person_outlined),

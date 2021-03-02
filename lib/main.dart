@@ -98,6 +98,7 @@ void main() async {
     "colorsInDrawer": true,
     "alwaysPrimary": true,
     "preNotificationMinutes": 20,
+    "developerMode": false,
   };
   standardSettings.entries.forEach((element) {
     if (!userdata.containsKey(element.key)) userdata.put(element.key, element.value);

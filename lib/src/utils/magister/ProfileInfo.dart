@@ -15,6 +15,11 @@ class ProfileInfo extends MagisterApi {
     ]);
   }
 
+  Future getTenant() async {
+    Map body = (await api.dio.get("https://magister.net/.well-known/host-meta.json")).data;
+    account.tenant = Uri.parse(body["links"].first["href"]).host;
+  }
+
   Future profileInfo() async {
     Map body = (await api.dio.get("api/account")).data;
     account.privileges = body["Groep"][0]["Privileges"].map((priv) => Privilege(priv)).toList().cast<Privilege>();

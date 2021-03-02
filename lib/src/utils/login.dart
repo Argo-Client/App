@@ -125,9 +125,11 @@ class _LoginView extends State<LoginView> {
                 dataBuilder: (c, Map tokenSet) => Futuristic(
                   autoStart: true,
                   errorBuilder: errorBuilder,
-                  futureBuilder: () {
+                  futureBuilder: () async {
                     account = Account(tokenSet);
-                    account.magister.expiryAndTenant();
+                    if (account.tenant == null) {
+                      await account.magister.profileInfo.getTenant();
+                    }
                     if (account.id == 0) return account.magister.profileInfo.profileInfo();
                     return Future.value(true);
                   },
@@ -315,40 +317,41 @@ class RefreshAccountView extends StatelessWidget {
         ),
         for (MagisterLoader loader in loaders) loader,
         ValueListenableBuilder(
-            valueListenable: errors,
-            builder: (context, _, _a) {
-              return errors.value.isEmpty
-                  ? Container()
-                  : Column(
-                      children: [
+          valueListenable: errors,
+          builder: (context, _, _a) {
+            return errors.value.isEmpty
+                ? Container()
+                : Column(
+                    children: [
+                      SelectableText(
+                        errors.value.first.first.toString(),
+                        maxLines: 10,
+                      ),
+                      if (errors.value.first.first.runtimeType == dio.DioError && errors.value.first.first.response != null)
                         SelectableText(
-                          errors.value.first.first.toString(),
+                          errors.value.first.first.response.data.toString(),
                           maxLines: 10,
                         ),
-                        if (errors.value.first.first.runtimeType == dio.DioError && errors.value.first.first.response != null)
-                          SelectableText(
-                            errors.value.first.first.response.data.toString(),
-                            maxLines: 10,
-                          ),
-                        RaisedButton(
-                          child: Text("Retry"),
-                          onPressed: () {
-                            errors.value.forEach(
-                              (error) => error.last(),
-                            );
-                            errors.value = [];
-                          },
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            totalLoaded.value = loaders.length;
-                          },
-                          child: Text("Boeie gewoon door"),
-                        ),
-                        Text("Argo is in beta, mocht er hier iets anders staan dan 'Geen Internet' stuur even een screenshot. Dan kunnen we het zo snel mogelijk oplossen"),
-                      ],
-                    );
-            }),
+                      RaisedButton(
+                        child: Text("Retry"),
+                        onPressed: () {
+                          errors.value.forEach(
+                            (error) => error.last(),
+                          );
+                          errors.value = [];
+                        },
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          totalLoaded.value = loaders.length;
+                        },
+                        child: Text("Boeie gewoon door"),
+                      ),
+                      Text("Argo is in beta, mocht er hier iets anders staan dan 'Geen Internet' stuur even een screenshot. Dan kunnen we het zo snel mogelijk oplossen"),
+                    ],
+                  );
+          },
+        ),
       ],
     );
   }

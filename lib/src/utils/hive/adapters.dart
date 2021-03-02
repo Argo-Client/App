@@ -119,11 +119,13 @@ class Account extends HiveObject {
     // this.studiewijzers = <Wijzer>[];
     // this.leermiddelen = <Leermiddel>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
+    this.magister.expiryAndUsername(tokenSet);
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
     if (this.isInBox) this.save();
+    this.magister.expiryAndUsername(tokenSet);
   }
 
   String toString() => this.fullName;

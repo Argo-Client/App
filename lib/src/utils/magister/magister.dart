@@ -36,12 +36,12 @@ class Magister {
     studiewijzers = Studiewijzers(MagisterApi(acc));
     leermiddelen = Leermiddelen(MagisterApi(acc));
   }
-  void expiryAndTenant() {
-    String parsed = base64.normalize(account.accessToken.split(".")[1]);
+  void expiryAndUsername(Map tokenSet) {
+    String parsed = base64.normalize(tokenSet["id_token"].split(".")[1]);
+
     Map data = json.decode(utf8.decode(base64Decode(parsed)));
     account.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
-    account.username = data["urn:magister:claims:iam:username"];
-    account.tenant = data["urn:magister:claims:iam:tenant"];
+    account.username = data["preferred_username"];
     if (account.isInBox) account.save();
   }
 
@@ -78,7 +78,6 @@ class MagisterApi {
           },
           onResponse: (Response res) {
             account.saveTokens(res.data);
-            account.magister.expiryAndTenant();
             this.dio.unlock();
             print("Refreshed token");
             return res;
@@ -91,7 +90,6 @@ class MagisterApi {
               print("$account is uitgelogd");
               MagisterLogin().launch(main.appState.context, (tokenSet, _) {
                 account.saveTokens(tokenSet);
-                account.magister.expiryAndTenant();
                 if (account.isInBox) account.save();
               }, title: "Account is uitgelogd");
               return dio.request(e.request.path, options: e.request);

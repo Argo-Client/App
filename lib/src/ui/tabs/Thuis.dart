@@ -21,7 +21,7 @@ class _Thuis extends State<Thuis> {
   // void afterFirstLayout(BuildContext context) => handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
   @override
   Widget build(BuildContext context) {
-    String username = account.username != null ? " |" + account.username : "";
+    String username = account.username != null ? " | " + account.username : "";
     String klasCode = account.klasCode ?? "";
     return Scaffold(
       floatingActionButton: shortcutButton(),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:after_layout/after_layout.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -18,53 +17,45 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
   void afterFirstLayout(BuildContext context) => handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              DrawerStates.layoutKey.currentState.openDrawer();
-            },
-          ),
-          title: Text("Afwezigheid"),
-          actions: [
-            ValueListenableBuilder(
-                valueListenable: updateNotifier,
-                builder: (context, _, _a) {
-                  return Row(
+    return AppPage(
+      title: Text("Afwezigheid"),
+      actions: [
+        ValueListenableBuilder(
+          valueListenable: updateNotifier,
+          builder: (context, _, _a) => Row(
+            children: [
+              Tooltip(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 15,
+                  ),
+                  child: Row(
                     children: [
-                      Tooltip(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            right: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.check),
-                              Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
-                            ],
-                          ),
-                        ),
-                        message: "Geoorloofd",
-                      ),
-                      Tooltip(
-                        message: "Ongeoorloofd",
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            right: 15,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.error),
-                              Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
-                            ],
-                          ),
-                        ),
-                      )
+                      Icon(Icons.check),
+                      Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
                     ],
-                  );
-                }),
-          ]),
+                  ),
+                ),
+                message: "Geoorloofd",
+              ),
+              Tooltip(
+                message: "Ongeoorloofd",
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 15,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error),
+                      Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
       body: RefreshIndicator(
         child: ValueListenableBuilder(
             valueListenable: updateNotifier,

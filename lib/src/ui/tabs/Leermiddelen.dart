@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -14,16 +13,8 @@ class _Leermiddelen extends State<Leermiddelen> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
-          },
-        ),
-        title: Text("Leermiddelen"),
-      ),
+    return AppPage(
+      title: Text("Leermiddelen"),
       body: RefreshIndicator(
         child: ValueListenableBuilder(
             valueListenable: updateNotifier,

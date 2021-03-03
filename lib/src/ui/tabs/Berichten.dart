@@ -6,7 +6,6 @@ import 'package:futuristic/futuristic.dart';
 import 'package:dio/dio.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -19,29 +18,21 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
+    return AppPage(
+      title: Text("Berichten"),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
           onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
+            FlushbarHelper.createInformation(message: "Ja excuses, je kan op dit moment nog geen berichten sturen via Argo")..show(context);
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) => NieuwBerichtPagina(),
+            //   ),
+            // );
           },
         ),
-        title: Text("Berichten"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              FlushbarHelper.createInformation(message: "Ja excuses, je kan op dit moment nog geen berichten sturen via Argo")..show(context);
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => NieuwBerichtPagina(),
-              //   ),
-              // );
-            },
-          ),
-        ],
-      ),
+      ],
       body: RefreshIndicator(
         child: ValueListenableBuilder(
           valueListenable: updateNotifier,

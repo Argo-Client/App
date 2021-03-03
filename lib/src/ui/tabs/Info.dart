@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class Info extends StatefulWidget {
@@ -19,26 +18,18 @@ class _Info extends State<Info> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () {
-              DrawerStates.layoutKey.currentState.openDrawer();
-            },
-          ),
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                text: "Over",
-              ),
-              Tab(
-                text: "Credits",
-              ),
-            ],
-          ),
-          title: Text("Info"),
+      child: AppPage(
+        bottom: TabBar(
+          tabs: [
+            Tab(
+              text: "Over",
+            ),
+            Tab(
+              text: "Credits",
+            ),
+          ],
         ),
+        title: Text("Info"),
         body: TabBarView(
           children: [
             ListView(

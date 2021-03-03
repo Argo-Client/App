@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class MijnGegevens extends StatefulWidget {
@@ -13,16 +12,8 @@ class MijnGegevens extends StatefulWidget {
 class _MijnGegevens extends State<MijnGegevens> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
-          },
-        ),
-        title: Text("Mijn Gegevens"),
-      ),
+    return AppPage(
+      title: Text("Mijn Gegevens"),
       body: RefreshIndicator(
         child: SingleChildScrollView(
           child: ValueListenableBuilder(

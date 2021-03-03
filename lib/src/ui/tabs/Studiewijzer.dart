@@ -4,7 +4,6 @@ import 'package:after_layout/after_layout.dart';
 import 'package:futuristic/futuristic.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -17,20 +16,8 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
   void afterFirstLayout(BuildContext context) => handleError(account.magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.menu,
-          ),
-          onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
-          },
-        ),
-        title: Text(
-          "Studiewijzers",
-        ),
-      ),
+    return AppPage(
+      title: Text("Studiewijzers"),
       body: RefreshIndicator(
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),

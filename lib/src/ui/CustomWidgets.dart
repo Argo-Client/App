@@ -1,3 +1,4 @@
+import 'package:Argo/src/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:Argo/main.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
@@ -383,6 +384,30 @@ class _PopoutFloatState extends State<PopoutFloat> with SingleTickerProviderStat
   }
 }
 
+class AppPage extends StatelessWidget {
+  final Widget title;
+  final List<Widget> actions;
+  final Widget body;
+  final PreferredSizeWidget bottom;
+
+  AppPage({this.title, this.actions, this.body, this.bottom});
+
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          actions: actions,
+          leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              DrawerStates.layoutKey.currentState.openDrawer();
+            },
+          ),
+          title: title,
+          bottom: bottom,
+        ),
+        body: body,
+      );
+}
+
 class BijlageItem extends StatelessWidget {
   final Bron bijlage;
   final Function onTap;
@@ -566,6 +591,7 @@ class ListTileBorder extends StatelessWidget {
     this.onTap,
     this.border,
   });
+
   @override
   Widget build(BuildContext context) {
     return Container(

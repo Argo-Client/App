@@ -5,7 +5,6 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -30,57 +29,47 @@ class _Cijfers extends State<Cijfers> {
       builder: (BuildContext context, _, _a) {
         return DefaultTabController(
           length: jaar == 0 ? 1 + perioden.length : perioden.length,
-          child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: Icon(
-                  Icons.menu,
-                ),
-                onPressed: () {
-                  DrawerStates.layoutKey.currentState.openDrawer();
-                },
-              ),
-              bottom: TabBar(
-                isScrollable: true,
-                tabs: [
-                  if (jaar == 0) // Recenst
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: Tab(
-                        text: "Recent",
-                      ),
+          child: AppPage(
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: [
+                if (jaar == 0) // Recenst
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20,
                     ),
-                  for (Periode periode in perioden)
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: Tab(
-                        text: periode.abbr,
-                      ),
+                    child: Tab(
+                      text: "Recent",
                     ),
+                  ),
+                for (Periode periode in perioden)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Tab(
+                      text: periode.abbr,
+                    ),
+                  ),
+              ],
+            ),
+            title: PopupMenuButton(
+              initialValue: jaar,
+              onSelected: (value) => setState(() => jaar = value),
+              itemBuilder: (BuildContext context) {
+                return <PopupMenuEntry>[
+                  for (int i = 0; i < account.cijfers.length; i++)
+                    PopupMenuItem(
+                      value: i,
+                      child: Text('${account.cijfers[i].leerjaar}'),
+                    ),
+                ];
+              },
+              child: Row(
+                children: [
+                  Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+                  Icon(Icons.keyboard_arrow_down_outlined),
                 ],
-              ),
-              title: PopupMenuButton(
-                initialValue: jaar,
-                onSelected: (value) => setState(() => jaar = value),
-                itemBuilder: (BuildContext context) {
-                  return <PopupMenuEntry>[
-                    for (int i = 0; i < account.cijfers.length; i++)
-                      PopupMenuItem(
-                        value: i,
-                        child: Text('${account.cijfers[i].leerjaar}'),
-                      ),
-                  ];
-                },
-                child: Row(
-                  children: [
-                    Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
-                    Icon(Icons.keyboard_arrow_down_outlined),
-                  ],
-                ),
               ),
             ),
             body: TabBarView(

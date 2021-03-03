@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
 class Instellingen extends StatefulWidget {
@@ -17,19 +16,20 @@ class _Instellingen extends State<Instellingen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Kies een kleur"),
-          content: BlockPicker(
-            pickerColor: userdata.get(pick),
-            onColorChanged: (color) {
-              appState.setState(() {
-                userdata.put(pick, color);
-              });
-            },
-          ),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            ColorPicker(
+              pickerColor: userdata.get(pick),
+              onColorChanged: (color) {
+                appState.setState(() {
+                  userdata.put(pick, color);
+                });
+              },
+            ),
+          ]),
           actions: <Widget>[
             FlatButton(
               child: Text(
                 "Sluit",
-                textScaleFactor: 1.25,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -42,16 +42,8 @@ class _Instellingen extends State<Instellingen> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
-          },
-        ),
-        title: Text("Instellingen"),
-      ),
+    return AppPage(
+      title: Text("Instellingen"),
       body: ListView(
         children: [
           ContentHeader("Uiterlijk"),

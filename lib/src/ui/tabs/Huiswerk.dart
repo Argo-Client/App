@@ -6,7 +6,6 @@ import 'package:futuristic/futuristic.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 
 import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
 import 'package:Argo/src/utils/hive/adapters.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -46,31 +45,23 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            DrawerStates.layoutKey.currentState.openDrawer();
-          },
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Huiswerk"),
-            ValueListenableBuilder(
-              valueListenable: lastMonday,
-              builder: (context, date, _a) => Text(
-                "Week ${currentWeek(date)}",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey[300],
-                  fontWeight: FontWeight.w400,
-                ),
+    return AppPage(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Huiswerk"),
+          ValueListenableBuilder(
+            valueListenable: lastMonday,
+            builder: (context, date, _a) => Text(
+              "Week ${currentWeek(date)}",
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey[300],
+                fontWeight: FontWeight.w400,
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
       body: InfinityPageView(
         controller: pageController,

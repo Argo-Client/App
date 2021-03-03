@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-// import 'package:numberpicker/numberpicker.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:Argo/main.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -27,7 +27,7 @@ class InstellingenCategory extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => InstellingPagina(category.toLowerCase(), children),
+              builder: (context) => InstellingPagina(category, children),
             ),
           );
         },
@@ -38,15 +38,39 @@ class InstellingenCategory extends StatelessWidget {
 
 class SwitchInstelling extends StatelessWidget {
   final String title;
-  final Function onUpdate;
-  final bool value;
+  final String setting;
+  final String subtitle;
+  final Function onChange;
 
-  SwitchInstelling({this.title, this.onUpdate, this.value});
+  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange});
+
   Widget build(BuildContext context) {
-    return SwitchListTile(
-      value: value,
-      onChanged: onUpdate,
-      title: Text(title),
+    return SeeCard(
+      border: Border(
+        top: greyBorderSide(),
+      ),
+      child: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return SwitchListTile(
+            subtitle: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                subtitle,
+                maxLines: 1,
+              ),
+            ),
+            value: userdata.get(setting),
+            activeColor: userdata.get("accentColor"),
+            onChanged: (value) {
+              if (onChange != null) onChange();
+              setState(() {
+                userdata.put(setting, value);
+              });
+            },
+            title: Text(title),
+          );
+        },
+      ),
     );
   }
 }
@@ -68,7 +92,15 @@ class CustomInstelling extends StatelessWidget {
         title: Text(title),
         onTap: onTap,
         trailing: trailing,
-        subtitle: Text(subtitle),
+        subtitle: subtitle != null
+            ? SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  subtitle,
+                  maxLines: 1,
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -83,7 +115,7 @@ class InstellingPagina extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Instellingen voor $instelling"),
+        title: Text(instelling),
       ),
       body: ListView(
         children: page,
@@ -93,119 +125,115 @@ class InstellingPagina extends StatelessWidget {
 }
 
 class _Instellingen extends State<Instellingen> {
-  Future showThemeMenu() {
+  Future showThemeMenu(setState) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text("Selecteer je thema"),
-              actions: [
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Sluit",
-                  ),
-                )
-              ],
-              content: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    RadioListTile(
-                      title: Text("Licht"),
-                      activeColor: userdata.get('accentColor'),
-                      value: "licht",
-                      groupValue: userdata.get("theme"),
-                      onChanged: (value) {
-                        appState.setState(() {
-                          setState(() {
-                            userdata.put("theme", value);
-                          });
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      title: Text("Donker"),
-                      activeColor: userdata.get('accentColor'),
-                      value: "donker",
-                      groupValue: userdata.get("theme"),
-                      onChanged: (value) {
-                        appState.setState(() {
-                          setState(() {
-                            userdata.put("theme", value);
-                          });
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      title: Text("OLED"),
-                      activeColor: userdata.get('accentColor'),
-                      value: "OLED",
-                      groupValue: userdata.get("theme"),
-                      onChanged: (value) {
-                        appState.setState(() {
-                          setState(() {
-                            userdata.put("theme", value);
-                          });
-                        });
-                      },
-                    ),
-                    RadioListTile(
-                      title: Text("Systeem kleur"),
-                      activeColor: userdata.get('accentColor'),
-                      value: "systeem",
-                      groupValue: userdata.get("theme"),
-                      onChanged: (value) {
-                        appState.setState(() {
-                          setState(() {
-                            userdata.put("theme", value);
-                          });
-                        });
-                      },
-                    ),
-                  ],
-                ),
+        return AlertDialog(
+          title: Text("Selecteer je thema"),
+          actions: [
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                "Sluit",
               ),
-            );
-          },
+            )
+          ],
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                RadioListTile(
+                  title: Text("Licht"),
+                  activeColor: userdata.get('accentColor'),
+                  value: "licht",
+                  groupValue: userdata.get("theme"),
+                  onChanged: (value) {
+                    appState.setState(() {
+                      setState(() {
+                        userdata.put("theme", value);
+                      });
+                    });
+                  },
+                ),
+                RadioListTile(
+                  title: Text("Donker"),
+                  activeColor: userdata.get('accentColor'),
+                  value: "donker",
+                  groupValue: userdata.get("theme"),
+                  onChanged: (value) {
+                    appState.setState(() {
+                      setState(() {
+                        userdata.put("theme", value);
+                      });
+                    });
+                  },
+                ),
+                RadioListTile(
+                  title: Text("OLED"),
+                  activeColor: userdata.get('accentColor'),
+                  value: "OLED",
+                  groupValue: userdata.get("theme"),
+                  onChanged: (value) {
+                    appState.setState(() {
+                      setState(() {
+                        userdata.put("theme", value);
+                      });
+                    });
+                  },
+                ),
+                RadioListTile(
+                  title: Text("Systeem kleur"),
+                  activeColor: userdata.get('accentColor'),
+                  value: "systeem",
+                  groupValue: userdata.get("theme"),
+                  onChanged: (value) {
+                    appState.setState(() {
+                      setState(() {
+                        userdata.put("theme", value);
+                      });
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  // void _showColorPicker(pick) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text("Kies een kleur"),
-  //         content: Column(mainAxisSize: MainAxisSize.min, children: [
-  //           ColorPicker(
-  //             pickerColor: userdata.get(pick),
-  //             onColorChanged: (color) {
-  //               appState.setState(() {
-  //                 userdata.put(pick, color);
-  //               });
-  //             },
-  //           ),
-  //         ]),
-  //         actions: <Widget>[
-  //           FlatButton(
-  //             child: Text(
-  //               "Sluit",
-  //             ),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  Future showColorPicker(pick) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Kies een kleur"),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            BlockPicker(
+              pickerColor: userdata.get(pick),
+              onColorChanged: (color) {
+                appState.setState(() {
+                  userdata.put(pick, color);
+                });
+              },
+            ),
+          ]),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                "Sluit",
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget build(BuildContext context) {
     return AppPage(
@@ -216,37 +244,291 @@ class _Instellingen extends State<Instellingen> {
             icon: Icons.format_paint_outlined,
             category: "Uiterlijk",
             children: [
-              // CustomInstelling(
-              //   title: "Thema",
-              //   onTap: () {
-              //     showThemeMenu();
-              //   },
-              //   trailing: Icon(Icons.brightness_3),
-              //   subtitle: userdata.get("theme").toString().capitalize + " thema",
-              // ),
-
-              // CustomInstelling
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: "Thema",
+                    onTap: () {
+                      showThemeMenu(setState);
+                    },
+                    trailing: Icon(Icons.brightness_2_outlined),
+                    subtitle: userdata.get("theme").toString().capitalize + " thema",
+                  );
+                },
+              ),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: 'Primaire kleur',
+                    onTap: () => showColorPicker("primaryColor"),
+                    subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    trailing: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: userdata.get("primaryColor"),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: 'Secundaire kleur',
+                    onTap: () => showColorPicker("accentColor"),
+                    subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    trailing: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: userdata.get("accentColor"),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              SwitchInstelling(
+                title: "Icoon kleuren in sidebar",
+                subtitle: "Voeg kleur toe aan de icoontjes in de sidebar",
+                setting: "colorsInDrawer",
+                onChange: () => appState.setState(() {}),
+              )
             ],
           ),
           InstellingenCategory(
             icon: Icons.calendar_today_outlined,
             category: "Agenda",
             children: [
-              CustomInstelling(
-                title: "Automatisch start uur",
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: "Hoogte van één uur",
+                    subtitle: "Hoe hoog een uur (in pixels) moet zijn",
+                    trailing: CircleShape(
+                      child: Text("${userdata.get("pixelsPerHour")}"),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Pixels per uur"),
+                          minValue: 50,
+                          maxValue: 500,
+                          initialIntegerValue: userdata.get("pixelsPerHour"),
+                        );
+                      },
+                    ).then(
+                      (value) {
+                        if (value != null)
+                          setState(
+                            () {
+                              userdata.put("pixelsPerHour", value);
+                            },
+                          );
+                      },
+                    ),
+                  );
+                },
               ),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    subtitle: "Hoelaat je lesuren beginnen",
+                    title: "Start tijd",
+                    trailing: CircleShape(
+                      child: Text("${userdata.get("agendaStartHour")}"),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Agenda starttijd"),
+                          minValue: 0,
+                          maxValue: userdata.get("agendaEndHour"),
+                          initialIntegerValue: userdata.get("agendaStartHour"),
+                        );
+                      },
+                    ).then(
+                      (value) {
+                        if (value != null)
+                          setState(
+                            () {
+                              userdata.put("agendaStartHour", value);
+                            },
+                          );
+                      },
+                    ),
+                  );
+                },
+              ),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: "Eind tijd",
+                    subtitle: "Hoelaat je lesuren eindigen",
+                    trailing: CircleShape(
+                      child: Text("${userdata.get("agendaEndHour")}"),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Agenda eindtijd"),
+                          minValue: userdata.get("agendaStartHour"),
+                          maxValue: 23,
+                          initialIntegerValue: userdata.get("agendaEndHour"),
+                        );
+                      },
+                    ).then(
+                      (value) {
+                        if (value != null)
+                          setState(() {
+                            userdata.put("agendaEndHour", value);
+                          });
+                      },
+                    ),
+                  );
+                },
+              ),
+              SwitchInstelling(
+                title: "Automatisch begin uur",
+                subtitle: "Laat Argo je start tijd berekenen",
+                setting: "agendaAutoBegin",
+              ),
+              SwitchInstelling(
+                title: "Automatisch eind uur",
+                subtitle: "Laat Argo je eind tijd berekenen",
+                setting: "agendaAutoEind",
+              )
             ],
           ),
           InstellingenCategory(
             icon: Icons.notifications_outlined,
             category: "Notificaties",
-            children: [],
+            children: [
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return CustomInstelling(
+                    title: "Notificatie voor de les",
+                    subtitle: "Het aantal minuten dat je voor een les een notificatie krijgt",
+                    trailing: CircleShape(
+                      child: Text("${userdata.get("preNotificationMinutes")}"),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Notificatie Tijd (minuten)"),
+                          minValue: 0,
+                          maxValue: 720,
+                          initialIntegerValue: userdata.get("preNotificationMinutes"),
+                        );
+                      },
+                    ).then((value) {
+                      if (value != null)
+                        setState(() {
+                          userdata.put("preNotificationMinutes", value);
+                          notifications.lessonNotifications(account.lessons);
+                        });
+                    }),
+                  );
+                },
+              )
+            ],
           ),
           InstellingenCategory(
-            icon: Icons.miscellaneous_services,
+            icon: Icons.build_outlined,
             category: "Overig",
-            children: [],
+            children: [
+              SwitchInstelling(
+                title: "Zet je foto uit",
+                subtitle: "Voor als die niet zo goed gelukt is",
+                setting: "useIcon",
+                onChange: () => appState.setState(() {}),
+              ),
+              SwitchInstelling(
+                title: "Terugknop opent sidebar",
+                subtitle: "Open de sidebar als je één keer op de terugknop klikt",
+                setting: "backOpensDrawer",
+                onChange: () => appState.setState(() {}),
+              ),
+              SwitchInstelling(
+                title: "Dubble terugknop voor agenda",
+                subtitle: "Open de agenda als je twee keer snel op de terugknop klikt",
+                setting: "doubleBackAgenda",
+                onChange: () => appState.setState(() {}),
+              ),
+              if (accounts.length > 1)
+                SwitchInstelling(
+                  title: "Open altijd je hoofdaccount",
+                  subtitle: "Open altijd je hoofd account als je de app opstart",
+                  setting: "alwaysPrimary",
+                  onChange: () => appState.setState(() {}),
+                ),
+              StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  if (custom.isEmpty) {
+                    return Container();
+                  }
+
+                  return CustomInstelling(
+                    title: "Verwijder alle zelfbedachte namen",
+                    trailing: Padding(
+                      padding: EdgeInsets.only(right: 15),
+                      child: Icon(
+                        Icons.delete,
+                        color: Colors.red[400],
+                      ),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        title: Text("Weet je het zeker?"),
+                        content: Text("Als je op verwijder klikt, worden al je zelfbedachte namen verwijderd."),
+                        actions: [
+                          FlatButton(
+                            child: Text("Annuleer"),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          FlatButton(
+                            child: Text("Verwijder"),
+                            onPressed: () => setState(
+                              () {
+                                custom.clear();
+                                handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
+          if (userdata.get("developerMode"))
+            InstellingenCategory(
+              icon: Icons.settings_ethernet,
+              category: "Developer opties",
+              children: [
+                SwitchInstelling(
+                  title: "Developer opties",
+                  subtitle: "Schakel developer opties uit",
+                  setting: "developerMode",
+                ),
+              ],
+            ),
         ],
       ),
     );

@@ -97,7 +97,7 @@ void main() async {
     "doubleBackAgenda": true,
     "colorsInDrawer": true,
     "alwaysPrimary": true,
-    "preNotificationMinutes": 20,
+    "preNotificationMinutes": 10,
     "developerMode": false,
   };
   standardSettings.entries.forEach((element) {

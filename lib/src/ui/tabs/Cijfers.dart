@@ -82,8 +82,9 @@ class _Cijfers extends State<Cijfers> {
                     child: SingleChildScrollView(
                       physics: AlwaysScrollableScrollPhysics(),
                       child: account.recenteCijfers.isEmpty
-                          ? Center(
-                              child: Text("Nog geen cijfers"),
+                          ? EmptyPage(
+                              text: "Nog geen cijfers",
+                              icon: Icons.looks_6_outlined,
                             )
                           : SeeCard(
                               column: [

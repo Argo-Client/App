@@ -39,6 +39,12 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           builder: (BuildContext context, box, Widget child) {
             List<Widget> berichten = [];
             String lastDay;
+            if (account.berichten.isEmpty) {
+              return EmptyPage(
+                text: "Geen berichten",
+                icon: Icons.email_outlined,
+              );
+            }
             for (int i = 0; i < account.berichten.length; i++) {
               ValueNotifier<Bericht> ber = ValueNotifier(account.berichten[i]);
               if (lastDay != ber.value.dag) {

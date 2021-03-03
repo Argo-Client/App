@@ -19,6 +19,12 @@ class _Leermiddelen extends State<Leermiddelen> {
         child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
+              if (account.leermiddelen.isEmpty) {
+                return EmptyPage(
+                  text: "Geen leermiddelen",
+                  icon: Icons.language_outlined,
+                );
+              }
               return Column(
                 children: [
                   for (Leermiddel leermiddel in account.leermiddelen)

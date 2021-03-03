@@ -5,7 +5,6 @@ class Cijfers extends MagisterApi {
   MagisterApi api;
   Cijfers(this.api) : super(api.account);
   Future refresh() async {
-    // account.cijfers = [];
     await cijferJaren();
     await api.wait([recentCijfers(), cijferPerioden(), cijfers()]);
   }

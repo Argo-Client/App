@@ -74,6 +74,12 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
+              if (account.bronnen.isEmpty) {
+                return EmptyPage(
+                  text: "Geen bronnen",
+                  icon: Icons.folder_outlined,
+                );
+              }
               return ListView(
                 children: [
                   if (bronnenView.last == null)
@@ -84,11 +90,9 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                       ),
                     )
                   else if (bronnenView.last.isEmpty)
-                    Container(
-                      height: bodyHeight(context),
-                      child: Center(
-                        child: Text("Deze map is leeg"),
-                      ),
+                    EmptyPage(
+                      text: "Deze map is leeg",
+                      icon: Icons.folder_outlined,
                     )
                   else
                     SeeCard(

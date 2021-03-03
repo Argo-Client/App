@@ -60,6 +60,11 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
         child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
+              if (account.afwezigheid.isEmpty)
+                return EmptyPage(
+                  text: "Geen afwezigheid",
+                  icon: Icons.check_circle_outlined,
+                );
               List<Widget> absenties = [];
               String lastDay;
               for (int i = 0; i < account.afwezigheid.length; i++) {
@@ -130,21 +135,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 );
                 lastDay = afw.dag;
               }
-              return account.afwezigheid.isEmpty
-                  ? ListView(
-                      children: [
-                        Center(
-                          child: Text(
-                            "Geen afwezigheid",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : buildLiveList(absenties, 10);
+              return buildLiveList(absenties, 10);
             }),
         onRefresh: () async {
           await handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);

@@ -129,14 +129,11 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                 dataBuilder: (c, week) {
                   List<Les> huiswerkLessen = week.expand((List<Les> x) => x).where((les) => les.huiswerk != null).toList().cast<Les>();
                   List<Widget> huiswerk = [];
-                  if (huiswerkLessen.isEmpty) {
-                    return Container(
-                      height: bodyHeight(context),
-                      child: Center(
-                        child: Text("Geen Huiswerk deze week."),
-                      ),
+                  if (huiswerkLessen.isEmpty)
+                    return EmptyPage(
+                      text: "Geen huiswerk deze week",
+                      icon: Icons.assignment_outlined,
                     );
-                  }
                   String lastDay;
                   int i = 0;
                   for (Les les in huiswerkLessen) {
@@ -189,6 +186,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                             ),
                           ],
                         ),
+                        padding: EdgeInsets.only(bottom: 10.0),
                       ),
                     );
                   }

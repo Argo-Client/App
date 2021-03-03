@@ -657,3 +657,39 @@ Widget buildLiveList(list, loaded) {
           );
       });
 }
+
+class EmptyPage extends StatelessWidget {
+  final String text;
+  final IconData icon;
+
+  EmptyPage({
+    this.text,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: bodyHeight(context),
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 100,
+            color: Colors.grey[400],
+          ),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey[400],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

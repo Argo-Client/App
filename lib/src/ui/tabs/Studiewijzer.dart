@@ -24,17 +24,15 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
+              if (account.studiewijzers.isEmpty) {
+                return EmptyPage(
+                  text: "Geen studiewijzers",
+                  icon: Icons.school_outlined,
+                );
+              }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Padding(
-                  //   padding: EdgeInsets.only(
-                  //     top: 10,
-                  //     left: 10,
-                  //   ),
-                  //   child:
-                  //   ),
-                  // ),
                   for (Wijzer wijs in account.studiewijzers)
                     SeeCard(
                       border: account.studiewijzers.length - 1 == account.studiewijzers.indexOf(wijs)
@@ -45,26 +43,11 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
                       child: ListTile(
                         title: Text(wijs.naam),
                         onTap: () async {
-                          setState(
-                            () {},
-                          );
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => StudiewijzerPagina(wijs),
                             ),
                           );
-                          // await handleError(
-                          //   () async => await account.magister.studiewijzers.loadChildren(wijs),
-                          //   "Kon ${wijs.naam} niet laden",
-                          //   context,
-                          //   () {
-                          //     setState(
-                          //       () {},
-                          //     );
-                          //   },
-                          // );
-                          // await handleError(() async => await account.magister.bronnen.loadChildren(bron), "Kon ${bron.naam} niet laden.", context, () {
-                          // });
                         },
                       ),
                     ),

@@ -1,6 +1,7 @@
 library adapters;
 
 import 'package:Argo/src/utils/magister/magister.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -90,42 +91,25 @@ class Account extends HiveObject {
   Magister magister;
   Account([Map tokenSet]) {
     this.magister = Magister(this);
+
     if (tokenSet != null) {
       this.accessToken = tokenSet["access_token"];
       this.refreshToken = tokenSet["refresh_token"];
+      this.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
+
+      String parsed = base64.normalize(tokenSet["id_token"].split(".")[1]);
+      Map data = json.decode(utf8.decode(base64Decode(parsed)));
+      this.username = data["preferred_username"];
     }
 
-    // this.address = "";
-    // this.birthdate = "";
-    // this.email = "";
-    // this.fullName = "";
     this.id = 0;
-    // this.initials = "";
-    // this.klas = "";
-    // this.klasCode = "";
-    // this.name = "";
-    // this.officialFullName = "";
-    // this.phone = "-";
-    // this.profiel = "";
-    this.username = "Unset";
-    this.accessToken = tokenSet != null ? tokenSet["access_token"] : "";
-    this.refreshToken = tokenSet != null ? tokenSet["refresh_token"] : "";
-    // this.tenant = "";
-    // this.expiry = 8640000000000000;
-    // this.afwezigheid = <Absentie>[];
-    // this.berichten = <Bericht>[];
-    // this.cijfers = <CijferJaar>[];
-    // this.recenteCijfers = <Cijfer>[];
-    // this.studiewijzers = <Wijzer>[];
-    // this.leermiddelen = <Leermiddel>[];
     this.lessons = {}.cast<String, List<List<Les>>>();
-    this.magister.expiryAndUsername(tokenSet);
   }
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
+    this.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
     if (this.isInBox) this.save();
-    this.magister.expiryAndUsername(tokenSet);
   }
 
   String toString() => this.fullName;

@@ -36,14 +36,6 @@ class Magister {
     studiewijzers = Studiewijzers(MagisterApi(acc));
     leermiddelen = Leermiddelen(MagisterApi(acc));
   }
-  void expiryAndUsername(Map tokenSet) {
-    String parsed = base64.normalize(tokenSet["id_token"].split(".")[1]);
-
-    Map data = json.decode(utf8.decode(base64Decode(parsed)));
-    account.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
-    account.username = data["preferred_username"];
-    if (account.isInBox) account.save();
-  }
 
   Future downloadProfilePicture() async {
     var img = (await api.dio.get("api/leerlingen/${account.id}/foto", options: Options(responseType: ResponseType.bytes)));

@@ -30,6 +30,12 @@ def keystoreProperties = new Properties()
    if (keystorePropertiesFile.exists()) {
        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
    }
+   else {
+    keystoreProperties.setProperty('storePassword', System.getenv('KEY_STORE_PASSWORD'));
+    keystoreProperties.setProperty('keyPassword', System.getenv('KEY_PASSWORD'));
+    keystoreProperties.setProperty('keyAlias', "key");
+    keystoreProperties.setProperty('storeFile', "key.jks");
+}
 
 
 android {
@@ -63,12 +69,14 @@ android {
                 storePassword keystoreProperties['storePassword']
             }
         }
-        buildTypes {
-            release {
-                signingConfig signingConfigs.release
-            }
-        }
     }
+	else {
+		buildTypes {
+			release {
+				signingConfig signingConfigs.debug
+			}
+		}
+	}
 }
 
 flutter {

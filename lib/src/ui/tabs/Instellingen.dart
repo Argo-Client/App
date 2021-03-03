@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:numberpicker/numberpicker.dart';
+// import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+// import 'package:numberpicker/numberpicker.dart';
 import 'package:Argo/main.dart';
 import 'package:Argo/src/ui/CustomWidgets.dart';
 
@@ -176,36 +176,36 @@ class _Instellingen extends State<Instellingen> {
     );
   }
 
-  void _showColorPicker(pick) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Kies een kleur"),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            ColorPicker(
-              pickerColor: userdata.get(pick),
-              onColorChanged: (color) {
-                appState.setState(() {
-                  userdata.put(pick, color);
-                });
-              },
-            ),
-          ]),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                "Sluit",
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showColorPicker(pick) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text("Kies een kleur"),
+  //         content: Column(mainAxisSize: MainAxisSize.min, children: [
+  //           ColorPicker(
+  //             pickerColor: userdata.get(pick),
+  //             onColorChanged: (color) {
+  //               appState.setState(() {
+  //                 userdata.put(pick, color);
+  //               });
+  //             },
+  //           ),
+  //         ]),
+  //         actions: <Widget>[
+  //           FlatButton(
+  //             child: Text(
+  //               "Sluit",
+  //             ),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget build(BuildContext context) {
     return AppPage(

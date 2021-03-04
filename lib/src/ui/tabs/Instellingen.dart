@@ -11,10 +11,10 @@ class Instellingen extends StatefulWidget {
 
 class InstellingenCategory extends StatelessWidget {
   final String category;
-  final List<Widget> children;
+  final Widget Function(BuildContext, void Function(void Function())) builder;
   final IconData icon;
 
-  InstellingenCategory({this.category, this.icon, this.children});
+  InstellingenCategory({this.category, this.icon, this.builder});
 
   Widget build(BuildContext context) {
     return SeeCard(
@@ -27,7 +27,7 @@ class InstellingenCategory extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => InstellingPagina(category, children),
+              builder: (context) => InstellingPagina(category, builder),
             ),
           );
         },
@@ -108,19 +108,18 @@ class CustomInstelling extends StatelessWidget {
 
 class InstellingPagina extends StatelessWidget {
   final String instelling;
-  final List<Widget> page;
+  final Widget Function(BuildContext, void Function(void Function())) page;
 
   InstellingPagina(this.instelling, this.page);
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(instelling),
-      ),
-      body: ListView(
-        children: page,
-      ),
-    );
+        appBar: AppBar(
+          title: Text(instelling),
+        ),
+        body: StatefulBuilder(
+          builder: page,
+        ));
   }
 }
 
@@ -243,22 +242,18 @@ class _Instellingen extends State<Instellingen> {
           InstellingenCategory(
             icon: Icons.format_paint_outlined,
             category: "Uiterlijk",
-            children: [
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+            builder: (BuildContext context, StateSetter setState) {
+              return ListView(
+                children: [
+                  CustomInstelling(
                     title: "Thema",
                     onTap: () {
                       showThemeMenu(setState);
                     },
                     trailing: Icon(Icons.brightness_2_outlined),
                     subtitle: userdata.get("theme").toString().capitalize + " thema",
-                  );
-                },
-              ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+                  ),
+                  CustomInstelling(
                     title: 'Primaire kleur',
                     onTap: () => showColorPicker("primaryColor"),
                     subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
@@ -273,12 +268,8 @@ class _Instellingen extends State<Instellingen> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+                  ),
+                  CustomInstelling(
                     title: 'Secundaire kleur',
                     onTap: () => showColorPicker("accentColor"),
                     subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
@@ -293,24 +284,24 @@ class _Instellingen extends State<Instellingen> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-              SwitchInstelling(
-                title: "Icoon kleuren in sidebar",
-                subtitle: "Voeg kleur toe aan de icoontjes in de sidebar",
-                setting: "colorsInDrawer",
-                onChange: () => appState.setState(() {}),
-              )
-            ],
+                  ),
+                  SwitchInstelling(
+                    title: "Icoon kleuren in sidebar",
+                    subtitle: "Voeg kleur toe aan de icoontjes in de sidebar",
+                    setting: "colorsInDrawer",
+                    onChange: () => appState.setState(() {}),
+                  )
+                ],
+              );
+            },
           ),
           InstellingenCategory(
             icon: Icons.calendar_today_outlined,
             category: "Agenda",
-            children: [
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+            builder: (BuildContext context, StateSetter setState) {
+              return ListView(
+                children: [
+                  CustomInstelling(
                     title: "Hoogte van één uur",
                     subtitle: "Hoe hoog een uur (in pixels) moet zijn",
                     trailing: CircleShape(
@@ -336,12 +327,8 @@ class _Instellingen extends State<Instellingen> {
                           );
                       },
                     ),
-                  );
-                },
-              ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+                  ),
+                  CustomInstelling(
                     subtitle: "Hoelaat je lesuren beginnen",
                     title: "Start tijd",
                     trailing: CircleShape(
@@ -367,12 +354,8 @@ class _Instellingen extends State<Instellingen> {
                           );
                       },
                     ),
-                  );
-                },
-              ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+                  ),
+                  CustomInstelling(
                     title: "Eind tijd",
                     subtitle: "Hoelaat je lesuren eindigen",
                     trailing: CircleShape(
@@ -396,28 +379,28 @@ class _Instellingen extends State<Instellingen> {
                           });
                       },
                     ),
-                  );
-                },
-              ),
-              SwitchInstelling(
-                title: "Automatisch begin uur",
-                subtitle: "Laat Argo je start tijd berekenen",
-                setting: "agendaAutoBegin",
-              ),
-              SwitchInstelling(
-                title: "Automatisch eind uur",
-                subtitle: "Laat Argo je eind tijd berekenen",
-                setting: "agendaAutoEind",
-              )
-            ],
+                  ),
+                  SwitchInstelling(
+                    title: "Automatisch begin uur",
+                    subtitle: "Laat Argo je start tijd berekenen",
+                    setting: "agendaAutoBegin",
+                  ),
+                  SwitchInstelling(
+                    title: "Automatisch eind uur",
+                    subtitle: "Laat Argo je eind tijd berekenen",
+                    setting: "agendaAutoEind",
+                  )
+                ],
+              );
+            },
           ),
           InstellingenCategory(
             icon: Icons.notifications_outlined,
             category: "Notificaties",
-            children: [
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  return CustomInstelling(
+            builder: (BuildContext context, StateSetter setState) {
+              return ListView(
+                children: [
+                  CustomInstelling(
                     title: "Notificatie voor de les",
                     subtitle: "Het aantal minuten dat je voor een les een notificatie krijgt",
                     trailing: CircleShape(
@@ -440,94 +423,97 @@ class _Instellingen extends State<Instellingen> {
                           notifications.lessonNotifications(account.lessons);
                         });
                     }),
-                  );
-                },
-              )
-            ],
+                  )
+                ],
+              );
+            },
           ),
           InstellingenCategory(
             icon: Icons.build_outlined,
             category: "Overig",
-            children: [
-              SwitchInstelling(
-                title: "Zet je foto uit",
-                subtitle: "Voor als die niet zo goed gelukt is",
-                setting: "useIcon",
-                onChange: () => appState.setState(() {}),
-              ),
-              SwitchInstelling(
-                title: "Terugknop opent sidebar",
-                subtitle: "Open de sidebar als je één keer op de terugknop klikt",
-                setting: "backOpensDrawer",
-                onChange: () => appState.setState(() {}),
-              ),
-              SwitchInstelling(
-                title: "Dubble terugknop voor agenda",
-                subtitle: "Open de agenda als je twee keer snel op de terugknop klikt",
-                setting: "doubleBackAgenda",
-                onChange: () => appState.setState(() {}),
-              ),
-              if (accounts.length > 1)
-                SwitchInstelling(
-                  title: "Open altijd je hoofdaccount",
-                  subtitle: "Open altijd je hoofd account als je de app opstart",
-                  setting: "alwaysPrimary",
-                  onChange: () => appState.setState(() {}),
-                ),
-              StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-                  if (custom.isEmpty) {
-                    return Container();
-                  }
-
-                  return CustomInstelling(
-                    title: "Verwijder alle zelfbedachte namen",
-                    trailing: Padding(
-                      padding: EdgeInsets.only(right: 15),
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.red[400],
-                      ),
+            builder: (BuildContext context, StateSetter setState) {
+              return ListView(
+                children: [
+                  SwitchInstelling(
+                    title: "Zet je foto uit",
+                    subtitle: "Voor als die niet zo goed gelukt is",
+                    setting: "useIcon",
+                    onChange: () => appState.setState(() {}),
+                  ),
+                  SwitchInstelling(
+                    title: "Terugknop opent sidebar",
+                    subtitle: "Open de sidebar als je één keer op de terugknop klikt",
+                    setting: "backOpensDrawer",
+                    onChange: () => appState.setState(() {}),
+                  ),
+                  SwitchInstelling(
+                    title: "Dubble terugknop voor agenda",
+                    subtitle: "Open de agenda als je twee keer snel op de terugknop klikt",
+                    setting: "doubleBackAgenda",
+                    onChange: () => appState.setState(() {}),
+                  ),
+                  if (accounts.length > 1)
+                    SwitchInstelling(
+                      title: "Open altijd je hoofdaccount",
+                      subtitle: "Open altijd je hoofd account als je de app opstart",
+                      setting: "alwaysPrimary",
+                      onChange: () => appState.setState(() {}),
                     ),
-                    onTap: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: Text("Weet je het zeker?"),
-                        content: Text("Als je op verwijder klikt, worden al je zelfbedachte namen verwijderd."),
-                        actions: [
-                          FlatButton(
-                            child: Text("Annuleer"),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                          FlatButton(
-                            child: Text("Verwijder"),
-                            onPressed: () => setState(
-                              () {
-                                custom.clear();
-                                handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
-                                Navigator.of(context).pop();
-                              },
+                  if (custom.isEmpty)
+                    Container()
+                  else
+                    CustomInstelling(
+                      title: "Verwijder alle zelfbedachte namen",
+                      trailing: Padding(
+                        padding: EdgeInsets.only(right: 15),
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.red[400],
+                        ),
+                      ),
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text("Weet je het zeker?"),
+                          content: Text("Als je op verwijder klikt, worden al je zelfbedachte namen verwijderd."),
+                          actions: [
+                            FlatButton(
+                              child: Text("Annuleer"),
+                              onPressed: () => Navigator.of(context).pop(),
                             ),
-                          ),
-                        ],
+                            FlatButton(
+                              child: Text("Verwijder"),
+                              onPressed: () => setState(
+                                () {
+                                  custom.clear();
+                                  handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ],
+                ],
+              );
+            },
           ),
           if (userdata.get("developerMode"))
             InstellingenCategory(
               icon: Icons.settings_ethernet,
               category: "Developer opties",
-              children: [
-                SwitchInstelling(
-                  title: "Developer opties",
-                  subtitle: "Schakel developer opties uit",
-                  setting: "developerMode",
-                ),
-              ],
+              builder: (BuildContext context, StateSetter setState) {
+                return ListView(
+                  children: [
+                    SwitchInstelling(
+                      title: "Developer opties",
+                      subtitle: "Schakel developer opties uit",
+                      setting: "developerMode",
+                    ),
+                  ],
+                );
+              },
             ),
         ],
       ),

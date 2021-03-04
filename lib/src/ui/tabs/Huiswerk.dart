@@ -135,7 +135,6 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                       icon: Icons.assignment_outlined,
                     );
                   String lastDay;
-                  int i = 0;
                   for (Les les in huiswerkLessen) {
                     if (lastDay != les.date) {
                       huiswerk.add(ContentHeader(les.date));

@@ -1,11 +1,11 @@
-<center><img src="assets/icons/icon192.png"></center>
+<p align="center"><img src="assets/icons/icon192.png"></p>
 <h1 align="center">Argo</h1>
-<center>
+<p align="center">
 <img src="https://github.com/argo-client/app/actions/workflows/main.yml/badge.svg">
 <img src="https://img.shields.io/website-up-down-green-red/https/argo-magister.net">
 <img src="https://img.shields.io/discord/750027981623263292.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2">
 <img src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103">
-</center>
+</p>
 
 <h3 align="center">
 Argo is een Magister 6 applicatie met material design.

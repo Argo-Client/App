@@ -143,37 +143,35 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                     lastDay = les.date;
                     huiswerk.add(
                       SeeCard(
-                        border: huiswerkLessen.last == les || huiswerkLessen[++i].date != lastDay
-                            ? null
-                            : Border(
-                                bottom: greyBorderSide(),
-                              ),
-                        child: Column(
+                        // border: huiswerkLessen.last == les || huiswerkLessen[++i].date != lastDay
+                        //     ? null
+                        //     : Border(
+                        //         bottom: greyBorderSide(),
+                        //       ),
+                        child: ExpansionTile(
+                          leading: les.huiswerkAf
+                              ? IconButton(
+                                  onPressed: () {
+                                    huiswerkAf(les);
+                                  },
+                                  icon: Icon(
+                                    Icons.assignment_turned_in_outlined,
+                                    color: Colors.green,
+                                  ),
+                                )
+                              : IconButton(
+                                  onPressed: () {
+                                    huiswerkAf(les);
+                                  },
+                                  icon: Icon(
+                                    Icons.assignment_outlined,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                          title: Text(
+                            les.title,
+                          ),
                           children: [
-                            ListTile(
-                              leading: les.huiswerkAf
-                                  ? IconButton(
-                                      onPressed: () {
-                                        huiswerkAf(les);
-                                      },
-                                      icon: Icon(
-                                        Icons.assignment_turned_in_outlined,
-                                        color: Colors.green,
-                                      ),
-                                    )
-                                  : IconButton(
-                                      onPressed: () {
-                                        huiswerkAf(les);
-                                      },
-                                      icon: Icon(
-                                        Icons.assignment_outlined,
-                                        color: Colors.grey[400],
-                                      ),
-                                    ),
-                              title: Text(
-                                les.title,
-                              ),
-                            ),
                             Padding(
                               child: WebContent(
                                 les.huiswerk,
@@ -186,7 +184,6 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                             ),
                           ],
                         ),
-                        padding: EdgeInsets.only(bottom: 10.0),
                       ),
                     );
                   }

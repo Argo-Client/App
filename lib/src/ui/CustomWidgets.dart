@@ -121,7 +121,7 @@ class ShowPeopleList extends StatelessWidget {
             SeeCard(
               child: ListTileBorder(
                 border: Border(
-                  bottom: greyBorderSide(),
+                  top: greyBorderSide(),
                 ),
                 leading: Icon(
                   Icons.person,

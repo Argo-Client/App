@@ -21,4 +21,4 @@ Dit project is open source, maar pull requests worden genegeerd (voor nu).
 
 ## Licentie
 
-Dit project is beschermd onder de MIT license - Bekijk het [LICENSE](LICENSE) bestand voor details.
+Dit project is beschermd onder de Apache 2.0 license - Bekijk het [LICENSE](LICENSE) bestand voor details.

@@ -38,11 +38,6 @@ class _Info extends State<Info> {
                 SeeCard(
                   column: [
                     Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
                       child: ListTile(
                         leading: Icon(Icons.verified_user_outlined),
                         title: Text('Versie'),
@@ -57,7 +52,7 @@ class _Info extends State<Info> {
                     ),
                     ListTileBorder(
                       border: Border(
-                        bottom: greyBorderSide(),
+                        top: greyBorderSide(),
                       ),
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
@@ -66,7 +61,7 @@ class _Info extends State<Info> {
                     ),
                     ListTileBorder(
                       border: Border(
-                        bottom: greyBorderSide(),
+                        top: greyBorderSide(),
                       ),
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),

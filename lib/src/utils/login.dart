@@ -35,6 +35,7 @@ class _LoginView extends State<LoginView> {
 
   Account account;
   _LoginView(this.magisterLogin, this.title);
+
   Widget errorBuilder(context, dynamic error, retry) => Column(
         children: [
           SelectableText(
@@ -53,6 +54,7 @@ class _LoginView extends State<LoginView> {
           Text("Argo is in beta, mocht er hier iets anders staan dan 'Geen Internet' stuur even een screenshot. Dan kunnen we het zo snel mogelijk oplossen"),
         ],
       );
+
   Widget build(BuildContext context) {
     CookieManager().clearCookies();
     return Scaffold(
@@ -181,7 +183,7 @@ class MagisterLoader extends StatelessWidget {
   Widget build(c) => SeeCard(
         child: ListTileBorder(
           border: Border(
-            bottom: greyBorderSide(),
+            top: greyBorderSide(),
           ),
           leading: Container(
             padding: EdgeInsets.only(top: 4.5),

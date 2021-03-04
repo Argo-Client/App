@@ -36,7 +36,7 @@ dependencies:
   flutter_colorpicker: ^0.3.4
   hive: ^1.4.4
   hive_flutter: ^0.3.1
-  outline_material_icons: ^0.1.1
+
   after_layout: ^1.0.7+2
   numberpicker: ^1.2.1
   flushbar: ^1.10.4

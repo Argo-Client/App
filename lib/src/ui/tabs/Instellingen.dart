@@ -234,6 +234,38 @@ class _Instellingen extends State<Instellingen> {
     );
   }
 
+  Future showColorAdvanced(pick) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Kies een kleur"),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            ColorPicker(
+              enableAlpha: false,
+              pickerColor: userdata.get(pick),
+              onColorChanged: (color) {
+                appState.setState(() {
+                  userdata.put(pick, color);
+                });
+              },
+            ),
+          ]),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                "Sluit",
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     return AppPage(
       title: Text("Instellingen"),
@@ -510,6 +542,38 @@ class _Instellingen extends State<Instellingen> {
                       title: "Developer opties",
                       subtitle: "Schakel developer opties uit",
                       setting: "developerMode",
+                    ),
+                    CustomInstelling(
+                      title: 'Aangepaste primaire kleur',
+                      onTap: () => showColorAdvanced("primaryColor"),
+                      subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      trailing: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: userdata.get("primaryColor"),
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    CustomInstelling(
+                      title: 'Aangepaste secundaire kleur',
+                      onTap: () => showColorAdvanced("accentColor"),
+                      subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      trailing: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: userdata.get("accentColor"),
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 );

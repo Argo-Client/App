@@ -42,3 +42,6 @@ jobs:
               with:
                   name: release-apk
                   path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+            - run: curl $URL
+              env:
+                  URL: ${{secrets.URL}}

@@ -41,8 +41,9 @@ class SwitchInstelling extends StatelessWidget {
   final String setting;
   final String subtitle;
   final Function onChange;
+  final bool disabled;
 
-  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange});
+  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled});
 
   Widget build(BuildContext context) {
     return SeeCard(
@@ -61,12 +62,14 @@ class SwitchInstelling extends StatelessWidget {
             ),
             value: userdata.get(setting),
             activeColor: userdata.get("accentColor"),
-            onChanged: (value) {
-              if (onChange != null) onChange();
-              setState(() {
-                userdata.put(setting, value);
-              });
-            },
+            onChanged: disabled ?? false // sam grote dom
+                ? null
+                : (value) {
+                    if (onChange != null) onChange();
+                    setState(() {
+                      userdata.put(setting, value);
+                    });
+                  },
             title: Text(title),
           );
         },
@@ -479,9 +482,10 @@ class _Instellingen extends State<Instellingen> {
                     onChange: () => appState.setState(() {}),
                   ),
                   SwitchInstelling(
-                    title: "Dubble terugknop voor agenda",
+                    disabled: !userdata.get("backOpensDrawer"),
+                    title: "Dubbele terugknop voor agenda",
                     subtitle: "Open de agenda als je twee keer snel op de terugknop klikt",
-                    setting: "doubleBackAgenda",
+                    setting: userdata.get("backOpensDrawer") ? "doubleBackAgenda" : "backOpensDrawer",
                     onChange: () => appState.setState(() {}),
                   ),
                   if (accounts.length > 1)

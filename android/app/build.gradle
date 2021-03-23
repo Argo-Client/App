@@ -30,7 +30,7 @@ def keystoreProperties = new Properties()
    if (keystorePropertiesFile.exists()) {
        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
    }
-   else {
+   else if(System.getenv("KEY_STORE_PASSWORD")) {
     keystoreProperties.setProperty('storePassword', System.getenv('KEY_STORE_PASSWORD'));
     keystoreProperties.setProperty('keyPassword', System.getenv('KEY_PASSWORD'));
     keystoreProperties.setProperty('keyAlias', "key");

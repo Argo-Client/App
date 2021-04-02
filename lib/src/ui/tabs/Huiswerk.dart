@@ -87,36 +87,13 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                   }
                   return Future.value(account.lessons[buildSlug]);
                 },
-                errorBuilder: (c, dynamic error, retry) => Container(
-                  height: bodyHeight(context),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                            bottom: 25,
-                          ),
-                          child: Icon(
-                            Icons.wifi_off_outlined,
-                            size: 150,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: Text(
-                            "Fout tijdens het laden van huiswerk: \n\n" + error.error,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 17.5,
-                            ),
-                          ),
-                        ),
-                        RaisedButton(
-                          onPressed: retry,
-                          child: Text("Probeer Opnieuw"),
-                        ),
-                      ],
+                errorBuilder: (c, error, retry) => RefreshIndicator(
+                  onRefresh: () async => retry(),
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: EmptyPage(
+                      icon: Icons.wifi_off_outlined,
+                      text: "Geen internet",
                     ),
                   ),
                 ),
@@ -126,8 +103,9 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                     child: CircularProgressIndicator(),
                   ),
                 ),
-                dataBuilder: (c, week) {
-                  List<Les> huiswerkLessen = week.expand((List<Les> x) => x).where((les) => les.huiswerk != null).toList().cast<Les>();
+                dataBuilder: (c, _) {
+                  List<List<Les>> week = account.lessons[buildSlug];
+                  List<Les> huiswerkLessen = week.expand((x) => x).where((les) => les.huiswerk != null).toList();
                   List<Widget> huiswerk = [];
                   if (huiswerkLessen.isEmpty)
                     return EmptyPage(
@@ -142,11 +120,6 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                     lastDay = les.date;
                     huiswerk.add(
                       SeeCard(
-                        // border: huiswerkLessen.last == les || huiswerkLessen[++i].date != lastDay
-                        //     ? null
-                        //     : Border(
-                        //         bottom: greyBorderSide(),
-                        //       ),
                         child: ExpansionTile(
                           leading: les.huiswerkAf
                               ? IconButton(
@@ -187,13 +160,19 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                     );
                   }
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.symmetric(
-                        horizontal: greyBorderSide(),
+                  return RefreshIndicator(
+                    onRefresh: () async => await handleError(() async => account.magister.agenda.getLessen(buildMonday), "Kon huiswerk niet verversen", context),
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.symmetric(
+                            horizontal: greyBorderSide(),
+                          ),
+                        ),
+                        child: buildLiveList(huiswerk, 4),
                       ),
                     ),
-                    child: buildLiveList(huiswerk, 4),
                   );
                 },
               );

@@ -107,46 +107,27 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                                 : null,
                             onTap: () async {
                               if (bron.isFolder) {
-                                breadcrumbs.add(
-                                  bron.naam,
-                                );
-                                bronnenView.add(
-                                  bron.children,
-                                );
-                                setState(
-                                  () {},
-                                );
+                                breadcrumbs.add(bron.naam);
+                                bronnenView.add(bron.children);
+                                setState(() {});
                                 if (bron.children == null) {
                                   await handleError(
                                     () async => await account.magister.bronnen.loadChildren(bron),
                                     "Kon ${bron.naam} niet laden.",
                                     context,
                                     () {
-                                      setState(
-                                        () {},
-                                      );
-                                      bronnenView = bronnenView
-                                          .where(
-                                            (list) => list != null,
-                                          )
-                                          .toList();
-                                      bronnenView.add(
-                                        bron.children,
-                                      );
+                                      setState(() {});
+                                      bronnenView = bronnenView.where((list) => list != null).toList();
+                                      bronnenView.add(bron.children);
                                     },
                                   );
                                 }
                               } else {
-                                account.magister.bronnen.downloadFile(
-                                  bron,
-                                  (count, total) {
-                                    setState(
-                                      () {
-                                        bron.downloadCount = count;
-                                      },
-                                    );
-                                  },
-                                );
+                                account.magister.bronnen.downloadFile(bron, (count, total) {
+                                  setState(() {
+                                    bron.downloadCount = count;
+                                  });
+                                });
                               }
                             },
                           ),

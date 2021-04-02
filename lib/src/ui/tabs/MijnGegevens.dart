@@ -16,6 +16,7 @@ class _MijnGegevens extends State<MijnGegevens> {
       title: Text("Mijn Gegevens"),
       body: RefreshIndicator(
         child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           child: ValueListenableBuilder(
               valueListenable: updateNotifier,
               builder: (context, _, _a) {

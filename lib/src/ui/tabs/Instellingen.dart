@@ -62,7 +62,7 @@ class SwitchInstelling extends StatelessWidget {
             ),
             value: userdata.get(setting),
             activeColor: userdata.get("accentColor"),
-            onChanged: disabled ?? false // sam grote dom
+            onChanged: disabled ?? false // sam grote dom // huh maar ik vertelde jou toch dat je dit zo moest doen? Hoezo ben ik dan dom joh, kom vechten.
                 ? null
                 : (value) {
                     if (onChange != null) onChange();

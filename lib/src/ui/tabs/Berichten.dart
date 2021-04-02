@@ -34,89 +34,92 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
         ),
       ],
       body: RefreshIndicator(
-        child: ValueListenableBuilder(
-          valueListenable: updateNotifier,
-          builder: (BuildContext context, box, Widget child) {
-            List<Widget> berichten = [];
-            String lastDay;
-            if (account.berichten.isEmpty) {
-              return EmptyPage(
-                text: "Geen berichten",
-                icon: Icons.email_outlined,
-              );
-            }
-            for (int i = 0; i < account.berichten.length; i++) {
-              ValueNotifier<Bericht> ber = ValueNotifier(account.berichten[i]);
-              if (lastDay != ber.value.dag) {
-                berichten.add(
-                  ContentHeader(ber.value.dag),
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: ValueListenableBuilder(
+            valueListenable: updateNotifier,
+            builder: (BuildContext context, box, Widget child) {
+              List<Widget> berichten = [];
+              String lastDay;
+              if (account.berichten.isEmpty) {
+                return EmptyPage(
+                  text: "Geen berichten",
+                  icon: Icons.email_outlined,
                 );
               }
-              berichten.add(
-                SeeCard(
-                  border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
-                      ? null
-                      : Border(
-                          bottom: greyBorderSide(),
-                        ),
-                  child: Stack(
-                    children: [
-                      ValueListenableBuilder(
-                        valueListenable: ber,
-                        builder: (c, ber, _) {
-                          if (ber.read)
-                            return Container();
-                          else
-                            return Padding(
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: userdata.get("accentColor"),
+              for (int i = 0; i < account.berichten.length; i++) {
+                ValueNotifier<Bericht> ber = ValueNotifier(account.berichten[i]);
+                if (lastDay != ber.value.dag) {
+                  berichten.add(
+                    ContentHeader(ber.value.dag),
+                  );
+                }
+                berichten.add(
+                  SeeCard(
+                    border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
+                        ? null
+                        : Border(
+                            bottom: greyBorderSide(),
+                          ),
+                    child: Stack(
+                      children: [
+                        ValueListenableBuilder(
+                          valueListenable: ber,
+                          builder: (c, ber, _) {
+                            if (ber.read)
+                              return Container();
+                            else
+                              return Padding(
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: userdata.get("accentColor"),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              padding: EdgeInsets.all(
-                                10,
+                                padding: EdgeInsets.all(
+                                  10,
+                                ),
+                              );
+                          },
+                        ),
+                        ListTile(
+                          trailing: Padding(
+                            child: ber.value.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
+                            padding: EdgeInsets.only(
+                              top: 7,
+                              left: 7,
+                            ),
+                          ),
+                          subtitle: Text(
+                            ber.value.afzender,
+                          ),
+                          title: Text(
+                            ber.value.onderwerp,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => BerichtPagina(ber),
                               ),
                             );
-                        },
-                      ),
-                      ListTile(
-                        trailing: Padding(
-                          child: ber.value.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
+                          },
                         ),
-                        subtitle: Text(
-                          ber.value.afzender,
-                        ),
-                        title: Text(
-                          ber.value.onderwerp,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => BerichtPagina(ber),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-              lastDay = ber.value.dag;
-            }
-            return buildLiveList(berichten, 10);
-          },
+                );
+                lastDay = ber.value.dag;
+              }
+              return buildLiveList(berichten, 10);
+            },
+          ),
         ),
         onRefresh: () async {
           await handleError(account.magister.berichten.refresh, "Kon berichten niet verversen", context);
@@ -176,30 +179,17 @@ class BerichtPagina extends StatelessWidget {
         onError: (error, retry) {
           if (!(error is DioError)) throw (error);
         },
-        errorBuilder: (context, error, retry) {
-          if (!(error is DioError))
-            return Text("Dit zou je nooit moeten zien, error: \n\n $error");
-          else
-            return RefreshIndicator(
-              onRefresh: () async => retry(),
-              child: SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width - 50,
-                    height: bodyHeight(context),
-                    child: Text(
-                      "Kon geen verbinding maken met Magister:\n${(error as dynamic).error.toString()}",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+        errorBuilder: (context, dynamic error, retry) {
+          return RefreshIndicator(
+            onRefresh: () async => retry(),
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: EmptyPage(
+                icon: Icons.wifi_off_outlined,
+                text: error?.error ?? error?.toString() ?? error.message ?? error,
               ),
-            );
+            ),
+          );
         },
         dataBuilder: (context, data) {
           Bericht ber = data[0];

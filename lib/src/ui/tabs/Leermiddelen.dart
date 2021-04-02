@@ -16,50 +16,53 @@ class _Leermiddelen extends State<Leermiddelen> {
     return AppPage(
       title: Text("Leermiddelen"),
       body: RefreshIndicator(
-        child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (BuildContext context, _, _a) {
-              if (account.leermiddelen.isEmpty) {
-                return EmptyPage(
-                  text: "Geen leermiddelen",
-                  icon: Icons.language_outlined,
-                );
-              }
-              return Column(
-                children: [
-                  for (Leermiddel leermiddel in account.leermiddelen)
-                    SeeCard(
-                      child: Tooltip(
-                        message: leermiddel.title,
-                        child: ListTileBorder(
-                          onTap: () => account.magister.leermiddelen.launch(leermiddel),
-                          border: account.leermiddelen.last == leermiddel
-                              ? null
-                              : Border(
-                                  bottom: greyBorderSide(),
-                                ),
-                          title: Text(
-                            leermiddel.title,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: leermiddel?.uitgeverij == null
-                              ? null
-                              : Text(
-                                  leermiddel?.uitgeverij,
-                                ),
-                          trailing: Text(
-                            leermiddel?.vak?.code ?? "",
-                            style: TextStyle(
-                              color: Colors.grey[400],
-                              fontSize: 16,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: ValueListenableBuilder(
+              valueListenable: updateNotifier,
+              builder: (BuildContext context, _, _a) {
+                if (account.leermiddelen.isEmpty) {
+                  return EmptyPage(
+                    text: "Geen leermiddelen",
+                    icon: Icons.language_outlined,
+                  );
+                }
+                return Column(
+                  children: [
+                    for (Leermiddel leermiddel in account.leermiddelen)
+                      SeeCard(
+                        child: Tooltip(
+                          message: leermiddel.title,
+                          child: ListTileBorder(
+                            onTap: () => account.magister.leermiddelen.launch(leermiddel),
+                            border: account.leermiddelen.last == leermiddel
+                                ? null
+                                : Border(
+                                    bottom: greyBorderSide(),
+                                  ),
+                            title: Text(
+                              leermiddel.title,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: leermiddel?.uitgeverij == null
+                                ? null
+                                : Text(
+                                    leermiddel?.uitgeverij,
+                                  ),
+                            trailing: Text(
+                              leermiddel?.vak?.code ?? "",
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              );
-            }),
+                  ],
+                );
+              }),
+        ),
         onRefresh: () async {
           await handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
         },

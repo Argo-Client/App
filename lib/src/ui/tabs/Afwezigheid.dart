@@ -57,7 +57,9 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
         ),
       ],
       body: RefreshIndicator(
-        child: ValueListenableBuilder(
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
               if (account.afwezigheid.isEmpty)
@@ -136,7 +138,9 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 lastDay = afw.dag;
               }
               return buildLiveList(absenties, 10);
-            }),
+            },
+          ),
+        ),
         onRefresh: () async {
           await handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
         },

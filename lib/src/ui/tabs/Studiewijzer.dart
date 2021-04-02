@@ -35,7 +35,7 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
                 children: [
                   for (Wijzer wijs in account.studiewijzers)
                     SeeCard(
-                      border: account.studiewijzers.length - 1 == account.studiewijzers.indexOf(wijs)
+                      border: account.studiewijzers.last == wijs
                           ? null
                           : Border(
                               bottom: greyBorderSide(),
@@ -64,18 +64,11 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
   }
 }
 
-class StudiewijzerPagina extends StatefulWidget {
+class StudiewijzerPagina extends StatelessWidget {
   final Wijzer wijs;
   StudiewijzerPagina(this.wijs);
-  @override
-  _StudiewijzerPagina createState() => _StudiewijzerPagina(wijs);
-}
 
-class _StudiewijzerPagina extends State<StudiewijzerPagina> {
-  Wijzer wijs;
-  _StudiewijzerPagina(this.wijs);
-
-  ValueNotifier<Wijzer> selected = ValueNotifier(null);
+  final ValueNotifier<Wijzer> selected = ValueNotifier(null);
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +86,6 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
                         selected.value = null;
                       },
                     )
-                  // : AnimatedIcon(icon: AnimatedIcons.),
                   : null,
               title: selected.value != null
                   ? Text(selected.value.naam)
@@ -122,39 +114,9 @@ class _StudiewijzerPagina extends State<StudiewijzerPagina> {
             onRefresh: () async => retry(),
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
-              child: Container(
-                height: bodyHeight(context),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: 25,
-                            ),
-                            child: Icon(
-                              Icons.wifi_off_outlined,
-                              size: 150,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Text(
-                              "Fout tijdens het laden van studiewijzer: \n\n" + error.error,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 17.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.center,
-                ),
+              child: EmptyPage(
+                icon: Icons.wifi_off_outlined,
+                text: "Geen Internet",
               ),
             ),
           );
@@ -250,9 +212,16 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
       ),
       body: Futuristic(
         autoStart: true,
-        errorBuilder: (BuildContext context, error, retry) {
-          return Text(error);
-        },
+        errorBuilder: (_, dynamic error, retry) => RefreshIndicator(
+          onRefresh: () async => retry(),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: EmptyPage(
+              icon: Icons.wifi_off_outlined,
+              text: error?.error ?? error?.toString(),
+            ),
+          ),
+        ),
         futureBuilder: () async {
           await account.magister.studiewijzers.loadTab(
             wijstab,

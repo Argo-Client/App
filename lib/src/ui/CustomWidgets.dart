@@ -634,6 +634,8 @@ Widget buildLiveList(list, loaded) {
   return LiveList.options(
       itemCount: list.length,
       options: options,
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
       itemBuilder: (
         BuildContext context,
         int index,
@@ -670,8 +672,8 @@ class EmptyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       height: bodyHeight(context),
-      width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

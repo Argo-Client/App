@@ -74,10 +74,10 @@ class _Cijfers extends State<Cijfers> {
             ),
             body: TabBarView(
               children: [
-                if (jaar == 0) // Recenst
+                if (jaar == 0) // Recente Cijfers
                   RefreshIndicator(
                     onRefresh: () async {
-                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
+                      await handleError(account.magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
                     },
                     child: SingleChildScrollView(
                       physics: AlwaysScrollableScrollPhysics(),
@@ -103,9 +103,7 @@ class _Cijfers extends State<Cijfers> {
                   ),
                 for (Periode periode in perioden)
                   RefreshIndicator(
-                    onRefresh: () async {
-                      await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context);
-                    },
+                    onRefresh: () async => await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context),
                     child: SingleChildScrollView(
                       child: SeeCard(
                         column: () {

@@ -517,6 +517,63 @@ class Privilege {
   }
 }
 
+@HiveType(typeId: 14)
+class Opdracht {
+  @HiveField(0)
+  String titel;
+  @HiveField(1)
+  String vak;
+  @HiveField(2)
+  DateTime inleverDatum;
+  @HiveField(3)
+  DateTime ingeleverdOp;
+  @HiveField(4)
+  String status;
+  @HiveField(5)
+  String omschrijving;
+  @HiveField(6)
+  String beoordeling;
+  @HiveField(7)
+  String beoordeeldOp;
+  @HiveField(8)
+  List<Bron> leerlingBijlage;
+  @HiveField(9)
+  String leerlingOpmerking;
+  @HiveField(10)
+  bool magInleveren;
+  @HiveField(11)
+  bool teLaat;
+  @HiveField(12)
+  String docentOpmerking;
+  @HiveField(13)
+  List<Bron> docentBijlage;
+  @HiveField(14)
+  int versie;
+  @HiveField(15)
+  int id;
+
+  Opdracht([opdr]) {
+    if (opdr != null) {
+      this.titel = opdr["Titel"];
+      this.vak = opdr["Vak"];
+      this.inleverDatum = opdr["InleverenVoor"];
+      this.ingeleverdOp = opdr["IngeleverdOp"];
+      this.status = opdr["Status"];
+      this.omschrijving = opdr["Omschrijving"];
+      this.beoordeling = opdr["Beoordeling"];
+      this.beoordeeldOp = opdr["BeoordeelOp"];
+      this.leerlingBijlage = opdr["LeerlingBijlagen"];
+      this.leerlingOpmerking = opdr["LeerlingOpmerking"];
+      this.magInleveren = opdr["MagInLeveren"];
+      this.teLaat = opdr["IsTeLaat"];
+      this.docentOpmerking = opdr["DocentOpmerking"];
+      this.docentBijlage = opdr["FeedbackBijlagen"];
+      this.versie = opdr["VersieNummer"];
+      this.id = opdr["OpdrachtId"];
+    }
+  }
+}
+
 class MaterialColorAdapter extends TypeAdapter<MaterialColor> {
   @override
   final typeId = 100;

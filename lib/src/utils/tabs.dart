@@ -12,6 +12,7 @@ import 'package:Argo/src/ui/tabs/Leermiddelen.dart';
 import 'package:Argo/src/ui/tabs/MijnGegevens.dart';
 import 'package:Argo/src/ui/tabs/Studiewijzer.dart';
 import 'package:Argo/src/ui/tabs/Thuis.dart';
+import 'package:Argo/src/ui/tabs/Opdrachten.dart';
 
 import 'package:Argo/src/utils/hive/adapters.dart';
 
@@ -78,6 +79,13 @@ class Tabs {
           "page": Leermiddelen(),
           "color": Colors.cyan,
         },
+      // {
+      //   "name": Text("Opdrachten"),
+      //   "icon": Icons.assignment_late_outlined,
+      //   "page": Opdrachten(),
+      //   "overridePop": true,
+      //   "color": Colors.red[600],
+      // },
       if (account.has("Bronnen", "Read"))
         {
           "name": Text("Bronnen"),

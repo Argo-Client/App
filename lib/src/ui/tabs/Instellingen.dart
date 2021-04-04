@@ -13,15 +13,18 @@ class InstellingenCategory extends StatelessWidget {
   final String category;
   final Widget Function(BuildContext, void Function(void Function())) builder;
   final IconData icon;
+  final bool border;
 
-  InstellingenCategory({this.category, this.icon, this.builder});
+  InstellingenCategory({this.category, this.icon, this.builder, this.border = true});
 
   Widget build(BuildContext context) {
     return SeeCard(
       child: ListTileBorder(
-        border: Border(
-          top: greyBorderSide(),
-        ),
+        border: !border
+            ? null
+            : Border(
+                top: greyBorderSide(),
+              ),
         title: Text(category),
         leading: Icon(icon),
         onTap: () {
@@ -42,14 +45,17 @@ class SwitchInstelling extends StatelessWidget {
   final String subtitle;
   final Function onChange;
   final bool disabled;
+  final bool border;
 
-  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled});
+  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled, this.border = true});
 
   Widget build(BuildContext context) {
     return SeeCard(
-      border: Border(
-        top: greyBorderSide(),
-      ),
+      border: !border
+          ? null
+          : Border(
+              top: greyBorderSide(),
+            ),
       child: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return SwitchListTile(
@@ -83,14 +89,17 @@ class CustomInstelling extends StatelessWidget {
   final String subtitle;
   final Function onTap;
   final Widget trailing;
+  final bool border;
 
-  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle});
+  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle, this.border = true});
 
   Widget build(BuildContext context) {
     return SeeCard(
-      border: Border(
-        top: greyBorderSide(),
-      ),
+      border: !border
+          ? null
+          : Border(
+              top: greyBorderSide(),
+            ),
       child: ListTile(
         title: Text(title),
         onTap: onTap,
@@ -212,16 +221,19 @@ class _Instellingen extends State<Instellingen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Kies een kleur"),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            BlockPicker(
-              pickerColor: userdata.get(pick),
-              onColorChanged: (color) {
-                appState.setState(() {
-                  userdata.put(pick, color);
-                });
-              },
-            ),
-          ]),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BlockPicker(
+                pickerColor: userdata.get(pick),
+                onColorChanged: (color) {
+                  appState.setState(() {
+                    userdata.put(pick, color);
+                  });
+                },
+              ),
+            ],
+          ),
           actions: <Widget>[
             FlatButton(
               child: Text(
@@ -275,12 +287,14 @@ class _Instellingen extends State<Instellingen> {
       body: ListView(
         children: [
           InstellingenCategory(
+            border: false,
             icon: Icons.format_paint_outlined,
             category: "Uiterlijk",
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
                 children: [
                   CustomInstelling(
+                    border: false,
                     title: "Thema",
                     onTap: () {
                       showThemeMenu(setState);
@@ -337,6 +351,7 @@ class _Instellingen extends State<Instellingen> {
               return ListView(
                 children: [
                   CustomInstelling(
+                    border: false,
                     title: "Hoogte van één uur",
                     subtitle: "Hoe hoog een uur (in pixels) moet zijn",
                     trailing: CircleShape(
@@ -436,6 +451,7 @@ class _Instellingen extends State<Instellingen> {
               return ListView(
                 children: [
                   CustomInstelling(
+                    border: false,
                     title: "Notificatie voor de les",
                     subtitle: "Het aantal minuten dat je voor een les een notificatie krijgt",
                     trailing: CircleShape(
@@ -470,6 +486,7 @@ class _Instellingen extends State<Instellingen> {
               return ListView(
                 children: [
                   SwitchInstelling(
+                    border: false,
                     title: "Zet je foto uit",
                     subtitle: "Voor als die niet zo goed gelukt is",
                     setting: "useIcon",
@@ -543,6 +560,7 @@ class _Instellingen extends State<Instellingen> {
                 return ListView(
                   children: [
                     SwitchInstelling(
+                      border: false,
                       title: "Developer opties",
                       subtitle: "Schakel developer opties uit",
                       setting: "developerMode",

@@ -196,7 +196,11 @@ class _Cijfers extends State<Cijfers> {
                   _recenteCijfers(),
                 for (Periode periode in perioden)
                   RefreshIndicator(
-                    onRefresh: () async => await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context),
+                    onRefresh: () async => await handleError(
+                      account.magister.cijfers.refresh,
+                      "Kon cijfers niet verversen",
+                      context,
+                    ),
                     child: SingleChildScrollView(
                       child: SeeCard(
                         column: () {

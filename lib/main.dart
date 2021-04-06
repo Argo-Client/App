@@ -65,23 +65,28 @@ void main() async {
     Hive.registerAdapter(DocentAdapter());
     Hive.registerAdapter(PrivilegeAdapter());
   } catch (_) {}
+
   try {
     List<Box> boxes = await Future.wait([
       Hive.openBox("userdata"),
       Hive.openBox("custom"),
       Hive.openBox<Account>("accounts"),
     ]);
+
     userdata = boxes.removeAt(0);
     custom = boxes.removeAt(0);
     accounts = boxes.removeAt(0);
   } catch (e) {
     Hive.deleteBoxFromDisk("accounts");
     print(e);
+
     return main();
   }
+
   if (accounts.isEmpty) {
     userdata.delete("introduction");
   }
+
   Map standardSettings = {
     "theme": "systeem",
     "primaryColor": Colors.blue,
@@ -100,20 +105,26 @@ void main() async {
     "preNotificationMinutes": 10,
     "developerMode": false,
   };
+
   standardSettings.entries.forEach((element) {
     if (!userdata.containsKey(element.key)) userdata.put(element.key, element.value);
   });
+
   log("Userdata: " + userdata.toMap().toString());
   log("accounts: " + accounts.toMap().toString());
+
   if (accounts.isNotEmpty) {
     // Als je de app voor het eerst opent heb je nog geen account
     int firstAccIndex = accounts.toMap().entries.first.key;
+
     if (userdata.get("alwaysPrimary")) {
       userdata.put("accountIndex", firstAccIndex);
     }
+
     account = accounts.get(userdata.get("accountIndex")) ?? accounts.get(firstAccIndex);
     notifications.lessonNotifications(account.lessons);
   }
+
   runApp(App());
 }
 

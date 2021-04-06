@@ -26,6 +26,96 @@ class Berichten extends StatefulWidget {
 
 class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
+
+  Widget _buildBericht(ValueNotifier<Bericht> ber, int i) {
+    return SeeCard(
+      border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
+          ? null
+          : Border(
+              bottom: greyBorderSide(),
+            ),
+      child: Stack(
+        children: [
+          ValueListenableBuilder(
+            valueListenable: ber,
+            builder: (c, ber, _) {
+              if (ber.read)
+                return Container();
+              else
+                return Padding(
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: userdata.get("accentColor"),
+                      ),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(
+                    10,
+                  ),
+                );
+            },
+          ),
+          ListTile(
+            trailing: Padding(
+              child: ber.value.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
+              padding: EdgeInsets.only(
+                top: 7,
+                left: 7,
+              ),
+            ),
+            subtitle: Text(
+              ber.value.afzender,
+            ),
+            title: Text(
+              ber.value.onderwerp,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BerichtPagina(ber),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBerichten(BuildContext context, box, Widget child) {
+    List<Widget> berichten = [];
+    String lastDay;
+
+    if (account.berichten.isEmpty) {
+      return EmptyPage(
+        text: "Geen berichten",
+        icon: Icons.email_outlined,
+      );
+    }
+
+    for (int i = 0; i < account.berichten.length; i++) {
+      ValueNotifier<Bericht> bericht = ValueNotifier(account.berichten[i]);
+      if (lastDay != bericht.value.dag) {
+        berichten.add(
+          ContentHeader(bericht.value.dag),
+        );
+      }
+
+      berichten.add(_buildBericht(bericht, i));
+
+      lastDay = bericht.value.dag;
+    }
+
+    return buildLiveList(berichten, 10);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppPage(
@@ -48,87 +138,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           physics: AlwaysScrollableScrollPhysics(),
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
-            builder: (BuildContext context, box, Widget child) {
-              List<Widget> berichten = [];
-              String lastDay;
-              if (account.berichten.isEmpty) {
-                return EmptyPage(
-                  text: "Geen berichten",
-                  icon: Icons.email_outlined,
-                );
-              }
-              for (int i = 0; i < account.berichten.length; i++) {
-                ValueNotifier<Bericht> ber = ValueNotifier(account.berichten[i]);
-                if (lastDay != ber.value.dag) {
-                  berichten.add(
-                    ContentHeader(ber.value.dag),
-                  );
-                }
-                berichten.add(
-                  SeeCard(
-                    border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
-                        ? null
-                        : Border(
-                            bottom: greyBorderSide(),
-                          ),
-                    child: Stack(
-                      children: [
-                        ValueListenableBuilder(
-                          valueListenable: ber,
-                          builder: (c, ber, _) {
-                            if (ber.read)
-                              return Container();
-                            else
-                              return Padding(
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: userdata.get("accentColor"),
-                                    ),
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(
-                                  10,
-                                ),
-                              );
-                          },
-                        ),
-                        ListTile(
-                          trailing: Padding(
-                            child: ber.value.prioriteit ? Icon(Icons.error, color: Colors.redAccent) : null,
-                            padding: EdgeInsets.only(
-                              top: 7,
-                              left: 7,
-                            ),
-                          ),
-                          subtitle: Text(
-                            ber.value.afzender,
-                          ),
-                          title: Text(
-                            ber.value.onderwerp,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => BerichtPagina(ber),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-                lastDay = ber.value.dag;
-              }
-              return buildLiveList(berichten, 10);
-            },
+            builder: _buildBerichten,
           ),
         ),
         onRefresh: () async {
@@ -141,7 +151,159 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
 
 class BerichtPagina extends StatelessWidget {
   final ValueNotifier<Bericht> ber;
+
   const BerichtPagina(this.ber);
+
+  Widget _afzender(String afzender) {
+    return ListTileBorder(
+      border: Border(
+        bottom: greyBorderSide(),
+      ),
+      leading: Padding(
+        child: Icon(
+          Icons.person_outlined,
+        ),
+        padding: EdgeInsets.only(
+          top: 7,
+          left: 7,
+        ),
+      ),
+      title: Text(
+        afzender,
+      ),
+      subtitle: Text(
+        "Afzender",
+      ),
+    );
+  }
+
+  Widget _dag(String dag) {
+    return ListTileBorder(
+      border: Border(
+        bottom: greyBorderSide(),
+      ),
+      leading: Padding(
+        child: Icon(
+          Icons.send,
+        ),
+        padding: EdgeInsets.only(
+          top: 7,
+          left: 7,
+        ),
+      ),
+      title: Text(
+        dag,
+      ),
+      subtitle: Text(
+        "Verzonden",
+      ),
+    );
+  }
+
+  Widget _ontvangers(BuildContext context, Bericht bericht) {
+    return ListTileBorder(
+      border: bericht.cc == null
+          ? null
+          : Border(
+              bottom: greyBorderSide(),
+            ),
+      leading: Padding(
+        child: Icon(
+          Icons.people_outlined,
+        ),
+        padding: EdgeInsets.only(
+          top: 7,
+          left: 7,
+        ),
+      ),
+      title: Text(
+        bericht.ontvangers.take(10).join(", "),
+        overflow: TextOverflow.ellipsis,
+      ),
+      onTap: bericht.ontvangers.length > 3
+          ? () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PeopleList(
+                    bericht.ontvangers,
+                    title: "Ontvangers",
+                  ),
+                ),
+              );
+            }
+          : null,
+      subtitle: Text(
+        "Ontvanger(s)",
+      ),
+    );
+  }
+
+  Widget _cc(BuildContext context, List<String> cc) {
+    return ListTile(
+      leading: Padding(
+        child: Icon(
+          Icons.people_outline,
+        ),
+        padding: EdgeInsets.only(
+          top: 7,
+          left: 7,
+        ),
+      ),
+      title: Text(
+        cc.take(5).join(', '),
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        "CC",
+      ),
+      onTap: cc.length > 3
+          ? () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PeopleList(
+                    cc,
+                    title: "Ontvangers",
+                  ),
+                ),
+              );
+            }
+          : null,
+    );
+  }
+
+  Widget _bijlagen(List<Bron> bijlagen) {
+    return SeeCard(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      margin: EdgeInsets.only(top: 20),
+      column: [
+        Padding(
+          padding: EdgeInsets.only(
+            top: 20,
+            left: 20,
+            bottom: 10,
+          ),
+          child: Text(
+            "Bijlagen",
+            style: TextStyle(
+              fontSize: 23,
+            ),
+          ),
+        ),
+        for (Bron bron in bijlagen)
+          BijlageItem(
+            bron,
+            onTap: () {
+              account.magister.bronnen.downloadFile(bron, (_, _a) {});
+            },
+            border: bijlagen.last != bron
+                ? Border(
+                    bottom: greyBorderSide(),
+                  )
+                : null,
+          )
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,10 +365,7 @@ class BerichtPagina extends StatelessWidget {
         },
         dataBuilder: (context, data) {
           Bericht ber = data[0];
-          List<Bron> bijlagen;
-          if (ber.heeftBijlagen) {
-            bijlagen = data[1];
-          }
+
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -218,115 +377,10 @@ class BerichtPagina extends StatelessWidget {
                     right: 0,
                   ),
                   column: [
-                    if (ber.afzender != null)
-                      ListTileBorder(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                        leading: Padding(
-                          child: Icon(
-                            Icons.person_outlined,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
-                        ),
-                        title: Text(
-                          ber.afzender,
-                        ),
-                        subtitle: Text(
-                          "Afzender",
-                        ),
-                      ),
-                    if (ber.dag != null)
-                      ListTileBorder(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                        leading: Padding(
-                          child: Icon(
-                            Icons.send,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
-                        ),
-                        title: Text(
-                          ber.dag,
-                        ),
-                        subtitle: Text(
-                          "Verzonden",
-                        ),
-                      ),
-                    if (ber.ontvangers != null)
-                      ListTileBorder(
-                        border: ber.cc == null
-                            ? null
-                            : Border(
-                                bottom: greyBorderSide(),
-                              ),
-                        leading: Padding(
-                          child: Icon(
-                            Icons.people_outlined,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
-                        ),
-                        title: Text(
-                          ber.ontvangers.take(10).join(", "),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        onTap: ber.ontvangers.length > 3
-                            ? () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PeopleList(
-                                      ber.ontvangers,
-                                      title: "Ontvangers",
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
-                        subtitle: Text(
-                          "Ontvanger(s)",
-                        ),
-                      ),
-                    if (ber.cc != null)
-                      ListTile(
-                        leading: Padding(
-                          child: Icon(
-                            Icons.people_outline,
-                          ),
-                          padding: EdgeInsets.only(
-                            top: 7,
-                            left: 7,
-                          ),
-                        ),
-                        title: Text(
-                          ber.cc.take(5).join(', '),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          "CC",
-                        ),
-                        onTap: ber.cc.length > 3
-                            ? () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PeopleList(
-                                      ber.cc,
-                                      title: "Ontvangers",
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
-                      ),
+                    if (ber.afzender != null) _afzender(ber.afzender),
+                    if (ber.dag != null) _dag(ber.dag),
+                    if (ber.ontvangers != null) _ontvangers(context, ber),
+                    if (ber.cc != null) _cc(context, ber.cc),
                   ],
                 ),
                 if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
@@ -344,38 +398,7 @@ class BerichtPagina extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (ber.heeftBijlagen)
-                  SeeCard(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    margin: EdgeInsets.only(top: 20),
-                    column: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: 20,
-                          left: 20,
-                          bottom: 10,
-                        ),
-                        child: Text(
-                          "Bijlagen",
-                          style: TextStyle(
-                            fontSize: 23,
-                          ),
-                        ),
-                      ),
-                      for (Bron bron in bijlagen)
-                        BijlageItem(
-                          bron,
-                          onTap: () {
-                            account.magister.bronnen.downloadFile(bron, (_, _a) {});
-                          },
-                          border: bijlagen.last != bron
-                              ? Border(
-                                  bottom: greyBorderSide(),
-                                )
-                              : null,
-                        )
-                    ],
-                  ),
+                if (ber.heeftBijlagen) _bijlagen(data[1]),
               ],
             ),
           );

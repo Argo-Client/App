@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:intl/intl.dart';
 import 'magister.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 class Berichten extends MagisterApi {
   MagisterApi api;

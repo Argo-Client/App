@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'package:Argo/src/ui/tabs/Afwezigheid.dart';
-import 'package:Argo/src/ui/tabs/Agenda.dart';
-import 'package:Argo/src/ui/tabs/Berichten.dart';
-import 'package:Argo/src/ui/tabs/Bronnen.dart';
-import 'package:Argo/src/ui/tabs/Cijfers.dart';
-import 'package:Argo/src/ui/tabs/Huiswerk.dart';
-import 'package:Argo/src/ui/tabs/Info.dart';
-import 'package:Argo/src/ui/tabs/Instellingen.dart';
-import 'package:Argo/src/ui/tabs/Leermiddelen.dart';
-import 'package:Argo/src/ui/tabs/MijnGegevens.dart';
-import 'package:Argo/src/ui/tabs/Studiewijzer.dart';
-import 'package:Argo/src/ui/tabs/Thuis.dart';
-import 'package:Argo/src/ui/tabs/Opdrachten.dart';
+import 'package:argo/src/ui/tabs/Afwezigheid.dart';
+import 'package:argo/src/ui/tabs/Agenda.dart';
+import 'package:argo/src/ui/tabs/Berichten.dart';
+import 'package:argo/src/ui/tabs/Bronnen.dart';
+import 'package:argo/src/ui/tabs/Cijfers.dart';
+import 'package:argo/src/ui/tabs/Huiswerk.dart';
+import 'package:argo/src/ui/tabs/Info.dart';
+import 'package:argo/src/ui/tabs/Instellingen.dart';
+import 'package:argo/src/ui/tabs/Leermiddelen.dart';
+import 'package:argo/src/ui/tabs/MijnGegevens.dart';
+import 'package:argo/src/ui/tabs/Studiewijzer.dart';
+import 'package:argo/src/ui/tabs/Thuis.dart';
+// import 'package:argo/src/ui/tabs/Opdrachten.dart';
 
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 class Tabs {
   Account account;

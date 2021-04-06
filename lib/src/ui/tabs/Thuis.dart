@@ -2,10 +2,10 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/layout.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/layout.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 import 'Agenda.dart';
 import 'Berichten.dart';

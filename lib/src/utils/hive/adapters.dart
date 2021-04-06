@@ -1,11 +1,11 @@
 library adapters;
 
-import 'package:Argo/src/utils/magister/magister.dart';
+import 'package:argo/src/utils/magister/magister.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:Argo/main.dart';
+import 'package:argo/main.dart';
 part 'adapters.g.dart';
 
 extension StringExtension on String {

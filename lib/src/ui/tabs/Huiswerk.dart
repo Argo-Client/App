@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 import 'Agenda.dart';
 

@@ -1,5 +1,5 @@
 import 'magister.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 class Studiewijzers extends MagisterApi {
   MagisterApi api;

@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'magister.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 class Afwezigheid extends MagisterApi {
   MagisterApi api;

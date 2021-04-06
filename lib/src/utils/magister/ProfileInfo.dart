@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 import 'magister.dart';
 

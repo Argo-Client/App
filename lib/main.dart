@@ -11,7 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'src/utils/hive/adapters.dart';
 
-import 'package:Argo/src/utils/notifications.dart';
+import 'package:argo/src/utils/notifications.dart';
 import 'src/layout.dart';
 
 extension StringExtension on String {

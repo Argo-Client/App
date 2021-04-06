@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 class Cijfers extends StatefulWidget {
   @override

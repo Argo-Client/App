@@ -1,5 +1,5 @@
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -75,11 +75,9 @@ class _OpdrachtenState extends State<Opdrachten> {
 }
 
 class OpdrachtPagina extends StatelessWidget {
-  Opdracht opdracht;
+  final Opdracht opdracht;
 
-  OpdrachtPagina(opdracht) {
-    this.opdracht = opdracht;
-  }
+  OpdrachtPagina(this.opdracht);
 
   @override
   Widget build(BuildContext context) {

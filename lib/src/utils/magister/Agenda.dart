@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'dart:convert';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 class Agenda extends MagisterApi {
   MagisterApi api;

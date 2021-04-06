@@ -1,5 +1,5 @@
 import 'magister.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class Leermiddelen extends MagisterApi {

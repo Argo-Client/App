@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
@@ -47,7 +47,7 @@ class _LoginView extends State<LoginView> {
               error.toString(),
               maxLines: 10,
             ),
-          RaisedButton(
+          ElevatedButton(
             child: Text("Retry"),
             onPressed: retry,
           ),
@@ -334,7 +334,7 @@ class RefreshAccountView extends StatelessWidget {
                           errors.value.first.first.response.data.toString(),
                           maxLines: 10,
                         ),
-                      RaisedButton(
+                      ElevatedButton(
                         child: Text("Retry"),
                         onPressed: () {
                           errors.value.forEach(
@@ -343,7 +343,7 @@ class RefreshAccountView extends StatelessWidget {
                           errors.value = [];
                         },
                       ),
-                      RaisedButton(
+                      ElevatedButton(
                         onPressed: () {
                           totalLoaded.value = loaders.length;
                         },

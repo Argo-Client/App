@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:Argo/main.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 class Instellingen extends StatefulWidget {
   @override
@@ -143,7 +143,7 @@ class _Instellingen extends State<Instellingen> {
         return AlertDialog(
           title: Text("Selecteer je thema"),
           actions: [
-            FlatButton(
+            TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -235,7 +235,7 @@ class _Instellingen extends State<Instellingen> {
             ],
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(
                 "Sluit",
               ),
@@ -267,7 +267,7 @@ class _Instellingen extends State<Instellingen> {
             ),
           ]),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(
                 "Sluit",
               ),
@@ -530,11 +530,11 @@ class _Instellingen extends State<Instellingen> {
                           title: Text("Weet je het zeker?"),
                           content: Text("Als je op verwijder klikt, worden al je zelfbedachte namen verwijderd."),
                           actions: [
-                            FlatButton(
+                            TextButton(
                               child: Text("Annuleer"),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
-                            FlatButton(
+                            TextButton(
                               child: Text("Verwijder"),
                               onPressed: () => setState(
                                 () {

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:Argo/main.dart' as main;
+import 'package:argo/main.dart' as main;
 import 'package:dio/dio.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/utils/login.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/login.dart';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
 import 'Cijfers.dart';

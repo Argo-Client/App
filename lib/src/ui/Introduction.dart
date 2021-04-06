@@ -7,11 +7,11 @@ import 'package:intro_slider/slide_object.dart';
 import 'package:flutter_placeholder_textlines/flutter_placeholder_textlines.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
-import 'package:Argo/src/utils/login.dart';
+import 'package:argo/src/utils/login.dart';
 
 class Introduction extends StatefulWidget {
   @override
@@ -122,7 +122,7 @@ class _Introduction extends State<Introduction> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: 15),
-                    child: FlatButton(
+                    child: TextButton(
                       child: Text(
                         "Bekijk hier ons beleid",
                         style: TextStyle(
@@ -327,7 +327,7 @@ class _Introduction extends State<Introduction> {
                     ),
                   ),
                   Center(
-                    child: FlatButton(
+                    child: TextButton(
                       child: Text(
                         "Log nu in!",
                         style: TextStyle(

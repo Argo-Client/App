@@ -1,10 +1,10 @@
-import 'package:Argo/main.dart';
+import 'package:argo/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 class Info extends StatefulWidget {
   @override

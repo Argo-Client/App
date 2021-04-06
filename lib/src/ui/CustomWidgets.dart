@@ -1,6 +1,6 @@
-import 'package:Argo/src/layout.dart';
+import 'package:argo/src/layout.dart';
 import 'package:flutter/material.dart';
-import 'package:Argo/main.dart';
+import 'package:argo/main.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,7 +8,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:auto_animated/auto_animated.dart';
 
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 import 'package:filesize/filesize.dart';
 

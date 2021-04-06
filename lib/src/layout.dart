@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:after_layout/after_layout.dart';
 import 'package:flushbar/flushbar_helper.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 
 import 'ui/Introduction.dart';
 import 'utils/login.dart' as login;
@@ -81,11 +81,11 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                     title: Text("Weet je het zeker?"),
                     content: Text("Als je het account verwijderd, moet je weer opnieuw inloggen om hem te kunnen gebruiken."),
                     actions: [
-                      FlatButton(
+                      TextButton(
                         child: Text("Annuleer"),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      FlatButton(
+                      TextButton(
                         child: Text("Verwijder"),
                         onPressed: () {
                           Navigator.pop(context);

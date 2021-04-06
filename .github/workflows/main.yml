@@ -2,46 +2,45 @@
 name: Flutter CI
 
 on:
-    push:
-        branches:
-            - master
+  push:
+    branches:
+      - master
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            # Setup
-            - uses: actions/checkout@v1
-            - uses: actions/setup-java@v1
-              with:
-                  java-version: "12.x"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Setup
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
 
-            - uses: subosito/flutter-action@v1
-              with:
-                  flutter-version: "1.22.6"
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "2.0.4"
 
+      # Signing key uit env naar bestand
+      - run: echo $KEY | base64 -d > android/app/key.jks
+        env:
+          KEY: ${{ secrets.SIGNING_KEY }}
 
-            # Signing key uit env naar bestand
-            - run: echo $KEY | base64 -d > android/app/key.jks
-              env:
-                  KEY: ${{ secrets.SIGNING_KEY }}
+      # Checks
+      - run: flutter pub get
+      - run: flutter analyze .
+      # - run: flutter test
 
-            # Checks
-            - run: flutter pub get
-            - run: flutter analyze .
-            # - run: flutter test
-              
-            # Build
-            - run: flutter build apk --split-per-abi
-              env:
-                  KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-                  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-            
-            # Add File
-            - uses: actions/upload-artifact@v1
-              with:
-                  name: release-apk
-                  path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
-            - run: curl $URL
-              env:
-                  URL: ${{secrets.URL}}
+      # Build
+      - run: flutter build apk --split-per-abi
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      # Add File
+      - uses: actions/upload-artifact@v1
+        with:
+          name: release-apk
+          path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+      - run: curl $URL
+        env:
+          URL: ${{secrets.URL}}

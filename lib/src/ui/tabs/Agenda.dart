@@ -7,9 +7,9 @@ import 'package:timer_builder/timer_builder.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:intl/intl.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -769,7 +769,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
 
                             showDialog(
                               context: context,
-                              child: AlertDialog(
+                              builder: (BuildContext context) => AlertDialog(
                                 content: Row(children: [
                                   Expanded(
                                     child: TextField(
@@ -780,7 +780,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                                   ),
                                 ]),
                                 actions: <Widget>[
-                                  FlatButton(
+                                  TextButton(
                                       child: Text('RESET'),
                                       onPressed: () async {
                                         Navigator.pop(context);
@@ -788,12 +788,12 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                                         await updateLessons();
                                         Navigator.pop(context);
                                       }),
-                                  FlatButton(
+                                  TextButton(
                                       child: Text('CANCEL'),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       }),
-                                  FlatButton(
+                                  TextButton(
                                     child: Text('SAVE'),
                                     onPressed: () {
                                       if (con.text == "") return;
@@ -1098,8 +1098,10 @@ class _AddLesPagina extends State<AddLesPagina> {
                                     padding: EdgeInsets.only(
                                       left: 10,
                                     ),
-                                    child: RaisedButton(
-                                      color: userdata.get("accentColor"),
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        foregroundColor: userdata.get("accentColor"),
+                                      ),
                                       child: Text("Datum: " + formatDate.format(date)),
                                       onPressed: () async {
                                         DateTime newDate = await showDatePicker(
@@ -1122,7 +1124,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  FlatButton(
+                                  TextButton(
                                     onPressed: !heleDag
                                         ? () async {
                                             TimeOfDay newStartTime = await showTimePicker(
@@ -1142,7 +1144,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                                   ),
 
                                   /// [GUUS] renderflex error bij AM PM of klein telefoontje
-                                  FlatButton(
+                                  TextButton(
                                     onPressed: !heleDag
                                         ? () async {
                                             TimeOfDay newEndTime = await showTimePicker(
@@ -1240,7 +1242,6 @@ class _AddLesPagina extends State<AddLesPagina> {
           color: Colors.white,
         ),
       ),
-      resizeToAvoidBottomPadding: true,
     );
   }
 }

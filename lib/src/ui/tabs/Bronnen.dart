@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
 
-import 'package:Argo/main.dart';
-import 'package:Argo/src/utils/hive/adapters.dart';
-import 'package:Argo/src/ui/CustomWidgets.dart';
+import 'package:argo/main.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/ui/CustomWidgets.dart';
 
 class Bronnen extends StatefulWidget {
   @override

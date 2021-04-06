@@ -9,7 +9,14 @@ import 'package:intl/intl.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/PeopleList.dart';
+import 'package:argo/src/ui/components/WebContent.dart';
+import 'package:argo/src/ui/components/Bijlage.dart';
 
 final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -824,7 +831,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                       ? () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => ShowPeopleList(
+                              builder: (context) => PeopleList(
                                 les.docenten,
                                 title: "Docenten",
                               ),

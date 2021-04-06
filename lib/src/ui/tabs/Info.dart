@@ -4,7 +4,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:argo/src/ui/CustomWidgets.dart';
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/ContentHeader.dart';
 
 class Info extends StatefulWidget {
   @override

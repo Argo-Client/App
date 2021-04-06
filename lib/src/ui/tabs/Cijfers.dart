@@ -6,7 +6,63 @@ import 'package:futuristic/futuristic.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/EmptyPage.dart';
+import 'package:argo/src/ui/components/CircleShape.dart';
+import 'package:argo/src/ui/components/ContentHeader.dart';
+
+class CijferTile extends StatelessWidget {
+  final Cijfer cijfer;
+  final bool isRecent;
+  final Border border;
+
+  CijferTile(this.cijfer, {this.isRecent, this.border});
+
+  @override
+  Widget build(BuildContext build) {
+    return ListTileBorder(
+      border: border,
+      trailing: cijfer.cijfer.length > 4
+          ? null
+          : Stack(
+              children: [
+                Text(
+                  cijfer.cijfer,
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: cijfer.voldoende ? null : Colors.red,
+                  ),
+                ),
+                Transform.translate(
+                  offset: Offset(10, -15),
+                  child: Text(
+                    "${cijfer.weging}x",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                )
+              ],
+            ),
+      subtitle: cijfer.cijfer.length <= 4
+          ? Text(isRecent == null ? formatDate.format(cijfer.ingevoerd) : cijfer.vak.naam)
+          : Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 8,
+              ),
+              child: Text(
+                cijfer.cijfer,
+              ),
+            ),
+      title: Text(cijfer.title),
+    );
+  }
+}
 
 class Cijfers extends StatefulWidget {
   @override

@@ -5,10 +5,193 @@ import 'dart:convert';
 import 'package:argo/main.dart';
 import 'package:argo/src/layout.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/ContentHeader.dart';
 
 import 'Agenda.dart';
 import 'Berichten.dart';
+import 'Cijfers.dart';
+
+class FeedItem extends StatelessWidget {
+  final List children;
+  final String header;
+  final Widget title;
+  final Widget subtitle;
+  final Widget trailing;
+  final Function onTap;
+
+  FeedItem({
+    this.children,
+    this.header,
+    this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ContentHeader(header),
+        for (Widget child in children)
+          Card(
+            child: child,
+          )
+      ],
+    );
+  }
+}
+
+class PopoutButton {
+  final Function onPressed;
+  final IconData icon;
+  final String text;
+
+  PopoutButton(this.text, {this.onPressed, this.icon});
+}
+
+class PopoutFloat extends StatefulWidget {
+  final List<PopoutButton> children;
+  final AnimatedIconData icon;
+  final ColorTween color;
+
+  PopoutFloat({this.children, this.icon, this.color});
+
+  @override
+  _PopoutFloatState createState() => _PopoutFloatState(icon: icon, children: children, color: color);
+}
+
+class _PopoutFloatState extends State<PopoutFloat> with SingleTickerProviderStateMixin {
+  final List<PopoutButton> children;
+  final AnimatedIconData icon;
+  final ColorTween color;
+
+  _PopoutFloatState({this.children, this.icon, this.color});
+
+  bool isOpened = false;
+  AnimationController _animationController;
+  Animation<double> _translateButton;
+  Animation<Color> _buttonColor;
+  Animation<double> _animateIcon;
+  Animation<double> _textOpacity;
+  Curve _curve = Curves.easeOut;
+  double _fabHeight = 56.0;
+
+  @override
+  initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _animateIcon = Tween<double>(begin: 0.0, end: 1.0).animate(
+      _animationController,
+    );
+
+    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      _animationController,
+    );
+
+    _buttonColor = color.animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.00,
+        1.00,
+        curve: Curves.linear,
+      ),
+    ));
+
+    _translateButton = Tween<double>(
+      begin: _fabHeight,
+      end: -14.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.0,
+        0.75,
+        curve: _curve,
+      ),
+    ));
+
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  animate() {
+    if (!isOpened) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+    isOpened = !isOpened;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        if (children != null)
+          for (int i = children.length - 1; i >= 0; i--)
+            Transform(
+              transform: Matrix4.translationValues(
+                0.0,
+                _translateButton.value * (i + 1),
+                0.0,
+              ),
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      child: FadeTransition(
+                        opacity: _textOpacity,
+                        child: Text(
+                          children[i].text,
+                        ),
+                      ),
+                      padding: EdgeInsets.only(
+                        right: 15,
+                      ),
+                    ),
+                    FloatingActionButton(
+                      heroTag: "PopoutButton-$i",
+                      onPressed: children[i].onPressed,
+                      child: Icon(
+                        children[i].icon,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: "PopoutFloat",
+              onPressed: animate,
+              backgroundColor: _buttonColor.value,
+              child: AnimatedIcon(
+                icon: icon,
+                progress: _animateIcon,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
 class Thuis extends StatefulWidget {
   @override

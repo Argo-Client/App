@@ -9,7 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
 
 import 'package:argo/src/utils/login.dart';
 

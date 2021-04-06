@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:argo/main.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/CircleShape.dart';
 
 class Instellingen extends StatefulWidget {
   @override

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:argo/main.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/ContentHeader.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
 
 class MijnGegevens extends StatefulWidget {
   @override

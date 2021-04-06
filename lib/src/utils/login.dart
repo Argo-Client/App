@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:argo/main.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,6 +15,10 @@ import 'package:http/http.dart';
 import 'package:pointycastle/export.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
 
 Box<Account> accounts = Hive.box("accounts");
 

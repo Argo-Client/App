@@ -7,7 +7,17 @@ import 'package:dio/dio.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/PeopleList.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/WebContent.dart';
+import 'package:argo/src/ui/components/Bijlage.dart';
+import 'package:argo/src/ui/components/EmptyPage.dart';
+import 'package:argo/src/ui/components/LiveList.dart';
+import 'package:argo/src/ui/components/ContentHeader.dart';
 
 class Berichten extends StatefulWidget {
   @override
@@ -274,7 +284,7 @@ class BerichtPagina extends StatelessWidget {
                             ? () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => ShowPeopleList(
+                                    builder: (context) => PeopleList(
                                       ber.ontvangers,
                                       title: "Ontvangers",
                                     ),
@@ -308,7 +318,7 @@ class BerichtPagina extends StatelessWidget {
                             ? () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (context) => ShowPeopleList(
+                                    builder: (context) => PeopleList(
                                       ber.cc,
                                       title: "Ontvangers",
                                     ),

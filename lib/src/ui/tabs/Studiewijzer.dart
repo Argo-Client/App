@@ -5,7 +5,13 @@ import 'package:futuristic/futuristic.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/ui/CustomWidgets.dart';
+
+import 'package:argo/src/ui/components/Card.dart';
+import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/WebContent.dart';
+import 'package:argo/src/ui/components/Bijlage.dart';
+import 'package:argo/src/ui/components/EmptyPage.dart';
 
 class Studiewijzers extends StatefulWidget {
   @override

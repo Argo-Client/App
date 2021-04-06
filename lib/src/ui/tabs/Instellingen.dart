@@ -344,6 +344,12 @@ class _Instellingen extends State<Instellingen> {
                     subtitle: "Voeg kleur toe aan de icoontjes in de sidebar",
                     setting: "colorsInDrawer",
                     onChange: () => appState.setState(() {}),
+                  ),
+                  SwitchInstelling(
+                    title: "Scroll animatie",
+                    subtitle: "Tiles laden in met een animatie",
+                    setting: "liveList",
+                    onChange: () => appState.setState(() {}),
                   )
                 ],
               );

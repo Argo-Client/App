@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:argo/main.dart';
 import 'package:auto_animated/auto_animated.dart';
 
 final options = LiveOptions(
@@ -10,6 +11,13 @@ final options = LiveOptions(
 );
 
 Widget buildLiveList(list, loaded) {
+  if (!userdata.get("liveList"))
+    return Column(
+      children: list,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+    );
+
   return LiveList.options(
       itemCount: list.length,
       options: options,

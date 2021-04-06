@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -20,6 +21,56 @@ class Afwezigheid extends StatefulWidget {
 
 class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
+
+  Widget _buildAfwezigheid(Absentie afwezigheid, int i, String hour) {
+    return SeeCard(
+      border: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afwezigheid.dag
+          ? null
+          : Border(
+              bottom: greyBorderSide(),
+            ),
+      child: ListTile(
+        leading: Padding(
+          child: afwezigheid.geoorloofd
+              ? Icon(
+                  Icons.check,
+                  color: Colors.green,
+                )
+              : Icon(
+                  Icons.error_outlined,
+                  color: Colors.redAccent,
+                ),
+          padding: EdgeInsets.only(
+            top: 7,
+            left: 7,
+          ),
+        ),
+        subtitle: Text(hour + afwezigheid.les.title),
+        title: Text(afwezigheid.type),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => LesPagina(afwezigheid.les),
+            ),
+          );
+        },
+        trailing: afwezigheid.les.huiswerk != null
+            ? !afwezigheid.les.huiswerkAf
+                ? Icon(
+                    Icons.assignment_outlined,
+                    size: 23,
+                    color: Colors.grey,
+                  )
+                : Icon(
+                    Icons.assignment_turned_in_outlined,
+                    size: 23,
+                    color: Colors.green,
+                  )
+            : null,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppPage(
@@ -72,6 +123,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                   text: "Geen afwezigheid",
                   icon: Icons.check_circle_outlined,
                 );
+
               List<Widget> absenties = [];
               String lastDay;
               for (int i = 0; i < account.afwezigheid.length; i++) {
@@ -79,69 +131,17 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                 String hour = afw.les.hour.isEmpty ? "" : afw.les.hour + "e - ";
                 if (lastDay != afw.dag) {
                   absenties.add(
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: 15,
-                        top: 20,
-                        bottom: 20,
-                      ),
-                      child: Text(
-                        afw.dag,
-                        style: TextStyle(color: userdata.get("accentColor")),
-                      ),
-                    ),
+                    ContentHeader(afw.dag),
                   );
                 }
+
                 absenties.add(
-                  SeeCard(
-                    border: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afw.dag
-                        ? null
-                        : Border(
-                            bottom: greyBorderSide(),
-                          ),
-                    child: ListTile(
-                      leading: Padding(
-                        child: afw.geoorloofd
-                            ? Icon(
-                                Icons.check,
-                                color: Colors.green,
-                              )
-                            : Icon(
-                                Icons.error_outlined,
-                                color: Colors.redAccent,
-                              ),
-                        padding: EdgeInsets.only(
-                          top: 7,
-                          left: 7,
-                        ),
-                      ),
-                      subtitle: Text(hour + afw.les.title),
-                      title: Text(afw.type),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => LesPagina(afw.les),
-                          ),
-                        );
-                      },
-                      trailing: afw.les.huiswerk != null
-                          ? !afw.les.huiswerkAf
-                              ? Icon(
-                                  Icons.assignment_outlined,
-                                  size: 23,
-                                  color: Colors.grey,
-                                )
-                              : Icon(
-                                  Icons.assignment_turned_in_outlined,
-                                  size: 23,
-                                  color: Colors.green,
-                                )
-                          : null,
-                    ),
-                  ),
+                  _buildAfwezigheid(afw, i, hour),
                 );
+
                 lastDay = afw.dag;
               }
+
               return buildLiveList(absenties, 10);
             },
           ),

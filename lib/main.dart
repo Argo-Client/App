@@ -104,6 +104,7 @@ void main() async {
     "alwaysPrimary": true,
     "preNotificationMinutes": 10,
     "developerMode": false,
+    "liveList": false,
   };
 
   standardSettings.entries.forEach((element) {

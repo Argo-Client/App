@@ -16,6 +16,94 @@ class Cijfers extends StatefulWidget {
 class _Cijfers extends State<Cijfers> {
   DateFormat formatDate = DateFormat("dd-MM-y");
   int jaar = 0;
+
+  Widget _buildCijfer(Cijfer cijfer, List cijfersInPeriode) {
+    return ListTileBorder(
+      border: Border(
+        left: greyBorderSide(),
+        bottom: cijfersInPeriode.last == cijfer
+            ? BorderSide(
+                width: 0,
+                color: Colors.transparent,
+              )
+            : greyBorderSide(),
+      ),
+      title: Text("${cijfer.vak.naam}"),
+      subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
+      trailing: CircleShape(
+        child: Text(
+          cijfer.cijfer,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.fade,
+          softWrap: false,
+          maxLines: 1,
+        ),
+      ),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CijferPagina(cijfer.vak.id, jaar),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _recenteCijfers() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await handleError(account.magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
+      },
+      child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: account.recenteCijfers.isEmpty
+            ? EmptyPage(
+                text: "Nog geen cijfers",
+                icon: Icons.looks_6_outlined,
+              )
+            : SeeCard(
+                column: [
+                  for (Cijfer cijfer in account.recenteCijfers)
+                    Container(
+                      child: CijferTile(cijfer, isRecent: true),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: greyBorderSide(),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Widget _tabBar(List<Periode> perioden) {
+    return TabBar(
+      isScrollable: true,
+      tabs: [
+        if (jaar == 0) // Recenst
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: Tab(
+              text: "Recent",
+            ),
+          ),
+        for (Periode periode in perioden)
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: Tab(
+              text: periode.abbr,
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Periode> perioden = account.cijfers[jaar].perioden
@@ -30,77 +118,26 @@ class _Cijfers extends State<Cijfers> {
         return DefaultTabController(
           length: jaar == 0 ? 1 + perioden.length : perioden.length,
           child: AppPage(
-            bottom: TabBar(
-              isScrollable: true,
-              tabs: [
-                if (jaar == 0) // Recenst
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: Tab(
-                      text: "Recent",
-                    ),
-                  ),
-                for (Periode periode in perioden)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    child: Tab(
-                      text: periode.abbr,
-                    ),
-                  ),
-              ],
-            ),
-            title: PopupMenuButton(
-              initialValue: jaar,
-              onSelected: (value) => setState(() => jaar = value),
-              itemBuilder: (BuildContext context) {
-                return <PopupMenuEntry>[
-                  for (int i = 0; i < account.cijfers.length; i++)
-                    PopupMenuItem(
-                      value: i,
-                      child: Text('${account.cijfers[i].leerjaar}'),
-                    ),
-                ];
-              },
-              child: Row(
-                children: [
-                  Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
-                  Icon(Icons.keyboard_arrow_down_outlined),
-                ],
-              ),
-            ),
+            bottom: _tabBar(perioden),
+            title: Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+            actions: [
+              PopupMenuButton(
+                  initialValue: jaar,
+                  onSelected: (value) => setState(() => jaar = value),
+                  itemBuilder: (BuildContext context) {
+                    return <PopupMenuEntry>[
+                      for (int i = 0; i < account.cijfers.length; i++)
+                        PopupMenuItem(
+                          value: i,
+                          child: Text('${account.cijfers[i].leerjaar}'),
+                        ),
+                    ];
+                  }),
+            ],
             body: TabBarView(
               children: [
                 if (jaar == 0) // Recente Cijfers
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      await handleError(account.magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
-                    },
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: account.recenteCijfers.isEmpty
-                          ? EmptyPage(
-                              text: "Nog geen cijfers",
-                              icon: Icons.looks_6_outlined,
-                            )
-                          : SeeCard(
-                              column: [
-                                for (Cijfer cijfer in account.recenteCijfers)
-                                  Container(
-                                    child: CijferTile(cijfer, isRecent: true),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        top: greyBorderSide(),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                    ),
-                  ),
+                  _recenteCijfers(),
                 for (Periode periode in perioden)
                   RefreshIndicator(
                     onRefresh: () async => await handleError(account.magister.cijfers.refresh, "Kon cijfers niet verversen", context),
@@ -113,38 +150,7 @@ class _Cijfers extends State<Cijfers> {
                               )
                               .toList();
 
-                          return [
-                            for (Cijfer cijfer in cijfersInPeriode)
-                              ListTileBorder(
-                                border: Border(
-                                  left: greyBorderSide(),
-                                  bottom: cijfersInPeriode.last == cijfer
-                                      ? BorderSide(
-                                          width: 0,
-                                          color: Colors.transparent,
-                                        )
-                                      : greyBorderSide(),
-                                ),
-                                title: Text("${cijfer.vak.naam}"),
-                                subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
-                                trailing: CircleShape(
-                                  child: Text(
-                                    "${cijfer.cijfer}",
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.fade,
-                                    softWrap: false,
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => CijferPagina(cijfer.vak.id, jaar),
-                                    ),
-                                  );
-                                },
-                              ),
-                          ];
+                          return [for (Cijfer cijfer in cijfersInPeriode) _buildCijfer(cijfer, cijfersInPeriode)];
                         }(),
                       ),
                     ),
@@ -173,13 +179,16 @@ class _CijferPagina extends State<CijferPagina> {
   double doubleCijfers;
   List<double> avgCijfers;
   double totalWeging;
+
   _CijferPagina(int id, int jaar) {
     this.jaar = account.cijfers[jaar];
     this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
     this.vak = cijfers.first.vak;
+
     avgCijfers = [];
     doubleCijfers = 0;
     totalWeging = 0;
+
     cijfers.reversed.forEach(
       (Cijfer cijfer) {
         if (cijfer.weging == 0 || cijfer.weging == null) return;
@@ -193,6 +202,46 @@ class _CijferPagina extends State<CijferPagina> {
           avgCijfers.add(doubleCijfers / totalWeging);
         }
       },
+    );
+  }
+
+  Widget _buildPeriode(Periode periode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: () {
+        List<Cijfer> periodecijfers = cijfers
+            .where(
+              (cijf) => cijf.periode.id == periode.id,
+            )
+            .toList();
+        if (periodecijfers.isEmpty)
+          return <Widget>[];
+        else
+          return [
+            ContentHeader(periode.naam),
+            SeeCard(
+              column: [
+                for (Cijfer cijfer in periodecijfers)
+                  Futuristic(
+                    autoStart: true,
+                    futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                    busyBuilder: (context) => CircularProgressIndicator(),
+                    errorBuilder: (context, error, retry) {
+                      return Text("Error $error");
+                    },
+                    dataBuilder: (context, data) => CijferTile(
+                      cijfer,
+                      border: periodecijfers.last != cijfer
+                          ? Border(
+                              bottom: greyBorderSide(),
+                            )
+                          : null,
+                    ),
+                  ),
+              ],
+            ),
+          ];
+      }(),
     );
   }
 
@@ -228,44 +277,7 @@ class _CijferPagina extends State<CijferPagina> {
                   _createCijfers(),
                 ),
               ),
-            for (Periode periode in jaar.perioden)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: () {
-                  List<Cijfer> periodecijfers = cijfers
-                      .where(
-                        (cijf) => cijf.periode.id == periode.id,
-                      )
-                      .toList();
-                  if (periodecijfers.isEmpty)
-                    return <Widget>[];
-                  else
-                    return [
-                      ContentHeader(periode.naam),
-                      SeeCard(
-                        column: [
-                          for (Cijfer cijfer in periodecijfers)
-                            Futuristic(
-                              autoStart: true,
-                              futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
-                              busyBuilder: (context) => CircularProgressIndicator(),
-                              errorBuilder: (context, error, retry) {
-                                return Text("Error $error");
-                              },
-                              dataBuilder: (context, data) => CijferTile(
-                                cijfer,
-                                border: periodecijfers.last != cijfer
-                                    ? Border(
-                                        bottom: greyBorderSide(),
-                                      )
-                                    : null,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ];
-                }(),
-              ),
+            for (Periode periode in jaar.perioden) _buildPeriode(periode),
           ],
         ),
       ),

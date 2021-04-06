@@ -74,6 +74,7 @@ class _OpdrachtenState extends State<Opdrachten> {
   }
 }
 
+//ignore: must_be_immutable
 class OpdrachtPagina extends StatelessWidget {
   final Opdracht opdracht;
 

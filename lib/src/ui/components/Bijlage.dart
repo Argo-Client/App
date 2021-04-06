@@ -1,4 +1,5 @@
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,15 @@ import 'package:filesize/filesize.dart';
 
 import 'ListTileBorder.dart';
 
+enum DownloadState { done, loading, none }
+
 class BijlageItem extends StatelessWidget {
   final Bron bijlage;
   final Function onTap;
   final Border border;
+  final ValueListenable<DownloadState> downloadState;
 
-  BijlageItem(this.bijlage, {this.onTap, this.border});
+  BijlageItem(this.bijlage, {this.onTap, this.border, this.downloadState});
   Widget build(BuildContext context) {
     List<String> splittedNaam = bijlage.naam.split(".");
     return Tooltip(
@@ -66,17 +70,23 @@ class BijlageItem extends StatelessWidget {
                 Icons.arrow_forward_ios,
                 size: 14,
               )
-            : bijlage.downloadCount == bijlage.size
-                ? Icon(
-                    Icons.arrow_forward_ios,
-                    size: 18,
-                  )
-                : bijlage.downloadCount == null
-                    ? Icon(
-                        Icons.cloud_download,
-                        size: 22,
-                      )
-                    : CircularProgressIndicator(),
+            : ValueListenableBuilder(
+                valueListenable: downloadState,
+                builder: (c, state, _) {
+                  if (state == DownloadState.done) {
+                    return Icon(
+                      Icons.arrow_forward_ios,
+                      size: 18,
+                    );
+                  }
+                  if (state == DownloadState.none) {
+                    return Icon(
+                      Icons.cloud_download,
+                      size: 22,
+                    );
+                  }
+                  return CircularProgressIndicator();
+                }),
         border: border,
       ),
       message: bijlage.naam,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -17,16 +18,16 @@ class Bronnen extends StatefulWidget {
 }
 
 class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
-  List<List<Bron>> bronnenView = [account.bronnen];
-  List<String> breadcrumbs = ["Bronnen"];
+  ValueNotifier<List<String>> breadcrumbs = ValueNotifier(["Bronnen"]);
+  ValueNotifier<List<List<Bron>>> bronnenView = ValueNotifier([account.bronnen]);
+
   void afterFirstLayout(BuildContext context) => handleError(account.magister.bronnen.refresh, "Fout tijdens verversen van bronnen", context);
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        if (bronnenView.length > 1) bronnenView.removeLast();
-        if (breadcrumbs.length > 1) breadcrumbs.removeLast();
-        setState(() {});
+        if (bronnenView.value.length > 1) bronnenView.value.removeLast();
+        if (breadcrumbs.value.length > 1) breadcrumbs.value.removeLast();
         return Future.value(false);
       },
       child: AppPage(
@@ -42,34 +43,36 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
               ),
               reverse: true,
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (int i = 0; i < breadcrumbs.length; i++)
-                    GestureDetector(
-                      child: Row(
-                        children: [
-                          Text(
-                            " ${breadcrumbs[i]} ",
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
+              child: ValueListenableBuilder(
+                valueListenable: breadcrumbs,
+                builder: (c, crumbs, _b) {
+                  return Row(
+                    children: [
+                      for (int i = 0; i < crumbs.length; i++)
+                        GestureDetector(
+                          child: Row(
+                            children: [
+                              Text(
+                                " ${crumbs[i]} ",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              if (crumbs.length != i + 1)
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 10,
+                                ),
+                            ],
                           ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 10,
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        setState(
-                          () {
-                            breadcrumbs = breadcrumbs.take(i + 1).toList();
-                            bronnenView = bronnenView.take(i + 1).toList();
+                          onTap: () {
+                            breadcrumbs.value = breadcrumbs.value.take(i + 1).toList();
+                            bronnenView.value = bronnenView.value.take(i + 1).toList();
                           },
-                        );
-                      },
-                    ),
-                ],
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -85,65 +88,78 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                   icon: Icons.folder_outlined,
                 );
               }
-              return ListView(
-                children: [
-                  if (bronnenView.last == null)
-                    Container(
+              return ValueListenableBuilder(
+                valueListenable: bronnenView,
+                builder: (c, view, _) {
+                  if (view.last == null)
+                    return Container(
                       height: bodyHeight(context),
                       child: Center(
                         child: CircularProgressIndicator(),
                       ),
-                    )
-                  else if (bronnenView.last.isEmpty)
-                    EmptyPage(
+                    );
+                  else if (view.last.isEmpty)
+                    return EmptyPage(
                       text: "Deze map is leeg",
                       icon: Icons.folder_outlined,
-                    )
-                  else
-                    SeeCard(
-                      column: [
-                        for (Bron bron in bronnenView.last)
-                          BijlageItem(
-                            bron,
-                            border: bronnenView.last.last != bron
-                                ? Border(
-                                    bottom: greyBorderSide(),
-                                  )
-                                : null,
-                            onTap: () async {
-                              if (bron.isFolder) {
-                                breadcrumbs.add(bron.naam);
-                                bronnenView.add(bron.children);
-                                setState(() {});
-                                if (bron.children == null) {
-                                  await handleError(
-                                    () async => await account.magister.bronnen.loadChildren(bron),
-                                    "Kon ${bron.naam} niet laden.",
-                                    context,
-                                    () {
-                                      setState(() {});
-                                      bronnenView = bronnenView.where((list) => list != null).toList();
-                                      bronnenView.add(bron.children);
-                                    },
-                                  );
-                                }
-                              } else {
-                                account.magister.bronnen.downloadFile(bron, (count, total) {
-                                  setState(() {
-                                    bron.downloadCount = count;
-                                  });
-                                });
-                              }
-                            },
-                          ),
-                      ],
-                    ),
-                ],
+                    );
+                  return ListView(
+                    children: [
+                      SeeCard(
+                        column: [
+                          for (Bron bron in view.last)
+                            () {
+                              ValueNotifier<DownloadState> state = ValueNotifier(DownloadState.none);
+                              return BijlageItem(
+                                bron,
+                                downloadState: state,
+                                border: view.last.last != bron
+                                    ? Border(
+                                        bottom: greyBorderSide(),
+                                      )
+                                    : null,
+                                onTap: () async {
+                                  if (bron.isFolder) {
+                                    breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
+                                    bronnenView.value = List.from(view)..add(bron.children);
+                                    if (bron.children == null) {
+                                      await handleError(
+                                        () async => await account.magister.bronnen.loadChildren(bron),
+                                        "Kon ${bron.naam} niet laden.",
+                                        context,
+                                        () {
+                                          bronnenView.value = view.where((list) => list != null).toList();
+                                          bronnenView.value = List.from(view)..add(bron.children);
+                                        },
+                                      );
+                                    }
+                                  } else {
+                                    account.magister.bronnen.downloadFile(bron, (count, total) {
+                                      if (count == total) {
+                                        state.value = DownloadState.done;
+                                      }
+                                    });
+                                  }
+                                },
+                              );
+                            }()
+                        ],
+                      ),
+                    ],
+                  );
+                },
               );
             },
           ),
           onRefresh: () async {
-            await handleError(account.magister.bronnen.refresh, "Kon bronnen niet verversen", context);
+            Future Function() refresh = account.magister.bronnen.refresh;
+            if (bronnenView.value.length > 1) {
+              Bron bron = bronnenView.value.last.last;
+              if (bron.isFolder) {
+                refresh = () async => await account.magister.bronnen.loadChildren(bron);
+              }
+            }
+            await handleError(refresh, "Kon bronnen niet verversen", context);
           },
         ),
       ),

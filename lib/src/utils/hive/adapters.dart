@@ -417,6 +417,7 @@ class Bron {
   @HiveField(7)
   String uri;
   int downloadCount;
+
   Bron([Map bron]) {
     if (bron != null) {
       this.naam = bron["Naam"] ?? bron["naam"];

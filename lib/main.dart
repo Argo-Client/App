@@ -100,11 +100,12 @@ void main() async {
     "agendaAutoEind": false,
     "backOpensDrawer": true,
     "doubleBackAgenda": true,
-    "colorsInDrawer": true,
+    "colorsInDrawer": false,
     "alwaysPrimary": true,
     "preNotificationMinutes": 10,
     "developerMode": false,
     "liveList": false,
+    "pinned": <Wijzer>[],
   };
 
   standardSettings.entries.forEach((element) {

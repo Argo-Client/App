@@ -35,6 +35,7 @@ dependencies:
   flutter_colorpicker: ^0.3.4
   hive: ^1.4.4
   hive_flutter: ^0.3.1
+  package_info: ^2.0.0
 
   after_layout: ^1.0.7+2
   numberpicker: ^1.2.1

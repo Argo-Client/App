@@ -1,8 +1,10 @@
 import 'package:argo/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:futuristic/futuristic.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info/package_info.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/Utils.dart';
@@ -45,7 +47,13 @@ class _Info extends State<Info> {
                       child: ListTile(
                         leading: Icon(Icons.verified_user_outlined),
                         title: Text('Versie'),
-                        subtitle: Text("0.1.2"),
+                        subtitle: Futuristic(
+                          futureBuilder: PackageInfo.fromPlatform,
+                          busyBuilder: (BuildContext context) => CircularProgressIndicator(),
+                          dataBuilder: (BuildContext context, packageInfo) => Text(packageInfo.version),
+                          onError: (err, retry) => print(err),
+                          autoStart: true,
+                        ),
                         onLongPress: () {
                           Fluttertoast.showToast(
                             msg: userdata.get("developerMode") ? "Developer modus was al ontgrendeld" : "Developer modus ontgrendeld",

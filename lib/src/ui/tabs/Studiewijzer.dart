@@ -20,6 +20,30 @@ class Studiewijzers extends StatefulWidget {
 
 class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewijzers> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
+
+  List<Widget> _buildStudiewijzers() {
+    return [
+      for (Wijzer wijs in account.studiewijzers)
+        SeeCard(
+          border: account.studiewijzers.last == wijs
+              ? null
+              : Border(
+                  bottom: greyBorderSide(),
+                ),
+          child: ListTile(
+            title: Text(wijs.naam),
+            onTap: () async {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StudiewijzerPagina(wijs),
+                ),
+              );
+            },
+          ),
+        ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppPage(
@@ -38,26 +62,7 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (Wijzer wijs in account.studiewijzers)
-                    SeeCard(
-                      border: account.studiewijzers.last == wijs
-                          ? null
-                          : Border(
-                              bottom: greyBorderSide(),
-                            ),
-                      child: ListTile(
-                        title: Text(wijs.naam),
-                        onTap: () async {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => StudiewijzerPagina(wijs),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                ],
+                children: _buildStudiewijzers(),
               );
             },
           ),
@@ -76,6 +81,61 @@ class StudiewijzerPagina extends StatelessWidget {
 
   final ValueNotifier<Wijzer> selected = ValueNotifier(null);
 
+  bool _isPinned(Wijzer wijzer) {
+    List<Wijzer> pinned = userdata.get("pinned");
+    return pinned.where((g) => g.id == wijzer.id).isNotEmpty;
+  }
+
+  Widget _buildStudiewijzerPagina(BuildContext context, _) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          for (Wijzer wijzer in wijs.children)
+            ValueListenableBuilder(
+              valueListenable: selected,
+              builder: (context, _, _a) {
+                bool isPinned = _isPinned(wijzer);
+
+                return SeeCard(
+                  border: wijs.children.last.id == wijzer.id
+                      ? null
+                      : Border(
+                          bottom: greyBorderSide(),
+                        ),
+                  child: ListTile(
+                    title: Text(
+                      wijzer.naam,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    onLongPress: () {
+                      if (!isPinned) selected.value = wijzer;
+                    },
+                    trailing: isPinned
+                        ? Icon(Icons.push_pin)
+                        : selected?.value?.id == wijzer.id
+                            ? Icon(Icons.check)
+                            : null,
+                    onTap: () {
+                      if (selected.value != null) {
+                        selected.value = null;
+                        return;
+                      }
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => StudiewijzerTab(wijzer),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +144,7 @@ class StudiewijzerPagina extends StatelessWidget {
         child: ValueListenableBuilder(
           valueListenable: selected,
           builder: (context, _, _a) {
+            // bool isPinned = _isPinned(selected.value);
             return AppBar(
               leading: selected.value != null
                   ? IconButton(
@@ -101,7 +162,12 @@ class StudiewijzerPagina extends StatelessWidget {
               actions: [
                 if (selected.value != null)
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      List<Wijzer> currentSettings = userdata.get("pinned");
+                      userdata.put("pinned", [...currentSettings, selected.value]);
+
+                      selected.value = null;
+                    },
                     icon: Icon(Icons.push_pin),
                   ),
               ],
@@ -127,51 +193,7 @@ class StudiewijzerPagina extends StatelessWidget {
             ),
           );
         },
-        dataBuilder: (BuildContext context, _) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                for (Wijzer wijstab in wijs.children)
-                  ValueListenableBuilder(
-                    valueListenable: selected,
-                    builder: (context, _, _a) {
-                      return GestureDetector(
-                        child: SeeCard(
-                          border: wijs.children.length - 1 == wijs.children.indexOf(wijstab)
-                              ? null
-                              : Border(
-                                  bottom: greyBorderSide(),
-                                ),
-                          child: ListTile(
-                            title: Text(
-                              wijstab.naam,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onLongPress: () {
-                              selected.value = wijstab;
-                            },
-                            trailing: selected?.value?.id == wijstab.id ? Icon(Icons.check) : null,
-                            onTap: () {
-                              if (selected.value != null) {
-                                selected.value = null;
-                                return;
-                              }
-
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => StudiewijzerTab(wijstab),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  )
-              ],
-            ),
-          );
-        },
+        dataBuilder: _buildStudiewijzerPagina,
       ),
     );
   }
@@ -179,7 +201,9 @@ class StudiewijzerPagina extends StatelessWidget {
 
 class StudiewijzerTab extends StatefulWidget {
   final Wijzer wijstab;
+
   StudiewijzerTab(this.wijstab);
+
   @override
   _StudiewijzerTab createState() => _StudiewijzerTab(wijstab);
 }
@@ -188,6 +212,38 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
   final Wijzer wijstab;
 
   _StudiewijzerTab(this.wijstab);
+
+  Widget _buildStudiewijzerInfo(BuildContext context, _) {
+    return ListView(
+      children: [
+        if (wijstab.omschrijving
+            .replaceAll(RegExp("<[^>]*>"), "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
+            .isNotEmpty)
+          SeeCard(
+            child: Padding(
+              padding: EdgeInsets.all(15),
+              child: WebContent(
+                wijstab.omschrijving,
+              ),
+            ),
+          ),
+        SeeCard(
+          column: [
+            for (Bron wijsbron in wijstab.bronnen)
+              BijlageItem(
+                wijsbron,
+                download: account.magister.bronnen.downloadFile,
+                border: wijstab.bronnen.last != wijsbron
+                    ? Border(
+                        bottom: greyBorderSide(),
+                      )
+                    : null,
+              )
+          ],
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,37 +274,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),
         ),
-        dataBuilder: (BuildContext context, _) {
-          return ListView(
-            children: [
-              if (wijstab.omschrijving
-                  .replaceAll(RegExp("<[^>]*>"), "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
-                  .isNotEmpty)
-                SeeCard(
-                  child: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: WebContent(
-                      wijstab.omschrijving,
-                    ),
-                  ),
-                ),
-              SeeCard(
-                column: [
-                  for (Bron wijsbron in wijstab.bronnen)
-                    BijlageItem(
-                      wijsbron,
-                      download: account.magister.bronnen.downloadFile,
-                      border: wijstab.bronnen.last != wijsbron
-                          ? Border(
-                              bottom: greyBorderSide(),
-                            )
-                          : null,
-                    )
-                ],
-              ),
-            ],
-          );
-        },
+        dataBuilder: _buildStudiewijzerInfo,
       ),
     );
   }

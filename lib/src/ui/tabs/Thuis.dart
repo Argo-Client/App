@@ -11,22 +11,15 @@ import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'Agenda.dart';
 import 'Berichten.dart';
 import 'Cijfers.dart';
+import 'Studiewijzer.dart';
 
 class FeedItem extends StatelessWidget {
   final List children;
   final String header;
-  final Widget title;
-  final Widget subtitle;
-  final Widget trailing;
-  final Function onTap;
 
   FeedItem({
     this.children,
     this.header,
-    this.title,
-    this.subtitle,
-    this.trailing,
-    this.onTap,
   });
 
   @override
@@ -272,7 +265,7 @@ class _Thuis extends State<Thuis> {
             ),
           ];
         },
-        body: page(),
+        body: _page(),
       ),
     );
   }
@@ -312,25 +305,51 @@ class _Thuis extends State<Thuis> {
         ],
       );
 
-  Widget page() => RefreshIndicator(
-        child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (BuildContext context, _, _a) {
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ListView(
-                  children: [volgendeLes(), recenteCijfers(), recenteBerichten(), recenteAfwezigheid()],
-                ),
-              );
-            }),
-        onRefresh: () async {
-          await handleError(account.magister.berichten.refresh, "Fout tijdens verversen van vandaag", context);
-        },
-      );
+  Widget _page() {
+    return RefreshIndicator(
+      child: ValueListenableBuilder(
+          valueListenable: updateNotifier,
+          builder: (BuildContext context, _, _a) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ListView(
+                children: [_volgendeLes(), _pinnedItems(), _recenteCijfers(), _recenteBerichten(), _recenteAfwezigheid()],
+              ),
+            );
+          }),
+      onRefresh: () async {
+        await handleError(account.magister.berichten.refresh, "Fout tijdens verversen van vandaag", context);
+      },
+    );
+  }
 
-  Widget volgendeLes() {
+  Widget _pinnedItems() {
+    List<Wijzer> pinned = userdata.get("pinned");
+
+    if (pinned.isNotEmpty) {
+      return FeedItem(
+        children: [
+          for (Wijzer item in pinned.take(5))
+            ListTile(
+              title: Text(item.naam),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => StudiewijzerTab(item),
+                  ),
+                );
+              },
+            )
+        ],
+        header: "Gepinde items",
+      );
+    } else
+      return Container();
+  }
+
+  Widget _volgendeLes() {
     DateTime now = DateTime.now();
     Les nextLesson;
 
@@ -409,7 +428,7 @@ class _Thuis extends State<Thuis> {
       return Container();
   }
 
-  Widget recenteCijfers() {
+  Widget _recenteCijfers() {
     DateTime now = DateTime.now();
 
     if (account.recenteCijfers.isNotEmpty) {
@@ -443,7 +462,7 @@ class _Thuis extends State<Thuis> {
     return Container();
   }
 
-  Widget recenteAfwezigheid() {
+  Widget _recenteAfwezigheid() {
     DateTime now = DateTime.now();
     if (account.afwezigheid.isNotEmpty) {
       List afwezigheid = account.afwezigheid
@@ -497,7 +516,7 @@ class _Thuis extends State<Thuis> {
     return Container();
   }
 
-  Widget recenteBerichten() {
+  Widget _recenteBerichten() {
     DateTime now = DateTime.now();
     if (account.berichten.isNotEmpty) {
       List berichten = account.berichten

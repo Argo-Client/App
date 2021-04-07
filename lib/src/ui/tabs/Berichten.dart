@@ -124,7 +124,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
         IconButton(
           icon: Icon(Icons.add),
           onPressed: () {
-            FlushbarHelper.createInformation(message: "Ja excuses, je kan op dit moment nog geen berichten sturen via Argo")..show(context);
+            FlushbarHelper.createInformation(message: "Excuses, je kan op dit moment nog geen berichten sturen via Argo")..show(context);
             // Navigator.of(context).push(
             //   MaterialPageRoute(
             //     builder: (context) => NieuwBerichtPagina(),

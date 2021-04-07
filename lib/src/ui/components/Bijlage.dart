@@ -13,14 +13,33 @@ class BijlageItem extends StatelessWidget {
   final Bron bijlage;
   final Function onTap;
   final Border border;
-  final ValueListenable<DownloadState> downloadState;
+  final ValueNotifier<DownloadState> downloadState = ValueNotifier(DownloadState.none);
+  final Future Function(Bron, Function(int, int)) download;
 
-  BijlageItem(this.bijlage, {this.onTap, this.border, this.downloadState});
+  BijlageItem(
+    this.bijlage, {
+    this.onTap,
+    this.download,
+    this.border,
+  });
   Widget build(BuildContext context) {
     List<String> splittedNaam = bijlage.naam.split(".");
     return Tooltip(
       child: ListTileBorder(
-        onTap: onTap,
+        onTap: () {
+          if (onTap != null) onTap();
+          if (download != null) {
+            download(
+              bijlage,
+              (count, total) {
+                bijlage.downloadCount = count;
+                if (count >= total) {
+                  downloadState.value = DownloadState.done;
+                }
+              },
+            );
+          }
+        },
         leading: bijlage.isFolder
             ? Icon(Icons.folder_outlined)
             : Column(

@@ -186,7 +186,6 @@ class StudiewijzerTab extends StatefulWidget {
 
 class _StudiewijzerTab extends State<StudiewijzerTab> {
   final Wijzer wijstab;
-  Bron currentlyDownloading;
 
   _StudiewijzerTab(this.wijstab);
 
@@ -198,23 +197,6 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           child: Text(wijstab.naam),
           message: wijstab.naam,
         ),
-        bottom: currentlyDownloading == null
-            ? null
-            : PreferredSize(
-                child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Color.fromARGB(
-                      100,
-                      255,
-                      255,
-                      255,
-                    ),
-                  ),
-                  backgroundColor: Colors.transparent,
-                  value: currentlyDownloading.downloadCount / currentlyDownloading.size,
-                ),
-                preferredSize: Size.fromHeight(2),
-              ),
       ),
       body: Futuristic(
         autoStart: true,
@@ -255,29 +237,13 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
                   for (Bron wijsbron in wijstab.bronnen)
                     BijlageItem(
                       wijsbron,
-                      onTap: () {
-                        if (currentlyDownloading != null) return;
-                        currentlyDownloading = wijsbron;
-                        account.magister.bronnen.downloadFile(
-                          wijsbron,
-                          (count, _) {
-                            setState(
-                              () {
-                                wijsbron.downloadCount = count;
-                                if (count >= currentlyDownloading.size) {
-                                  currentlyDownloading = null;
-                                }
-                              },
-                            );
-                          },
-                        );
-                      },
+                      download: account.magister.bronnen.downloadFile,
                       border: wijstab.bronnen.last != wijsbron
                           ? Border(
                               bottom: greyBorderSide(),
                             )
                           : null,
-                    ),
+                    )
                 ],
               ),
             ],

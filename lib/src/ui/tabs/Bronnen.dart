@@ -27,41 +27,33 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
     List<Widget> bronnenPagina = [];
 
     for (Bron bron in view.last) {
-      ValueNotifier<DownloadState> state = ValueNotifier(DownloadState.none);
-
       bronnenPagina.add(
         SeeCard(
           child: BijlageItem(
             bron,
-            downloadState: state,
             border: view.last.last != bron
                 ? Border(
                     bottom: greyBorderSide(),
                   )
                 : null,
-            onTap: () async {
-              if (bron.isFolder) {
-                breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
-                bronnenView.value = List.from(view)..add(bron.children);
-                if (bron.children == null) {
-                  await handleError(
-                    () async => await account.magister.bronnen.loadChildren(bron),
-                    "Kon ${bron.naam} niet laden.",
-                    context,
-                    () {
-                      bronnenView.value = view.where((list) => list != null).toList();
-                      bronnenView.value = List.from(view)..add(bron.children);
-                    },
-                  );
-                }
-              } else {
-                account.magister.bronnen.downloadFile(bron, (count, total) {
-                  if (count == total) {
-                    state.value = DownloadState.done;
-                  }
-                });
-              }
-            },
+            download: bron.isFolder ? null : account.magister.bronnen.downloadFile,
+            onTap: !bron.isFolder
+                ? null
+                : () async {
+                    breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
+                    bronnenView.value = List.from(view)..add(bron.children);
+                    if (bron.children == null) {
+                      await handleError(
+                        () async => await account.magister.bronnen.loadChildren(bron),
+                        "Kon ${bron.naam} niet laden.",
+                        context,
+                        () {
+                          bronnenView.value = view.where((list) => list != null).toList();
+                          bronnenView.value = List.from(view)..add(bron.children);
+                        },
+                      );
+                    }
+                  },
           ),
         ),
       );

@@ -292,9 +292,7 @@ class BerichtPagina extends StatelessWidget {
         for (Bron bron in bijlagen)
           BijlageItem(
             bron,
-            onTap: () {
-              account.magister.bronnen.downloadFile(bron, (_, _a) {});
-            },
+            download: account.magister.bronnen.downloadFile,
             border: bijlagen.last != bron
                 ? Border(
                     bottom: greyBorderSide(),

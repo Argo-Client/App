@@ -20,7 +20,7 @@ class Introduction extends StatefulWidget {
 }
 
 class _Introduction extends State<Introduction> {
-  List<Color> _colors = [
+  final List<Color> _colors = [
     Colors.blue,
     Colors.red[400],
     Colors.green,

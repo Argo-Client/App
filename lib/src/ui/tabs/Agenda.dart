@@ -1107,7 +1107,9 @@ class _AddLesPagina extends State<AddLesPagina> {
                                     ),
                                     child: ElevatedButton(
                                       style: ButtonStyle(
-                                        foregroundColor: userdata.get("accentColor"),
+                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                          userdata.get("primaryColor"),
+                                        ),
                                       ),
                                       child: Text("Datum: " + formatDate.format(date)),
                                       onPressed: () async {

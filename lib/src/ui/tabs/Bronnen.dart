@@ -22,6 +22,56 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
   ValueNotifier<List<List<Bron>>> bronnenView = ValueNotifier([account.bronnen]);
 
   void afterFirstLayout(BuildContext context) => handleError(account.magister.bronnen.refresh, "Fout tijdens verversen van bronnen", context);
+
+  Widget _buildBronnenPagina(List<List<Bron>> view) {
+    List<Widget> bronnenPagina = [];
+
+    for (Bron bron in view.last) {
+      ValueNotifier<DownloadState> state = ValueNotifier(DownloadState.none);
+
+      bronnenPagina.add(
+        SeeCard(
+          child: BijlageItem(
+            bron,
+            downloadState: state,
+            border: view.last.last != bron
+                ? Border(
+                    bottom: greyBorderSide(),
+                  )
+                : null,
+            onTap: () async {
+              if (bron.isFolder) {
+                breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
+                bronnenView.value = List.from(view)..add(bron.children);
+                if (bron.children == null) {
+                  await handleError(
+                    () async => await account.magister.bronnen.loadChildren(bron),
+                    "Kon ${bron.naam} niet laden.",
+                    context,
+                    () {
+                      bronnenView.value = view.where((list) => list != null).toList();
+                      bronnenView.value = List.from(view)..add(bron.children);
+                    },
+                  );
+                }
+              } else {
+                account.magister.bronnen.downloadFile(bron, (count, total) {
+                  if (count == total) {
+                    state.value = DownloadState.done;
+                  }
+                });
+              }
+            },
+          ),
+        ),
+      );
+    }
+
+    return ListView(
+      children: bronnenPagina,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -103,50 +153,8 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                       text: "Deze map is leeg",
                       icon: Icons.folder_outlined,
                     );
-                  return ListView(
-                    children: [
-                      SeeCard(
-                        column: [
-                          for (Bron bron in view.last)
-                            () {
-                              ValueNotifier<DownloadState> state = ValueNotifier(DownloadState.none);
-                              return BijlageItem(
-                                bron,
-                                downloadState: state,
-                                border: view.last.last != bron
-                                    ? Border(
-                                        bottom: greyBorderSide(),
-                                      )
-                                    : null,
-                                onTap: () async {
-                                  if (bron.isFolder) {
-                                    breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
-                                    bronnenView.value = List.from(view)..add(bron.children);
-                                    if (bron.children == null) {
-                                      await handleError(
-                                        () async => await account.magister.bronnen.loadChildren(bron),
-                                        "Kon ${bron.naam} niet laden.",
-                                        context,
-                                        () {
-                                          bronnenView.value = view.where((list) => list != null).toList();
-                                          bronnenView.value = List.from(view)..add(bron.children);
-                                        },
-                                      );
-                                    }
-                                  } else {
-                                    account.magister.bronnen.downloadFile(bron, (count, total) {
-                                      if (count == total) {
-                                        state.value = DownloadState.done;
-                                      }
-                                    });
-                                  }
-                                },
-                              );
-                            }()
-                        ],
-                      ),
-                    ],
-                  );
+                  else
+                    return _buildBronnenPagina(view);
                 },
               );
             },

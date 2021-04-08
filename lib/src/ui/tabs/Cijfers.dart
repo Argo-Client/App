@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
 
-import 'dart:async';
-
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 

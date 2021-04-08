@@ -11,7 +11,7 @@ import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'Agenda.dart';
 import 'Berichten.dart';
 import 'Cijfers.dart';
-import 'Studiewijzer.dart';
+// import 'Studiewijzer.dart';
 
 class FeedItem extends StatelessWidget {
   final List children;
@@ -332,29 +332,29 @@ class _Thuis extends State<Thuis> {
     );
   }
 
-  Widget _pinnedItems() {
-    List<Wijzer> pinned = userdata.get("pinned");
+  // Widget _pinnedItems() {
+  //   List<Wijzer> pinned = userdata.get("pinned");
 
-    if (pinned.isNotEmpty) {
-      return FeedItem(
-        children: [
-          for (Wijzer item in pinned.take(5))
-            ListTile(
-              title: Text(item.naam),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => StudiewijzerTab(item),
-                  ),
-                );
-              },
-            )
-        ],
-        header: "Gepinde items",
-      );
-    } else
-      return Container();
-  }
+  //   if (pinned.isNotEmpty) {
+  //     return FeedItem(
+  //       children: [
+  //         for (Wijzer item in pinned.take(5))
+  //           ListTile(
+  //             title: Text(item.naam),
+  //             onTap: () {
+  //               Navigator.of(context).push(
+  //                 MaterialPageRoute(
+  //                   builder: (context) => StudiewijzerTab(item),
+  //                 ),
+  //               );
+  //             },
+  //           )
+  //       ],
+  //       header: "Gepinde items",
+  //     );
+  //   } else
+  //     return Container();
+  // }
 
   Widget _volgendeLes() {
     DateTime now = DateTime.now();

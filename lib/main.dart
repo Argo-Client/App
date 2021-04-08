@@ -24,6 +24,7 @@ _AppState appState;
 Box userdata, accounts, custom;
 Brightness theme;
 ValueNotifier<bool> updateNotifier = ValueNotifier(false);
+ValueNotifier<List> errorLog = ValueNotifier([]);
 
 Notifications notifications = Notifications();
 void update() => updateNotifier.value = !updateNotifier.value;
@@ -127,6 +128,9 @@ void main() async {
     notifications.lessonNotifications(account.lessons);
   }
 
+  FlutterError.onError = (FlutterErrorDetails errorDetails) {
+    errorLog.value = List.from(errorLog.value)..add(errorDetails);
+  };
   runApp(App());
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:argo/main.dart';
+import 'package:share/share.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/Utils.dart';
@@ -73,7 +74,7 @@ class SwitchInstelling extends StatelessWidget {
             ),
             value: userdata.get(setting),
             activeColor: userdata.get("accentColor"),
-            onChanged: disabled ?? false // sam grote dom // huh maar ik vertelde jou toch dat je dit zo moest doen? Hoezo ben ik dan dom joh, kom vechten.
+            onChanged: disabled ?? false // sam grote dom // huh maar ik vertelde jou toch dat je dit zo moest doen? Hoezo ben ik dan dom joh, kom vechten. // ja maar jij had t toen verkeerd gezegd en toen werkte t niet en toen moest ik t weer fixen
                 ? null
                 : (value) {
                     if (onChange != null) onChange();
@@ -608,11 +609,118 @@ class _Instellingen extends State<Instellingen> {
                         ),
                       ),
                     ),
+                    CustomInstelling(
+                      title: 'Userdata',
+                      subtitle: 'Userdata bekijken o̶f̶ v̶e̶r̶a̶n̶d̶e̶r̶e̶n̶',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DataPagina(),
+                          ),
+                        );
+                      },
+                    ),
+                    CustomInstelling(
+                      title: 'Error log',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LogPagina(),
+                          ),
+                        );
+                      },
+                      subtitle: 'Bekijk de error log van de app',
+                    )
                   ],
                 );
               },
             ),
         ],
+      ),
+    );
+  }
+}
+
+class LogPagina extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Logs"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.error_outline,
+            ),
+            onPressed: () {
+              throw "Manually generated error";
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.share,
+            ),
+            onPressed: () {
+              Share.share(errorLog.value.take(30).toString());
+            },
+          ),
+        ],
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: errorLog,
+        builder: (BuildContext context, log, _a) => ListView(
+          children: [
+            for (FlutterErrorDetails error in errorLog.value.reversed)
+              Column(
+                children: [
+                  ExpansionTile(
+                    title: Text(error.exceptionAsString()),
+                    subtitle: Text(error.context.toString()),
+                    children: [
+                      ListTile(
+                        subtitle: Text(error.stack.toString()),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DataPagina extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Userdata"),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.share,
+            ),
+            onPressed: () {
+              Share.share(userdata.values.toString());
+            },
+          ),
+        ],
+      ),
+      body: ListView(
+        children: () {
+          return userdata
+              .toMap()
+              .entries
+              .map((e) => ListTile(
+                    title: Text(e.key.toString()),
+                    subtitle: Text(
+                      e.value.toString(),
+                    ),
+                  ))
+              .toList();
+        }(),
       ),
     );
   }

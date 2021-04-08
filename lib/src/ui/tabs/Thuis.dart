@@ -308,17 +308,24 @@ class _Thuis extends State<Thuis> {
   Widget _page() {
     return RefreshIndicator(
       child: ValueListenableBuilder(
-          valueListenable: updateNotifier,
-          builder: (BuildContext context, _, _a) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ListView(
-                children: [_volgendeLes(), _pinnedItems(), _recenteCijfers(), _recenteBerichten(), _recenteAfwezigheid()],
-              ),
-            );
-          }),
+        valueListenable: updateNotifier,
+        builder: (BuildContext context, _, _a) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ListView(
+              children: [
+                _volgendeLes(),
+                // _pinnedItems(),
+                _recenteCijfers(),
+                _recenteBerichten(),
+                _recenteAfwezigheid(),
+              ],
+            ),
+          );
+        },
+      ),
       onRefresh: () async {
         await handleError(account.magister.berichten.refresh, "Fout tijdens verversen van vandaag", context);
       },

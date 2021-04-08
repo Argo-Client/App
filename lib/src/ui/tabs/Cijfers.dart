@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
+
+import 'dart:async';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
@@ -269,11 +272,7 @@ class _CijferPagina extends State<CijferPagina> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: () {
-        List<Cijfer> periodecijfers = cijfers
-            .where(
-              (cijf) => cijf.periode.id == periode.id,
-            )
-            .toList();
+        List<Cijfer> periodecijfers = cijfers.where((cijf) => cijf.periode.id == periode.id).toList();
         if (periodecijfers.isEmpty)
           return <Widget>[];
         else
@@ -284,8 +283,19 @@ class _CijferPagina extends State<CijferPagina> {
                 for (Cijfer cijfer in periodecijfers)
                   Futuristic(
                     autoStart: true,
+                    // futureBuilder: () async => Future.delayed(Duration(minutes: 2)),
                     futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
-                    busyBuilder: (context) => CircularProgressIndicator(),
+                    busyBuilder: (context) => ListTile(
+                      title: PlaceholderLines(
+                        count: 1,
+                        animate: true,
+                      ),
+                      subtitle: PlaceholderLines(
+                        count: 1,
+                        animate: true,
+                      ),
+                      trailing: CircularProgressIndicator(),
+                    ),
                     errorBuilder: (context, error, retry) {
                       return Text("Error $error");
                     },

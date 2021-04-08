@@ -31,6 +31,8 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
 
   void afterFirstLayout(BuildContext context) => handleError(account.magister.agenda.refresh, "Fout tijdens verversen van huiswerk", context);
 
+  Future<void> _handleError(buildMonday) async => await handleError(() async => account.magister.agenda.getLessen(buildMonday), "Kon huiswerk niet verversen", context);
+
   int infinityPageCount = 1000;
   int initialPage;
   InfinityPageController pageController;
@@ -38,6 +40,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
   DateTime startMonday;
   ValueNotifier<DateTime> lastMonday;
   String weekslug;
+
   @override
   void initState() {
     initialPage = (infinityPageCount / 2).floor();
@@ -47,7 +50,121 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
     lastMonday.addListener(() {
       weekslug = formatDate.format(lastMonday.value);
     });
+
     super.initState();
+  }
+
+  Widget _buildHuiswerkPagina(context, index) {
+    DateTime buildMonday = startMonday.add(
+      Duration(days: (index - initialPage) * 7),
+    );
+    String buildSlug = formatDate.format(buildMonday);
+
+    return ValueListenableBuilder(
+      valueListenable: updateNotifier,
+      builder: (context, _, _a) {
+        return Futuristic(
+          autoStart: true,
+          futureBuilder: () {
+            if (account.lessons[buildSlug] == null) {
+              return account.magister.agenda.getLessen(buildMonday);
+            }
+
+            return Future.value(account.lessons[buildSlug]);
+          },
+          errorBuilder: (c, error, retry) => RefreshIndicator(
+            onRefresh: () async => retry(),
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: EmptyPage(
+                icon: Icons.wifi_off_outlined,
+                text: "Geen internet",
+              ),
+            ),
+          ),
+          busyBuilder: (context) => Container(
+            height: bodyHeight(context),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          dataBuilder: (c, _) {
+            List<List<Les>> week = account.lessons[buildSlug];
+            List<Les> huiswerkLessen = week.expand((x) => x).where((les) => les.huiswerk != null).toList();
+            List<Widget> huiswerk = [];
+
+            if (huiswerkLessen.isEmpty)
+              return EmptyPage(
+                text: "Geen huiswerk deze week",
+                icon: Icons.assignment_outlined,
+              );
+
+            String lastDay;
+            for (Les les in huiswerkLessen) {
+              if (lastDay != les.date) {
+                huiswerk.add(ContentHeader(les.date));
+              }
+              lastDay = les.date;
+              huiswerk.add(
+                MaterialCard(
+                  child: ExpansionTile(
+                    leading: les.huiswerkAf
+                        ? IconButton(
+                            onPressed: () {
+                              huiswerkAf(les);
+                            },
+                            icon: Icon(
+                              Icons.assignment_turned_in_outlined,
+                              color: Colors.green,
+                            ),
+                          )
+                        : IconButton(
+                            onPressed: () {
+                              huiswerkAf(les);
+                            },
+                            icon: Icon(
+                              Icons.assignment_outlined,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                    title: Text(
+                      les.title,
+                    ),
+                    children: [
+                      Padding(
+                        child: WebContent(
+                          les.huiswerk,
+                        ),
+                        padding: EdgeInsets.only(
+                          left: 30,
+                          right: 30,
+                          bottom: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => _handleError(buildMonday),
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.symmetric(
+                      horizontal: greyBorderSide(),
+                    ),
+                  ),
+                  child: buildLiveList(huiswerk, 4),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -78,114 +195,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
             Duration(days: (value - initialPage) * 7),
           );
         },
-        itemBuilder: (context, index) {
-          DateTime buildMonday = startMonday.add(
-            Duration(days: (index - initialPage) * 7),
-          );
-          String buildSlug = formatDate.format(buildMonday);
-          return ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (context, _, _a) {
-              return Futuristic(
-                autoStart: true,
-                futureBuilder: () {
-                  if (account.lessons[buildSlug] == null) {
-                    return account.magister.agenda.getLessen(buildMonday);
-                  }
-                  return Future.value(account.lessons[buildSlug]);
-                },
-                errorBuilder: (c, error, retry) => RefreshIndicator(
-                  onRefresh: () async => retry(),
-                  child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    child: EmptyPage(
-                      icon: Icons.wifi_off_outlined,
-                      text: "Geen internet",
-                    ),
-                  ),
-                ),
-                busyBuilder: (context) => Container(
-                  height: bodyHeight(context),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-                dataBuilder: (c, _) {
-                  List<List<Les>> week = account.lessons[buildSlug];
-                  List<Les> huiswerkLessen = week.expand((x) => x).where((les) => les.huiswerk != null).toList();
-                  List<Widget> huiswerk = [];
-                  if (huiswerkLessen.isEmpty)
-                    return EmptyPage(
-                      text: "Geen huiswerk deze week",
-                      icon: Icons.assignment_outlined,
-                    );
-                  String lastDay;
-                  for (Les les in huiswerkLessen) {
-                    if (lastDay != les.date) {
-                      huiswerk.add(ContentHeader(les.date));
-                    }
-                    lastDay = les.date;
-                    huiswerk.add(
-                      MaterialCard(
-                        child: ExpansionTile(
-                          leading: les.huiswerkAf
-                              ? IconButton(
-                                  onPressed: () {
-                                    huiswerkAf(les);
-                                  },
-                                  icon: Icon(
-                                    Icons.assignment_turned_in_outlined,
-                                    color: Colors.green,
-                                  ),
-                                )
-                              : IconButton(
-                                  onPressed: () {
-                                    huiswerkAf(les);
-                                  },
-                                  icon: Icon(
-                                    Icons.assignment_outlined,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                          title: Text(
-                            les.title,
-                          ),
-                          children: [
-                            Padding(
-                              child: WebContent(
-                                les.huiswerk,
-                              ),
-                              padding: EdgeInsets.only(
-                                left: 30,
-                                right: 30,
-                                bottom: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () async => await handleError(() async => account.magister.agenda.getLessen(buildMonday), "Kon huiswerk niet verversen", context),
-                    child: SingleChildScrollView(
-                      physics: AlwaysScrollableScrollPhysics(),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.symmetric(
-                            horizontal: greyBorderSide(),
-                          ),
-                        ),
-                        child: buildLiveList(huiswerk, 4),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
+        itemBuilder: _buildHuiswerkPagina,
       ),
     );
   }

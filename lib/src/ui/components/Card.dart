@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:argo/main.dart';
 
 // ignore: must_be_immutable
-class SeeCard extends StatelessWidget {
+class MaterialCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets margin;
-  Color color;
   final Border border;
   final double width;
   final double height;
-  final List<Widget> column;
+  final List<Widget> children;
   final EdgeInsets padding;
   final CrossAxisAlignment crossAxisAlignment;
   final MainAxisAlignment mainAxisAlignment;
+  Color color;
 
-  SeeCard({
+  MaterialCard({
     this.width,
     this.height,
     this.margin,
     this.child,
     this.color,
     this.border,
-    this.column,
+    this.children,
     this.padding,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -50,11 +50,11 @@ class SeeCard extends StatelessWidget {
         color: color,
         child: Container(
           padding: padding,
-          child: column != null
+          child: children != null
               ? Column(
                   mainAxisAlignment: mainAxisAlignment,
                   crossAxisAlignment: crossAxisAlignment,
-                  children: column,
+                  children: children,
                 )
               : child,
         ),

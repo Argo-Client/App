@@ -126,7 +126,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                     }
                     lastDay = les.date;
                     huiswerk.add(
-                      SeeCard(
+                      MaterialCard(
                         child: ExpansionTile(
                           leading: les.huiswerkAf
                               ? IconButton(

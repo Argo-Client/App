@@ -19,7 +19,7 @@ DateFormat dateFormatter = DateFormat('dd-MM-yyyy HH:mm');
 
 class _OpdrachtenState extends State<Opdrachten> {
   Widget opdracht(Opdracht opdracht) {
-    return SeeCard(
+    return MaterialCard(
       child: ListTileBorder(
         border: Border(top: greyBorderSide()),
         title: opdracht.titel == null ? null : Text(opdracht.titel),
@@ -95,7 +95,7 @@ class OpdrachtPagina extends StatelessWidget {
       body: ListView(
         children: [
           if (opdracht.ingeleverdOp == null)
-            SeeCard(
+            MaterialCard(
               child: ListTileBorder(
                 leading: Icon(Icons.calendar_today_outlined),
                 title: Text(
@@ -105,7 +105,7 @@ class OpdrachtPagina extends StatelessWidget {
               ),
             ),
           if (opdracht.ingeleverdOp != null)
-            SeeCard(
+            MaterialCard(
               child: ListTileBorder(
                 border: Border(top: greyBorderSide()),
                 leading: Icon(Icons.assignment_returned_outlined),
@@ -115,7 +115,7 @@ class OpdrachtPagina extends StatelessWidget {
                 subtitle: Text("Ingeleverd op"),
               ),
             ),
-          SeeCard(
+          MaterialCard(
             child: ListTileBorder(
               border: Border(
                 top: greyBorderSide(),
@@ -126,11 +126,11 @@ class OpdrachtPagina extends StatelessWidget {
             ),
           ),
           if (opdracht.leerlingOpmerking != null && opdracht.leerlingOpmerking.isNotEmpty)
-            SeeCard(
+            MaterialCard(
               padding: EdgeInsets.all(20),
               margin: EdgeInsets.only(top: 20),
               crossAxisAlignment: CrossAxisAlignment.start,
-              column: [
+              children: [
                 Padding(
                   padding: EdgeInsets.only(bottom: 10),
                   child: Text(

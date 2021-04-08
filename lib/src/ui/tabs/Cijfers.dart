@@ -117,8 +117,8 @@ class _Cijfers extends State<Cijfers> {
                 text: "Nog geen cijfers",
                 icon: Icons.looks_6_outlined,
               )
-            : SeeCard(
-                column: [
+            : MaterialCard(
+                children: [
                   for (Cijfer cijfer in account.recenteCijfers)
                     Container(
                       child: CijferTile(cijfer, isRecent: true),
@@ -202,8 +202,8 @@ class _Cijfers extends State<Cijfers> {
                       context,
                     ),
                     child: SingleChildScrollView(
-                      child: SeeCard(
-                        column: () {
+                      child: MaterialCard(
+                        children: () {
                           List cijfersInPeriode = account.cijfers[jaar].cijfers
                               .where(
                                 (cijfer) => cijfer.periode.id == periode.id,
@@ -279,8 +279,8 @@ class _CijferPagina extends State<CijferPagina> {
         else
           return [
             ContentHeader(periode.naam),
-            SeeCard(
-              column: [
+            MaterialCard(
+              children: [
                 for (Cijfer cijfer in periodecijfers)
                   Futuristic(
                     autoStart: true,

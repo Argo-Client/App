@@ -28,7 +28,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
 
     for (Bron bron in view.last) {
       bronnenPagina.add(
-        SeeCard(
+        MaterialCard(
           child: BijlageItem(
             bron,
             border: view.last.last != bron

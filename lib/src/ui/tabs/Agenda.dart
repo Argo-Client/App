@@ -148,7 +148,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       ),
       width: MediaQuery.of(context).size.width - 30,
       height: les.duration * userdata.get("pixelsPerHour") / 60 + 1,
-      child: SeeCard(
+      child: MaterialCard(
         border: userdata.get("theme") == "OLED" || les.uitval
             ? null
             : Border.symmetric(
@@ -311,7 +311,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
           Expanded(
             child: Tooltip(
               message: les.title,
-              child: SeeCard(
+              child: MaterialCard(
                 border: Border(
                   top: userdata.get("theme") != "OLED"
                       ? BorderSide(
@@ -737,8 +737,8 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SeeCard(
-            column: [
+          MaterialCard(
+            children: [
               if (les.hour != null)
                 lesPaginaItem(
                   title: (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
@@ -863,7 +863,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
             ],
           ),
           if (les.description.isNotEmpty)
-            SeeCard(
+            MaterialCard(
               margin: EdgeInsets.only(top: 20),
               padding: EdgeInsets.all(20),
               child: Column(
@@ -893,7 +893,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
               ),
             ),
           if (les.heeftBijlagen)
-            SeeCard(
+            MaterialCard(
               margin: EdgeInsets.only(top: 20),
               child: Futuristic(
                 autoStart: true,
@@ -1026,7 +1026,7 @@ class _AddLesPagina extends State<AddLesPagina> {
       appBar: AppBar(
         title: Text("Nieuwe afspraak"),
       ),
-      body: SeeCard(
+      body: MaterialCard(
         child: Container(
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(

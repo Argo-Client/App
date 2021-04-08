@@ -24,7 +24,7 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
   List<Widget> _buildStudiewijzers() {
     return [
       for (Wijzer wijs in account.studiewijzers)
-        SeeCard(
+        MaterialCard(
           border: account.studiewijzers.last == wijs
               ? null
               : Border(
@@ -96,7 +96,7 @@ class StudiewijzerPagina extends StatelessWidget {
               builder: (context, _, _a) {
                 bool isPinned = _isPinned(wijzer);
 
-                return SeeCard(
+                return MaterialCard(
                   border: wijs.children.last.id == wijzer.id
                       ? null
                       : Border(
@@ -219,7 +219,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
         if (wijstab.omschrijving
             .replaceAll(RegExp("<[^>]*>"), "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
             .isNotEmpty)
-          SeeCard(
+          MaterialCard(
             child: Padding(
               padding: EdgeInsets.all(15),
               child: WebContent(
@@ -227,8 +227,8 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
               ),
             ),
           ),
-        SeeCard(
-          column: [
+        MaterialCard(
+          children: [
             for (Bron wijsbron in wijstab.bronnen)
               BijlageItem(
                 wijsbron,

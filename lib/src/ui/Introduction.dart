@@ -189,7 +189,7 @@ class _Introduction extends State<Introduction> {
                               width: MediaQuery.of(context).size.width / 2 - 70,
                               child: Column(
                                 children: [
-                                  SeeCard(
+                                  MaterialCard(
                                     margin: EdgeInsets.symmetric(
                                       vertical: 25,
                                     ),

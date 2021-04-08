@@ -35,7 +35,7 @@ class _Leermiddelen extends State<Leermiddelen> {
                 return Column(
                   children: [
                     for (Leermiddel leermiddel in account.leermiddelen)
-                      SeeCard(
+                      MaterialCard(
                         child: Tooltip(
                           message: leermiddel.title,
                           child: ListTileBorder(

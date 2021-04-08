@@ -23,7 +23,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
   void afterFirstLayout(BuildContext context) => handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
 
   Widget _buildAfwezigheid(Absentie afwezigheid, int i, String hour) {
-    return SeeCard(
+    return MaterialCard(
       border: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afwezigheid.dag
           ? null
           : Border(

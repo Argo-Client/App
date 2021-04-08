@@ -23,7 +23,7 @@ class InstellingenCategory extends StatelessWidget {
   InstellingenCategory({this.category, this.icon, this.builder, this.border = true});
 
   Widget build(BuildContext context) {
-    return SeeCard(
+    return MaterialCard(
       child: ListTileBorder(
         border: !border
             ? null
@@ -55,7 +55,7 @@ class SwitchInstelling extends StatelessWidget {
   SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled, this.border = true});
 
   Widget build(BuildContext context) {
-    return SeeCard(
+    return MaterialCard(
       border: !border
           ? null
           : Border(
@@ -99,7 +99,7 @@ class CustomInstelling extends StatelessWidget {
   CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle, this.border = true});
 
   Widget build(BuildContext context) {
-    return SeeCard(
+    return MaterialCard(
       border: !border
           ? null
           : Border(

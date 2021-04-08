@@ -28,7 +28,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
   void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
 
   Widget _buildBericht(ValueNotifier<Bericht> ber, int i) {
-    return SeeCard(
+    return MaterialCard(
       border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
           ? null
           : Border(
@@ -272,10 +272,10 @@ class BerichtPagina extends StatelessWidget {
   }
 
   Widget _bijlagen(List<Bron> bijlagen) {
-    return SeeCard(
+    return MaterialCard(
       crossAxisAlignment: CrossAxisAlignment.start,
       margin: EdgeInsets.only(top: 20),
-      column: [
+      children: [
         Padding(
           padding: EdgeInsets.only(
             top: 20,
@@ -367,14 +367,14 @@ class BerichtPagina extends StatelessWidget {
           return SingleChildScrollView(
             child: Column(
               children: [
-                SeeCard(
+                MaterialCard(
                   margin: EdgeInsets.only(
                     bottom: 20,
                     top: 0,
                     left: 0,
                     right: 0,
                   ),
-                  column: [
+                  children: [
                     if (ber.afzender != null) _afzender(ber.afzender),
                     if (ber.dag != null) _dag(ber.dag),
                     if (ber.ontvangers != null) _ontvangers(context, ber),
@@ -382,7 +382,7 @@ class BerichtPagina extends StatelessWidget {
                   ],
                 ),
                 if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
-                  SeeCard(
+                  MaterialCard(
                     child: Container(
                       padding: EdgeInsets.all(
                         20,
@@ -422,8 +422,8 @@ class NieuwBerichtPagina extends StatelessWidget {
         child: Form(
           child: Column(
             children: [
-              SeeCard(
-                column: [
+              MaterialCard(
+                children: [
                   ListTileBorder(
                     border: Border(
                       bottom: greyBorderSide(),

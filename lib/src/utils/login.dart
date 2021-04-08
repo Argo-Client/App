@@ -183,7 +183,7 @@ class MagisterLoader extends StatelessWidget {
   final ValueNotifier<List<List>> errors;
   MagisterLoader({this.name, this.future, this.count, this.errors});
   @override
-  Widget build(c) => SeeCard(
+  Widget build(c) => MaterialCard(
         child: ListTileBorder(
           border: Border(
             top: greyBorderSide(),

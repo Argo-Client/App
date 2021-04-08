@@ -41,8 +41,8 @@ class _Info extends State<Info> {
             ListView(
               children: [
                 ContentHeader("Algemeen"),
-                SeeCard(
-                  column: [
+                MaterialCard(
+                  children: [
                     Container(
                       child: ListTile(
                         leading: Icon(Icons.verified_user_outlined),
@@ -83,7 +83,7 @@ class _Info extends State<Info> {
                   ],
                 ),
                 ContentHeader("Tools"),
-                SeeCard(
+                MaterialCard(
                   child: ListTile(
                     leading: Icon(Icons.android_outlined),
                     title: Text('Flutter'),
@@ -96,8 +96,8 @@ class _Info extends State<Info> {
             ListView(
               children: [
                 ContentHeader("Makers"),
-                SeeCard(
-                  column: [
+                MaterialCard(
+                  children: [
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Guus van Meerveld'),
@@ -178,8 +178,8 @@ class _Info extends State<Info> {
                   ],
                 ),
                 ContentHeader("Support"),
-                SeeCard(
-                  column: [
+                MaterialCard(
+                  children: [
                     ExpansionTile(
                       tilePadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       leading: Icon(Icons.person_outlined),

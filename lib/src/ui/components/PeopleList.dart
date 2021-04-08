@@ -73,7 +73,7 @@ class PeopleList extends StatelessWidget {
       body: ListView(
         children: [
           for (int i = 0; i < people.length; i++)
-            SeeCard(
+            MaterialCard(
               child: ListTileBorder(
                 border: Border(
                   top: greyBorderSide(),

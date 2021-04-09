@@ -35,7 +35,7 @@ class CijferTile extends StatelessWidget {
                   cijfer.cijfer,
                   style: TextStyle(
                     fontSize: 17,
-                    color: cijfer.voldoende ? null : Colors.red,
+                    color: cijfer.voldoende || userdata.get("disableCijferColor") ? null : Colors.red,
                   ),
                 ),
                 Transform.translate(

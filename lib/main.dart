@@ -107,6 +107,7 @@ void main() async {
     "developerMode": false,
     "liveList": false,
     "pinned": <Wijzer>[],
+    "disableCijferColor": false,
   };
 
   standardSettings.entries.forEach((element) {

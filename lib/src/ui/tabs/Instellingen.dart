@@ -577,6 +577,12 @@ class _Instellingen extends State<Instellingen> {
                       subtitle: "Schakel developer opties uit",
                       setting: "developerMode",
                     ),
+                    SwitchInstelling(
+                      border: false,
+                      title: 'Cijfer kleur uitschakelen',
+                      subtitle: 'Maakt onvoldoendes wit in plaats van rood',
+                      setting: "disableCijferColor",
+                    ),
                     CustomInstelling(
                       title: 'Aangepaste primaire kleur',
                       onTap: () => showColorAdvanced("primaryColor"),

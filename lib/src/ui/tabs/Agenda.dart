@@ -100,15 +100,15 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   }
 
   int getEndHour(List<Les> dag) {
-    int startHour = userdata.get("agendaEndHour");
-    if (dag == null) return startHour;
+    int endHour = userdata.get("agendaEndHour");
+    if (dag == null) return endHour;
     List<Les> normalLessons = (dag.where((les) => !les.heleDag)).toList();
-    if (normalLessons.isEmpty) return startHour;
+    if (normalLessons.isEmpty) return endHour;
     int endLessonHour = (normalLessons.last.start / 60).ceil();
-    if (endLessonHour > startHour) {
+    if (endLessonHour > endHour) {
       return endLessonHour;
     }
-    return userdata.get("agendaAutoEind") ? endLessonHour : startHour;
+    return userdata.get("agendaAutoEind") ? endLessonHour : endHour;
   }
 
   void jumpOrAnimate(InfinityPageController controller, int page, {bool fast}) {

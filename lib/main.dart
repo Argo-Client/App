@@ -131,6 +131,7 @@ void main() async {
 
   FlutterError.onError = (FlutterErrorDetails errorDetails) {
     errorLog.value = List.from(errorLog.value)..add(errorDetails);
+    print(errorDetails);
   };
   runApp(App());
 }

@@ -1,5 +1,8 @@
 import 'magister.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import "package:intl/intl.dart";
+
+DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
 
 class Studiewijzers extends MagisterApi {
   MagisterApi api;
@@ -17,8 +20,8 @@ class Studiewijzers extends MagisterApi {
         .cast<Wijzer>();
   }
 
-  Future<Map> loadWijzer([id]) async {
-    return (await api.dio.get("api/leerlingen/${account.id}/studiewijzers/${id ?? ''}")).data;
+  Future<Map> loadWijzer([id = ""]) async {
+    return (await api.dio.get("api/leerlingen/${account.id}/studiewijzers/$id?peildatum=${dateFormatter.format(DateTime.now())}")).data;
   }
 
   Future loadChildren(Wijzer wijs) async {

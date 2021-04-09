@@ -82,7 +82,7 @@ class StudiewijzerPagina extends StatelessWidget {
   final ValueNotifier<Wijzer> selected = ValueNotifier(null);
 
   bool _isPinned(Wijzer wijzer) {
-    List<Wijzer> pinned = userdata.get("pinned");
+    List pinned = userdata.get("pinned");
     return pinned.where((g) => g.id == wijzer.id).isNotEmpty;
   }
 

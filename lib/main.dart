@@ -106,7 +106,6 @@ void main() async {
     "preNotificationMinutes": 10,
     "developerMode": false,
     "liveList": false,
-    "pinned": <Wijzer>[],
     "disableCijferColor": false,
   };
 

@@ -79,12 +79,7 @@ class StudiewijzerPagina extends StatelessWidget {
   final Wijzer wijs;
   StudiewijzerPagina(this.wijs);
 
-  final ValueNotifier<Wijzer> selected = ValueNotifier(null);
-
-  bool _isPinned(Wijzer wijzer) {
-    List pinned = userdata.get("pinned");
-    return pinned.where((g) => g.id == wijzer.id).isNotEmpty;
-  }
+  final ValueNotifier<List<Wijzer>> selected = ValueNotifier([]);
 
   Widget _buildStudiewijzerPagina(BuildContext context, _) {
     return SingleChildScrollView(
@@ -94,7 +89,7 @@ class StudiewijzerPagina extends StatelessWidget {
             ValueListenableBuilder(
               valueListenable: selected,
               builder: (context, _, _a) {
-                bool isPinned = _isPinned(wijzer);
+                bool isSelected = selected.value.contains(wijzer);
 
                 return MaterialCard(
                   border: wijs.children.last.id == wijzer.id
@@ -103,29 +98,29 @@ class StudiewijzerPagina extends StatelessWidget {
                           bottom: greyBorderSide(),
                         ),
                   child: ListTile(
+                    selected: isSelected,
                     title: Text(
                       wijzer.naam,
                       overflow: TextOverflow.ellipsis,
                     ),
                     onLongPress: () {
-                      if (!isPinned) selected.value = wijzer;
+                      selected.value = List.from(selected.value)..add(wijzer);
                     },
-                    trailing: isPinned
-                        ? Icon(Icons.push_pin)
-                        : selected?.value?.id == wijzer.id
-                            ? Icon(Icons.check)
-                            : null,
+                    trailing: wijzer.pinned ? Icon(Icons.push_pin_outlined) : null,
                     onTap: () {
-                      if (selected.value != null) {
-                        selected.value = null;
-                        return;
+                      if (selected.value.isNotEmpty) {
+                        if (isSelected) {
+                          selected.value = List.from(selected.value)..remove(wijzer);
+                        } else {
+                          selected.value = List.from(selected.value)..add(wijzer);
+                        }
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => StudiewijzerTab(wijzer),
+                          ),
+                        );
                       }
-
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => StudiewijzerTab(wijzer),
-                        ),
-                      );
                     },
                   ),
                 );
@@ -139,41 +134,52 @@ class StudiewijzerPagina extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: AppBar().preferredSize,
-        child: ValueListenableBuilder(
+      appBar: AppBar(
+        leading: ValueListenableBuilder(
           valueListenable: selected,
-          builder: (context, _, _a) {
-            // bool isPinned = _isPinned(selected.value);
-            return AppBar(
-              leading: selected.value != null
-                  ? IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        selected.value = null;
-                      },
-                    )
-                  : null,
-              title: selected.value != null
-                  ? Text(selected.value.naam)
-                  : Text(
-                      wijs.naam,
-                    ),
-              actions: [
-                if (selected.value != null)
-                  IconButton(
-                    onPressed: () {
-                      List<Wijzer> currentSettings = userdata.get("pinned");
-                      userdata.put("pinned", [...currentSettings, selected.value]);
-
-                      selected.value = null;
-                    },
-                    icon: Icon(Icons.push_pin),
-                  ),
-              ],
+          builder: (context, _a, _) {
+            if (selected.value.isNotEmpty)
+              return IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  selected.value = [];
+                },
+              );
+            return IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             );
           },
         ),
+        title: selected.value.isNotEmpty
+            ? Text("${selected.value.length} geselecteerd")
+            : Text(
+                wijs.naam,
+              ),
+        actions: [
+          ValueListenableBuilder(
+            valueListenable: selected,
+            builder: (context, _a, _) {
+              bool value = selected.value.where((wijzer) => wijzer.pinned).isEmpty;
+              if (selected.value.isNotEmpty)
+                return IconButton(
+                  onPressed: () {
+                    selected.value.forEach((wijzer) {
+                      wijzer.pinned = value;
+                    });
+                    selected.value = [];
+                  },
+                  icon: Icon(
+                    value ? Icons.push_pin_outlined : Icons.remove_circle_outline,
+                  ),
+                );
+              return Container();
+            },
+          ),
+        ],
       ),
       body: Futuristic(
         autoStart: true,
@@ -214,11 +220,16 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
   _StudiewijzerTab(this.wijstab);
 
   Widget _buildStudiewijzerInfo(BuildContext context, _) {
+    String title = wijstab.omschrijving.replaceAll(RegExp("<[^>]*>"), ""); // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
+    bool hasContent = title.isNotEmpty || wijstab.bronnen.isNotEmpty;
     return ListView(
       children: [
-        if (wijstab.omschrijving
-            .replaceAll(RegExp("<[^>]*>"), "") // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
-            .isNotEmpty)
+        if (!hasContent)
+          EmptyPage(
+            icon: Icons.subtitles_off,
+            text: "Geen Data",
+          ),
+        if (title.isNotEmpty)
           MaterialCard(
             child: Padding(
               padding: EdgeInsets.all(15),
@@ -227,20 +238,21 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
               ),
             ),
           ),
-        MaterialCard(
-          children: [
-            for (Bron wijsbron in wijstab.bronnen)
-              BijlageItem(
-                wijsbron,
-                download: account.magister.bronnen.downloadFile,
-                border: wijstab.bronnen.last != wijsbron
-                    ? Border(
-                        bottom: greyBorderSide(),
-                      )
-                    : null,
-              )
-          ],
-        ),
+        if (wijstab.bronnen.isNotEmpty)
+          MaterialCard(
+            children: [
+              for (Bron wijsbron in wijstab.bronnen)
+                BijlageItem(
+                  wijsbron,
+                  download: account.magister.bronnen.downloadFile,
+                  border: wijstab.bronnen.last != wijsbron
+                      ? Border(
+                          bottom: greyBorderSide(),
+                        )
+                      : null,
+                )
+            ],
+          ),
       ],
     );
   }

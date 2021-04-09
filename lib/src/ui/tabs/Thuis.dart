@@ -11,7 +11,7 @@ import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'Agenda.dart';
 import 'Berichten.dart';
 import 'Cijfers.dart';
-// import 'Studiewijzer.dart';
+import 'Studiewijzer.dart';
 
 class FeedItem extends StatelessWidget {
   final List children;
@@ -317,7 +317,7 @@ class _Thuis extends State<Thuis> {
             child: ListView(
               children: [
                 _volgendeLes(),
-                // _pinnedItems(),
+                _pinnedItems(),
                 _recenteCijfers(),
                 _recenteBerichten(),
                 _recenteAfwezigheid(),
@@ -332,29 +332,38 @@ class _Thuis extends State<Thuis> {
     );
   }
 
-  // Widget _pinnedItems() {
-  //   List<Wijzer> pinned = userdata.get("pinned");
+  Widget _pinnedItems() {
+    List<List<Wijzer>> pinned = [];
+    account.studiewijzers.forEach((hoofdwijzer) {
+      if (hoofdwijzer.children != null) {
+        pinned.addAll(
+          hoofdwijzer.children.where((wijzer) => wijzer.pinned).map((e) => [hoofdwijzer, e]),
+        );
+      }
+    });
 
-  //   if (pinned.isNotEmpty) {
-  //     return FeedItem(
-  //       children: [
-  //         for (Wijzer item in pinned.take(5))
-  //           ListTile(
-  //             title: Text(item.naam),
-  //             onTap: () {
-  //               Navigator.of(context).push(
-  //                 MaterialPageRoute(
-  //                   builder: (context) => StudiewijzerTab(item),
-  //                 ),
-  //               );
-  //             },
-  //           )
-  //       ],
-  //       header: "Gepinde items",
-  //     );
-  //   } else
-  //     return Container();
-  // }
+    if (pinned.isEmpty) {
+      return Container();
+    }
+
+    return FeedItem(
+      header: "Gepinde items",
+      children: [
+        for (List<Wijzer> item in pinned.take(5))
+          ListTile(
+            title: Text(item[1].naam),
+            subtitle: Text(item[0].naam),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StudiewijzerTab(item[1]),
+                ),
+              );
+            },
+          )
+      ],
+    );
+  }
 
   Widget _volgendeLes() {
     DateTime now = DateTime.now();

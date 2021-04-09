@@ -453,11 +453,16 @@ class Wijzer {
   List<Wijzer> children;
   @HiveField(5)
   String tabUrl;
+  @HiveField(6)
+  bool pinned;
   Wijzer([wijzer]) {
     if (wijzer != null) {
       this.naam = wijzer["Titel"];
       this.id = wijzer["Id"];
       this.omschrijving = wijzer["Omschrijving"];
+      if (pinned == null) {
+        pinned = false;
+      }
       if (wijzer["Links"] != null) {
         this.tabUrl = wijzer["Links"].where((a) => a["Rel"] == "Self").first["Href"];
       }

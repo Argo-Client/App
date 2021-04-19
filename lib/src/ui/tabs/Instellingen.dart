@@ -578,7 +578,6 @@ class _Instellingen extends State<Instellingen> {
                       setting: "developerMode",
                     ),
                     SwitchInstelling(
-                      border: false,
                       title: 'Cijfer kleur uitschakelen',
                       subtitle: 'Maakt onvoldoendes wit in plaats van rood',
                       setting: "disableCijferColor",
@@ -617,7 +616,7 @@ class _Instellingen extends State<Instellingen> {
                     ),
                     CustomInstelling(
                       title: 'Userdata',
-                      subtitle: 'Userdata bekijken o̶f̶ v̶e̶r̶a̶n̶d̶e̶r̶e̶n̶',
+                      subtitle: 'Userdata inzien',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

@@ -335,12 +335,12 @@ class _Introduction extends State<Introduction> {
     return MaterialApp(
       home: Builder(
         builder: (context) => new IntroSlider(
-          isShowSkipBtn: false,
+          showSkipBtn: false,
           renderPrevBtn: Icon(
             Icons.navigate_before,
             color: Colors.white,
           ),
-          isShowPrevBtn: true,
+          showPrevBtn: true,
           // isScrollable: false,
           colorDot: Color.fromRGBO(255, 255, 255, .5),
           sizeDot: 10.0,

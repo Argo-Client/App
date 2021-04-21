@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:argo/main.dart' as main;
 import 'package:dio/dio.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/utils/login.dart';
 import 'ProfileInfo.dart';
 import 'Agenda.dart';
 import 'Cijfers.dart';
@@ -51,47 +49,49 @@ class MagisterApi {
   Dio refreshDio;
   MagisterApi(Account account) {
     this.account = account;
-    this.dio = Dio(BaseOptions(baseUrl: "https://${account.tenant}/"));
-    this.refreshDio = Dio(BaseOptions(
-      baseUrl: "https://accounts.magister.net/connect/token",
-      responseType: ResponseType.json,
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded; charset=utf-8',
-        "Accept": "application/x-www-form-urlencoded",
-      },
-    ));
+    this.dio = Dio(
+      BaseOptions(baseUrl: "https://${account.tenant}/"),
+    );
+    this.refreshDio = Dio(
+      BaseOptions(
+        baseUrl: "https://accounts.magister.net/connect/token",
+        contentType: "application/x-www-form-urlencoded",
+      ),
+    );
     this.refreshDio.interceptors.add(InterceptorsWrapper(
-          onRequest: (options) {
+          onRequest: (options, handler) {
             print("Refreshing token");
             this.dio.lock();
+            this.refreshDio.lock();
             options.data = "refresh_token=${account.refreshToken}&client_id=M6LOAPP&grant_type=refresh_token";
-            options.headers["Content-Type"] = 'application/x-www-form-urlencoded; charset=utf-8';
-            return options;
+            handler.next(options);
           },
-          onResponse: (Response res) {
+          onResponse: (res, handler) {
             account.saveTokens(res.data);
             this.dio.unlock();
+            this.refreshDio.unlock();
             print("Refreshed token");
-            return res;
+            handler.next(res);
           },
-          onError: (e) async {
+          onError: (e, handler) async {
             print("Error refreshing token");
             this.dio.unlock();
+            this.refreshDio.unlock();
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
-              print("$account is uitgelogd");
-              MagisterLogin().launch(main.appState.context, (tokenSet, _) {
-                account.saveTokens(tokenSet);
-                if (account.isInBox) account.save();
-              }, title: "Account is uitgelogd");
-              return dio.request(e.request.path, options: e.request);
+              throw "$account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)";
+              // MagisterLogin().launch(main.appState.context, (tokenSet, _) {
+              //   account.saveTokens(tokenSet);
+              //   if (account.isInBox) account.save();
+              // }, title: "Account is uitgelogd");
+              // return dio.request(e.requestOptions.path, options: e.requestOptions as Options);
             }
-            return e;
+            return handler.next(e);
           },
         ));
     this.dio.interceptors.add(
           InterceptorsWrapper(
-            onRequest: (options) async {
+            onRequest: (options, handler) async {
               if (account.accessToken == null) {
                 throw ("Accestoken is null");
               }
@@ -100,17 +100,17 @@ class MagisterApi {
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
                 return refreshDio.post("").then((value) {
-                  return options;
+                  return handler.next(options);
                 });
               }
-              return options;
+              return handler.next(options);
             },
-            onError: (DioError e) {
-              RequestOptions options = e.request;
+            onError: (e, handler) {
+              RequestOptions options = e.requestOptions;
               if (e.response?.data == "SecurityToken Expired") {
                 if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
                   options.headers["Authorization"] = "Bearer ${account.accessToken}";
-                  return dio.request(options.path, options: options);
+                  return dio.request(options.path, options: options as Options);
                 }
                 print(e.response.data);
                 return refreshDio.post("");

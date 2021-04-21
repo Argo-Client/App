@@ -4,15 +4,14 @@ import 'dart:typed_data';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'dart:math';
-import 'package:http/http.dart';
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/export.dart' as castle;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -45,7 +44,7 @@ class _LoginView extends State<LoginView> {
             error.toString(),
             maxLines: 10,
           ),
-          if (error.runtimeType == dio.DioError && error.response != null)
+          if (error.runtimeType == DioError && error.response != null)
             SelectableText(
               error.toString(),
               maxLines: 10,
@@ -117,6 +116,7 @@ class _LoginView extends State<LoginView> {
               child: Futuristic(
                 autoStart: true,
                 errorBuilder: errorBuilder,
+                onError: (dynamic err, retry) => print(err.response),
                 futureBuilder: () async => magisterLogin.getTokenSet(redirectUrl, context),
                 busyBuilder: (c) => Center(
                   child: Row(
@@ -332,7 +332,7 @@ class RefreshAccountView extends StatelessWidget {
                         errors.value.first.first.toString(),
                         maxLines: 10,
                       ),
-                      if (errors.value.first.first.runtimeType == dio.DioError && errors.value.first.first.response != null)
+                      if (errors.value.first.first.runtimeType == DioError && errors.value.first.first.response != null)
                         SelectableText(
                           errors.value.first.first.response.data.toString(),
                           maxLines: 10,
@@ -401,7 +401,7 @@ class MagisterLogin {
     String nonce = generateRandomBase64(32);
     this.codeVerifier = generateRandomString();
     String state = generateRandomString();
-    String codeChallenge = base64Url.encode(SHA256Digest().process(Uint8List.fromList(this.codeVerifier.codeUnits))).replaceAll('=', '');
+    String codeChallenge = base64Url.encode(castle.SHA256Digest().process(Uint8List.fromList(this.codeVerifier.codeUnits))).replaceAll('=', '');
     String str = "https://accounts.magister.net/connect/authorize?client_id=M6LOAPP&redirect_uri=m6loapp%3A%2F%2Foauth2redirect%2F&scope=openid%20profile%20offline_access%20magister.mobile%20magister.ecs&response_type=code%20id_token&state=$state&nonce=$nonce&code_challenge=$codeChallenge&code_challenge_method=S256";
     if (preFill != null) {
       str += "&acr_values=tenant:${preFill["tenant"]}&prompt=select_account&login_hint=${preFill['username']}";
@@ -411,14 +411,14 @@ class MagisterLogin {
 
   Future<Map> getTokenSet(String url, BuildContext context) async {
     String code = url.replaceFirst(RegExp("^m6.*#code="), "").split("&")[0];
-    Response res = await post(
+
+    Response res = await Dio().post(
       "https://accounts.magister.net/connect/token",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: utf8.encode("code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier"),
+      options: Options(
+        contentType: "application/x-www-form-urlencoded",
+      ),
+      data: "code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier",
     );
-    // callback(jsonDecode(res.body), context);
-    return jsonDecode(res.body);
+    return res.data;
   }
 }

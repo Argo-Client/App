@@ -3,7 +3,7 @@
 <p align="center">
 <a href="https://github.com/Argo-Client/App/actions/workflows/main.yml"><img src="https://github.com/argo-client/app/actions/workflows/main.yml/badge.svg"></a>
 <a href="https://argo-magister.net"><img src="https://img.shields.io/website-up-down-green-red/https/argo-magister.net"></a>
-<a href="https//:discord.gg/Xc4Xzsm"><img src="https://img.shields.io/discord/750027981623263292.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
+<a href="https://discord.gg/Xc4Xzsm"><img src="https://img.shields.io/discord/750027981623263292.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
 <img src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103">
 </p>
 

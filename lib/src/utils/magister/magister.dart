@@ -62,21 +62,18 @@ class MagisterApi {
           onRequest: (options, handler) {
             print("Refreshing token");
             this.dio.lock();
-            this.refreshDio.lock();
             options.data = "refresh_token=${account.refreshToken}&client_id=M6LOAPP&grant_type=refresh_token";
             handler.next(options);
           },
           onResponse: (res, handler) {
             account.saveTokens(res.data);
             this.dio.unlock();
-            this.refreshDio.unlock();
             print("Refreshed token");
             handler.next(res);
           },
           onError: (e, handler) async {
             print("Error refreshing token");
             this.dio.unlock();
-            this.refreshDio.unlock();
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
               throw "$account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)";
@@ -86,7 +83,7 @@ class MagisterApi {
               // }, title: "Account is uitgelogd");
               // return dio.request(e.requestOptions.path, options: e.requestOptions as Options);
             }
-            return handler.next(e);
+            handler.next(e);
           },
         ));
     this.dio.interceptors.add(
@@ -99,29 +96,28 @@ class MagisterApi {
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
-                return refreshDio.post("").then((value) {
-                  return handler.next(options);
-                });
+                try {
+                  await refreshDio.post("");
+                } on DioError catch (e) {
+                  return handler.reject(translateHttpError(e));
+                }
               }
               return handler.next(options);
             },
-            onError: (e, handler) {
+            onError: (e, handler) async {
               RequestOptions options = e.requestOptions;
               if (e.response?.data == "SecurityToken Expired") {
                 if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
                   options.headers["Authorization"] = "Bearer ${account.accessToken}";
-                  return dio.request(options.path, options: options as Options);
+                  await dio.request(options.path, options: options as Options).then(handler.resolve);
+                  return;
                 }
                 print(e.response.data);
-                return refreshDio.post("");
+                await refreshDio.post("");
+                return handler.reject(DioError(error: "Probeer het Opnieuw", requestOptions: e.requestOptions));
               }
 
-              if (e.error.runtimeType == SocketException) {
-                this.dio.clear();
-                this.refreshDio.clear();
-                return "Geen Internet";
-              }
-              return e;
+              return handler.next(translateHttpError(e));
             },
           ),
         );
@@ -134,5 +130,14 @@ class MagisterApi {
     var values = Future.wait(runList);
     if (account.isInBox) account.save();
     return values;
+  }
+
+  DioError translateHttpError(DioError e) {
+    if (e.error.runtimeType == SocketException) {
+      this.dio.clear();
+      this.refreshDio.clear();
+      return DioError(error: "Geen Internet", requestOptions: e.requestOptions);
+    }
+    return e;
   }
 }

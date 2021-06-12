@@ -186,6 +186,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         );
       }
     }
+
     DateTime lastPopped;
     return WillPopScope(
       onWillPop: () {
@@ -260,21 +261,21 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                               )
                             : null,
                       ),
-                      // Align(
-                      //   alignment: Alignment.bottomRight,
-                      //   child: Icon(
-                      //     Icons.star,
-                      //     size: 25,
-                      //     color: Color.fromARGB(255, 255, 223, 0),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
                 StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) {
-                    return Column(
-                      children: _detailsPressed ? _accountsDrawer : _drawer,
+                    return Container(
+                      child: _detailsPressed
+                          ? Column(children: _accountsDrawer)
+                          : ListTileTheme(
+                              style: ListTileStyle.drawer,
+                              selectedColor: userdata.get('accentColor'),
+                              child: Column(
+                                children: _drawer,
+                              ),
+                            ),
                     );
                   },
                   key: DrawerStates.drawerState,

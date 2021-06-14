@@ -285,6 +285,9 @@ class Cijfer {
   bool voldoende;
   @HiveField(8)
   double weging;
+  @HiveField(9)
+  double parsed;
+
   Cijfer([Map cijfer]) {
     if (cijfer != null) {
       if (cijfer["waarde"] == null) {
@@ -305,6 +308,7 @@ class Cijfer {
         this.weging = cijfer["weegfactor"];
       }
     }
+    this.parsed = double.tryParse(this.cijfer.replaceFirst(",", "."));
   }
 }
 

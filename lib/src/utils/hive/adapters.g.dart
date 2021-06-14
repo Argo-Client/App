@@ -321,13 +321,14 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..title = fields[5] as String
       ..id = fields[6] as int
       ..voldoende = fields[7] as bool
-      ..weging = fields[8] as double;
+      ..weging = fields[8] as double
+      ..parsed = fields[9] as double;
   }
 
   @override
   void write(BinaryWriter writer, Cijfer obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.ingevoerd)
       ..writeByte(1)
@@ -345,7 +346,9 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..writeByte(7)
       ..write(obj.voldoende)
       ..writeByte(8)
-      ..write(obj.weging);
+      ..write(obj.weging)
+      ..writeByte(9)
+      ..write(obj.parsed);
   }
 
   @override
@@ -579,13 +582,14 @@ class WijzerAdapter extends TypeAdapter<Wijzer> {
       ..omschrijving = fields[2] as String
       ..bronnen = (fields[3] as List)?.cast<Bron>()
       ..children = (fields[4] as List)?.cast<Wijzer>()
-      ..tabUrl = fields[5] as String;
+      ..tabUrl = fields[5] as String
+      ..pinned = fields[6] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Wijzer obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.naam)
       ..writeByte(1)
@@ -597,7 +601,9 @@ class WijzerAdapter extends TypeAdapter<Wijzer> {
       ..writeByte(4)
       ..write(obj.children)
       ..writeByte(5)
-      ..write(obj.tabUrl);
+      ..write(obj.tabUrl)
+      ..writeByte(6)
+      ..write(obj.pinned);
   }
 
   @override
@@ -721,6 +727,84 @@ class PrivilegeAdapter extends TypeAdapter<Privilege> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is PrivilegeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class OpdrachtAdapter extends TypeAdapter<Opdracht> {
+  @override
+  final int typeId = 14;
+
+  @override
+  Opdracht read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Opdracht()
+      ..titel = fields[0] as String
+      ..vak = fields[1] as String
+      ..inleverDatum = fields[2] as DateTime
+      ..ingeleverdOp = fields[3] as DateTime
+      ..status = fields[4] as String
+      ..omschrijving = fields[5] as String
+      ..beoordeling = fields[6] as String
+      ..beoordeeldOp = fields[7] as String
+      ..leerlingBijlage = (fields[8] as List)?.cast<Bron>()
+      ..leerlingOpmerking = fields[9] as String
+      ..magInleveren = fields[10] as bool
+      ..teLaat = fields[11] as bool
+      ..docentOpmerking = fields[12] as String
+      ..docentBijlage = (fields[13] as List)?.cast<Bron>()
+      ..versie = fields[14] as int
+      ..id = fields[15] as int;
+  }
+
+  @override
+  void write(BinaryWriter writer, Opdracht obj) {
+    writer
+      ..writeByte(16)
+      ..writeByte(0)
+      ..write(obj.titel)
+      ..writeByte(1)
+      ..write(obj.vak)
+      ..writeByte(2)
+      ..write(obj.inleverDatum)
+      ..writeByte(3)
+      ..write(obj.ingeleverdOp)
+      ..writeByte(4)
+      ..write(obj.status)
+      ..writeByte(5)
+      ..write(obj.omschrijving)
+      ..writeByte(6)
+      ..write(obj.beoordeling)
+      ..writeByte(7)
+      ..write(obj.beoordeeldOp)
+      ..writeByte(8)
+      ..write(obj.leerlingBijlage)
+      ..writeByte(9)
+      ..write(obj.leerlingOpmerking)
+      ..writeByte(10)
+      ..write(obj.magInleveren)
+      ..writeByte(11)
+      ..write(obj.teLaat)
+      ..writeByte(12)
+      ..write(obj.docentOpmerking)
+      ..writeByte(13)
+      ..write(obj.docentBijlage)
+      ..writeByte(14)
+      ..write(obj.versie)
+      ..writeByte(15)
+      ..write(obj.id);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OpdrachtAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

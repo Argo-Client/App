@@ -307,8 +307,8 @@ class Cijfer {
         this.voldoende = cijfer["isVoldoende"];
         this.weging = cijfer["weegfactor"];
       }
+      this.parsed = double.tryParse(this.cijfer.replaceFirst(",", "."));
     }
-    this.parsed = double.tryParse(this.cijfer.replaceFirst(",", "."));
   }
 }
 

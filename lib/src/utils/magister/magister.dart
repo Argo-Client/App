@@ -109,11 +109,15 @@ class MagisterApi {
               if (e.response?.data == "SecurityToken Expired") {
                 if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
                   options.headers["Authorization"] = "Bearer ${account.accessToken}";
+
                   await dio.request(options.path, options: options as Options).then(handler.resolve);
                   return;
                 }
+
                 print(e.response.data);
+
                 await refreshDio.post("");
+
                 return handler.reject(DioError(error: "Probeer het Opnieuw", requestOptions: e.requestOptions));
               }
 

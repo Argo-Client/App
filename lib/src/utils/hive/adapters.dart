@@ -285,8 +285,10 @@ class Cijfer {
   bool voldoende;
   @HiveField(8)
   double weging;
-  @HiveField(9)
-  double parsed;
+
+  double parse() {
+    return this.cijfer == null ? null : double.tryParse(this.cijfer.replaceFirst(",", "."));
+  }
 
   Cijfer([Map cijfer]) {
     if (cijfer != null) {
@@ -307,7 +309,6 @@ class Cijfer {
         this.voldoende = cijfer["isVoldoende"];
         this.weging = cijfer["weegfactor"];
       }
-      this.parsed = double.tryParse(this.cijfer.replaceFirst(",", "."));
     }
   }
 }

@@ -321,14 +321,13 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..title = fields[5] as String
       ..id = fields[6] as int
       ..voldoende = fields[7] as bool
-      ..weging = fields[8] as double
-      ..parsed = fields[9] as double;
+      ..weging = fields[8] as double;
   }
 
   @override
   void write(BinaryWriter writer, Cijfer obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.ingevoerd)
       ..writeByte(1)
@@ -346,9 +345,7 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
       ..writeByte(7)
       ..write(obj.voldoende)
       ..writeByte(8)
-      ..write(obj.weging)
-      ..writeByte(9)
-      ..write(obj.parsed);
+      ..write(obj.weging);
   }
 
   @override

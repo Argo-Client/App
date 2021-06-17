@@ -55,7 +55,7 @@ class MagisterApi {
     this.refreshDio = Dio(
       BaseOptions(
         baseUrl: "https://accounts.magister.net/connect/token",
-        contentType: "application/x-www-form-urlencoded",
+        contentType: Headers.formUrlEncodedContentType,
       ),
     );
     this.refreshDio.interceptors.add(InterceptorsWrapper(
@@ -73,7 +73,6 @@ class MagisterApi {
           },
           onError: (e, handler) async {
             print("Error refreshing token");
-            this.dio.unlock();
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
               throw "$account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)";
@@ -93,16 +92,17 @@ class MagisterApi {
                 throw ("Accestoken is null");
               }
               options.baseUrl = "https://${account.tenant}/";
+
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
-                try {
-                  await refreshDio.post("");
-                } on DioError catch (e) {
-                  return handler.reject(translateHttpError(e));
-                }
+                refreshDio.post("")
+                  ..onError((e, stack) {
+                    handler.reject(e);
+                    return;
+                  });
               }
-              return handler.next(options);
+              handler.next(options);
             },
             onError: (e, handler) async {
               RequestOptions options = e.requestOptions;
@@ -110,24 +110,34 @@ class MagisterApi {
                 if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
                   options.headers["Authorization"] = "Bearer ${account.accessToken}";
 
-                  await dio.request(options.path, options: options as Options).then(handler.resolve);
+                  dio.fetch(options).then(handler.resolve);
                   return;
                 }
 
                 print(e.response.data);
-
-                await refreshDio.post("");
-
-                return handler.reject(DioError(error: "Probeer het Opnieuw", requestOptions: e.requestOptions));
+                this.dio.lock();
+                refreshDio.post("").whenComplete(() {
+                  this.dio.unlock();
+                }).then((value) {
+                  dio.fetch(options).then(
+                    (value) => handler.resolve(value),
+                    onError: (e) {
+                      handler.reject(e);
+                    },
+                  );
+                }).onError((e, stack) {
+                  handler.reject(e);
+                });
+                return;
               }
 
               return handler.next(translateHttpError(e));
             },
           ),
         );
-
-    // this.refreshDio.interceptors.add(LogInterceptor());
-    // this.dio.interceptors.add(LogInterceptor());
+    // LogInterceptor clean = LogInterceptor(requestHeader: false, responseHeader: false, request: false);
+    // this.refreshDio.interceptors.add(clean);
+    // this.dio.interceptors.add(clean);
   }
 
   Future wait(List<Future> runList) {

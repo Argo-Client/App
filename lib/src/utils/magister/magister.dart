@@ -75,7 +75,10 @@ class MagisterApi {
             print("Error refreshing token");
             print(e);
             if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
-              throw "$account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)";
+              return handler.reject(DioError(
+                requestOptions: e.requestOptions,
+                error: "Dit account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)",
+              ));
               // MagisterLogin().launch(main.appState.context, (tokenSet, _) {
               //   account.saveTokens(tokenSet);
               //   if (account.isInBox) account.save();

@@ -28,7 +28,10 @@ jobs:
       # Checks
       - run: flutter pub get
       - run: flutter analyze .
-      # - run: flutter test
+      - run: flutter test
+        env:
+          TOKEN_API: ${{ secrets.TOKEN_API }}
+          TOKEN_API_AUTH: ${{ secrets.TOKEN_API_AUTH }}
 
       # Build
       - run: flutter build apk --split-per-abi

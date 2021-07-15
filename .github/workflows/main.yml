@@ -2,48 +2,66 @@
 name: Flutter CI
 
 on:
-  push:
-    branches:
-      - master
+    push:
+        branches:
+            - master
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      # Setup
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
-        with:
-          java-version: "12.x"
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            # Setup
+            - name: Checkout
+              uses: actions/checkout@v1
 
-      - uses: subosito/flutter-action@v1
-        with:
-          flutter-version: "2.0.4"
+            - name: Setup Java
+              uses: actions/setup-java@v1
+              with:
+                  java-version: "12.x"
 
-      # Signing key uit env naar bestand
-      - run: echo $KEY | base64 -d > android/app/key.jks
-        env:
-          KEY: ${{ secrets.SIGNING_KEY }}
+            - name: Cache Flutter dependencies
+              uses: actions/cache@v1
+              with:
+                  path: /opt/hostedtoolcache/flutter
+                  key: ${{ runner.OS }}-flutter-install-cache-${{ env.flutter_version }}
 
-      # Checks
-      - run: flutter pub get
-      - run: flutter analyze .
-      - run: flutter test
-        env:
-          TOKEN_API: ${{ secrets.TOKEN_API }}
-          TOKEN_API_AUTH: ${{ secrets.TOKEN_API_AUTH }}
+            - name: Setup Flutter
+              uses: subosito/flutter-action@v1
+              with:
+                  flutter-version: "2.0.4"
 
-      # Build
-      - run: flutter build apk --split-per-abi
-        env:
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+            - name: Signing key uit env naar bestand
+              run: echo $KEY | base64 -d > android/app/key.jks
+              env:
+                  KEY: ${{ secrets.SIGNING_KEY }}
 
-      # Add File
-      - uses: actions/upload-artifact@v1
-        with:
-          name: release-apk
-          path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
-      - run: curl $URL
-        env:
-          URL: ${{secrets.URL}}
+            - name: Install Dependencies
+              run: flutter pub get
+
+            # Checks
+            - name: Analyze
+              run: flutter analyze .
+            - name: Test
+              run: flutter test
+              env:
+                  TOKEN_API: ${{ secrets.TOKEN_API }}
+                  TOKEN_API_AUTH: ${{ secrets.TOKEN_API_AUTH }}
+
+            # Build
+            - name: Build
+              run: flutter build apk --split-per-abi
+              env:
+                  KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+                  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+            # Add File
+            - name: Export APK
+              uses: actions/upload-artifact@v1
+              with:
+                  name: release-apk
+                  path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+
+            - name: Notify Discord
+              run: curl $URL
+              env:
+                  URL: ${{secrets.URL}}

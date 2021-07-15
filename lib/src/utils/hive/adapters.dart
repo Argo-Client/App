@@ -169,8 +169,6 @@ class Les {
   String getName() {
     Box custom = Hive.box("custom");
     String customName = custom.get("vak${this.vak.id}");
-    print(customName);
-    print(this.title);
     return customName ?? this.title;
   }
 

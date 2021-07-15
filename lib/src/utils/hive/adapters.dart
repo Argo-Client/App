@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:argo/main.dart';
 part 'adapters.g.dart';
 
 extension StringExtension on String {
@@ -215,13 +214,13 @@ class Les {
     if (les["Bijlagen"] != null) {
       this.bijlagen = les["Bijlagen"].map((bij) => Bron(bij)).toList().cast<Bron>();
     }
-    if (custom.containsKey("vak${this.vak.id}")) {
-      if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
-        this.uitval = true;
-      } else {
-        this.title = custom.get("vak${this.vak.id}");
-      }
-    }
+    // if (custom.containsKey("vak${this.vak.id}")) {
+    //   if (custom.get("vak${this.vak.id}").toLowerCase() == "uitval") {
+    //     this.uitval = true;
+    //   } else {
+    //     this.title = custom.get("vak${this.vak.id}");
+    //   }
+    // }
   }
 }
 

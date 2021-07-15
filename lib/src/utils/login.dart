@@ -279,13 +279,12 @@ class RefreshAccountView extends StatelessWidget {
           count: totalLoaded,
           errors: errors,
         ),
-      if (account.has("Profiel", "Read"))
-        MagisterLoader(
-          name: "Profiel Info",
-          future: account.magister.profileInfo.refresh,
-          count: totalLoaded,
-          errors: errors,
-        ),
+      MagisterLoader(
+        name: "Profiel Info",
+        future: account.magister.profileInfo.refresh,
+        count: totalLoaded,
+        errors: errors,
+      ),
       MagisterLoader(
         name: "Profiel Foto",
         future: account.magister.downloadProfilePicture,

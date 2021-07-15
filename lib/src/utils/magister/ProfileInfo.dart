@@ -33,19 +33,28 @@ class ProfileInfo extends MagisterApi {
   }
 
   Future schoolInfo() async {
+    if (!account.has("Aanmeldingen", "Read")) {
+      return print("Skipped Aanmeldingen");
+    }
+
     Map body = (await api.dio.get('api/leerlingen/${account.id}/aanmeldingen')).data["items"][0];
     account.klasCode = body["groep"]["code"];
     account.klas = body["studie"]["code"];
   }
 
   Future personInfo() async {
+    if (!account.has("Profiel", "Read")) {
+      return print("Skipped Profiel");
+    }
+
     Map body = (await api.dio.get('api/personen/${account.id}/profiel')).data;
     account.email = body["EmailAdres"].toString();
     account.phone = body["Mobiel"].toString();
   }
 
   Future getAdress() async {
-    Map body = (await api.dio.get('api/personen/${account.id}/adressen')).data["items"][0];
-    account.address = '${body["straat"]} ${body["huisnummer"]}\n${body["postcode"]}, ${body["plaats"]}';
+    Map body = (await api.dio.get('api/personen/${account.id}/adresprofiel')).data;
+
+    account.address = '${body["Straatnaam"]} ${body["Huisnummer"]}${body["Toevoeging"] ?? ""}\n${body["Postcode"]}, ${body["Woonplaats"]}';
   }
 }

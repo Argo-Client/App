@@ -45,7 +45,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
             left: 7,
           ),
         ),
-        subtitle: Text(hour + afwezigheid.les.title),
+        subtitle: Text(hour + afwezigheid.les.getName()),
         title: Text(afwezigheid.type),
         onTap: () {
           Navigator.of(context).push(

@@ -69,7 +69,7 @@ class Notifications {
       }
   }
 
-  String lesString(Les les) => "${les.startTime} - ${les.endTime}: ${les.title}" + (les.location == null ? "" : " - ${les.location}");
+  String lesString(Les les) => "${les.startTime} - ${les.endTime}: ${les.getName()}" + (les.location == null ? "" : " - ${les.location}");
   Notifications() {
     initialize();
   }

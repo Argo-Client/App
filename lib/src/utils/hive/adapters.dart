@@ -104,6 +104,7 @@ class Account extends HiveObject {
     this.id = 0;
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
+
   void saveTokens(tokenSet) {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
@@ -164,6 +165,14 @@ class Les {
   bool heeftBijlagen;
   @HiveField(23)
   List<Bron> bijlagen;
+
+  String getName() {
+    Box custom = Hive.box("custom");
+    String customName = custom.get("vak${this.vak.id}");
+    print(customName);
+    print(this.title);
+    return customName ?? this.title;
+  }
 
   Les([Map les]) {
     if (les == null) return;

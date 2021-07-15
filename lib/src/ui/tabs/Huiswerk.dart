@@ -128,7 +128,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                             ),
                           ),
                     title: Text(
-                      les.title,
+                      les.getName(),
                     ),
                     children: [
                       Padding(

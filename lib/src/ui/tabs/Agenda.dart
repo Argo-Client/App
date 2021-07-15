@@ -250,7 +250,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                     Row(
                       children: [
                         Text(
-                          les.title,
+                          les.getName(),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 16,
@@ -310,7 +310,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
         for (Les les in heleDagLessen)
           Expanded(
             child: Tooltip(
-              message: les.title,
+              message: les.getName(),
               child: MaterialCard(
                 border: Border(
                   top: userdata.get("theme") != "OLED"
@@ -331,7 +331,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                       15,
                     ),
                     child: Text(
-                      les.title,
+                      les.getName(),
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                     ),
@@ -775,7 +775,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
             child: TextField(
               controller: con,
               autofocus: true,
-              decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.title),
+              decoration: new InputDecoration(labelText: 'Nieuwe naam', hintText: les.getName()),
             ),
           ),
         ]),
@@ -785,7 +785,6 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
               onPressed: () async {
                 Navigator.pop(context);
                 custom.delete("vak${les.vak.id}");
-                await updateLessons();
                 Navigator.pop(context);
               }),
           TextButton(
@@ -799,9 +798,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
               if (con.text == "") return;
 
               custom.put("vak${les.vak.id}", con.text);
-              les.title = con.text;
               setState(() {});
-              updateLessons();
               Navigator.pop(context);
             },
           )
@@ -830,15 +827,15 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                 subtitle: "Datum",
                 icon: Icons.event,
               ),
-            if (les.title == null || les.title.capitalize != les.vak.naam)
+            if (les.getName().toLowerCase() != les.vak.naam.toLowerCase())
               LesPaginaItem(
                 title: les.vak.naam,
                 subtitle: "Vak",
                 icon: Icons.book,
               ),
-            if (les.title.isNotEmpty)
+            if (les.getName().isNotEmpty)
               LesPaginaItem(
-                title: les.title,
+                title: les.getName(),
                 subtitle: "Les",
                 icon: Icons.title,
                 trailing: les.vak.id == null
@@ -987,7 +984,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(les.title),
+          title: Text(les.getName()),
           actions: !les.editable
               ? null
               : [

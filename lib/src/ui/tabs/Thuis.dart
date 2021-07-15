@@ -396,7 +396,7 @@ class _Thuis extends State<Thuis> {
         header: "Volgende les",
         children: [
           ListTile(
-            title: Text(nextLesson.title),
+            title: Text(nextLesson.getName()),
             trailing: nextLesson.infoType != ""
                 ? Material(
                     child: Padding(
@@ -515,7 +515,7 @@ class _Thuis extends State<Thuis> {
                     left: 7,
                   ),
                 ),
-                subtitle: Text(afw.les.hour + "e - " + afw.les.title),
+                subtitle: Text(afw.les.hour + "e - " + afw.les.getName()),
                 title: Text(afw.type),
                 onTap: () {
                   Navigator.of(context).push(

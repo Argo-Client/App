@@ -82,7 +82,7 @@ class _LoginView extends State<LoginView> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: "herlaad",
-                child: Text("Herlaad"),
+                child: Text("Herladen"),
               ),
               PopupMenuItem(
                 value: "browser",

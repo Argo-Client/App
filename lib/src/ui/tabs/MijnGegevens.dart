@@ -15,7 +15,7 @@ class _MijnGegevens extends State<MijnGegevens> {
   @override
   Widget build(BuildContext context) {
     return AppPage(
-      title: Text("Mijn Gegevens"),
+      title: Text("Mijn gegevens"),
       body: RefreshIndicator(
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -116,7 +116,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "Mobiele nummer",
+                        "Telefoonnummer",
                       ),
                       subtitle: Text(
                         account.phone,
@@ -128,7 +128,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                     ),
                     ListTile(
                       title: Text(
-                        "Email Adres",
+                        "E-mailadres",
                       ),
                       subtitle: Text(
                         account.email,
@@ -156,7 +156,7 @@ class _MijnGegevens extends State<MijnGegevens> {
               }),
         ),
         onRefresh: () async {
-          await handleError(account.magister.profileInfo.refresh, "Kon mijn gegevens niet verversen", context);
+          await handleError(account.magister.profileInfo.refresh, "Kon Mijn gegevens niet verversen", context);
         },
       ),
     );

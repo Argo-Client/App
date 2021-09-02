@@ -28,14 +28,14 @@ class _Info extends State<Info> {
         bottom: TabBar(
           tabs: [
             Tab(
-              text: "Over",
+              text: "Info",
             ),
             Tab(
-              text: "Credits",
+              text: "Dank aan",
             ),
           ],
         ),
-        title: Text("Info"),
+        title: Text("Over deze app"),
         body: TabBarView(
           children: [
             ListView(
@@ -68,7 +68,7 @@ class _Info extends State<Info> {
                       ),
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
-                      subtitle: Text("Source code"),
+                      subtitle: Text("Broncode"),
                       onTap: () => launch("$url?u=argo&type=website"),
                     ),
                     ListTileBorder(
@@ -77,7 +77,7 @@ class _Info extends State<Info> {
                       ),
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
-                      subtitle: Text("Gezelligheid"),
+                      subtitle: Text("Aankondigingen, feedback en gezelligheid"),
                       onTap: () => launch("$url?u=argo&type=discord"),
                     ),
                   ],
@@ -87,7 +87,7 @@ class _Info extends State<Info> {
                   child: ListTile(
                     leading: Icon(Icons.android_outlined),
                     title: Text('Flutter'),
-                    subtitle: Text("Platform gebruikt om de app te maken"),
+                    subtitle: Text("Ontwikkelingsplatform"),
                     onTap: () => launch("https://flutter.dev/"),
                   ),
                 ),
@@ -101,7 +101,7 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Guus van Meerveld'),
-                      subtitle: Text('Bijdrage: UI'),
+                      subtitle: Text('Bijdrage: Interface'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
@@ -129,7 +129,7 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sam Taen'),
-                      subtitle: Text('Bijdrage: Backend'),
+                      subtitle: Text('Bijdrage: Servercode'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
@@ -157,7 +157,7 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Martijn Oosterhuis'),
-                      subtitle: Text('Bijdrage: Developer Modus'),
+                      subtitle: Text('Bijdrage: Ontwikkelaarsmodus'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
@@ -184,7 +184,7 @@ class _Info extends State<Info> {
                       tilePadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sjoerd Bolten'),
-                      subtitle: Text('Bijdrage: Hulp met magister inlog, iOS versie'),
+                      subtitle: Text('Bijdrage: Inloggen Magister & iOS-versie'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),

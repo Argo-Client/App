@@ -168,8 +168,12 @@ class Les {
 
   String getName() {
     Box custom = Hive.box("custom");
+    Box userdata = Hive.box("userdata");
+
     String customName = custom.get("vak${this.vak.id}");
-    return customName ?? this.title;
+    String vakName = userdata.get("useVakName") ? this.vak.naam : null;
+
+    return customName ?? vakName ?? this.title;
   }
 
   Les([Map les]) {

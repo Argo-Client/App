@@ -107,6 +107,7 @@ void main() async {
     "developerMode": false,
     "liveList": false,
     "disableCijferColor": false,
+    "useVakName": false,
   };
 
   standardSettings.entries.forEach((element) {

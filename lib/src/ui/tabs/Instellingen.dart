@@ -451,7 +451,12 @@ class _Instellingen extends State<Instellingen> {
                     title: "Automatisch eind uur",
                     subtitle: "Laat Argo je eind tijd berekenen",
                     setting: "agendaAutoEind",
-                  )
+                  ),
+                  SwitchInstelling(
+                    title: "Gebruik vak naam",
+                    subtitle: "Gebruik de naam van het vak",
+                    setting: "useVakName",
+                  ),
                 ],
               );
             },

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
+
 import 'package:argo/main.dart';
 import 'package:share/share.dart';
 
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/capitalize.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
+import 'package:argo/src/utils/notifications.dart';
+
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/CircleShape.dart';
@@ -306,7 +313,7 @@ class _Instellingen extends State<Instellingen> {
                       showThemeMenu(setState);
                     },
                     trailing: Icon(Icons.brightness_2_outlined),
-                    subtitle: userdata.get("theme").toString().capitalize + " thema",
+                    subtitle: capitalize(userdata.get("theme").toString()) + " thema",
                   ),
                   CustomInstelling(
                     title: 'Primaire kleur',
@@ -488,7 +495,7 @@ class _Instellingen extends State<Instellingen> {
                       if (value != null)
                         setState(() {
                           userdata.put("preNotificationMinutes", value);
-                          notifications.lessonNotifications(account.lessons);
+                          notifications.lessonNotifications();
                         });
                     }),
                   )

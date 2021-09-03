@@ -2,9 +2,13 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/layout.dart';
+
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/ContentHeader.dart';
 

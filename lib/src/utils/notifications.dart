@@ -2,8 +2,10 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart';
+
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/main.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/account.dart';
 
 // Notificatie zooi:
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -17,14 +19,12 @@ final InitializationSettings initializationSettings = InitializationSettings(
 class Notifications {
   void initialize() async {
     tz.initializeTimeZones();
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings, onSelectNotification: (ewa) {
-      print("notificatie selected");
-      print(ewa);
-      return Future.value(" hierzo 164");
-    });
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  void lessonNotifications(Map<String, List<List<Les>>> lessons) async {
+  void lessonNotifications() async {
+    Map<String, List<List<Les>>> lessons = account.lessons;
+
     await flutterLocalNotificationsPlugin.cancel(0);
     DateFormat formatDate = DateFormat("yyyy-MM-dd");
     DateTime now = DateTime.now();
@@ -74,3 +74,5 @@ class Notifications {
     initialize();
   }
 }
+
+Notifications notifications = Notifications();

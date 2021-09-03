@@ -4,7 +4,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'Card.dart';
-import 'Utils.dart';
+import 'greyBorderSize.dart';
 import 'ListTileBorder.dart';
 
 class PeopleList extends StatelessWidget {

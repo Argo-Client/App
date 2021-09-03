@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:argo/main.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/getBrightness.dart';
 
 BorderSide greyBorderSide() {
   Color color;
-  if (theme == Brightness.dark) {
+  if (getBrightness() == Brightness.dark) {
     if (userdata.get("theme") == "OLED") {
       color = Color.fromARGB(
         255,

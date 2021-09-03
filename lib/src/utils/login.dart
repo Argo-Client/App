@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,10 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/ListTileBorder.dart';
 
-Box<Account> accounts = Hive.box("accounts");
+import 'package:argo/src/utils/boxes.dart';
 
 class LoginView extends StatefulWidget {
   final MagisterLogin log;

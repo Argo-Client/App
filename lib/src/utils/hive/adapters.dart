@@ -5,11 +5,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:argo/src/utils/capitalize.dart';
 part 'adapters.g.dart';
-
-extension StringExtension on String {
-  String get cap => "${this[0].toUpperCase()}${this.substring(1)}";
-}
 
 DateFormat formatDatum = DateFormat("EEEE dd MMMM");
 DateFormat formatDate = DateFormat("yyyy-MM-dd");
@@ -336,7 +333,7 @@ class Vak {
     if (vak != null) {
       this.code = vak["Afkorting"];
       this.id = vak["Id"];
-      this.naam = ((vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
+      this.naam = capitalize(vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg");
     }
   }
 }

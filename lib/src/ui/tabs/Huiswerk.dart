@@ -5,11 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/bodyHeight.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';

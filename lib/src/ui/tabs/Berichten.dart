@@ -1,15 +1,18 @@
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flushbar/flushbar_helper.dart';
 
 import 'package:after_layout/after_layout.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:dio/dio.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/AppPage.dart';

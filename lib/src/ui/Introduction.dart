@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 

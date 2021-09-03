@@ -7,12 +7,17 @@ import 'package:timer_builder/timer_builder.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:intl/intl.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/bodyHeight.dart';
+import 'package:argo/src/utils/getBrightness.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
@@ -155,7 +160,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                 horizontal: greyBorderSide(),
               ),
         color: les.uitval
-            ? theme == Brightness.dark
+            ? getBrightness() == Brightness.dark
                 ? Color.fromARGB(255, 119, 66, 62)
                 : Color.fromARGB(255, 255, 205, 210)
             : null,
@@ -176,7 +181,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                   child: Text(
                     les.hour,
                     style: TextStyle(
-                      color: theme == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
+                      color: getBrightness() == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
                     ),
                   ),
                 ),
@@ -275,7 +280,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
-                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                              color: getBrightness() == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                             ),
                           ),
                         ),

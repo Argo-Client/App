@@ -563,7 +563,7 @@ class _Instellingen extends State<Instellingen> {
                               onPressed: () => setState(
                                 () {
                                   custom.clear();
-                                  handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                                  handleError(account().magister.agenda.refresh, "Kon agenda niet herladen", context);
                                   Navigator.of(context).pop();
                                 },
                               ),

@@ -6,7 +6,7 @@ import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/account.dart';
 
 Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
-  if (account.id != 0) {
+  if (account().id != 0) {
     try {
       await fun();
       update();

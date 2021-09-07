@@ -28,11 +28,11 @@ class Berichten extends StatefulWidget {
 }
 
 class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
 
   Widget _buildBericht(ValueNotifier<Bericht> ber, int i) {
     return MaterialCard(
-      border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
+      border: account().berichten.length - 1 == i || account().berichten[i + 1].dag != ber.value.dag
           ? null
           : Border(
               bottom: greyBorderSide(),
@@ -96,15 +96,15 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
     List<Widget> berichten = [];
     String lastDay;
 
-    if (account.berichten.isEmpty) {
+    if (account().berichten.isEmpty) {
       return EmptyPage(
         text: "Geen berichten",
         icon: Icons.email_outlined,
       );
     }
 
-    for (int i = 0; i < account.berichten.length; i++) {
-      ValueNotifier<Bericht> bericht = ValueNotifier(account.berichten[i]);
+    for (int i = 0; i < account().berichten.length; i++) {
+      ValueNotifier<Bericht> bericht = ValueNotifier(account().berichten[i]);
       if (lastDay != bericht.value.dag) {
         berichten.add(
           ContentHeader(bericht.value.dag),
@@ -145,7 +145,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           ),
         ),
         onRefresh: () async {
-          await handleError(account.magister.berichten.refresh, "Kon berichten niet verversen", context);
+          await handleError(account().magister.berichten.refresh, "Kon berichten niet verversen", context);
         },
       ),
     );
@@ -295,7 +295,7 @@ class BerichtPagina extends StatelessWidget {
         for (Bron bron in bijlagen)
           BijlageItem(
             bron,
-            download: account.magister.bronnen.downloadFile,
+            download: account().magister.bronnen.downloadFile,
             border: bijlagen.last != bron
                 ? Border(
                     bottom: greyBorderSide(),
@@ -337,8 +337,8 @@ class BerichtPagina extends StatelessWidget {
             return Future.value(returnable);
           }
           return Future.wait([
-            account.magister.berichten.getBerichtFrom(ber.value),
-            if (ber.value.heeftBijlagen) account.magister.berichten.bijlagen(ber.value),
+            account().magister.berichten.getBerichtFrom(ber.value),
+            if (ber.value.heeftBijlagen) account().magister.berichten.bijlagen(ber.value),
           ]);
         },
         onData: (bericht) {

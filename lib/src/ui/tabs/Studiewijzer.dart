@@ -21,13 +21,13 @@ class Studiewijzers extends StatefulWidget {
 }
 
 class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewijzers> {
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
 
   List<Widget> _buildStudiewijzers() {
     return [
-      for (Wijzer wijs in account.studiewijzers)
+      for (Wijzer wijs in account().studiewijzers)
         MaterialCard(
-          border: account.studiewijzers.last == wijs
+          border: account().studiewijzers.last == wijs
               ? null
               : Border(
                   bottom: greyBorderSide(),
@@ -56,7 +56,7 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
-              if (account.studiewijzers.isEmpty) {
+              if (account().studiewijzers.isEmpty) {
                 return EmptyPage(
                   text: "Geen studiewijzers",
                   icon: Icons.school_outlined,
@@ -70,7 +70,7 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
           ),
         ),
         onRefresh: () async {
-          await handleError(account.magister.studiewijzers.refresh, "Kon studiewijzer niet verversen", context);
+          await handleError(account().magister.studiewijzers.refresh, "Kon studiewijzer niet verversen", context);
         },
       ),
     );
@@ -185,7 +185,7 @@ class StudiewijzerPagina extends StatelessWidget {
       ),
       body: Futuristic(
         autoStart: true,
-        futureBuilder: wijs.children != null ? () async {} : () async => await account.magister.studiewijzers.loadChildren(wijs),
+        futureBuilder: wijs.children != null ? () async {} : () async => await account().magister.studiewijzers.loadChildren(wijs),
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),
         ),
@@ -246,7 +246,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
               for (Bron wijsbron in wijstab.bronnen)
                 BijlageItem(
                   wijsbron,
-                  download: account.magister.bronnen.downloadFile,
+                  download: account().magister.bronnen.downloadFile,
                   border: wijstab.bronnen.last != wijsbron
                       ? Border(
                           bottom: greyBorderSide(),
@@ -281,9 +281,9 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           ),
         ),
         futureBuilder: () async {
-          await account.magister.studiewijzers.loadTab(
-            wijstab,
-          );
+          await account().magister.studiewijzers.loadTab(
+                wijstab,
+              );
         },
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),

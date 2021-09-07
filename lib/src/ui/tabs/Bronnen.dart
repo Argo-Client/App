@@ -22,9 +22,9 @@ class Bronnen extends StatefulWidget {
 
 class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
   ValueNotifier<List<String>> breadcrumbs = ValueNotifier(["Bronnen"]);
-  ValueNotifier<List<List<Bron>>> bronnenView = ValueNotifier([account.bronnen]);
+  ValueNotifier<List<List<Bron>>> bronnenView = ValueNotifier([account().bronnen]);
 
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.bronnen.refresh, "Fout tijdens verversen van bronnen", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.bronnen.refresh, "Fout tijdens verversen van bronnen", context);
 
   Widget _buildBronnenPagina(List<List<Bron>> view) {
     List<Widget> bronnenPagina = [];
@@ -39,7 +39,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                     bottom: greyBorderSide(),
                   )
                 : null,
-            download: bron.isFolder ? null : account.magister.bronnen.downloadFile,
+            download: bron.isFolder ? null : account().magister.bronnen.downloadFile,
             onTap: !bron.isFolder
                 ? null
                 : () async {
@@ -47,7 +47,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
                     bronnenView.value = List.from(view)..add(bron.children);
                     if (bron.children == null) {
                       await handleError(
-                        () async => await account.magister.bronnen.loadChildren(bron),
+                        () async => await account().magister.bronnen.loadChildren(bron),
                         "Kon ${bron.naam} niet laden.",
                         context,
                         () {
@@ -127,7 +127,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
-              if (account.bronnen.isEmpty) {
+              if (account().bronnen.isEmpty) {
                 return EmptyPage(
                   text: "Geen bronnen",
                   icon: Icons.folder_outlined,
@@ -155,11 +155,11 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
             },
           ),
           onRefresh: () async {
-            Future Function() refresh = account.magister.bronnen.refresh;
+            Future Function() refresh = account().magister.bronnen.refresh;
             if (bronnenView.value.length > 1) {
               Bron bron = bronnenView.value.last.last;
               if (bron.isFolder) {
-                refresh = () async => await account.magister.bronnen.loadChildren(bron);
+                refresh = () async => await account().magister.bronnen.loadChildren(bron);
               }
             }
             await handleError(refresh, "Kon bronnen niet verversen", context);

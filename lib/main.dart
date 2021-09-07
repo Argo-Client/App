@@ -53,8 +53,22 @@ void main() async {
     return main();
   }
 
+  log("Userdata: " + userdata.toMap().toString());
+  log("Accounts: " + accounts.toMap().toString());
+
+  if (accounts.isNotEmpty) {
+    // Als je de app voor het eerst opent heb je nog geen account
+    notifications.lessonNotifications();
+  }
+
   if (accounts.isEmpty) {
     userdata.delete("introduction");
+  }
+
+  int firstAccIndex = accounts.toMap().entries.first.key;
+
+  if (userdata.get("alwaysPrimary") || !accounts.containsKey(userdata.get("accountIndex"))) {
+    userdata.put("accountIndex", firstAccIndex);
   }
 
   Map standardSettings = {
@@ -82,14 +96,6 @@ void main() async {
   standardSettings.entries.forEach((setting) {
     if (!userdata.containsKey(setting.key)) userdata.put(setting.key, setting.value);
   });
-
-  log("Userdata: " + userdata.toMap().toString());
-  log("Accounts: " + accounts.toMap().toString());
-
-  if (accounts.isNotEmpty) {
-    // Als je de app voor het eerst opent heb je nog geen account
-    notifications.lessonNotifications();
-  }
 
   FlutterError.onError = (FlutterErrorDetails errorDetails) {
     errorLog.value = List.from(errorLog.value)..add(errorDetails);

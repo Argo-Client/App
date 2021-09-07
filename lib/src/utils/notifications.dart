@@ -23,7 +23,7 @@ class Notifications {
   }
 
   void lessonNotifications() async {
-    Map<String, List<List<Les>>> lessons = account.lessons;
+    Map<String, List<List<Les>>> lessons = account().lessons;
 
     await flutterLocalNotificationsPlugin.cancel(0);
     DateFormat formatDate = DateFormat("yyyy-MM-dd");

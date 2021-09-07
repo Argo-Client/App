@@ -17,7 +17,7 @@ class Leermiddelen extends StatefulWidget {
 }
 
 class _Leermiddelen extends State<Leermiddelen> {
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
   @override
   Widget build(BuildContext context) {
     return AppPage(
@@ -28,7 +28,7 @@ class _Leermiddelen extends State<Leermiddelen> {
           child: ValueListenableBuilder(
               valueListenable: updateNotifier,
               builder: (BuildContext context, _, _a) {
-                if (account.leermiddelen.isEmpty) {
+                if (account().leermiddelen.isEmpty) {
                   return EmptyPage(
                     text: "Geen leermiddelen",
                     icon: Icons.language_outlined,
@@ -36,13 +36,13 @@ class _Leermiddelen extends State<Leermiddelen> {
                 }
                 return Column(
                   children: [
-                    for (Leermiddel leermiddel in account.leermiddelen)
+                    for (Leermiddel leermiddel in account().leermiddelen)
                       MaterialCard(
                         child: Tooltip(
                           message: leermiddel.title,
                           child: ListTileBorder(
-                            onTap: () => account.magister.leermiddelen.launch(leermiddel),
-                            border: account.leermiddelen.last == leermiddel
+                            onTap: () => account().magister.leermiddelen.launch(leermiddel),
+                            border: account().leermiddelen.last == leermiddel
                                 ? null
                                 : Border(
                                     bottom: greyBorderSide(),
@@ -71,7 +71,7 @@ class _Leermiddelen extends State<Leermiddelen> {
               }),
         ),
         onRefresh: () async {
-          await handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
+          await handleError(account().magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
         },
       ),
     );

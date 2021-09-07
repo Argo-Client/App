@@ -41,14 +41,14 @@ class _MijnGegevens extends State<MijnGegevens> {
                             child: CircleAvatar(
                               radius: 50,
                               backgroundColor: Theme.of(context).backgroundColor,
-                              child: userdata.get("useIcon") || account.profilePicture == null
+                              child: userdata.get("useIcon") || account().profilePicture == null
                                   ? Icon(
                                       Icons.person_outline,
                                       size: 60,
                                     )
                                   : Image.memory(
                                       base64Decode(
-                                        account.profilePicture,
+                                        account().profilePicture,
                                       ),
                                     ),
                             ),
@@ -59,7 +59,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                               Container(
                                 width: MediaQuery.of(context).size.width * (1 / 2),
                                 child: Text(
-                                  account.fullName,
+                                  account().fullName,
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.w300,
@@ -67,7 +67,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                                 ),
                               ),
                               Text(
-                                account.klasCode,
+                                account().klasCode,
                                 style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.grey,
@@ -88,7 +88,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Studie",
                       ),
                       subtitle: Text(
-                        account.klas,
+                        account().klas,
                       ),
                     ),
                     Divider(),
@@ -98,7 +98,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Officiële naam",
                       ),
                       subtitle: Text(
-                        account.officialFullName,
+                        account().officialFullName,
                       ),
                     ),
                     Padding(
@@ -110,7 +110,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Geboortedatum",
                       ),
                       subtitle: Text(
-                        account.birthdate,
+                        account().birthdate,
                       ),
                     ),
                     Padding(
@@ -122,7 +122,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Mobiele nummer",
                       ),
                       subtitle: Text(
-                        account.phone,
+                        account().phone,
                       ),
                     ),
                     Padding(
@@ -134,7 +134,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                         "Email Adres",
                       ),
                       subtitle: Text(
-                        account.email,
+                        account().email,
                       ),
                     ),
                     Padding(
@@ -150,7 +150,7 @@ class _MijnGegevens extends State<MijnGegevens> {
                           "Adres",
                         ),
                         subtitle: Text(
-                          account.address,
+                          account().address,
                         ),
                       ),
                     ),
@@ -159,7 +159,7 @@ class _MijnGegevens extends State<MijnGegevens> {
               }),
         ),
         onRefresh: () async {
-          await handleError(account.magister.profileInfo.refresh, "Kon mijn gegevens niet verversen", context);
+          await handleError(account().magister.profileInfo.refresh, "Kon mijn gegevens niet verversen", context);
         },
       ),
     );

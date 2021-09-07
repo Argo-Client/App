@@ -31,14 +31,14 @@ class Agenda extends StatefulWidget {
 }
 
 Future huiswerkAf(hw) async {
-  await account.magister.agenda.toggleHuiswerk(hw);
+  await account().magister.agenda.toggleHuiswerk(hw);
   hw.huiswerkAf = !hw.huiswerkAf;
   update();
 }
 
 class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProviderStateMixin {
   void afterFirstLayout(BuildContext context) {
-    handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
+    handleError(account().magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
   final int infinityPageCount = 1000;
@@ -145,7 +145,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       });
 
   Widget _buildLesCard(Les les, int startHour) {
-    List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
+    List<Absentie> afwezig = account().afwezigheid.where((abs) => abs.les.id == les.id).toList();
 
     return Container(
       margin: EdgeInsets.only(
@@ -477,7 +477,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
 
     return RefreshIndicator(
       onRefresh: () async => await handleError(
-        () async => account.magister.agenda.getLessen(buildWeekMonday),
+        () async => account().magister.agenda.getLessen(buildWeekMonday),
         "Kon agenda niet verversen",
         context,
       ),
@@ -490,8 +490,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
             bool gotLessons = false;
             List<Les> dag;
 
-            if (account.lessons[buildWeekslug] != null) {
-              dag = account.lessons[buildWeekslug][buildDay.weekday - 1];
+            if (account().lessons[buildWeekslug] != null) {
+              dag = account().lessons[buildWeekslug][buildDay.weekday - 1];
               gotLessons = true;
             }
 
@@ -567,7 +567,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                         if (!gotLessons)
                           Futuristic(
                             autoStart: true,
-                            futureBuilder: () async => account.magister.agenda.getLessen(buildWeekMonday),
+                            futureBuilder: () async => account().magister.agenda.getLessen(buildWeekMonday),
                             busyBuilder: (c) => Container(
                               width: MediaQuery.of(context).size.width - 30,
                               height: bodyHeight(context),
@@ -764,7 +764,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   }
 
   Future updateLessons() async {
-    await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
+    await handleError(() async => account().magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
       setState(update);
     });
   }
@@ -813,7 +813,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildPage() {
-    List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
+    List<Absentie> afwezig = account().afwezigheid.where((abs) => abs.les.id == les.id).toList();
 
     return SingleChildScrollView(
         child: Column(
@@ -916,7 +916,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
             margin: EdgeInsets.only(top: 20),
             child: Futuristic(
               autoStart: true,
-              futureBuilder: () => account.magister.agenda.getBijlagen(les),
+              futureBuilder: () => account().magister.agenda.getBijlagen(les),
               dataBuilder: (context, bijlagen) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -934,7 +934,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   for (Bron bron in bijlagen)
                     BijlageItem(
                       bron,
-                      download: account.magister.bronnen.downloadFile,
+                      download: account().magister.bronnen.downloadFile,
                       border: bijlagen.last != bron
                           ? Border(
                               bottom: greyBorderSide(),
@@ -956,7 +956,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
     return FloatingActionButton(
       onPressed: () async {
         animate();
-        await account.magister.agenda.toggleHuiswerk(les);
+        await account().magister.agenda.toggleHuiswerk(les);
         les.huiswerkAf = !les.huiswerkAf;
         setState(() {});
         update();
@@ -1001,9 +1001,9 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   // ),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () => account.magister.agenda.deleteLes(les).then((e) async {
+                    onPressed: () => account().magister.agenda.deleteLes(les).then((e) async {
                       Navigator.of(context).pop();
-                      await account.magister.agenda.refresh();
+                      await account().magister.agenda.refresh();
                       update();
                     }).catchError((e) {
                       FlushbarHelper.createError(message: "Les verwijderen mislukt: $e")..show(context);
@@ -1228,7 +1228,7 @@ class _AddLesPagina extends State<AddLesPagina> {
           if (_formKey.currentState.validate()) {
             handleError(
               () async {
-                await account.magister.agenda.addAfspraak(
+                await account().magister.agenda.addAfspraak(
                   {
                     "title": titel,
                     "locatie": locatie,
@@ -1256,7 +1256,7 @@ class _AddLesPagina extends State<AddLesPagina> {
               () async {
                 Navigator.of(context).pop();
                 FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
-                await account.magister.agenda.refresh();
+                await account().magister.agenda.refresh();
                 update();
               },
             );

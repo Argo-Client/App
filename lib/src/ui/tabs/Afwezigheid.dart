@@ -22,11 +22,11 @@ class Afwezigheid extends StatefulWidget {
 }
 
 class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid> {
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
 
   Widget _buildAfwezigheid(Absentie afwezigheid, int i, String hour) {
     return MaterialCard(
-      border: account.afwezigheid.length - 1 == i || account.afwezigheid[i + 1].dag != afwezigheid.dag
+      border: account().afwezigheid.length - 1 == i || account().afwezigheid[i + 1].dag != afwezigheid.dag
           ? null
           : Border(
               bottom: greyBorderSide(),
@@ -90,7 +90,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                   child: Row(
                     children: [
                       Icon(Icons.check),
-                      Text(" " + account.afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
+                      Text(" " + account().afwezigheid.where((afw) => afw.geoorloofd).length.toString()),
                     ],
                   ),
                 ),
@@ -105,7 +105,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
                   child: Row(
                     children: [
                       Icon(Icons.error),
-                      Text(" " + account.afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
+                      Text(" " + account().afwezigheid.where((afw) => !afw.geoorloofd).length.toString()),
                     ],
                   ),
                 ),
@@ -120,7 +120,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
           child: ValueListenableBuilder(
             valueListenable: updateNotifier,
             builder: (BuildContext context, _, _a) {
-              if (account.afwezigheid.isEmpty)
+              if (account().afwezigheid.isEmpty)
                 return EmptyPage(
                   text: "Geen afwezigheid",
                   icon: Icons.check_circle_outlined,
@@ -128,8 +128,8 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
 
               List<Widget> absenties = [];
               String lastDay;
-              for (int i = 0; i < account.afwezigheid.length; i++) {
-                Absentie afw = account.afwezigheid[i];
+              for (int i = 0; i < account().afwezigheid.length; i++) {
+                Absentie afw = account().afwezigheid[i];
                 String hour = afw.les.hour.isEmpty ? "" : afw.les.hour + "e - ";
                 if (lastDay != afw.dag) {
                   absenties.add(
@@ -149,7 +149,7 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
           ),
         ),
         onRefresh: () async {
-          await handleError(account.magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
+          await handleError(account().magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
         },
       ),
     );

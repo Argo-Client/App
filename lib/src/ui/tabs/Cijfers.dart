@@ -112,18 +112,18 @@ class _Cijfers extends State<Cijfers> {
   Widget _recenteCijfers() {
     return RefreshIndicator(
       onRefresh: () async {
-        await handleError(account.magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
+        await handleError(account().magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
       },
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        child: account.recenteCijfers.isEmpty
+        child: account().recenteCijfers.isEmpty
             ? EmptyPage(
                 text: "Nog geen cijfers",
                 icon: Icons.looks_6_outlined,
               )
             : MaterialCard(
                 children: [
-                  for (Cijfer cijfer in account.recenteCijfers)
+                  for (Cijfer cijfer in account().recenteCijfers)
                     Container(
                       child: CijferTile(cijfer, isRecent: true),
                       decoration: BoxDecoration(
@@ -166,9 +166,11 @@ class _Cijfers extends State<Cijfers> {
 
   @override
   Widget build(BuildContext context) {
-    List<Periode> perioden = account.cijfers[jaar].perioden
+    List<Periode> perioden = account()
+        .cijfers[jaar]
+        .perioden
         .where(
-          (periode) => account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id).isNotEmpty,
+          (periode) => account().cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id).isNotEmpty,
         )
         .toList();
 
@@ -179,17 +181,17 @@ class _Cijfers extends State<Cijfers> {
           length: jaar == 0 ? 1 + perioden.length : perioden.length,
           child: AppPage(
             bottom: _tabBar(perioden),
-            title: Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+            title: Text("Cijfers - ${account().cijfers[jaar].leerjaar}"),
             actions: [
               PopupMenuButton(
                   initialValue: jaar,
                   onSelected: (value) => setState(() => jaar = value),
                   itemBuilder: (BuildContext context) {
                     return <PopupMenuEntry>[
-                      for (int i = 0; i < account.cijfers.length; i++)
+                      for (int i = 0; i < account().cijfers.length; i++)
                         PopupMenuItem(
                           value: i,
-                          child: Text('${account.cijfers[i].leerjaar}'),
+                          child: Text('${account().cijfers[i].leerjaar}'),
                         ),
                     ];
                   }),
@@ -201,14 +203,16 @@ class _Cijfers extends State<Cijfers> {
                 for (Periode periode in perioden)
                   RefreshIndicator(
                     onRefresh: () async => await handleError(
-                      account.magister.cijfers.refresh,
+                      account().magister.cijfers.refresh,
                       "Kon cijfers niet verversen",
                       context,
                     ),
                     child: SingleChildScrollView(
                       child: MaterialCard(
                         children: () {
-                          List cijfersInPeriode = account.cijfers[jaar].cijfers
+                          List cijfersInPeriode = account()
+                              .cijfers[jaar]
+                              .cijfers
                               .where(
                                 (cijfer) => cijfer.periode.id == periode.id,
                               )
@@ -245,7 +249,7 @@ class _CijferPagina extends State<CijferPagina> {
   double totalWeging;
 
   _CijferPagina(int id, int jaar) {
-    this.jaar = account.cijfers[jaar];
+    this.jaar = account().cijfers[jaar];
     this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
     this.vak = cijfers.first.vak;
 
@@ -285,7 +289,7 @@ class _CijferPagina extends State<CijferPagina> {
                   Futuristic(
                     autoStart: true,
                     // futureBuilder: () async => Future.delayed(Duration(minutes: 2)),
-                    futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                    futureBuilder: () => account().magister.cijfers.getExtraInfo(cijfer, jaar),
                     busyBuilder: (context) => ListTile(
                       title: PlaceholderLines(
                         count: 1,

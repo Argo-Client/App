@@ -5,6 +5,8 @@ on:
     push:
         branches:
             - master
+env:
+    flutter_version: 2.2.1
 
 jobs:
     build:
@@ -19,8 +21,8 @@ jobs:
               with:
                   java-version: "12.x"
 
-            - name: Cache Flutter dependencies
-              uses: actions/cache@v1
+            - name: Cache Flutter
+              uses: actions/cache@v2
               with:
                   path: /opt/hostedtoolcache/flutter
                   key: ${{ runner.OS }}-flutter-install-cache-${{ env.flutter_version }}
@@ -28,7 +30,7 @@ jobs:
             - name: Setup Flutter
               uses: subosito/flutter-action@v1
               with:
-                  flutter-version: "2.2.1"
+                  flutter-version: ${{ env.flutter_version }}
 
             - name: Disable Analytics
               run: flutter config --no-analytics

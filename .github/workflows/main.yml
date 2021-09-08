@@ -28,12 +28,10 @@ jobs:
             - name: Setup Flutter
               uses: subosito/flutter-action@v1
               with:
-                  flutter-version: "2.0.4"
+                  flutter-version: "2.2.1"
 
-            - name: Signing key uit env naar bestand
-              run: echo $KEY | base64 -d > android/app/key.jks
-              env:
-                  KEY: ${{ secrets.SIGNING_KEY }}
+            - name: Disable Analytics
+              run: flutter config --no-analytics
 
             - name: Install Dependencies
               run: flutter pub get
@@ -50,9 +48,6 @@ jobs:
             # Build
             - name: Build
               run: flutter build apk --split-per-abi
-              env:
-                  KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-                  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
             # Add File
             - name: Export APK

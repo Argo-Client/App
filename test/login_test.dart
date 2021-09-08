@@ -53,7 +53,6 @@ void main() {
 
     test("Account id ophalen", () async {
       expect(account.id, 0);
-
       await account.magister.profileInfo.profileInfo();
 
       expect(account.privileges, isInstanceOf<List<Privilege>>());

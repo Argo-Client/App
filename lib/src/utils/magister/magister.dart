@@ -99,11 +99,10 @@ class MagisterApi {
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
               if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
                 print("Accestoken expired");
-                refreshDio.post("")
-                  ..onError((e, stack) {
-                    handler.reject(e);
-                    return;
-                  });
+                await refreshDio.post("").onError((e, stack) {
+                  handler.reject(e);
+                  return;
+                });
               }
               handler.next(options);
             },

@@ -16,10 +16,10 @@ class Refreshable extends StatelessWidget {
         onRefresh: () async {
           await handleError(onRefresh, "Fout tijdens verversen van $type", context);
         },
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Container(
-            height: bodyHeight(context),
+        child: Container(
+          height: bodyHeight(context),
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: ValueListenableBuilder(
               valueListenable: updateNotifier,
               builder: (context, _, _a) => child ?? builder(context),

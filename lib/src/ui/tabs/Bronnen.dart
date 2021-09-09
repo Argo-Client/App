@@ -1,4 +1,3 @@
-import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -6,7 +5,6 @@ import 'package:after_layout/after_layout.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/bodyHeight.dart';
-import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
@@ -15,6 +13,7 @@ import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
+import 'package:argo/src/ui/components/Refreshable.dart';
 
 class Bronnen extends StatefulWidget {
   @override

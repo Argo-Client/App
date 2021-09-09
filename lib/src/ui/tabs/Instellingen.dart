@@ -334,7 +334,7 @@ class _Instellingen extends State<Instellingen> {
                   CustomInstelling(
                     title: 'Secundaire kleur',
                     onTap: () => showColorPicker("accentColor"),
-                    subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                     trailing: Container(
                       width: 40,
                       height: 40,
@@ -613,7 +613,7 @@ class _Instellingen extends State<Instellingen> {
                     CustomInstelling(
                       title: 'Aangepaste secundaire kleur',
                       onTap: () => showColorAdvanced("accentColor"),
-                      subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                       trailing: Container(
                         width: 40,
                         height: 40,

@@ -70,11 +70,7 @@ class _LoginView extends State<LoginView> {
                 }
               } else {
                 launch(magisterLogin.url);
-                StreamSubscription _sub;
-                _sub = getLinksStream().listen((String link) async {
-                  _sub.cancel();
-                  setState(() => redirectUrl = link);
-                });
+                linkStream.first.then((link) => setState(() => redirectUrl = link));
               }
             },
             itemBuilder: (context) => [

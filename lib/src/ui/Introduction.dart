@@ -349,7 +349,7 @@ class _Introduction extends State<Introduction> {
             color: Colors.white,
           ),
           typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
-          nameDoneBtn: "LOGIN",
+          // nameDoneBtn: "LOGIN",
           onDonePress: loginPress,
           slides: [
             _buildLicenseSlide(),

@@ -1,14 +1,12 @@
-import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:argo/src/utils/boxes.dart';
-import 'package:argo/src/utils/update.dart';
-import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
+import 'package:argo/src/ui/components/Refreshable.dart';
 
 class MijnGegevens extends StatefulWidget {
   @override

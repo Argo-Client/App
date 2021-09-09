@@ -5,7 +5,7 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/account.dart';
 
-Future handleError(Function fun, String msg, BuildContext context, [Function cb]) async {
+Future handleError(Future Function() fun, String msg, BuildContext context, [Function cb]) async {
   if (account().id != 0) {
     try {
       await fun();

@@ -1,7 +1,7 @@
+import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
-import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
@@ -18,23 +18,19 @@ class Leermiddelen extends StatefulWidget {
 
 class _Leermiddelen extends State<Leermiddelen> {
   void afterFirstLayout(BuildContext context) => handleError(account().magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
+
   @override
-  Widget build(BuildContext context) {
-    return AppPage(
-      title: Text("Leermiddelen"),
-      body: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: ValueListenableBuilder(
-              valueListenable: updateNotifier,
-              builder: (BuildContext context, _, _a) {
-                if (account().leermiddelen.isEmpty) {
-                  return EmptyPage(
-                    text: "Geen leermiddelen",
-                    icon: Icons.language_outlined,
-                  );
-                }
-                return Column(
+  Widget build(BuildContext context) => AppPage(
+        title: Text("Leermiddelen"),
+        body: Refreshable(
+          type: "leermiddelen",
+          onRefresh: account().magister.leermiddelen.refresh,
+          child: account().leermiddelen.isEmpty
+              ? EmptyPage(
+                  text: "Geen leermiddelen",
+                  icon: Icons.language_outlined,
+                )
+              : Column(
                   children: [
                     for (Leermiddel leermiddel in account().leermiddelen)
                       MaterialCard(
@@ -67,13 +63,7 @@ class _Leermiddelen extends State<Leermiddelen> {
                         ),
                       ),
                   ],
-                );
-              }),
+                ),
         ),
-        onRefresh: () async {
-          await handleError(account().magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
-        },
-      ),
-    );
-  }
+      );
 }

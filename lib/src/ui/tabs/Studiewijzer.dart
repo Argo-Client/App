@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -50,28 +51,18 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
   Widget build(BuildContext context) {
     return AppPage(
       title: Text("Studiewijzers"),
-      body: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (BuildContext context, _, _a) {
-              if (account().studiewijzers.isEmpty) {
-                return EmptyPage(
-                  text: "Geen studiewijzers",
-                  icon: Icons.school_outlined,
-                );
-              }
-              return Column(
+      body: Refreshable(
+        type: "studiewijzers",
+        onRefresh: account().magister.studiewijzers.refresh,
+        child: account().studiewijzers.isEmpty
+            ? EmptyPage(
+                text: "Geen studiewijzers",
+                icon: Icons.school_outlined,
+              )
+            : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _buildStudiewijzers(),
-              );
-            },
-          ),
-        ),
-        onRefresh: () async {
-          await handleError(account().magister.studiewijzers.refresh, "Kon studiewijzer niet verversen", context);
-        },
+              ),
       ),
     );
   }
@@ -84,7 +75,9 @@ class StudiewijzerPagina extends StatelessWidget {
   final ValueNotifier<List<Wijzer>> selected = ValueNotifier([]);
 
   Widget _buildStudiewijzerPagina(BuildContext context, _) {
-    return SingleChildScrollView(
+    return Refreshable(
+      type: "studiewijzer",
+      onRefresh: () => Future.delayed(Duration(milliseconds: 100)), // Doet ook nog niet de pagina verversen
       child: Column(
         children: [
           for (Wijzer wijzer in wijs.children)

@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:argo/src/utils/account.dart';
 import 'package:flutter/material.dart';
 
@@ -114,42 +115,35 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
           ),
         ),
       ],
-      body: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (BuildContext context, _, _a) {
-              if (account().afwezigheid.isEmpty)
-                return EmptyPage(
-                  text: "Geen afwezigheid",
-                  icon: Icons.check_circle_outlined,
-                );
+      body: Refreshable(
+        onRefresh: account().magister.afwezigheid.refresh,
+        type: "afwezigheid",
+        builder: (context) {
+          if (account().afwezigheid.isEmpty)
+            return EmptyPage(
+              text: "Geen afwezigheid",
+              icon: Icons.check_circle_outlined,
+            );
 
-              List<Widget> absenties = [];
-              String lastDay;
-              for (int i = 0; i < account().afwezigheid.length; i++) {
-                Absentie afw = account().afwezigheid[i];
-                String hour = afw.les.hour.isEmpty ? "" : afw.les.hour + "e - ";
-                if (lastDay != afw.dag) {
-                  absenties.add(
-                    ContentHeader(afw.dag),
-                  );
-                }
+          List<Widget> absenties = [];
+          String lastDay;
+          for (int i = 0; i < account().afwezigheid.length; i++) {
+            Absentie afw = account().afwezigheid[i];
+            String hour = afw.les.hour.isEmpty ? "" : afw.les.hour + "e - ";
+            if (lastDay != afw.dag) {
+              absenties.add(
+                ContentHeader(afw.dag),
+              );
+            }
 
-                absenties.add(
-                  _buildAfwezigheid(afw, i, hour),
-                );
+            absenties.add(
+              _buildAfwezigheid(afw, i, hour),
+            );
 
-                lastDay = afw.dag;
-              }
+            lastDay = afw.dag;
+          }
 
-              return buildLiveList(absenties, 10);
-            },
-          ),
-        ),
-        onRefresh: () async {
-          await handleError(account().magister.afwezigheid.refresh, "Fout tijdens verversen van afwezigheid", context);
+          return buildLiveList(absenties, 10);
         },
       ),
     );

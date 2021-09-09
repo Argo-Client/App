@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 import 'package:flushbar/flushbar_helper.dart';
 
@@ -92,7 +93,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
     );
   }
 
-  Widget _buildBerichten(BuildContext context, box, Widget child) {
+  Widget _buildBerichten(BuildContext context) {
     List<Widget> berichten = [];
     String lastDay;
 
@@ -136,17 +137,10 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           },
         ),
       ],
-      body: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: _buildBerichten,
-          ),
-        ),
-        onRefresh: () async {
-          await handleError(account().magister.berichten.refresh, "Kon berichten niet verversen", context);
-        },
+      body: Refreshable(
+        builder: _buildBerichten,
+        onRefresh: account().magister.berichten.refresh,
+        type: "berichten",
       ),
     );
   }

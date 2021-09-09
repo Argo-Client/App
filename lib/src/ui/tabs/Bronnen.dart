@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -62,7 +63,7 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
       );
     }
 
-    return ListView(
+    return Column(
       children: bronnenPagina,
     );
   }
@@ -123,49 +124,45 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
           ),
           preferredSize: Size.fromHeight(25),
         ),
-        body: RefreshIndicator(
-          child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: (BuildContext context, _, _a) {
-              if (account().bronnen.isEmpty) {
-                return EmptyPage(
+        body: Refreshable(
+          type: "bronnen",
+          onRefresh: account().magister.bronnen.refresh, // Ververst alleen "/" niet de bron waar je nu inzit.
+          child: account().bronnen.isEmpty
+              ? EmptyPage(
                   text: "Geen bronnen",
                   icon: Icons.folder_outlined,
-                );
-              }
-              return ValueListenableBuilder(
-                valueListenable: bronnenView,
-                builder: (c, view, _) {
-                  if (view.last == null)
-                    return Container(
-                      height: bodyHeight(context),
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  else if (view.last.isEmpty)
-                    return EmptyPage(
-                      text: "Deze map is leeg",
-                      icon: Icons.folder_outlined,
-                    );
-                  else
-                    return _buildBronnenPagina(view);
-                },
-              );
-            },
-          ),
-          onRefresh: () async {
-            Future Function() refresh = account().magister.bronnen.refresh;
-            if (bronnenView.value.length > 1) {
-              Bron bron = bronnenView.value.last.last;
-              if (bron.isFolder) {
-                refresh = () async => await account().magister.bronnen.loadChildren(bron);
-              }
-            }
-            await handleError(refresh, "Kon bronnen niet verversen", context);
-          },
+                )
+              : ValueListenableBuilder(
+                  valueListenable: bronnenView,
+                  builder: (c, view, _) {
+                    if (view.last == null)
+                      return Container(
+                        height: bodyHeight(context),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    else if (view.last.isEmpty)
+                      return EmptyPage(
+                        text: "Deze map is leeg",
+                        icon: Icons.folder_outlined,
+                      );
+                    else
+                      return _buildBronnenPagina(view);
+                  },
+                ),
         ),
       ),
     );
   }
 }
+// Widget ewa = RefreshIndicator(
+//           child: ValueListenableBuilder(
+//             valueListenable: updateNotifier,
+//             builder: ,
+//           ),
+//           onRefresh: () async {
+            
+//             await handleError(refresh, "Kon bronnen niet verversen", context);
+//           },
+//         );

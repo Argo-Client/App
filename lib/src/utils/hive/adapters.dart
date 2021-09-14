@@ -102,11 +102,11 @@ class Account extends HiveObject {
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
 
-  void saveTokens(tokenSet) {
+  Future<void> saveTokens(tokenSet) async {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
     this.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
-    if (this.isInBox) this.save();
+    if (this.isInBox) await this.save();
   }
 
   String toString() => this.fullName;

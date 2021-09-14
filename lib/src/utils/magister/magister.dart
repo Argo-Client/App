@@ -47,6 +47,26 @@ class MagisterApi {
   Account account;
   Dio dio;
   Dio refreshDio;
+
+  Future<void> refreshToken() async {
+    print("Refreshing token");
+    this.dio.lock();
+    await this
+        .refreshDio
+        .post<Map>(
+          "https://accounts.magister.net/connect/token",
+          data: "refresh_token=${account.refreshToken}&client_id=M6LOAPP&grant_type=refresh_token",
+        )
+        .then((res) async {
+      await account.saveTokens(res.data);
+    }).catchError((err) {
+      print("Error while refreshing token");
+      print(err);
+    }).whenComplete(
+      () => this.dio.unlock(),
+    );
+  }
+
   MagisterApi(Account account) {
     this.account = account;
     this.dio = Dio(
@@ -54,83 +74,64 @@ class MagisterApi {
     );
     this.refreshDio = Dio(
       BaseOptions(
-        baseUrl: "https://accounts.magister.net/connect/token",
         contentType: Headers.formUrlEncodedContentType,
       ),
     );
-    this.refreshDio.interceptors.add(InterceptorsWrapper(
-          onRequest: (options, handler) {
-            print("Refreshing token");
-            this.dio.lock();
-            options.data = "refresh_token=${account.refreshToken}&client_id=M6LOAPP&grant_type=refresh_token";
-            handler.next(options);
-          },
-          onResponse: (res, handler) {
-            account.saveTokens(res.data);
-            this.dio.unlock();
-            print("Refreshed token");
-            handler.next(res);
-          },
-          onError: (e, handler) async {
-            print("Error refreshing token");
-            print(e);
-            if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
-              return handler.reject(DioError(
-                requestOptions: e.requestOptions,
-                error: "Dit account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)",
-              ));
-              // MagisterLogin().launch(main.appState.context, (tokenSet, _) {
-              //   account.saveTokens(tokenSet);
-              //   if (account.isInBox) account.save();
-              // }, title: "Account is uitgelogd");
-              // return dio.request(e.requestOptions.path, options: e.requestOptions as Options);
-            }
-            handler.next(e);
-          },
-        ));
+    this.refreshDio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          if (e.response?.data != null && e.response?.data["error"] == "invalid_grant") {
+            return handler.reject(DioError(
+              requestOptions: e.requestOptions,
+              error: "Dit account is uitgelogd, verwijder je account en log opnieuw in. (Spijt me zeer hier is nog geen automatische support voor)",
+            ));
+            // MagisterLogin().launch(main.appState.context, (tokenSet, _) {
+            //   account.saveTokens(tokenSet);
+            //   if (account.isInBox) account.save();
+            // }, title: "Account is uitgelogd");
+            // return dio.request(e.requestOptions.path, options: e.requestOptions as Options);
+          }
+          handler.next(e);
+        },
+      ),
+    );
     this.dio.interceptors.add(
           InterceptorsWrapper(
             onRequest: (options, handler) async {
-              if (account.accessToken == null) {
-                throw ("Accestoken is null");
+              if (account.accessToken == null || DateTime.now().millisecondsSinceEpoch > account.expiry) {
+                print("Accestoken expired");
+                await this.refreshToken().onError((e, stack) {
+                  handler.reject(e);
+                  return;
+                });
               }
+
               options.baseUrl = "https://${account.tenant}/";
 
               options.headers["Authorization"] = "Bearer ${account.accessToken}";
-              if (DateTime.now().millisecondsSinceEpoch > account.expiry) {
-                print("Accestoken expired");
-                await refreshDio.post("").onError((e, stack) {
-                  handler.reject(e);
-                  return;
-                });
-              }
-              handler.next(options);
+
+              return handler.next(options);
             },
             onError: (e, handler) async {
-              RequestOptions options = e.requestOptions;
+              var options = e.requestOptions;
+
+              Future<void> retry() => dio.fetch(options).then(
+                    (r) => handler.resolve(r),
+                    onError: (e) => handler.reject(e),
+                  );
+
               if (e.response?.data == "SecurityToken Expired") {
+                print("Request failed, token is invalid");
+
                 if (options.headers["Authorization"] != "Bearer ${account.accessToken}") {
                   options.headers["Authorization"] = "Bearer ${account.accessToken}";
 
-                  dio.fetch(options).then(handler.resolve);
-                  return;
+                  return await retry();
                 }
 
-                print(e.response.data);
-                this.dio.lock();
-                refreshDio.post("").whenComplete(() {
-                  this.dio.unlock();
-                }).then((value) {
-                  dio.fetch(options).then(
-                    (value) => handler.resolve(value),
-                    onError: (e) {
-                      handler.reject(e);
-                    },
-                  );
-                }).onError((e, stack) {
-                  handler.reject(e);
-                });
-                return;
+                return await this.refreshToken().then((_) => retry()).onError(
+                      (e, stack) => handler.reject(e),
+                    );
               }
 
               return handler.next(translateHttpError(e));

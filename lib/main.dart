@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/getBrightness.dart';
+import 'package:argo/src/utils/workmanager.dart';
 
 import 'package:argo/src/utils/notifications.dart';
 import 'package:argo/src/layout.dart';
@@ -58,7 +59,8 @@ void main() async {
 
   if (accounts.isNotEmpty) {
     // Als je de app voor het eerst opent heb je nog geen account
-    notifications.lessonNotifications();
+    await notifications.initialize();
+    enableBackground();
   }
 
   if (accounts.isEmpty) {

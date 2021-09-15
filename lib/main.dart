@@ -2,64 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:developer';
-import 'dart:async';
+
+import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/hive/init.dart';
 
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/getBrightness.dart';
 import 'package:argo/src/utils/workmanager.dart';
 
-import 'package:argo/src/utils/notifications.dart';
 import 'package:argo/src/layout.dart';
 
 _AppState appState;
 ValueNotifier<List> errorLog = ValueNotifier([]);
 
 void main() async {
-  await Hive.initFlutter();
-  try {
-    Hive.registerAdapter(AccountAdapter());
-    Hive.registerAdapter(ColorAdapter());
-    Hive.registerAdapter(MaterialColorAdapter());
-    // Hive.registerAdapter(IconAdapter());
-    Hive.registerAdapter(LesAdapter());
-    Hive.registerAdapter(CijferJaarAdapter());
-    Hive.registerAdapter(CijferAdapter());
-    Hive.registerAdapter(VakAdapter());
-    Hive.registerAdapter(PeriodeAdapter());
-    Hive.registerAdapter(BerichtAdapter());
-    Hive.registerAdapter(AbsentieAdapter());
-    Hive.registerAdapter(BronAdapter());
-    Hive.registerAdapter(WijzerAdapter());
-    Hive.registerAdapter(LeermiddelAdapter());
-    Hive.registerAdapter(DocentAdapter());
-    Hive.registerAdapter(PrivilegeAdapter());
-  } catch (_) {}
-  Box accounts;
-  Box userdata;
-  try {
-    List<Box> boxes = await Future.wait([
-      Hive.openBox<Account>("accounts"),
-      Hive.openBox("userdata"),
-      Hive.openBox("custom"),
-    ]);
-    accounts = boxes.removeAt(0);
-    userdata = boxes.removeAt(0);
-  } catch (e) {
-    Hive.deleteBoxFromDisk("accounts");
-    print(e);
-
-    return main();
-  }
+  await initHive();
+  Box<Account> accounts = Hive.box("accounts");
+  Box userdata = Hive.box("userdata");
 
   log("Userdata: " + userdata.toMap().toString());
   log("Accounts: " + accounts.toMap().toString());
 
   if (accounts.isNotEmpty) {
     // Als je de app voor het eerst opent heb je nog geen account
-    await notifications.initialize();
     enableBackground();
   }
 

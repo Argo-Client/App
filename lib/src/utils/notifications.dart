@@ -39,6 +39,9 @@ class Notifications {
   }
 
   Future<void> lessonNotifications() async {
+    if (account == null) {
+      return;
+    }
     await notificationsPlugin.cancel(0);
 
     DateFormat formatDate = DateFormat("yyyy-MM-dd");

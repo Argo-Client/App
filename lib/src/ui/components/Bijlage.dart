@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:filesize/filesize.dart';
 
-import 'ListTileBorder.dart';
-
 enum DownloadState { done, loading, none }
 
 class BijlageItem extends StatelessWidget {
@@ -25,7 +23,7 @@ class BijlageItem extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> splittedNaam = bijlage.naam.split(".");
     return Tooltip(
-      child: ListTileBorder(
+      child: ListTile(
         onTap: () {
           if (onTap != null) onTap();
           if (download != null) {
@@ -106,7 +104,6 @@ class BijlageItem extends StatelessWidget {
                   }
                   return CircularProgressIndicator();
                 }),
-        border: border,
       ),
       message: bijlage.naam,
     );

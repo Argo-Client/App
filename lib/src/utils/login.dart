@@ -16,8 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/boxes.dart';
@@ -113,13 +112,6 @@ class _Error extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class SimpleFuturistic extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
 
@@ -269,10 +261,7 @@ class MagisterLoader extends StatelessWidget {
   @override
   Widget build(c) {
     return MaterialCard(
-      child: ListTileBorder(
-        border: Border(
-          top: greyBorderSide(),
-        ),
+      child: ListTile(
         leading: Container(
           padding: EdgeInsets.only(top: 4.5),
           child: Text(
@@ -392,18 +381,18 @@ class RefreshAccountView extends StatelessWidget {
           valueListenable: totalLoaded,
           builder: (c, loaded, _) => LinearProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(
-              Color.fromARGB(
-                100,
+              Color.fromRGBO(
                 255,
                 255,
                 255,
+                1,
               ),
             ),
             backgroundColor: userdata.get("primaryColor"),
             value: loaded / loaders.length,
           ),
         ),
-        for (MagisterLoader loader in loaders) loader,
+        ...divideListTiles(loaders),
         ValueListenableBuilder(
           valueListenable: errors,
           builder: (context, _, _a) {

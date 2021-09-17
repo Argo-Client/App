@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -88,6 +89,7 @@ class _AppState extends State<App> {
         scaffoldBackgroundColor: userdata.get("theme") == "OLED" ? Colors.black : null,
         primaryColor: userdata.get("primaryColor"),
         accentColor: userdata.get("accentColor"),
+        dividerColor: grayBorderColor(),
       ),
       home: Home(),
       debugShowCheckedModeBanner: false,

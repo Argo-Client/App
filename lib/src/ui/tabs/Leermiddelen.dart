@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +7,6 @@ import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
 
@@ -31,18 +30,13 @@ class _Leermiddelen extends State<Leermiddelen> {
                   icon: Icons.language_outlined,
                 )
               : Column(
-                  children: [
+                  children: divideListTiles([
                     for (Leermiddel leermiddel in account().leermiddelen)
                       MaterialCard(
                         child: Tooltip(
                           message: leermiddel.title,
-                          child: ListTileBorder(
+                          child: ListTile(
                             onTap: () => account().magister.leermiddelen.launch(leermiddel),
-                            border: account().leermiddelen.last == leermiddel
-                                ? null
-                                : Border(
-                                    bottom: greyBorderSide(),
-                                  ),
                             title: Text(
                               leermiddel.title,
                               overflow: TextOverflow.ellipsis,
@@ -62,7 +56,7 @@ class _Leermiddelen extends State<Leermiddelen> {
                           ),
                         ),
                       ),
-                  ],
+                  ]),
                 ),
         ),
       );

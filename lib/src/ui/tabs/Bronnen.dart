@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
@@ -9,7 +10,6 @@ import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
@@ -31,39 +31,32 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
 
     for (Bron bron in view.last) {
       bronnenPagina.add(
-        MaterialCard(
-          child: BijlageItem(
-            bron,
-            border: view.last.last != bron
-                ? Border(
-                    bottom: greyBorderSide(),
-                  )
-                : null,
-            download: bron.isFolder ? null : account().magister.bronnen.downloadFile,
-            onTap: !bron.isFolder
-                ? null
-                : () async {
-                    breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
-                    bronnenView.value = List.from(view)..add(bron.children);
-                    if (bron.children == null) {
-                      await handleError(
-                        () async => await account().magister.bronnen.loadChildren(bron),
-                        "Kon ${bron.naam} niet laden.",
-                        context,
-                        () {
-                          bronnenView.value = view.where((list) => list != null).toList();
-                          bronnenView.value = List.from(view)..add(bron.children);
-                        },
-                      );
-                    }
-                  },
-          ),
+        BijlageItem(
+          bron,
+          download: bron.isFolder ? null : account().magister.bronnen.downloadFile,
+          onTap: !bron.isFolder
+              ? null
+              : () async {
+                  breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
+                  bronnenView.value = List.from(view)..add(bron.children);
+                  if (bron.children == null) {
+                    await handleError(
+                      () async => await account().magister.bronnen.loadChildren(bron),
+                      "Kon ${bron.naam} niet laden.",
+                      context,
+                      () {
+                        bronnenView.value = view.where((list) => list != null).toList();
+                        bronnenView.value = List.from(view)..add(bron.children);
+                      },
+                    );
+                  }
+                },
         ),
       );
     }
 
-    return Column(
-      children: bronnenPagina,
+    return MaterialCard(
+      children: divideListTiles(bronnenPagina),
     );
   }
 

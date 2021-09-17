@@ -1,11 +1,10 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/CircleShape.dart';
@@ -20,8 +19,7 @@ DateFormat dateFormatter = DateFormat('dd-MM-yyyy HH:mm');
 class _OpdrachtenState extends State<Opdrachten> {
   Widget opdracht(Opdracht opdracht) {
     return MaterialCard(
-      child: ListTileBorder(
-        border: Border(top: greyBorderSide()),
+      child: ListTile(
         title: opdracht.titel == null ? null : Text(opdracht.titel),
         subtitle: opdracht.status == null || opdracht.inleverDatum == null
             ? null
@@ -68,19 +66,13 @@ class _OpdrachtenState extends State<Opdrachten> {
       title: Text("Opdrachten"),
       body: Scaffold(
         body: ListView(
-          children: [
-            for (int i = 0; i < opdrachten.length; i++)
-              opdracht(
-                opdrachten[i],
-              ),
-          ],
+          children: divideListTiles(opdrachten.map(opdracht)),
         ),
       ),
     );
   }
 }
 
-//ignore: must_be_immutable
 class OpdrachtPagina extends StatelessWidget {
   final Opdracht opdracht;
 
@@ -93,10 +85,10 @@ class OpdrachtPagina extends StatelessWidget {
         title: Text(opdracht.titel),
       ),
       body: ListView(
-        children: [
+        children: divideListTiles([
           if (opdracht.ingeleverdOp == null)
             MaterialCard(
-              child: ListTileBorder(
+              child: ListTile(
                 leading: Icon(Icons.calendar_today_outlined),
                 title: Text(
                   dateFormatter.format(opdracht.inleverDatum),
@@ -106,8 +98,7 @@ class OpdrachtPagina extends StatelessWidget {
             ),
           if (opdracht.ingeleverdOp != null)
             MaterialCard(
-              child: ListTileBorder(
-                border: Border(top: greyBorderSide()),
+              child: ListTile(
                 leading: Icon(Icons.assignment_returned_outlined),
                 title: Text(
                   dateFormatter.format(opdracht.ingeleverdOp),
@@ -116,10 +107,7 @@ class OpdrachtPagina extends StatelessWidget {
               ),
             ),
           MaterialCard(
-            child: ListTileBorder(
-              border: Border(
-                top: greyBorderSide(),
-              ),
+            child: ListTile(
               leading: Icon(Icons.grade_outlined),
               title: Text(opdracht.status),
               subtitle: Text("Status"),
@@ -141,7 +129,7 @@ class OpdrachtPagina extends StatelessWidget {
                 WebContent(opdracht.leerlingOpmerking),
               ],
             ),
-        ],
+        ]),
       ),
     );
   }

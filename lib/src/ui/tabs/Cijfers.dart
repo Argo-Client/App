@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 
@@ -12,8 +13,6 @@ import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
 import 'package:argo/src/ui/components/CircleShape.dart';
@@ -22,14 +21,12 @@ import 'package:argo/src/ui/components/ContentHeader.dart';
 class CijferTile extends StatelessWidget {
   final Cijfer cijfer;
   final bool isRecent;
-  final Border border;
 
-  CijferTile(this.cijfer, {this.isRecent, this.border});
+  CijferTile(this.cijfer, {this.isRecent});
 
   @override
   Widget build(BuildContext build) {
-    return ListTileBorder(
-      border: border,
+    return ListTile(
       trailing: cijfer.cijfer.length > 4
           ? null
           : Stack(
@@ -78,16 +75,7 @@ class _Cijfers extends State<Cijfers> {
   int jaar = 0;
 
   Widget _buildCijfer(Cijfer cijfer, List cijfersInPeriode) {
-    return ListTileBorder(
-      border: Border(
-        left: greyBorderSide(),
-        bottom: cijfersInPeriode.last == cijfer
-            ? BorderSide(
-                width: 0,
-                color: Colors.transparent,
-              )
-            : greyBorderSide(),
-      ),
+    return ListTile(
       title: Text("${cijfer.vak.naam}"),
       subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
       trailing: CircleShape(
@@ -122,17 +110,12 @@ class _Cijfers extends State<Cijfers> {
                 icon: Icons.looks_6_outlined,
               )
             : MaterialCard(
-                children: [
+                children: divideListTiles([
                   for (Cijfer cijfer in account().recenteCijfers)
                     Container(
                       child: CijferTile(cijfer, isRecent: true),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: greyBorderSide(),
-                        ),
-                      ),
                     ),
-                ],
+                ]),
               ),
       ),
     );
@@ -218,7 +201,13 @@ class _Cijfers extends State<Cijfers> {
                               )
                               .toList();
 
-                          return [for (Cijfer cijfer in cijfersInPeriode) _buildCijfer(cijfer, cijfersInPeriode)];
+                          return divideListTiles(
+                            cijfersInPeriode
+                                .map(
+                                  (cijfer) => _buildCijfer(cijfer, cijfersInPeriode),
+                                )
+                                .toList(),
+                          );
                         }(),
                       ),
                     ),
@@ -284,11 +273,10 @@ class _CijferPagina extends State<CijferPagina> {
           return [
             ContentHeader(periode.naam),
             MaterialCard(
-              children: [
+              children: divideListTiles([
                 for (Cijfer cijfer in periodecijfers)
                   Futuristic(
                     autoStart: true,
-                    // futureBuilder: () async => Future.delayed(Duration(minutes: 2)),
                     futureBuilder: () => account().magister.cijfers.getExtraInfo(cijfer, jaar),
                     busyBuilder: (context) => ListTile(
                       title: PlaceholderLines(
@@ -306,14 +294,9 @@ class _CijferPagina extends State<CijferPagina> {
                     },
                     dataBuilder: (context, data) => CijferTile(
                       cijfer,
-                      border: periodecijfers.last != cijfer
-                          ? Border(
-                              bottom: greyBorderSide(),
-                            )
-                          : null,
                     ),
                   ),
-              ],
+              ]),
             ),
           ];
       }(),

@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -8,7 +9,6 @@ import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
@@ -24,26 +24,23 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
   void afterFirstLayout(BuildContext context) => handleError(account().magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
 
   List<Widget> _buildStudiewijzers() {
-    return [
-      for (Wijzer wijs in account().studiewijzers)
-        MaterialCard(
-          border: account().studiewijzers.last == wijs
-              ? null
-              : Border(
-                  bottom: greyBorderSide(),
-                ),
-          child: ListTile(
-            title: Text(wijs.naam),
-            onTap: () async {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => StudiewijzerPagina(wijs),
-                ),
-              );
-            },
-          ),
-        ),
-    ];
+    return divideListTiles(
+      account()
+          .studiewijzers
+          .map(
+            (studiewijzer) => ListTile(
+              title: Text(studiewijzer.naam),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => StudiewijzerPagina(studiewijzer),
+                  ),
+                );
+              },
+            ),
+          )
+          .toList(),
+    );
   }
 
   @override
@@ -58,9 +55,11 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
                 text: "Geen studiewijzers",
                 icon: Icons.school_outlined,
               )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildStudiewijzers(),
+            : MaterialCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _buildStudiewijzers(),
+                ),
               ),
       ),
     );
@@ -78,49 +77,47 @@ class StudiewijzerPagina extends StatelessWidget {
       type: "studiewijzer",
       onRefresh: () => Future.delayed(Duration(milliseconds: 100)), // Doet ook nog niet de pagina verversen
       child: Column(
-        children: [
-          for (Wijzer wijzer in wijs.children)
-            ValueListenableBuilder(
-              valueListenable: selected,
-              builder: (context, _, _a) {
-                bool isSelected = selected.value.contains(wijzer);
+        children: divideListTiles(
+          wijs.children
+              .map(
+                (wijzer) => ValueListenableBuilder(
+                  valueListenable: selected,
+                  builder: (context, _, _a) {
+                    bool isSelected = selected.value.contains(wijzer);
 
-                return MaterialCard(
-                  border: wijs.children.last.id == wijzer.id
-                      ? null
-                      : Border(
-                          bottom: greyBorderSide(),
+                    return MaterialCard(
+                      child: ListTile(
+                        selected: isSelected,
+                        title: Text(
+                          wijzer.naam,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                  child: ListTile(
-                    selected: isSelected,
-                    title: Text(
-                      wijzer.naam,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onLongPress: () {
-                      selected.value = List.from(selected.value)..add(wijzer);
-                    },
-                    trailing: wijzer.pinned ? Icon(Icons.push_pin_outlined) : null,
-                    onTap: () {
-                      if (selected.value.isNotEmpty) {
-                        if (isSelected) {
-                          selected.value = List.from(selected.value)..remove(wijzer);
-                        } else {
+                        onLongPress: () {
                           selected.value = List.from(selected.value)..add(wijzer);
-                        }
-                      } else {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => StudiewijzerTab(wijzer),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                );
-              },
-            ),
-        ],
+                        },
+                        trailing: wijzer.pinned ? Icon(Icons.push_pin_outlined) : null,
+                        onTap: () {
+                          if (selected.value.isNotEmpty) {
+                            if (isSelected) {
+                              selected.value = List.from(selected.value)..remove(wijzer);
+                            } else {
+                              selected.value = List.from(selected.value)..add(wijzer);
+                            }
+                          } else {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => StudiewijzerTab(wijzer),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
@@ -234,18 +231,12 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           ),
         if (wijstab.bronnen.isNotEmpty)
           MaterialCard(
-            children: [
-              for (Bron wijsbron in wijstab.bronnen)
-                BijlageItem(
-                  wijsbron,
-                  download: account().magister.bronnen.downloadFile,
-                  border: wijstab.bronnen.last != wijsbron
-                      ? Border(
-                          bottom: greyBorderSide(),
-                        )
-                      : null,
-                )
-            ],
+            children: divideListTiles(wijstab.bronnen
+                .map((bron) => BijlageItem(
+                      bron,
+                      download: account().magister.bronnen.downloadFile,
+                    ))
+                .toList()),
           ),
       ],
     );

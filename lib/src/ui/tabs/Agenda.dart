@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:futuristic/futuristic.dart';
@@ -17,8 +18,7 @@ import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/greyBorderSize.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
@@ -157,14 +157,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
         border: userdata.get("theme") == "OLED" || les.uitval
             ? null
             : Border.symmetric(
-                horizontal: greyBorderSide(),
+                horizontal: defaultBorderSide(context),
               ),
         color: les.uitval
             ? getBrightness() == Brightness.dark
-                ? Color.fromARGB(255, 119, 66, 62)
-                : Color.fromARGB(255, 255, 205, 210)
+                ? Color.fromRGBO(119, 66, 62, 1)
+                : Color.fromRGBO(255, 205, 210, 1)
             : null,
-        // shape: BorderRadius.all(),
         margin: EdgeInsets.only(
           top: .75,
         ),
@@ -318,16 +317,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               message: les.getName(),
               child: MaterialCard(
                 border: Border(
-                  top: userdata.get("theme") != "OLED"
-                      ? BorderSide(
-                          width: 0,
-                        )
-                      : greyBorderSide(),
-                  right: les == dag.where((les) => les.heleDag).last
-                      ? BorderSide(
-                          width: 0,
-                        )
-                      : greyBorderSide(),
+                  top: userdata.get("theme") != "OLED" ? null : defaultBorderSide(context),
+                  right: les.heleDag && les == dag.where((les) => les.heleDag).last ? null : defaultBorderSide(context),
                 ),
                 child: InkWell(
                   child: Padding(
@@ -515,7 +506,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: greyBorderSide(),
+                              bottom: defaultBorderSide(context),
                             ),
                           ),
                         ),
@@ -533,9 +524,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                 width: 30,
                                 decoration: BoxDecoration(
                                   border: Border(
-                                    top: greyBorderSide(),
-                                    right: greyBorderSide(),
-                                    left: greyBorderSide(),
+                                    top: defaultBorderSide(context),
+                                    right: defaultBorderSide(context),
+                                    left: defaultBorderSide(context),
                                   ),
                                 ),
 
@@ -614,9 +605,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                 return <Widget>[Container()];
                               }
 
-                              return <Widget>[
-                                for (Les les in lessen) _buildLesCard(les, startHour),
-                              ];
+                              return lessen
+                                  .map(
+                                    (les) => _buildLesCard(les, startHour),
+                                  )
+                                  .toList();
                             }(),
                           )
                       ],
@@ -681,11 +674,8 @@ class LesPaginaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTileBorder(
+    return ListTile(
       subtitle: Text(subtitle),
-      border: Border(
-        top: greyBorderSide(),
-      ),
       leading: Icon(icon),
       title: Text(
         title,
@@ -819,7 +809,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
         child: Column(
       children: [
         MaterialCard(
-          children: [
+          children: divideListTiles([
             if (les.hour != null)
               LesPaginaItem(
                 title: (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
@@ -892,7 +882,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
-          ],
+          ]),
         ),
         if (les.description.isNotEmpty)
           MaterialCard(
@@ -931,16 +921,10 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                       bottom: 10,
                     ),
                   ),
-                  for (Bron bron in bijlagen)
-                    BijlageItem(
-                      bron,
-                      download: account().magister.bronnen.downloadFile,
-                      border: bijlagen.last != bron
-                          ? Border(
-                              bottom: greyBorderSide(),
-                            )
-                          : null,
-                    )
+                  ...bijlagen.map((bron) => BijlageItem(
+                        bron,
+                        download: account().magister.bronnen.downloadFile,
+                      ))
                 ],
               ),
             ),
@@ -1051,11 +1035,8 @@ class _AddLesPagina extends State<AddLesPagina> {
             child: Form(
               key: _formKey,
               child: Column(
-                children: [
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                children: divideListTiles([
+                  ListTile(
                     leading: Icon(Icons.title),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -1074,10 +1055,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                       onChanged: (value) => titel = value,
                     ),
                   ),
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                  ListTile(
                     leading: Icon(Icons.location_on),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -1092,11 +1070,6 @@ class _AddLesPagina extends State<AddLesPagina> {
                     ),
                   ),
                   Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
-                    ),
                     child: Column(
                       children: [
                         SwitchListTile(
@@ -1212,7 +1185,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                       onChanged: (value) => inhoud = value,
                     ),
                   ),
-                ],
+                ]),
               ),
             ),
           ),

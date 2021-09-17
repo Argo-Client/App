@@ -115,7 +115,7 @@ class _MijnGegevens extends State<MijnGegevens> {
             ),
             ListTile(
               title: Text(
-                "Mobiele nummer",
+                "Telefoonnummer",
               ),
               subtitle: Text(
                 account().phone,
@@ -127,7 +127,7 @@ class _MijnGegevens extends State<MijnGegevens> {
             ),
             ListTile(
               title: Text(
-                "Email Adres",
+                "E-mailadres",
               ),
               subtitle: Text(
                 account().email,

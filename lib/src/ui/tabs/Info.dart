@@ -32,7 +32,7 @@ class _Info extends State<Info> {
               text: "Over",
             ),
             Tab(
-              text: "Credits",
+              text: "Auteurs",
             ),
           ],
         ),
@@ -56,7 +56,7 @@ class _Info extends State<Info> {
                       ),
                       onLongPress: () {
                         Fluttertoast.showToast(
-                          msg: userdata.get("developerMode") ? "Developer modus was al ontgrendeld" : "Developer modus ontgrendeld",
+                          msg: "Ontwikkelaars opties ontgrendeld",
                         );
                         userdata.put("developerMode", true);
                       },
@@ -64,13 +64,13 @@ class _Info extends State<Info> {
                     ListTile(
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
-                      subtitle: Text("Source code"),
+                      subtitle: Text("Broncode"),
                       onTap: () => launch("$url?u=argo&type=website"),
                     ),
                     ListTile(
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
-                      subtitle: Text("Gezelligheid"),
+                      subtitle: Text("Aankondigingen, feedback en gezelligheid"),
                       onTap: () => launch("$url?u=argo&type=discord"),
                     )
                   ]),
@@ -81,7 +81,7 @@ class _Info extends State<Info> {
                     ListTile(
                       leading: Icon(Icons.android_outlined),
                       title: Text('Flutter'),
-                      subtitle: Text("Platform gebruikt om de app te maken"),
+                      subtitle: Text("Toolkit waarmee de app is gemaakt."),
                       onTap: () => launch("https://flutter.dev/"),
                     )
                   ]),
@@ -117,7 +117,7 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sam Taen'),
-                      subtitle: Text('Bijdrage: Backend'),
+                      subtitle: Text('Bijdrage: Magister'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
@@ -138,18 +138,11 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Martijn Oosterhuis'),
-                      subtitle: Text('Bijdrage: Developer Modus'),
+                      subtitle: Text('Bijdrage: Ontwikkelaarsmodus'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
-                          onTap: () {
-                            launch("${url}u=martijn&type=website");
-                          },
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.device_hub_outlined),
-                          title: Text("Github"),
                           onTap: () {
                             launch("${url}u=martijn&type=website");
                           },
@@ -165,7 +158,7 @@ class _Info extends State<Info> {
                       tilePadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sjoerd Bolten'),
-                      subtitle: Text('Bijdrage: Hulp met magister inlog, iOS versie'),
+                      subtitle: Text('Bijdrage: Inloggen Magister & iOS-versie'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),

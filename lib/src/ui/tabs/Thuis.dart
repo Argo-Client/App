@@ -295,9 +295,9 @@ class _Thuis extends State<Thuis> {
             icon: Icons.event_outlined,
           ),
           PopoutButton(
-            "Nieuw bericht",
+            "Bericht opstellen",
             onPressed: () {
-              FlushbarHelper.createInformation(message: "Ja excuses, dit werkt nog niet.")..show(context);
+              FlushbarHelper.createInformation(message: "Helaas werkt deze functie nog niet.")..show(context);
               // Navigator.of(context).push(
               //   MaterialPageRoute(
               //     builder: (context) => NieuwBerichtPagina(null),

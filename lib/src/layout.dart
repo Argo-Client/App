@@ -144,7 +144,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
         ),
       ListTile(
         leading: Icon(Icons.add_outlined),
-        title: Text("Voeg account toe"),
+        title: Text("Account toevoegen"),
         onTap: () {
           login.MagisterLogin().launch(context, (Account newAccount, context, {String error}) async {
             setState(() {});

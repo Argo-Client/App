@@ -5,7 +5,11 @@ import 'package:after_layout/after_layout.dart';
 import 'package:flushbar/flushbar_helper.dart';
 
 import 'package:argo/main.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/account.dart';
+
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'utils/boxes.dart';
 
 import 'ui/Introduction.dart';
 import 'utils/login.dart' as login;
@@ -36,10 +40,10 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if (account == null) {
+    if (account() == null) {
       return Scaffold();
     }
-    List<Map> children = Tabs(account).children;
+    List<Map> children = Tabs(account()).children;
     var child = children[_currentIndex];
     bool useIcon = userdata.get("useIcon");
     void changeAccount(int id) {
@@ -47,7 +51,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       if (userdata.get("accountIndex") != index) {
         setState(() {
           userdata.put("accountIndex", index);
-          account = accounts.get(index);
           update();
         });
       }
@@ -66,7 +69,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       appBar: AppBar(
                         title: Text("Verversen"),
                       ),
-                      body: login.RefreshAccountView(account, context, (account, context) async {
+                      body: login.RefreshAccountView(account(), context, (account, context) async {
                         update();
                         FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
                         await acc.magister.downloadProfilePicture();
@@ -101,7 +104,6 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                             return;
                           }
                           userdata.put("accountsIndex", accounts.toMap().entries.first.key);
-                          account = accounts.get(userdata.get("accountsIndex"));
                           setState(() {});
                         },
                       )
@@ -227,7 +229,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                   },
                   otherAccountsPictures: [
                     for (Account acc in accounts.toMap().values)
-                      if (acc.id != account.id)
+                      if (acc.id != account().id)
                         InkWell(
                           onTap: () => changeAccount(acc.id),
                           child: CircleAvatar(
@@ -242,8 +244,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                           ),
                         ),
                   ],
-                  accountName: Text(account.fullName),
-                  accountEmail: Text(account.klasCode),
+                  accountName: Text(account().fullName),
+                  accountEmail: Text(account().klasCode),
                   currentAccountPicture: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -251,7 +253,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                         backgroundColor: Theme.of(context).backgroundColor,
                         backgroundImage: !useIcon
                             ? Image.memory(
-                                base64Decode(account.profilePicture),
+                                base64Decode(account().profilePicture),
                               ).image
                             : null,
                         child: useIcon

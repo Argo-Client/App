@@ -1,11 +1,10 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clipboard/clipboard.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'Card.dart';
-import 'Utils.dart';
-import 'ListTileBorder.dart';
 
 class PeopleList extends StatelessWidget {
   final List people;
@@ -70,23 +69,21 @@ class PeopleList extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          for (int i = 0; i < people.length; i++)
-            MaterialCard(
-              child: ListTileBorder(
-                border: Border(
-                  top: greyBorderSide(),
+      body: MaterialCard(
+        children: divideListTiles(
+          people
+              .map(
+                (person) => ListTile(
+                  leading: Icon(
+                    Icons.person,
+                  ),
+                  title: Text(
+                    person.toString(),
+                  ),
                 ),
-                leading: Icon(
-                  Icons.person,
-                ),
-                title: Text(
-                  people[i].toString(),
-                ),
-              ),
-            ),
-        ],
+              )
+              .toList(),
+        ),
       ),
     );
   }

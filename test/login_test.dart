@@ -35,7 +35,7 @@ void main() {
     test("Token refreshen", () async {
       expect(account.refreshToken, isNotNull);
 
-      await account.magister.api.refreshDio.post("");
+      await account.magister.api.refreshToken();
 
       expect(account.accessToken, isInstanceOf<String>());
       expect(account.refreshToken, isInstanceOf<String>());
@@ -53,7 +53,6 @@ void main() {
 
     test("Account id ophalen", () async {
       expect(account.id, 0);
-
       await account.magister.profileInfo.profileInfo();
 
       expect(account.privileges, isInstanceOf<List<Privilege>>());

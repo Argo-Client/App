@@ -1,14 +1,15 @@
-import 'package:argo/main.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:futuristic/futuristic.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
 
+import 'package:argo/src/utils/boxes.dart';
+
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
 
@@ -31,7 +32,7 @@ class _Info extends State<Info> {
               text: "Info",
             ),
             Tab(
-              text: "Dank aan",
+              text: "Auteurs",
             ),
           ],
         ),
@@ -42,54 +43,48 @@ class _Info extends State<Info> {
               children: [
                 ContentHeader("Algemeen"),
                 MaterialCard(
-                  children: [
-                    Container(
-                      child: ListTile(
-                        leading: Icon(Icons.verified_user_outlined),
-                        title: Text('Versie'),
-                        subtitle: Futuristic(
-                          futureBuilder: PackageInfo.fromPlatform,
-                          busyBuilder: (BuildContext context) => CircularProgressIndicator(),
-                          dataBuilder: (BuildContext context, packageInfo) => Text(packageInfo.version),
-                          onError: (err, retry) => print(err),
-                          autoStart: true,
-                        ),
-                        onLongPress: () {
-                          Fluttertoast.showToast(
-                            msg: userdata.get("developerMode") ? "Developer modus was al ontgrendeld" : "Developer modus ontgrendeld",
-                          );
-                          userdata.put("developerMode", true);
-                        },
+                  children: divideListTiles([
+                    ListTile(
+                      leading: Icon(Icons.verified_user_outlined),
+                      title: Text('Versie'),
+                      subtitle: Futuristic(
+                        futureBuilder: PackageInfo.fromPlatform,
+                        busyBuilder: (BuildContext context) => CircularProgressIndicator(),
+                        dataBuilder: (BuildContext context, packageInfo) => Text(packageInfo.version),
+                        onError: (err, retry) => print(err),
+                        autoStart: true,
                       ),
+                      onLongPress: () {
+                        Fluttertoast.showToast(
+                          msg: "Ontwikkelaars opties ontgrendeld",
+                        );
+                        userdata.put("developerMode", true);
+                      },
                     ),
-                    ListTileBorder(
-                      border: Border(
-                        top: greyBorderSide(),
-                      ),
+                    ListTile(
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
                       subtitle: Text("Broncode"),
                       onTap: () => launch("$url?u=argo&type=website"),
                     ),
-                    ListTileBorder(
-                      border: Border(
-                        top: greyBorderSide(),
-                      ),
+                    ListTile(
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
                       subtitle: Text("Aankondigingen, feedback en gezelligheid"),
                       onTap: () => launch("$url?u=argo&type=discord"),
-                    ),
-                  ],
+                    )
+                  ]),
                 ),
                 ContentHeader("Tools"),
                 MaterialCard(
-                  child: ListTile(
-                    leading: Icon(Icons.android_outlined),
-                    title: Text('Flutter'),
-                    subtitle: Text("Ontwikkelingsplatform"),
-                    onTap: () => launch("https://flutter.dev/"),
-                  ),
+                  children: divideListTiles([
+                    ListTile(
+                      leading: Icon(Icons.android_outlined),
+                      title: Text('Flutter'),
+                      subtitle: Text("Toolkit waarmee de app is gemaakt."),
+                      onTap: () => launch("https://flutter.dev/"),
+                    )
+                  ]),
                 ),
               ],
             ),
@@ -97,7 +92,7 @@ class _Info extends State<Info> {
               children: [
                 ContentHeader("Makers"),
                 MaterialCard(
-                  children: [
+                  children: divideListTiles([
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Guus van Meerveld'),
@@ -119,17 +114,10 @@ class _Info extends State<Info> {
                         ),
                       ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Sam Taen'),
-                      subtitle: Text('Bijdrage: Servercode'),
+                      subtitle: Text('Bijdrage: Magister'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),
@@ -147,13 +135,6 @@ class _Info extends State<Info> {
                         ),
                       ],
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: greyBorderSide(),
-                        ),
-                      ),
-                    ),
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Martijn Oosterhuis'),
@@ -166,16 +147,9 @@ class _Info extends State<Info> {
                             launch("${url}u=martijn&type=website");
                           },
                         ),
-                        ListTile(
-                          leading: Icon(Icons.device_hub_outlined),
-                          title: Text("Github"),
-                          onTap: () {
-                            launch("${url}u=martijn&type=website");
-                          },
-                        ),
                       ],
                     )
-                  ],
+                  ]),
                 ),
                 ContentHeader("Support"),
                 MaterialCard(

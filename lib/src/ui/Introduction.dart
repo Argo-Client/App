@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 
@@ -30,7 +31,6 @@ class _Introduction extends State<Introduction> {
   ValueNotifier<bool> showDot = ValueNotifier(false);
 
   void onLoggedIn(Account acc, BuildContext context, {String error}) {
-    account = acc;
     userdata.put("introduction", true);
     Navigator.pushReplacement(
       context,
@@ -349,7 +349,7 @@ class _Introduction extends State<Introduction> {
             color: Colors.white,
           ),
           typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
-          nameDoneBtn: "LOGIN",
+          // nameDoneBtn: "LOGIN",
           onDonePress: loginPress,
           slides: [
             _buildLicenseSlide(),

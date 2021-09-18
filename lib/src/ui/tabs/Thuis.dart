@@ -2,9 +2,13 @@ import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/layout.dart';
+
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/ContentHeader.dart';
 
@@ -197,8 +201,8 @@ class _Thuis extends State<Thuis> {
   // void afterFirstLayout(BuildContext context) => handleError(account.magister.leermiddelen.refresh, "Fout tijdens verversen van leermiddelen", context);
   @override
   Widget build(BuildContext context) {
-    String username = account.username != null ? " | " + account.username : "";
-    String klasCode = account.klasCode ?? "";
+    String username = account().username != null ? " | " + account().username : "";
+    String klasCode = account().klasCode ?? "";
     return Scaffold(
       floatingActionButton: shortcutButton(),
       body: NestedScrollView(
@@ -228,13 +232,13 @@ class _Thuis extends State<Thuis> {
                     Container(
                       margin: EdgeInsets.only(bottom: 15.0),
                       child: () {
-                        bool useIcon = userdata.get("useIcon") || account.profilePicture == null;
+                        bool useIcon = userdata.get("useIcon") || account().profilePicture == null;
                         return CircleAvatar(
                           backgroundColor: Theme.of(context).backgroundColor,
                           backgroundImage: useIcon
                               ? null
                               : Image.memory(
-                                  base64Decode(account.profilePicture),
+                                  base64Decode(account().profilePicture),
                                 ).image,
                           child: !useIcon
                               ? null
@@ -249,7 +253,7 @@ class _Thuis extends State<Thuis> {
                     Container(
                       margin: EdgeInsets.only(bottom: 7.5),
                       child: Text(
-                        account.fullName,
+                        account().fullName,
                         style: TextStyle(
                           fontSize: 20.0,
                         ),
@@ -327,14 +331,14 @@ class _Thuis extends State<Thuis> {
         },
       ),
       onRefresh: () async {
-        await handleError(account.magister.berichten.refresh, "Fout tijdens verversen van vandaag", context);
+        await handleError(account().magister.berichten.refresh, "Fout tijdens verversen van vandaag", context);
       },
     );
   }
 
   Widget _pinnedItems() {
     List<List<Wijzer>> pinned = [];
-    account.studiewijzers.forEach((hoofdwijzer) {
+    account().studiewijzers.forEach((hoofdwijzer) {
       if (hoofdwijzer.children != null) {
         pinned.addAll(
           hoofdwijzer.children.where((wijzer) => wijzer.pinned).map((e) => [hoofdwijzer, e]),
@@ -378,11 +382,11 @@ class _Thuis extends State<Thuis> {
     String weekslug = formatDate.format(lastMonday);
 
     for (int i = now.weekday - 1; i < 6; i++) {
-      if (account.lessons[weekslug] == null) {
+      if (account().lessons[weekslug] == null) {
         break;
       }
 
-      for (Les les in account.lessons[weekslug][i]) {
+      for (Les les in account().lessons[weekslug][i]) {
         if (les.startDateTime.isAfter(now) && !les.uitval) {
           nextLesson = les;
           break;
@@ -447,8 +451,9 @@ class _Thuis extends State<Thuis> {
   Widget _recenteCijfers() {
     DateTime now = DateTime.now();
 
-    if (account.recenteCijfers.isNotEmpty) {
-      List recenteCijfers = account.recenteCijfers
+    if (account().recenteCijfers.isNotEmpty) {
+      List recenteCijfers = account()
+          .recenteCijfers
           .take(3)
           .where(
             (cijf) => cijf.ingevoerd.isAfter(
@@ -480,8 +485,9 @@ class _Thuis extends State<Thuis> {
 
   Widget _recenteAfwezigheid() {
     DateTime now = DateTime.now();
-    if (account.afwezigheid.isNotEmpty) {
-      List afwezigheid = account.afwezigheid
+    if (account().afwezigheid.isNotEmpty) {
+      List afwezigheid = account()
+          .afwezigheid
           .take(3)
           .where(
             (afw) => afw.date.isAfter(
@@ -534,8 +540,9 @@ class _Thuis extends State<Thuis> {
 
   Widget _recenteBerichten() {
     DateTime now = DateTime.now();
-    if (account.berichten.isNotEmpty) {
-      List berichten = account.berichten
+    if (account().berichten.isNotEmpty) {
+      List berichten = account()
+          .berichten
           .take(3)
           .where(
             (ber) => ber.date.isAfter(

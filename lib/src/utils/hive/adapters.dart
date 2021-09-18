@@ -5,11 +5,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:argo/src/utils/capitalize.dart';
 part 'adapters.g.dart';
-
-extension StringExtension on String {
-  String get cap => "${this[0].toUpperCase()}${this.substring(1)}";
-}
 
 DateFormat formatDatum = DateFormat("EEEE dd MMMM");
 DateFormat formatDate = DateFormat("yyyy-MM-dd");
@@ -105,11 +102,11 @@ class Account extends HiveObject {
     this.lessons = {}.cast<String, List<List<Les>>>();
   }
 
-  void saveTokens(tokenSet) {
+  Future<void> saveTokens(tokenSet) async {
     this.accessToken = tokenSet["access_token"];
     this.refreshToken = tokenSet["refresh_token"];
     this.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
-    if (this.isInBox) this.save();
+    if (this.isInBox) await this.save();
   }
 
   String toString() => this.fullName;
@@ -168,8 +165,12 @@ class Les {
 
   String getName() {
     Box custom = Hive.box("custom");
+    Box userdata = Hive.box("userdata");
+
     String customName = custom.get("vak${this.vak.id}");
-    return customName ?? this.title;
+    String vakName = userdata.get("useVakName") ? this.vak.naam : null;
+
+    return customName ?? vakName ?? this.title;
   }
 
   Les([Map les]) {
@@ -332,7 +333,7 @@ class Vak {
     if (vak != null) {
       this.code = vak["Afkorting"];
       this.id = vak["Id"];
-      this.naam = ((vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg") as String).cap;
+      this.naam = capitalize(vak["Omschrijving"] ?? vak["omschrijving"] ?? vak["Naam"] ?? "leeg");
     }
   }
 }

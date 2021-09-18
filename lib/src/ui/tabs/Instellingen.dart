@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+
+import 'package:share/share.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
+
 import 'package:argo/main.dart';
-import 'package:share/share.dart';
+
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/capitalize.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
+import 'package:argo/src/utils/notifications.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/CircleShape.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 
 class Instellingen extends StatefulWidget {
   @override
@@ -19,18 +26,12 @@ class InstellingenCategory extends StatelessWidget {
   final String category;
   final Widget Function(BuildContext, void Function(void Function())) builder;
   final IconData icon;
-  final bool border;
 
-  InstellingenCategory({this.category, this.icon, this.builder, this.border = true});
+  InstellingenCategory({this.category, this.icon, this.builder});
 
   Widget build(BuildContext context) {
     return MaterialCard(
-      child: ListTileBorder(
-        border: !border
-            ? null
-            : Border(
-                top: greyBorderSide(),
-              ),
+      child: ListTile(
         title: Text(category),
         leading: Icon(icon),
         onTap: () {
@@ -51,17 +52,11 @@ class SwitchInstelling extends StatelessWidget {
   final String subtitle;
   final Function onChange;
   final bool disabled;
-  final bool border;
 
-  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled, this.border = true});
+  SwitchInstelling({this.title, this.setting, this.subtitle, this.onChange, this.disabled});
 
   Widget build(BuildContext context) {
     return MaterialCard(
-      border: !border
-          ? null
-          : Border(
-              top: greyBorderSide(),
-            ),
       child: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
           return SwitchListTile(
@@ -95,17 +90,11 @@ class CustomInstelling extends StatelessWidget {
   final String subtitle;
   final Function onTap;
   final Widget trailing;
-  final bool border;
 
-  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle, this.border = true});
+  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle});
 
   Widget build(BuildContext context) {
     return MaterialCard(
-      border: !border
-          ? null
-          : Border(
-              top: greyBorderSide(),
-            ),
       child: ListTile(
         title: Text(title),
         onTap: onTap,
@@ -291,22 +280,20 @@ class _Instellingen extends State<Instellingen> {
     return AppPage(
       title: Text("Instellingen"),
       body: ListView(
-        children: [
+        children: divideListTiles([
           InstellingenCategory(
-            border: false,
             icon: Icons.format_paint_outlined,
             category: "Uiterlijk",
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
-                children: [
+                children: divideListTiles([
                   CustomInstelling(
-                    border: false,
                     title: "Thema",
                     onTap: () {
                       showThemeMenu(setState);
                     },
                     trailing: Icon(Icons.brightness_2_outlined),
-                    subtitle: userdata.get("theme").toString().capitalize,
+                    subtitle: capitalize(userdata.get("theme").toString()),
                   ),
                   CustomInstelling(
                     title: 'Primaire kleur',
@@ -327,7 +314,7 @@ class _Instellingen extends State<Instellingen> {
                   CustomInstelling(
                     title: 'Secundaire kleur',
                     onTap: () => showColorPicker("accentColor"),
-                    subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                     trailing: Container(
                       width: 40,
                       height: 40,
@@ -352,7 +339,7 @@ class _Instellingen extends State<Instellingen> {
                     setting: "liveList",
                     onChange: () => appState.setState(() {}),
                   )
-                ],
+                ]),
               );
             },
           ),
@@ -361,9 +348,8 @@ class _Instellingen extends State<Instellingen> {
             category: "Agenda",
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
-                children: [
+                children: divideListTiles([
                   CustomInstelling(
-                    border: false,
                     title: "Agendaschaal",
                     subtitle: "De lengte van één uur in de agenda (in pixels)",
                     trailing: CircleShape(
@@ -451,8 +437,13 @@ class _Instellingen extends State<Instellingen> {
                     title: "Automatische eindtijd",
                     subtitle: "De eindtijd van je agenda wordt gedetecteerd",
                     setting: "agendaAutoEind",
-                  )
-                ],
+                  ),
+                  SwitchInstelling(
+                    title: "Gebruik vak naam",
+                    subtitle: "Gebruik de naam van het vak",
+                    setting: "useVakName",
+                  ),
+                ]),
               );
             },
           ),
@@ -461,13 +452,12 @@ class _Instellingen extends State<Instellingen> {
             category: "Notificaties",
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
-                children: [
+                children: divideListTiles([
                   CustomInstelling(
-                    border: false,
                     title: "Lesmelding",
                     subtitle: "Hoeveel minuten voor de les je een melding krijgt",
                     trailing: CircleShape(
-                      child: Text("${userdata.get("preNotificationMinutes")}"),
+                      child: Text(userdata.get("preNotificationMinutes").toString()),
                     ),
                     onTap: () => showDialog(
                       context: context,
@@ -483,11 +473,11 @@ class _Instellingen extends State<Instellingen> {
                       if (value != null)
                         setState(() {
                           userdata.put("preNotificationMinutes", value);
-                          notifications.lessonNotifications(account.lessons);
+                          notifications.lessonNotifications();
                         });
                     }),
                   )
-                ],
+                ]),
               );
             },
           ),
@@ -496,37 +486,34 @@ class _Instellingen extends State<Instellingen> {
             category: "Overig",
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
-                children: [
+                children: divideListTiles([
                   SwitchInstelling(
-                    border: false,
-                    title: "Foto verbergen",
-                    subtitle: "Voor als die niet zo goed gelukt is",
+                    title: "Verberg foto",
+                    subtitle: "Vervangt je foto voor pictogram",
                     setting: "useIcon",
                     onChange: () => appState.setState(() {}),
                   ),
                   SwitchInstelling(
-                    title: "Menu openen met terugknop",
-                    subtitle: "Opent de zijbalk bij één keer gebruiken terugknop",
+                    title: "Menu met terugknop",
+                    subtitle: "Opent het menu met de terugknop",
                     setting: "backOpensDrawer",
                     onChange: () => appState.setState(() {}),
                   ),
                   SwitchInstelling(
                     disabled: !userdata.get("backOpensDrawer"),
-                    title: "Agenda openen met 2× terugknop",
-                    subtitle: "Opent de agenda bij twee keer gebruiken terugknop",
+                    title: "Agenda met 2× terugknop",
+                    subtitle: "Opent de agenda met de terugknop",
                     setting: userdata.get("backOpensDrawer") ? "doubleBackAgenda" : "backOpensDrawer",
                     onChange: () => appState.setState(() {}),
                   ),
                   if (accounts.length > 1)
                     SwitchInstelling(
                       title: "Altijd hoofdaccount gebruiken",
-                      subtitle: "Opent altijd je hoofdaccount als je de app opstart",
+                      subtitle: "Onthoud je account-keuze niet",
                       setting: "alwaysPrimary",
                       onChange: () => appState.setState(() {}),
                     ),
-                  if (custom.isEmpty)
-                    Container()
-                  else
+                  if (custom.isNotEmpty)
                     CustomInstelling(
                       title: "Alle aangepaste vaknamen wissen",
                       trailing: Padding(
@@ -551,7 +538,7 @@ class _Instellingen extends State<Instellingen> {
                               onPressed: () => setState(
                                 () {
                                   custom.clear();
-                                  handleError(account.magister.agenda.refresh, "Kon agenda niet herladen", context);
+                                  handleError(account().magister.agenda.refresh, "Kon agenda niet herladen", context);
                                   Navigator.of(context).pop();
                                 },
                               ),
@@ -560,7 +547,7 @@ class _Instellingen extends State<Instellingen> {
                         ),
                       ),
                     ),
-                ],
+                ]),
               );
             },
           ),
@@ -570,16 +557,15 @@ class _Instellingen extends State<Instellingen> {
               category: "Ontwikkelaarsopties",
               builder: (BuildContext context, StateSetter setState) {
                 return ListView(
-                  children: [
+                  children: divideListTiles([
                     SwitchInstelling(
-                      border: false,
                       title: "Ontwikkelaarsopties",
                       subtitle: "Schakel ontwikkelaarsopties uit",
                       setting: "developerMode",
                     ),
                     SwitchInstelling(
                       title: 'Onvoldoendekleur uitschakelen',
-                      subtitle: 'Zorgt ervoor dat onvoldoendes niet rood verschijnen',
+                      subtitle: 'Normale kleur voor onvoldoendes',
                       setting: "disableCijferColor",
                     ),
                     CustomInstelling(
@@ -601,7 +587,7 @@ class _Instellingen extends State<Instellingen> {
                     CustomInstelling(
                       title: 'Aangepaste secundaire kleur',
                       onTap: () => showColorAdvanced("accentColor"),
-                      subtitle: '#${Theme.of(context).accentColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
                       trailing: Container(
                         width: 40,
                         height: 40,
@@ -615,8 +601,8 @@ class _Instellingen extends State<Instellingen> {
                       ),
                     ),
                     CustomInstelling(
-                      title: 'Gebruikersgegevens',
-                      subtitle: 'Gebruikersgegevens inzien',
+                      title: 'Instellingen',
+                      subtitle: 'Lijst met je instellingen',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -636,11 +622,11 @@ class _Instellingen extends State<Instellingen> {
                       },
                       subtitle: 'Bekijk het foutenlogboek van de app',
                     )
-                  ],
+                  ]),
                 );
               },
             ),
-        ],
+        ]),
       ),
     );
   }
@@ -651,14 +637,14 @@ class LogPagina extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Logboek"),
+        title: Text("Error log"),
         actions: [
           IconButton(
             icon: Icon(
               Icons.error_outline,
             ),
             onPressed: () {
-              throw "Manually generated error";
+              throw "Dit is een error";
             },
           ),
           IconButton(
@@ -701,7 +687,7 @@ class DataPagina extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Gebruikersgegevens"),
+        title: Text("Instellingen"),
         actions: [
           IconButton(
             icon: Icon(
@@ -713,19 +699,21 @@ class DataPagina extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: () {
-          return userdata
-              .toMap()
-              .entries
-              .map((e) => ListTile(
-                    title: Text(e.key.toString()),
-                    subtitle: Text(
-                      e.value.toString(),
-                    ),
-                  ))
-              .toList();
-        }(),
+      body: MaterialCard(
+        child: ListView(
+          children: divideListTiles(
+            userdata
+                .toMap()
+                .entries
+                .map((e) => ListTile(
+                      title: Text(e.key.toString()),
+                      subtitle: Text(
+                        e.value.toString(),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ),
       ),
     );
   }

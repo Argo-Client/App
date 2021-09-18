@@ -5,11 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/bodyHeight.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
@@ -29,9 +32,9 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
     return ((dayOfYear - date.weekday + 10) / 7).floor();
   }
 
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.agenda.refresh, "Fout tijdens verversen van huiswerk", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.agenda.refresh, "Fout tijdens verversen van huiswerk", context);
 
-  Future<void> _handleError(buildMonday) async => await handleError(() async => account.magister.agenda.getLessen(buildMonday), "Kon huiswerk niet verversen", context);
+  Future<void> _handleError(buildMonday) async => await handleError(() async => account().magister.agenda.getLessen(buildMonday), "Kon huiswerk niet verversen", context);
 
   int infinityPageCount = 1000;
   int initialPage;
@@ -66,11 +69,11 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
         return Futuristic(
           autoStart: true,
           futureBuilder: () {
-            if (account.lessons[buildSlug] == null) {
-              return account.magister.agenda.getLessen(buildMonday);
+            if (account().lessons[buildSlug] == null) {
+              return account().magister.agenda.getLessen(buildMonday);
             }
 
-            return Future.value(account.lessons[buildSlug]);
+            return Future.value(account().lessons[buildSlug]);
           },
           errorBuilder: (c, error, retry) => RefreshIndicator(
             onRefresh: () async => retry(),
@@ -89,7 +92,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
             ),
           ),
           dataBuilder: (c, _) {
-            List<List<Les>> week = account.lessons[buildSlug];
+            List<List<Les>> week = account().lessons[buildSlug];
             List<Les> huiswerkLessen = week.expand((x) => x).where((les) => les.huiswerk != null).toList();
             List<Widget> huiswerk = [];
 
@@ -154,7 +157,7 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.symmetric(
-                      horizontal: greyBorderSide(),
+                      horizontal: defaultBorderSide(context),
                     ),
                   ),
                   child: buildLiveList(huiswerk, 4),

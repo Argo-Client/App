@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:argo/main.dart';
+import 'package:argo/src/utils/boxes.dart';
 import 'package:auto_animated/auto_animated.dart';
 
 final options = LiveOptions(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:argo/main.dart';
+import 'package:argo/src/utils/bodyHeight.dart';
 
 class EmptyPage extends StatelessWidget {
   final String text;

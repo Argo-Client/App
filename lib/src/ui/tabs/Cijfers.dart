@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 
@@ -5,12 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
 import 'package:argo/src/ui/components/CircleShape.dart';
@@ -19,14 +21,12 @@ import 'package:argo/src/ui/components/ContentHeader.dart';
 class CijferTile extends StatelessWidget {
   final Cijfer cijfer;
   final bool isRecent;
-  final Border border;
 
-  CijferTile(this.cijfer, {this.isRecent, this.border});
+  CijferTile(this.cijfer, {this.isRecent});
 
   @override
   Widget build(BuildContext build) {
-    return ListTileBorder(
-      border: border,
+    return ListTile(
       trailing: cijfer.cijfer.length > 4
           ? null
           : Stack(
@@ -75,16 +75,7 @@ class _Cijfers extends State<Cijfers> {
   int jaar = 0;
 
   Widget _buildCijfer(Cijfer cijfer, List cijfersInPeriode) {
-    return ListTileBorder(
-      border: Border(
-        left: greyBorderSide(),
-        bottom: cijfersInPeriode.last == cijfer
-            ? BorderSide(
-                width: 0,
-                color: Colors.transparent,
-              )
-            : greyBorderSide(),
-      ),
+    return ListTile(
       title: Text("${cijfer.vak.naam}"),
       subtitle: Text("${formatDate.format(cijfer.ingevoerd)}"),
       trailing: CircleShape(
@@ -109,27 +100,22 @@ class _Cijfers extends State<Cijfers> {
   Widget _recenteCijfers() {
     return RefreshIndicator(
       onRefresh: () async {
-        await handleError(account.magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
+        await handleError(account().magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
       },
       child: SingleChildScrollView(
         physics: AlwaysScrollableScrollPhysics(),
-        child: account.recenteCijfers.isEmpty
+        child: account().recenteCijfers.isEmpty
             ? EmptyPage(
                 text: "Nog geen cijfers",
                 icon: Icons.looks_6_outlined,
               )
             : MaterialCard(
-                children: [
-                  for (Cijfer cijfer in account.recenteCijfers)
+                children: divideListTiles([
+                  for (Cijfer cijfer in account().recenteCijfers)
                     Container(
                       child: CijferTile(cijfer, isRecent: true),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: greyBorderSide(),
-                        ),
-                      ),
                     ),
-                ],
+                ]),
               ),
       ),
     );
@@ -163,9 +149,11 @@ class _Cijfers extends State<Cijfers> {
 
   @override
   Widget build(BuildContext context) {
-    List<Periode> perioden = account.cijfers[jaar].perioden
+    List<Periode> perioden = account()
+        .cijfers[jaar]
+        .perioden
         .where(
-          (periode) => account.cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id).isNotEmpty,
+          (periode) => account().cijfers[jaar].cijfers.where((cijfer) => cijfer.periode.id == periode.id).isNotEmpty,
         )
         .toList();
 
@@ -176,17 +164,17 @@ class _Cijfers extends State<Cijfers> {
           length: jaar == 0 ? 1 + perioden.length : perioden.length,
           child: AppPage(
             bottom: _tabBar(perioden),
-            title: Text("Cijfers - ${account.cijfers[jaar].leerjaar}"),
+            title: Text("Cijfers - ${account().cijfers[jaar].leerjaar}"),
             actions: [
               PopupMenuButton(
                   initialValue: jaar,
                   onSelected: (value) => setState(() => jaar = value),
                   itemBuilder: (BuildContext context) {
                     return <PopupMenuEntry>[
-                      for (int i = 0; i < account.cijfers.length; i++)
+                      for (int i = 0; i < account().cijfers.length; i++)
                         PopupMenuItem(
                           value: i,
-                          child: Text('${account.cijfers[i].leerjaar}'),
+                          child: Text('${account().cijfers[i].leerjaar}'),
                         ),
                     ];
                   }),
@@ -198,20 +186,28 @@ class _Cijfers extends State<Cijfers> {
                 for (Periode periode in perioden)
                   RefreshIndicator(
                     onRefresh: () async => await handleError(
-                      account.magister.cijfers.refresh,
+                      account().magister.cijfers.refresh,
                       "Kon cijfers niet verversen",
                       context,
                     ),
                     child: SingleChildScrollView(
                       child: MaterialCard(
                         children: () {
-                          List cijfersInPeriode = account.cijfers[jaar].cijfers
+                          List cijfersInPeriode = account()
+                              .cijfers[jaar]
+                              .cijfers
                               .where(
                                 (cijfer) => cijfer.periode.id == periode.id,
                               )
                               .toList();
 
-                          return [for (Cijfer cijfer in cijfersInPeriode) _buildCijfer(cijfer, cijfersInPeriode)];
+                          return divideListTiles(
+                            cijfersInPeriode
+                                .map(
+                                  (cijfer) => _buildCijfer(cijfer, cijfersInPeriode),
+                                )
+                                .toList(),
+                          );
                         }(),
                       ),
                     ),
@@ -242,7 +238,7 @@ class _CijferPagina extends State<CijferPagina> {
   double totalWeging;
 
   _CijferPagina(int id, int jaar) {
-    this.jaar = account.cijfers[jaar];
+    this.jaar = account().cijfers[jaar];
     this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
     this.vak = cijfers.first.vak;
 
@@ -277,12 +273,11 @@ class _CijferPagina extends State<CijferPagina> {
           return [
             ContentHeader(periode.naam),
             MaterialCard(
-              children: [
+              children: divideListTiles([
                 for (Cijfer cijfer in periodecijfers)
                   Futuristic(
                     autoStart: true,
-                    // futureBuilder: () async => Future.delayed(Duration(minutes: 2)),
-                    futureBuilder: () => account.magister.cijfers.getExtraInfo(cijfer, jaar),
+                    futureBuilder: () => account().magister.cijfers.getExtraInfo(cijfer, jaar),
                     busyBuilder: (context) => ListTile(
                       title: PlaceholderLines(
                         count: 1,
@@ -299,14 +294,9 @@ class _CijferPagina extends State<CijferPagina> {
                     },
                     dataBuilder: (context, data) => CijferTile(
                       cijfer,
-                      border: periodecijfers.last != cijfer
-                          ? Border(
-                              bottom: greyBorderSide(),
-                            )
-                          : null,
                     ),
                   ),
-              ],
+              ]),
             ),
           ];
       }(),

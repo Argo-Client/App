@@ -1,16 +1,17 @@
-import 'package:flushbar/flushbar_helper.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:futuristic/futuristic.dart';
 import 'package:dio/dio.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
@@ -18,6 +19,7 @@ import 'package:argo/src/ui/components/Bijlage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
 import 'package:argo/src/ui/components/LiveList.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
+import 'package:argo/src/ui/components/Refreshable.dart';
 
 class Berichten extends StatefulWidget {
   @override
@@ -25,15 +27,10 @@ class Berichten extends StatefulWidget {
 }
 
 class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
-  void afterFirstLayout(BuildContext context) => handleError(account.magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
+  void afterFirstLayout(BuildContext context) => handleError(account().magister.berichten.refresh, "Fout tijdens verversen van berichten", context);
 
-  Widget _buildBericht(ValueNotifier<Bericht> ber, int i) {
+  Widget _buildBericht(ValueNotifier<Bericht> ber) {
     return MaterialCard(
-      border: account.berichten.length - 1 == i || account.berichten[i + 1].dag != ber.value.dag
-          ? null
-          : Border(
-              bottom: greyBorderSide(),
-            ),
       child: Stack(
         children: [
           ValueListenableBuilder(
@@ -89,31 +86,38 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
     );
   }
 
-  Widget _buildBerichten(BuildContext context, box, Widget child) {
-    List<Widget> berichten = [];
-    String lastDay;
-
-    if (account.berichten.isEmpty) {
+  Widget _buildBerichten(BuildContext context) {
+    if (account().berichten.isEmpty) {
       return EmptyPage(
         text: "Geen berichten",
         icon: Icons.email_outlined,
       );
     }
 
-    for (int i = 0; i < account.berichten.length; i++) {
-      ValueNotifier<Bericht> bericht = ValueNotifier(account.berichten[i]);
-      if (lastDay != bericht.value.dag) {
-        berichten.add(
-          ContentHeader(bericht.value.dag),
-        );
-      }
+    Map<String, List<Bericht>> berichtenPerDay = {};
+    List<Widget> berichtenWidgets = [];
 
-      berichten.add(_buildBericht(bericht, i));
-
-      lastDay = bericht.value.dag;
+    for (var bericht in account().berichten) {
+      berichtenPerDay[bericht.dag] ??= [];
+      berichtenPerDay[bericht.dag].add(bericht);
     }
 
-    return buildLiveList(berichten, 10);
+    berichtenPerDay.entries.forEach((day) {
+      berichtenWidgets.addAll(
+        [
+          ContentHeader(day.key),
+          ...divideListTiles(
+            day.value
+                .map(
+                  (bericht) => _buildBericht(ValueNotifier(bericht)),
+                )
+                .toList(),
+          ),
+        ],
+      );
+    });
+
+    return buildLiveList(berichtenWidgets, 10);
   }
 
   @override
@@ -133,17 +137,10 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
           },
         ),
       ],
-      body: RefreshIndicator(
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: ValueListenableBuilder(
-            valueListenable: updateNotifier,
-            builder: _buildBerichten,
-          ),
-        ),
-        onRefresh: () async {
-          await handleError(account.magister.berichten.refresh, "Kon berichten niet verversen", context);
-        },
+      body: Refreshable(
+        builder: _buildBerichten,
+        onRefresh: account().magister.berichten.refresh,
+        type: "berichten",
       ),
     );
   }
@@ -155,10 +152,7 @@ class BerichtPagina extends StatelessWidget {
   const BerichtPagina(this.ber);
 
   Widget _afzender(String afzender) {
-    return ListTileBorder(
-      border: Border(
-        bottom: greyBorderSide(),
-      ),
+    return ListTile(
       leading: Padding(
         child: Icon(
           Icons.person_outlined,
@@ -178,10 +172,7 @@ class BerichtPagina extends StatelessWidget {
   }
 
   Widget _dag(String dag) {
-    return ListTileBorder(
-      border: Border(
-        bottom: greyBorderSide(),
-      ),
+    return ListTile(
       leading: Padding(
         child: Icon(
           Icons.send,
@@ -201,12 +192,7 @@ class BerichtPagina extends StatelessWidget {
   }
 
   Widget _ontvangers(BuildContext context, Bericht bericht) {
-    return ListTileBorder(
-      border: bericht.cc == null
-          ? null
-          : Border(
-              bottom: greyBorderSide(),
-            ),
+    return ListTile(
       leading: Padding(
         child: Icon(
           Icons.people_outlined,
@@ -289,16 +275,14 @@ class BerichtPagina extends StatelessWidget {
             ),
           ),
         ),
-        for (Bron bron in bijlagen)
-          BijlageItem(
-            bron,
-            download: account.magister.bronnen.downloadFile,
-            border: bijlagen.last != bron
-                ? Border(
-                    bottom: greyBorderSide(),
-                  )
-                : null,
-          )
+        ...divideListTiles(
+          bijlagen
+              .map((bijlage) => BijlageItem(
+                    bijlage,
+                    download: account().magister.bronnen.downloadFile,
+                  ))
+              .toList(),
+        )
       ],
     );
   }
@@ -334,14 +318,12 @@ class BerichtPagina extends StatelessWidget {
             return Future.value(returnable);
           }
           return Future.wait([
-            account.magister.berichten.getBerichtFrom(ber.value),
-            if (ber.value.heeftBijlagen) account.magister.berichten.bijlagen(ber.value),
+            account().magister.berichten.getBerichtFrom(ber.value),
+            if (ber.value.heeftBijlagen) account().magister.berichten.bijlagen(ber.value),
           ]);
         },
         onData: (bericht) {
           ber.value.read = bericht[0].read;
-          // ignore: invalid_use_of_visible_for_testing_member,invalid_use_of_protected_member
-          ber.notifyListeners();
         },
         busyBuilder: (context) => Center(
           child: CircularProgressIndicator(),
@@ -423,11 +405,8 @@ class NieuwBerichtPagina extends StatelessWidget {
           child: Column(
             children: [
               MaterialCard(
-                children: [
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                children: divideListTiles([
+                  ListTile(
                     leading: Icon(Icons.person_outlined),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -446,10 +425,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                       },
                     ),
                   ),
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                  ListTile(
                     leading: Icon(Icons.people_outlined),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -462,10 +438,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                       initialValue: ber?.cc?.join(', '),
                     ),
                   ),
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                  ListTile(
                     leading: Icon(Icons.people_outlined),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -478,10 +451,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                       initialValue: ber?.cc?.join(', '),
                     ),
                   ),
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                  ListTile(
                     leading: Icon(Icons.subject),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -516,7 +486,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                       // validator: validator,
                     ),
                   ),
-                ],
+                ]),
               ),
             ],
           ),

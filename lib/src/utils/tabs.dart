@@ -111,7 +111,7 @@ class Tabs {
         "color": Colors.blue[200],
       },
       {
-        "name": Text("Over deze app"),
+        "name": Text("Info"),
         "icon": Icons.info_outlined,
         "page": Info(),
         "color": Colors.lime[700],

@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:futuristic/futuristic.dart';
@@ -7,13 +8,17 @@ import 'package:timer_builder/timer_builder.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:intl/intl.dart';
 
-import 'package:argo/main.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:argo/src/utils/update.dart';
+import 'package:argo/src/utils/boxes.dart';
+import 'package:argo/src/utils/bodyHeight.dart';
+import 'package:argo/src/utils/getBrightness.dart';
+import 'package:argo/src/utils/handleError.dart';
+import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/Utils.dart';
-import 'package:argo/src/ui/components/ListTileBorder.dart';
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
@@ -26,14 +31,14 @@ class Agenda extends StatefulWidget {
 }
 
 Future huiswerkAf(hw) async {
-  await account.magister.agenda.toggleHuiswerk(hw);
+  await account().magister.agenda.toggleHuiswerk(hw);
   hw.huiswerkAf = !hw.huiswerkAf;
   update();
 }
 
 class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProviderStateMixin {
   void afterFirstLayout(BuildContext context) {
-    handleError(account.magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
+    handleError(account().magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
   final int infinityPageCount = 1000;
@@ -140,7 +145,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       });
 
   Widget _buildLesCard(Les les, int startHour) {
-    List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
+    List<Absentie> afwezig = account().afwezigheid.where((abs) => abs.les.id == les.id).toList();
 
     return Container(
       margin: EdgeInsets.only(
@@ -152,14 +157,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
         border: userdata.get("theme") == "OLED" || les.uitval
             ? null
             : Border.symmetric(
-                horizontal: greyBorderSide(),
+                horizontal: defaultBorderSide(context),
               ),
         color: les.uitval
-            ? theme == Brightness.dark
-                ? Color.fromARGB(255, 119, 66, 62)
-                : Color.fromARGB(255, 255, 205, 210)
+            ? getBrightness() == Brightness.dark
+                ? Color.fromRGBO(119, 66, 62, 1)
+                : Color.fromRGBO(255, 205, 210, 1)
             : null,
-        // shape: BorderRadius.all(),
         margin: EdgeInsets.only(
           top: .75,
         ),
@@ -176,7 +180,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                   child: Text(
                     les.hour,
                     style: TextStyle(
-                      color: theme == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
+                      color: getBrightness() == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
                     ),
                   ),
                 ),
@@ -275,7 +279,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
-                              color: theme == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                              color: getBrightness() == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
                             ),
                           ),
                         ),
@@ -313,16 +317,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               message: les.getName(),
               child: MaterialCard(
                 border: Border(
-                  top: userdata.get("theme") != "OLED"
-                      ? BorderSide(
-                          width: 0,
-                        )
-                      : greyBorderSide(),
-                  right: les == dag.where((les) => les.heleDag).last
-                      ? BorderSide(
-                          width: 0,
-                        )
-                      : greyBorderSide(),
+                  top: userdata.get("theme") != "OLED" ? null : defaultBorderSide(context),
+                  right: les.heleDag && les == dag.where((les) => les.heleDag).last ? null : defaultBorderSide(context),
                 ),
                 child: InkWell(
                   child: Padding(
@@ -472,7 +468,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
 
     return RefreshIndicator(
       onRefresh: () async => await handleError(
-        () async => account.magister.agenda.getLessen(buildWeekMonday),
+        () async => account().magister.agenda.getLessen(buildWeekMonday),
         "Kon agenda niet verversen",
         context,
       ),
@@ -485,8 +481,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
             bool gotLessons = false;
             List<Les> dag;
 
-            if (account.lessons[buildWeekslug] != null) {
-              dag = account.lessons[buildWeekslug][buildDay.weekday - 1];
+            if (account().lessons[buildWeekslug] != null) {
+              dag = account().lessons[buildWeekslug][buildDay.weekday - 1];
               gotLessons = true;
             }
 
@@ -510,7 +506,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: greyBorderSide(),
+                              bottom: defaultBorderSide(context),
                             ),
                           ),
                         ),
@@ -528,9 +524,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                 width: 30,
                                 decoration: BoxDecoration(
                                   border: Border(
-                                    top: greyBorderSide(),
-                                    right: greyBorderSide(),
-                                    left: greyBorderSide(),
+                                    top: defaultBorderSide(context),
+                                    right: defaultBorderSide(context),
+                                    left: defaultBorderSide(context),
                                   ),
                                 ),
 
@@ -562,7 +558,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                         if (!gotLessons)
                           Futuristic(
                             autoStart: true,
-                            futureBuilder: () async => account.magister.agenda.getLessen(buildWeekMonday),
+                            futureBuilder: () async => account().magister.agenda.getLessen(buildWeekMonday),
                             busyBuilder: (c) => Container(
                               width: MediaQuery.of(context).size.width - 30,
                               height: bodyHeight(context),
@@ -609,9 +605,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                 return <Widget>[Container()];
                               }
 
-                              return <Widget>[
-                                for (Les les in lessen) _buildLesCard(les, startHour),
-                              ];
+                              return lessen
+                                  .map(
+                                    (les) => _buildLesCard(les, startHour),
+                                  )
+                                  .toList();
                             }(),
                           )
                       ],
@@ -676,11 +674,8 @@ class LesPaginaItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTileBorder(
+    return ListTile(
       subtitle: Text(subtitle),
-      border: Border(
-        top: greyBorderSide(),
-      ),
       leading: Icon(icon),
       title: Text(
         title,
@@ -759,7 +754,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   }
 
   Future updateLessons() async {
-    await handleError(() async => account.magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
+    await handleError(() async => account().magister.agenda.getLessen(les.lastMonday), "Kon agenda niet herladen", context, () {
       setState(update);
     });
   }
@@ -808,13 +803,13 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildPage() {
-    List<Absentie> afwezig = account.afwezigheid.where((abs) => abs.les.id == les.id).toList();
+    List<Absentie> afwezig = account().afwezigheid.where((abs) => abs.les.id == les.id).toList();
 
     return SingleChildScrollView(
         child: Column(
       children: [
         MaterialCard(
-          children: [
+          children: divideListTiles([
             if (les.hour != null)
               LesPaginaItem(
                 title: (les.hour != "" ? les.hour + "e " : "") + les.startTime + " - " + les.endTime,
@@ -887,7 +882,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
-          ],
+          ]),
         ),
         if (les.description.isNotEmpty)
           MaterialCard(
@@ -911,7 +906,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
             margin: EdgeInsets.only(top: 20),
             child: Futuristic(
               autoStart: true,
-              futureBuilder: () => account.magister.agenda.getBijlagen(les),
+              futureBuilder: () => account().magister.agenda.getBijlagen(les),
               dataBuilder: (context, bijlagen) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -926,16 +921,10 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                       bottom: 10,
                     ),
                   ),
-                  for (Bron bron in bijlagen)
-                    BijlageItem(
-                      bron,
-                      download: account.magister.bronnen.downloadFile,
-                      border: bijlagen.last != bron
-                          ? Border(
-                              bottom: greyBorderSide(),
-                            )
-                          : null,
-                    )
+                  ...bijlagen.map((bron) => BijlageItem(
+                        bron,
+                        download: account().magister.bronnen.downloadFile,
+                      ))
                 ],
               ),
             ),
@@ -951,7 +940,7 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
     return FloatingActionButton(
       onPressed: () async {
         animate();
-        await account.magister.agenda.toggleHuiswerk(les);
+        await account().magister.agenda.toggleHuiswerk(les);
         les.huiswerkAf = !les.huiswerkAf;
         setState(() {});
         update();
@@ -996,9 +985,9 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                   // ),
                   IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () => account.magister.agenda.deleteLes(les).then((e) async {
+                    onPressed: () => account().magister.agenda.deleteLes(les).then((e) async {
                       Navigator.of(context).pop();
-                      await account.magister.agenda.refresh();
+                      await account().magister.agenda.refresh();
                       update();
                     }).catchError((e) {
                       FlushbarHelper.createError(message: "Les verwijderen mislukt: $e")..show(context);
@@ -1046,11 +1035,8 @@ class _AddLesPagina extends State<AddLesPagina> {
             child: Form(
               key: _formKey,
               child: Column(
-                children: [
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                children: divideListTiles([
+                  ListTile(
                     leading: Icon(Icons.title),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -1069,10 +1055,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                       onChanged: (value) => titel = value,
                     ),
                   ),
-                  ListTileBorder(
-                    border: Border(
-                      bottom: greyBorderSide(),
-                    ),
+                  ListTile(
                     leading: Icon(Icons.location_on),
                     title: TextFormField(
                       decoration: InputDecoration(
@@ -1087,11 +1070,6 @@ class _AddLesPagina extends State<AddLesPagina> {
                     ),
                   ),
                   Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: greyBorderSide(),
-                      ),
-                    ),
                     child: Column(
                       children: [
                         SwitchListTile(
@@ -1207,7 +1185,7 @@ class _AddLesPagina extends State<AddLesPagina> {
                       onChanged: (value) => inhoud = value,
                     ),
                   ),
-                ],
+                ]),
               ),
             ),
           ),
@@ -1223,7 +1201,7 @@ class _AddLesPagina extends State<AddLesPagina> {
           if (_formKey.currentState.validate()) {
             handleError(
               () async {
-                await account.magister.agenda.addAfspraak(
+                await account().magister.agenda.addAfspraak(
                   {
                     "title": titel,
                     "locatie": locatie,
@@ -1251,7 +1229,7 @@ class _AddLesPagina extends State<AddLesPagina> {
               () async {
                 Navigator.of(context).pop();
                 FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
-                await account.magister.agenda.refresh();
+                await account().magister.agenda.refresh();
                 update();
               },
             );

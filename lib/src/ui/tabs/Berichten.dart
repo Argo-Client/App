@@ -397,7 +397,7 @@ class NieuwBerichtPagina extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Nieuw bericht",
+          "Bericht opstellen",
         ),
       ),
       body: SingleChildScrollView(

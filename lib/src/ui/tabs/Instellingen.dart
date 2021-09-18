@@ -264,7 +264,7 @@ class _Instellingen extends State<Instellingen> {
           actions: <Widget>[
             TextButton(
               child: Text(
-                "Sluit",
+                "Sluiten",
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -489,12 +489,12 @@ class _Instellingen extends State<Instellingen> {
                 children: divideListTiles([
                   SwitchInstelling(
                     title: "Verberg foto",
-                    subtitle: "Vervangt je foto voor een emoji",
+                    subtitle: "Vervangt je foto voor pictogram",
                     setting: "useIcon",
                     onChange: () => appState.setState(() {}),
                   ),
                   SwitchInstelling(
-                    title: "Zijbalk met terugknop",
+                    title: "Menu met terugknop",
                     subtitle: "Opent het menu met de terugknop",
                     setting: "backOpensDrawer",
                     onChange: () => appState.setState(() {}),
@@ -612,7 +612,7 @@ class _Instellingen extends State<Instellingen> {
                       },
                     ),
                     CustomInstelling(
-                      title: 'Error log',
+                      title: 'Foutenlogboek',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -620,7 +620,7 @@ class _Instellingen extends State<Instellingen> {
                           ),
                         );
                       },
-                      subtitle: 'Bekijk de error log van de app',
+                      subtitle: 'Bekijk het foutenlogboek van de app',
                     )
                   ]),
                 );

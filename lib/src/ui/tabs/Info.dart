@@ -29,14 +29,14 @@ class _Info extends State<Info> {
         bottom: TabBar(
           tabs: [
             Tab(
-              text: "Over",
+              text: "Info",
             ),
             Tab(
               text: "Auteurs",
             ),
           ],
         ),
-        title: Text("Info"),
+        title: Text("Over deze app"),
         body: TabBarView(
           children: [
             ListView(
@@ -96,7 +96,7 @@ class _Info extends State<Info> {
                     ExpansionTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Guus van Meerveld'),
-                      subtitle: Text('Bijdrage: UI'),
+                      subtitle: Text('Bijdrage: Interface'),
                       children: [
                         ListTile(
                           leading: Icon(Icons.public_outlined),

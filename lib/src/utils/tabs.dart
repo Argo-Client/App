@@ -99,7 +99,7 @@ class Tabs {
       },
       if (account.has("Profiel", "Read"))
         {
-          "name": Text("Mijn gegevens"),
+          "name": Text("Mijn Gegevens"),
           "icon": Icons.person_outlined,
           "page": MijnGegevens(),
           "color": Colors.pink[200],

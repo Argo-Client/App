@@ -89,7 +89,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                         onPressed: () => Navigator.pop(context),
                       ),
                       TextButton(
-                        child: Text("Verwijderen"),
+                        child: Text("Verwijder"),
                         onPressed: () {
                           Navigator.pop(context);
                           accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
@@ -116,11 +116,11 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               const PopupMenuItem(
                 value: "verwijder",
-                child: Text('Verwijderen'),
+                child: Text('Verwijder'),
               ),
               const PopupMenuItem(
                 value: "herlaad",
-                child: Text('Herladen'),
+                child: Text('Herlaad'),
               ),
             ],
           ),

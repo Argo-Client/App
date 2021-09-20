@@ -49,7 +49,7 @@ jobs:
 
             # Build
             - name: Build
-              run: flutter build apk --split-per-abi
+              run: flutter build apk --split-per-abi --dart-define=GITHUB_SHA=$GITHUB_SHA
 
             # Add File
             - name: Export APK

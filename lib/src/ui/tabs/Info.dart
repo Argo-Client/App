@@ -1,8 +1,11 @@
-import 'package:argo/src/ui/components/ListTileDivider.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:futuristic/futuristic.dart';
+import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info/package_info.dart';
@@ -12,6 +15,21 @@ import 'package:argo/src/utils/boxes.dart';
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
+
+class ArgoUpdateApi {
+  String commitHash;
+  String commitMessage;
+  String downloadURL;
+  DateTime timestamp;
+
+  ArgoUpdateApi(Map<String, dynamic> json) {
+    this.commitHash = json["commitID"];
+    this.downloadURL = json["downloadURL"];
+    this.commitMessage = json["commitMessage"];
+    this.timestamp = DateTime.parse(json["timestamp"]).toLocal();
+  }
+}
 
 class Info extends StatefulWidget {
   @override
@@ -19,8 +37,8 @@ class Info extends StatefulWidget {
 }
 
 class _Info extends State<Info> {
-  String url = "https://argo-magister.net/links?";
-
+  final String url = "https://argo-magister.net/links?";
+  final String commitSha = const bool.hasEnvironment("GITHUB_SHA") ? const String.fromEnvironment("GITHUB_SHA").substring(0, 7) : null;
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -61,17 +79,98 @@ class _Info extends State<Info> {
                         userdata.put("developerMode", true);
                       },
                     ),
+                    if (commitSha != null)
+                      ExpansionTile(
+                        leading: Icon(Icons.ad_units),
+                        title: Text("Github Commit"),
+                        subtitle: Text("Commit hash: $commitSha"),
+                        maintainState: true,
+                        trailing: IconButton(
+                          icon: Icon(Icons.launch),
+                          onPressed: () {
+                            launch("https://github.com/Argo-Client/App/commit/$commitSha");
+                          },
+                        ),
+                        children: [
+                          Futuristic<List<ArgoUpdateApi>>(
+                            futureBuilder: () => Dio().get<Map<String, dynamic>>("https://download.argo-magister.net/register.json").then((value) => (value.data["files"] as List)
+                                .map(
+                                  (e) => ArgoUpdateApi(e),
+                                )
+                                .toList()),
+                            initialBuilder: (context, start) => ElevatedButton.icon(
+                              icon: Icon(Icons.refresh),
+                              onPressed: start,
+                              label: Text("Check Versie"),
+                            ),
+                            onError: (err, _) => print(err),
+                            dataBuilder: (context, versions) {
+                              var currentVersion = versions.firstWhere((element) => element.commitHash.startsWith(commitSha), orElse: () => null);
+                              var latestVersion = versions.isEmpty ? null : versions.last;
+                              var isLatest = currentVersion == latestVersion;
+
+                              var formatter = DateFormat("dd-MM-y HH:mm");
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (currentVersion != null)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Huidige versie: ${isLatest ? "latest" : ""}",
+                                          textScaleFactor: 1.2,
+                                        ),
+                                        Text("Versie: ${currentVersion.commitHash.substring(0, 7)}"),
+                                        Text(currentVersion.commitMessage.split("\n").first),
+                                        Text(formatter.format(currentVersion.timestamp)),
+                                      ],
+                                    ),
+                                  if (currentVersion != null && !isLatest)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 10),
+                                    ),
+                                  if (!isLatest)
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Nieuwste versie:",
+                                          textScaleFactor: 1.2,
+                                        ),
+                                        Text("Versie: ${latestVersion.commitHash.substring(0, 7)}"),
+                                        Text(
+                                          latestVersion.commitMessage.split("\n").first,
+                                          overflow: TextOverflow.fade,
+                                        ),
+                                        Text(formatter.format(latestVersion.timestamp)),
+                                        ElevatedButton.icon(
+                                          icon: Icon(Icons.download),
+                                          onPressed: () {
+                                            launch("https://download.argo-magister.nl/${latestVersion.downloadURL}");
+                                          },
+                                          label: Text("Update"),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              );
+                            },
+                          )
+                        ],
+                      ),
                     ListTile(
                       leading: Icon(Icons.device_hub_outlined),
                       title: Text('Github'),
                       subtitle: Text("Broncode"),
-                      onTap: () => launch("$url?u=argo&type=website"),
+                      onTap: () => launch("https://github.com/Argo-Client/App"),
                     ),
                     ListTile(
                       leading: Icon(Icons.chat_outlined),
                       title: Text('Discord'),
                       subtitle: Text("Aankondigingen, feedback en gezelligheid"),
-                      onTap: () => launch("$url?u=argo&type=discord"),
+                      onTap: () => launch("https://discord.com/invite/Xc4Xzsm"),
                     )
                   ]),
                 ),
@@ -102,14 +201,14 @@ class _Info extends State<Info> {
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
                           onTap: () {
-                            launch("${url}u=guus&type=website");
+                            launch("https://guusvanmeerveld.dev");
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.device_hub_outlined),
                           title: Text("Github"),
                           onTap: () {
-                            launch("${url}u=guus&type=github");
+                            launch("https://github.com/Guusvanmeerveld");
                           },
                         ),
                       ],
@@ -123,31 +222,22 @@ class _Info extends State<Info> {
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
                           onTap: () {
-                            launch("${url}u=sam&type=website");
+                            launch("https://samtaen.nl");
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.device_hub_outlined),
                           title: Text("Github"),
                           onTap: () {
-                            launch("${url}u=sam&type=github");
+                            launch("https://github.com/Netfloex");
                           },
                         ),
                       ],
                     ),
-                    ExpansionTile(
+                    ListTile(
                       leading: Icon(Icons.person_outlined),
                       title: Text('Martijn Oosterhuis'),
                       subtitle: Text('Bijdrage: Ontwikkelaarsmodus'),
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.public_outlined),
-                          title: Text("Website"),
-                          onTap: () {
-                            launch("${url}u=martijn&type=website");
-                          },
-                        ),
-                      ],
                     )
                   ]),
                 ),

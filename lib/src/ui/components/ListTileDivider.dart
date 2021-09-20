@@ -4,22 +4,20 @@ import 'package:flutter/material.dart';
 List<Widget> divideListTiles(List<Widget> children) {
   final List<Widget> items = [];
   for (var child in children) {
-    items.addAll(
-      [
-        DecoratedBox(
-          position: DecorationPosition.foreground,
-          decoration: BoxDecoration(
-            border: child == children.last
-                ? null
-                : Border(
-                    bottom: BorderSide(
-                      color: grayBorderColor(),
-                    ),
+    items.add(
+      DecoratedBox(
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          border: child == children.last
+              ? null
+              : Border(
+                  bottom: BorderSide(
+                    color: grayBorderColor(),
                   ),
-          ),
-          child: child,
+                ),
         ),
-      ],
+        child: child,
+      ),
     );
   }
   return items;

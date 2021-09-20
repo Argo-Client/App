@@ -101,7 +101,7 @@ class _Introduction extends State<Introduction> {
                   decoration: TextDecoration.underline,
                 ),
               ),
-              onPressed: () => launch("https://argo-magister.net/beleid"),
+              onPressed: () => launch("https://argo-magister.nl/beleid"),
             ),
           ),
           InkWell(

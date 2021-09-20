@@ -35,7 +35,6 @@ class Info extends StatefulWidget {
 }
 
 class _Info extends State<Info> {
-  final String url = "https://argo-magister.net/links?";
   final String commitSha = const bool.hasEnvironment("GITHUB_SHA") ? const String.fromEnvironment("GITHUB_SHA").substring(0, 7) : null;
   @override
   Widget build(BuildContext context) {
@@ -91,7 +90,7 @@ class _Info extends State<Info> {
                         ),
                         children: [
                           Futuristic<List<ArgoUpdateApi>>(
-                            futureBuilder: () => Dio().get<Map<String, dynamic>>("https://download.argo-magister.net/register.json").then((value) => (value.data["files"] as List)
+                            futureBuilder: () => Dio().get<Map<String, dynamic>>("https://download.argo-magister.nl/register.json").then((value) => (value.data["files"] as List)
                                 .map(
                                   (e) => ArgoUpdateApi(e),
                                 )
@@ -252,14 +251,14 @@ class _Info extends State<Info> {
                           leading: Icon(Icons.public_outlined),
                           title: Text("Website"),
                           onTap: () {
-                            launch("${url}u=sjoerd&type=website");
+                            launch("https://sjoerd.dev");
                           },
                         ),
                         ListTile(
                           leading: Icon(Icons.device_hub_outlined),
                           title: Text("Github"),
                           onTap: () {
-                            launch("${url}u=sjoerd&type=github");
+                            launch("https://github.com/netlob");
                           },
                         ),
                       ],

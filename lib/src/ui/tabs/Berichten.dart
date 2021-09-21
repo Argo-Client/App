@@ -1,10 +1,9 @@
 import 'package:argo/src/ui/components/ListTileDivider.dart';
+import 'package:argo/src/utils/magister/Berichten.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:futuristic/futuristic.dart';
-import 'package:dio/dio.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/boxes.dart';
@@ -66,7 +65,7 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
               ),
             ),
             subtitle: Text(
-              ber.value.afzender,
+              ber.value.afzender.naam,
             ),
             title: Text(
               ber.value.onderwerp,
@@ -128,12 +127,11 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
         IconButton(
           icon: Icon(Icons.add),
           onPressed: () {
-            FlushbarHelper.createInformation(message: "Helaas kun je op dit moment nog geen berichten sturen via Argo.")..show(context);
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => NieuwBerichtPagina(),
-            //   ),
-            // );
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NieuwBerichtPagina(),
+              ),
+            );
           },
         ),
       ],
@@ -224,7 +222,7 @@ class BerichtPagina extends StatelessWidget {
     );
   }
 
-  Widget _cc(BuildContext context, List<String> cc) {
+  Widget _cc(BuildContext context, List<Contact> cc) {
     return ListTile(
       leading: Padding(
         child: Icon(
@@ -328,9 +326,7 @@ class BerichtPagina extends StatelessWidget {
         busyBuilder: (context) => Center(
           child: CircularProgressIndicator(),
         ),
-        onError: (error, retry) {
-          if (!(error is DioError)) throw (error);
-        },
+        onError: (error, retry) => print(error),
         errorBuilder: (context, dynamic error, retry) {
           return RefreshIndicator(
             onRefresh: () async => retry(),
@@ -357,7 +353,7 @@ class BerichtPagina extends StatelessWidget {
                     right: 0,
                   ),
                   children: [
-                    if (ber.afzender != null) _afzender(ber.afzender),
+                    if (ber.afzender.naam != null) _afzender(ber.afzender.naam),
                     if (ber.dag != null) _dag(ber.dag),
                     if (ber.ontvangers != null) _ontvangers(context, ber),
                     if (ber.cc != null) _cc(context, ber.cc),
@@ -390,7 +386,11 @@ class BerichtPagina extends StatelessWidget {
 
 class NieuwBerichtPagina extends StatelessWidget {
   final Bericht ber;
-  const NieuwBerichtPagina([this.ber]);
+  final ValueNotifier<List<Contact>> to = ValueNotifier([]);
+
+  NieuwBerichtPagina([this.ber]) {
+    to.value = [ber.afzender];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -406,22 +406,40 @@ class NieuwBerichtPagina extends StatelessWidget {
             children: [
               MaterialCard(
                 children: divideListTiles([
+                  ValueListenableBuilder<List<Contact>>(
+                    valueListenable: to,
+                    builder: (context, persons, _a) {
+                      return Row(
+                        children: persons
+                            .map(
+                              (person) => ElevatedButton(
+                                onPressed: () {
+                                  to.value = List.from(to.value)..removeWhere((other) => other.id == person.id);
+                                },
+                                child: Text(person.naam),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    },
+                  ),
                   ListTile(
                     leading: Icon(Icons.person_outlined),
-                    title: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: 'Aan',
-                      ),
-                      initialValue: ber != null ? ber.afzender : null,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Veld verplicht';
-                        }
-                        return null;
+                    title: Autocomplete<QueryResponse>(
+                      onSelected: (person) {
+                        to.value = List.from(to.value)..add(person.toContact());
+                      },
+                      optionsBuilder: (textValues) {
+                        String query = textValues.text.trim().toLowerCase();
+                        account().magister.berichten.search(query);
+
+                        var queryCache = account().magister.berichten.queryCache;
+                        bool hasKey = queryCache.containsKey(query);
+                        var cached = queryCache[hasKey ? query : query.replaceFirst(RegExp(".\$"), "")];
+
+                        return (cached ?? []).where(
+                          (person) => !to.value.any((other) => other.id == person.id),
+                        );
                       },
                     ),
                   ),

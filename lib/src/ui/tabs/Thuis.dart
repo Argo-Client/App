@@ -1,4 +1,3 @@
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
@@ -297,12 +296,11 @@ class _Thuis extends State<Thuis> {
           PopoutButton(
             "Bericht opstellen",
             onPressed: () {
-              FlushbarHelper.createInformation(message: "Helaas werkt deze functie nog niet.")..show(context);
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => NieuwBerichtPagina(null),
-              //   ),
-              // );
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NieuwBerichtPagina(null),
+                ),
+              );
             },
             icon: Icons.email,
           ),
@@ -572,7 +570,7 @@ class _Thuis extends State<Thuis> {
                       )
                     : null,
                 subtitle: Text(
-                  ber.afzender,
+                  ber.afzender.naam,
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {

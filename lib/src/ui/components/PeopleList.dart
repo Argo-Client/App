@@ -1,4 +1,5 @@
 import 'package:argo/src/ui/components/ListTileDivider.dart';
+import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clipboard/clipboard.dart';
@@ -7,7 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'Card.dart';
 
 class PeopleList extends StatelessWidget {
-  final List people;
+  final List<Contact> people;
   final String title;
 
   PeopleList(
@@ -30,7 +31,7 @@ class PeopleList extends StatelessWidget {
             ),
             onPressed: () {
               FlutterClipboard.copy(
-                people.join(" \r\n"),
+                people.map((e) => e.naam).join(" \r\n"),
               ).then((value) => {
                     Fluttertoast.showToast(
                       msg: "Gekopieerd ;)",
@@ -78,7 +79,7 @@ class PeopleList extends StatelessWidget {
                     Icons.person,
                   ),
                   title: Text(
-                    person.toString(),
+                    person.naam,
                   ),
                 ),
               )

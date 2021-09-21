@@ -4,7 +4,42 @@ import 'package:intl/intl.dart';
 import 'magister.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 
+class QueryResponse {
+  String initials;
+  String firstname;
+  String tussenvoegsel;
+  String lastname;
+  String klas;
+
+  int id;
+
+  String get naam {
+    return "${firstname ?? initials} ${tussenvoegsel != null ? "$tussenvoegsel " : ""}$lastname";
+  }
+
+  String toString() => naam;
+
+  Contact toContact() {
+    var contact = Contact();
+    contact.id = id;
+    contact.naam = naam;
+    return contact;
+  }
+
+  QueryResponse(Map json) {
+    initials = json["voorletters"];
+    firstname = json["roepnaam"];
+    tussenvoegsel = json["tussenvoegsel"];
+    lastname = json["achternaam"];
+    klas = json["klas"];
+
+    id = json["id"];
+  }
+}
+
 class Berichten extends MagisterApi {
+  Map<String, Iterable<QueryResponse>> queryCache = {};
+
   MagisterApi api;
   Berichten(this.api) : super(api.account);
   DateFormat formatDate = DateFormat("yyyy-MM-dd");
@@ -49,5 +84,25 @@ class Berichten extends MagisterApi {
     ber.bijlagen = raw.map((bij) => Bron(bij)).toList().cast<Bron>();
     account.save();
     return ber.bijlagen;
+  }
+
+  Future<Iterable<QueryResponse>> search(String query) async {
+    if (queryCache[query] != null) {
+      return queryCache[query];
+    }
+    if (query.length < 2) {
+      return [];
+    }
+
+    List raw = (await api.dio.get(
+      "/api/contacten/personen",
+      queryParameters: {
+        "q": query,
+      },
+    ))
+        .data["items"];
+
+    queryCache[query] = raw.map((e) => QueryResponse(e)).toList();
+    return queryCache[query];
   }
 }

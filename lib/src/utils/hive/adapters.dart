@@ -135,7 +135,7 @@ class Les {
   @HiveField(9)
   Vak vak;
   @HiveField(10)
-  List<Docent> docenten;
+  List<Contact> docenten;
   @HiveField(11)
   String huiswerk;
   @HiveField(12)
@@ -194,7 +194,7 @@ class Les {
     this.location = les["Lokatie"];
     this.date = formatDatum.format(start);
     this.vak = les["Vakken"].isEmpty ? Vak({"Omschrijving": les["Omschrijving"]}) : Vak(les["Vakken"][0]);
-    this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Docent(doc)).toList().cast<Docent>() : null;
+    this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Contact(doc)).toList().cast<Contact>() : null;
     this.huiswerk = les["Inhoud"];
     this.huiswerkAf = les["Afgerond"];
     this.startDateTime = start;
@@ -351,7 +351,7 @@ class Bericht {
   @HiveField(4)
   String onderwerp;
   @HiveField(5)
-  String afzender;
+  Contact afzender;
   @HiveField(6)
   DateTime date;
   @HiveField(7)
@@ -363,9 +363,9 @@ class Bericht {
   @HiveField(9)
   String inhoud;
   @HiveField(10)
-  List<String> ontvangers;
+  List<Contact> ontvangers;
   @HiveField(11)
-  List<String> cc;
+  List<Contact> cc;
 
   Bericht([Map ber]) {
     if (ber != null) {
@@ -375,13 +375,13 @@ class Bericht {
       this.prioriteit = ber["heeftPrioriteit"];
       this.heeftBijlagen = ber["heeftBijlagen"];
       this.onderwerp = ber["onderwerp"];
-      this.afzender = ber["afzender"]["naam"];
+      this.afzender = Contact(ber["afzender"]);
       this.read = ber["isGelezen"];
 
       if (ber["inhoud"] != null) {
         this.inhoud = ber["inhoud"];
-        this.ontvangers = ber["ontvangers"].map((ont) => ont["weergavenaam"]).toList().cast<String>();
-        this.cc = ber["kopieOntvangers"].isEmpty ? null : ber["kopieOntvangers"].map((ont) => ont["weergavenaam"]).toList().cast<String>();
+        this.ontvangers = ber["ontvangers"].map((ont) => Contact(ont)).toList().cast<Contact>();
+        this.cc = ber["kopieOntvangers"].isEmpty ? null : ber["kopieOntvangers"].map((ont) => Contact(ont)).toList().cast<Contact>();
       }
     }
   }
@@ -505,20 +505,21 @@ class Leermiddel {
   }
 }
 
-@HiveType(typeId: 12)
-class Docent {
+@HiveType(typeId: 15)
+class Contact {
   @HiveField(0)
   String naam;
   @HiveField(1)
-  String code;
-  Docent([docent]) {
-    if (docent != null) {
-      this.naam = docent["Naam"];
-      this.code = docent["Docentcode"];
+  int id;
+
+  String toString() => naam;
+
+  Contact([Map contact]) {
+    if (contact != null) {
+      id = contact["id"];
+      naam = contact["naam"] ?? contact["weergavenaam"];
     }
   }
-
-  String toString() => this.naam;
 }
 
 @HiveType(typeId: 13)

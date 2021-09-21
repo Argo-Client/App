@@ -19,7 +19,7 @@ Future<void> initHive() async {
     Hive.registerAdapter(BronAdapter());
     Hive.registerAdapter(WijzerAdapter());
     Hive.registerAdapter(LeermiddelAdapter());
-    Hive.registerAdapter(DocentAdapter());
+    Hive.registerAdapter(ContactAdapter());
     Hive.registerAdapter(PrivilegeAdapter());
   } catch (_) {}
 

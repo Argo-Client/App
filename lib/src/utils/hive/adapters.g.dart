@@ -137,7 +137,7 @@ class LesAdapter extends TypeAdapter<Les> {
       ..location = fields[7] as String
       ..date = fields[8] as String
       ..vak = fields[9] as Vak
-      ..docenten = (fields[10] as List)?.cast<Docent>()
+      ..docenten = (fields[10] as List)?.cast<Contact>()
       ..huiswerk = fields[11] as String
       ..information = fields[12] as String
       ..hour = fields[13] as String
@@ -414,13 +414,13 @@ class BerichtAdapter extends TypeAdapter<Bericht> {
       ..prioriteit = fields[2] as bool
       ..heeftBijlagen = fields[3] as bool
       ..onderwerp = fields[4] as String
-      ..afzender = fields[5] as String
+      ..afzender = fields[5] as Contact
       ..date = fields[6] as DateTime
       ..read = fields[7] as bool
       ..bijlagen = (fields[8] as List)?.cast<Bron>()
       ..inhoud = fields[9] as String
-      ..ontvangers = (fields[10] as List)?.cast<String>()
-      ..cc = (fields[11] as List)?.cast<String>();
+      ..ontvangers = (fields[10] as List)?.cast<Contact>()
+      ..cc = (fields[11] as List)?.cast<Contact>();
   }
 
   @override
@@ -656,29 +656,29 @@ class LeermiddelAdapter extends TypeAdapter<Leermiddel> {
           typeId == other.typeId;
 }
 
-class DocentAdapter extends TypeAdapter<Docent> {
+class ContactAdapter extends TypeAdapter<Contact> {
   @override
-  final int typeId = 12;
+  final int typeId = 15;
 
   @override
-  Docent read(BinaryReader reader) {
+  Contact read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Docent()
+    return Contact()
       ..naam = fields[0] as String
-      ..code = fields[1] as String;
+      ..id = fields[1] as int;
   }
 
   @override
-  void write(BinaryWriter writer, Docent obj) {
+  void write(BinaryWriter writer, Contact obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
       ..write(obj.naam)
       ..writeByte(1)
-      ..write(obj.code);
+      ..write(obj.id);
   }
 
   @override
@@ -687,7 +687,7 @@ class DocentAdapter extends TypeAdapter<Docent> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DocentAdapter &&
+      other is ContactAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

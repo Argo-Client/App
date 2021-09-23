@@ -297,6 +297,16 @@ class Cijfer {
     return this.cijfer == null ? null : double.tryParse(this.cijfer.replaceFirst(",", "."));
   }
 
+  Cijfer lowCopy() {
+    Cijfer newCijfer = Cijfer();
+    newCijfer.cijfer = cijfer;
+    newCijfer.weging = weging;
+    newCijfer.id = id;
+    newCijfer.periode = periode;
+    newCijfer.title = title;
+    return newCijfer;
+  }
+
   Cijfer([Map cijfer]) {
     if (cijfer != null) {
       if (cijfer["waarde"] == null) {

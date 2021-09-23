@@ -19,7 +19,7 @@ Color grayBorderColor() {
       color = Color(0xFF646464);
       break;
     case "licht":
-      color = Color(0xFFFFFFFF);
+      color = Color(0xFFe1e1e1);
       break;
     default:
       throw "${userdata.get("theme")} is een onjuist thema";

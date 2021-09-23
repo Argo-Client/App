@@ -1,9 +1,11 @@
 import 'package:argo/src/ui/components/ListTileDivider.dart';
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_placeholder_textlines/placeholder_lines.dart';
 
 import 'package:intl/intl.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+// import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:futuristic/futuristic.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
@@ -224,18 +226,23 @@ class _Cijfers extends State<Cijfers> {
 class CijferPagina extends StatefulWidget {
   final int id;
   final int jaar;
+
   CijferPagina(this.id, this.jaar);
+
   @override
   _CijferPagina createState() => _CijferPagina(id, jaar);
 }
 
 class _CijferPagina extends State<CijferPagina> {
-  CijferJaar jaar;
-  List<Cijfer> cijfers;
-  Vak vak;
-  double doubleCijfers;
+  // Charts
   List<double> avgCijfers;
   double totalWeging;
+  double doubleCijfers;
+
+  // Cijfer informatie
+  Vak vak;
+  CijferJaar jaar;
+  List<Cijfer> cijfers;
 
   _CijferPagina(int id, int jaar) {
     this.jaar = account().cijfers[jaar];
@@ -249,10 +256,12 @@ class _CijferPagina extends State<CijferPagina> {
     cijfers.reversed.forEach(
       (Cijfer cijfer) {
         if (cijfer.weging == 0 || cijfer.weging == null) return;
+
         double cijf;
         try {
           cijf = double.parse(cijfer.cijfer.replaceFirst(",", "."));
         } catch (e) {}
+
         if (cijf != null) {
           doubleCijfers += cijf * cijfer.weging;
           totalWeging += cijfer.weging;
@@ -313,28 +322,34 @@ class _CijferPagina extends State<CijferPagina> {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.flag,
+              Icons.flag_outlined,
             ),
             onPressed: () {},
           ),
           IconButton(
             icon: Icon(
-              Icons.calculate,
+              Icons.calculate_outlined,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BerekenCijferPagina(vak, cijfers, jaar),
+                ),
+              );
+            },
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (avgCijfers.isNotEmpty)
-              SizedBox(
-                height: 200.0,
-                child: charts.LineChart(
-                  _createCijfers(),
-                ),
-              ),
+            // if (avgCijfers.isNotEmpty)
+            //   SizedBox(
+            //     height: 200.0,
+            //     child: charts.LineChart(
+            //       _createCijfers(),
+            //     ),
+            //   ),
             for (Periode periode in jaar.perioden) _buildPeriode(periode),
           ],
         ),
@@ -342,16 +357,172 @@ class _CijferPagina extends State<CijferPagina> {
     );
   }
 
-  List<charts.Series<double, int>> _createCijfers() {
-    return [
-      new charts.Series<double, int>(
-        id: 'Cijfers',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (double cijfer, i) => i,
-        measureFn: (double cijfer, _) => cijfer,
-        displayName: "Gemiddelde",
-        data: avgCijfers,
-      )
-    ];
+  // List<charts.Series<double, int>> _createCijfers() {
+  //   return [
+  //     new charts.Series<double, int>(
+  //       id: 'Cijfers',
+  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //       domainFn: (double cijfer, i) => i,
+  //       measureFn: (double cijfer, _) => cijfer,
+  //       displayName: "Gemiddelde",
+  //       data: avgCijfers,
+  //     )
+  //   ];
+  // }
+}
+
+class BerekenCijferPagina extends StatefulWidget {
+  final Vak vak;
+  final List<Cijfer> cijfers;
+  final CijferJaar jaar;
+
+  const BerekenCijferPagina(this.vak, this.cijfers, this.jaar);
+
+  @override
+  _BerekenCijferPaginaState createState() => _BerekenCijferPaginaState(vak, cijfers, jaar);
+}
+
+class _BerekenCijferPaginaState extends State<BerekenCijferPagina> {
+  List<Cijfer> cijfers;
+  CijferJaar jaar;
+  Vak vak;
+
+  ValueNotifier<List<Cijfer>> included;
+
+  _BerekenCijferPaginaState(Vak vak, List<Cijfer> cijfers, CijferJaar jaar) {
+    this.vak = vak;
+    this.jaar = jaar;
+
+    this.cijfers = cijfers.where((cijfer) => cijfer.parse() != null).map((oldCijfer) => oldCijfer.lowCopy()).toList();
+
+    this.included = ValueNotifier(this.cijfers.where((cijfer) => cijfer.weging != null && cijfer.weging > 1).toList());
+  }
+
+  Widget _buildPeriode(Periode periode) {
+    List<Cijfer> periodeCijfers = cijfers.where((cijf) => cijf.periode.id == periode.id).toList();
+
+    if (periodeCijfers.isEmpty) return Container();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ContentHeader(periode.naam),
+        ...divideListTiles(
+          periodeCijfers.map(
+            (cijfer) {
+              ValueNotifier<bool> checked = ValueNotifier(included.value.contains(cijfer));
+
+              void updateChecked() {
+                checked.value = !checked.value;
+
+                if (checked.value)
+                  included.value = List.from(included.value)..add(cijfer);
+                else
+                  included.value = List.from(included.value)..remove(cijfer);
+              }
+
+              return MaterialCard(
+                child: ValueListenableBuilder(
+                  valueListenable: checked,
+                  builder: (context, _, _a) => ListTile(
+                    onTap: updateChecked,
+                    leading: Checkbox(
+                      value: checked.value,
+                      onChanged: (bool bool) => updateChecked(),
+                      activeColor: userdata.get('accentColor'),
+                    ),
+                    title: Text(cijfer.title),
+                    trailing: Container(
+                      width: 75,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Container(
+                            child: TextFormField(
+                              onChanged: (changed) {
+                                cijfer.cijfer = changed;
+                              },
+                              decoration: InputDecoration(
+                                isDense: true,
+                                // border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.number,
+                              initialValue: cijfer.cijfer,
+                            ),
+                            width: 30,
+                          ),
+                          Text("x"),
+                          Container(
+                            child: TextFormField(
+                              decoration: InputDecoration(
+                                isDense: true,
+                                // border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.number,
+                              initialValue: cijfer.weging.toString(),
+                            ),
+                            width: 30,
+                          ),
+                        ],
+                        // leading: Checkbox(value: ,),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ).toList(),
+        )
+      ],
+    );
+  }
+
+  String _calculateAverage(List<Cijfer> cijfers) {
+    double sum = cijfers.fold(0, (value, cijfer) => value + cijfer.parse() * cijfer.weging);
+    double weight = cijfers.fold(0, (value, cijfer) => value + cijfer.weging);
+
+    double average = sum / weight;
+
+    print(cijfers.map((cijfer) => "${cijfer.cijfer}x${cijfer.weging}"));
+
+    return average.toStringAsPrecision(3);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gemiddelde berekenen'),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: defaultBorderSide(context),
+          ),
+        ),
+        child: ListTile(
+          tileColor: Colors.grey[800],
+          // leading: Icon(Icons.ac_unit),
+          title: Text("Gemiddelde:"),
+          trailing: ValueListenableBuilder(
+            valueListenable: this.included,
+            builder: (context, _, _a) => Text(
+              _calculateAverage(this.included.value),
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
+      ),
+      body: cijfers.isEmpty
+          ? EmptyPage(
+              icon: Icons.calculate_outlined,
+              text: 'Ha ha sukkel',
+            )
+          : ListView(
+              children: [
+                for (Periode periode in jaar.perioden) _buildPeriode(periode),
+              ],
+            ),
+    );
   }
 }

@@ -389,7 +389,9 @@ class NieuwBerichtPagina extends StatelessWidget {
   final ValueNotifier<List<Contact>> to = ValueNotifier([]);
 
   NieuwBerichtPagina([this.ber]) {
-    to.value = [ber.afzender];
+    if (this.ber != null) {
+      to.value = [ber.afzender];
+    }
   }
 
   @override

@@ -194,7 +194,12 @@ class Les {
     this.location = les["Lokatie"];
     this.date = formatDatum.format(start);
     this.vak = les["Vakken"].isEmpty ? Vak({"Omschrijving": les["Omschrijving"]}) : Vak(les["Vakken"][0]);
-    this.docenten = les["Docenten"] != null && les["Docenten"].isNotEmpty ? les["Docenten"].map((doc) => Contact(doc)).toList().cast<Contact>() : null;
+
+    List docentenList = les["Docenten"];
+    if (docentenList != null && docentenList.isNotEmpty) {
+      this.docenten = docentenList.map((doc) => Contact(doc)).toList();
+    }
+
     this.huiswerk = les["Inhoud"];
     this.huiswerkAf = les["Afgerond"];
     this.startDateTime = start;
@@ -526,8 +531,8 @@ class Contact {
 
   Contact([Map contact]) {
     if (contact != null) {
-      id = contact["id"];
-      naam = contact["naam"] ?? contact["weergavenaam"];
+      id = contact["id"] ?? contact["Id"];
+      naam = contact["naam"] ?? contact["weergavenaam"] ?? contact["Naam"];
     }
   }
 }

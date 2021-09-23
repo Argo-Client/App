@@ -19,7 +19,7 @@ install:
 script:
   - ./flutter/bin/flutter test
   - ./flutter/bin/flutter format --set-exit-if-changed -l 9999 --dry-run lib
-  - ./flutter/bin/flutter analyze .
+  - ./flutter/bin/flutter analyze lib
 
 cache:
   directories:

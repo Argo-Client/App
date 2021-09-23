@@ -298,6 +298,8 @@ class Cijfer {
   @HiveField(8)
   double weging;
 
+  bool selected;
+
   double parse() {
     return this.cijfer == null ? null : double.tryParse(this.cijfer.replaceFirst(",", "."));
   }
@@ -309,6 +311,7 @@ class Cijfer {
     newCijfer.id = id;
     newCijfer.periode = periode;
     newCijfer.title = title;
+    newCijfer.selected = true;
     return newCijfer;
   }
 

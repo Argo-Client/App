@@ -39,7 +39,7 @@ class Cijfers extends MagisterApi {
   Future getExtraInfo(Cijfer cijf, CijferJaar jaar) async {
     if (cijf.title != null) return cijf;
     Map cijfer = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/extracijferkolominfo/${cijf.kolomId}")).data;
-    cijf.title = cijfer["WerkInformatieOmschrijving"] ?? cijfer["KolomOmschrijving"];
+    cijf.title = cijfer["KolomOmschrijving"] ?? cijfer["WerkInformatieOmschrijving"] ?? cijfer["KolomKopnaam"] ?? "Geen Titel";
     cijf.weging = cijfer["Weging"];
     return cijf;
   }

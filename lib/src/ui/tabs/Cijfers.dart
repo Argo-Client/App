@@ -168,6 +168,18 @@ class _Cijfers extends State<Cijfers> {
             bottom: _tabBar(perioden),
             title: Text("Cijfers - ${account().cijfers[jaar].leerjaar}"),
             actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.calculate_outlined,
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => _BerekenCijferPagina(),
+                    ),
+                  );
+                },
+              ),
               PopupMenuButton(
                   initialValue: jaar,
                   onSelected: (value) => setState(() => jaar = value),
@@ -234,12 +246,6 @@ class CijferPagina extends StatefulWidget {
 }
 
 class _CijferPagina extends State<CijferPagina> {
-  // Charts
-  List<double> avgCijfers;
-  double totalWeging;
-  double doubleCijfers;
-
-  // Cijfer informatie
   Vak vak;
   CijferJaar jaar;
   List<Cijfer> cijfers;
@@ -248,67 +254,44 @@ class _CijferPagina extends State<CijferPagina> {
     this.jaar = account().cijfers[jaar];
     this.cijfers = this.jaar.cijfers.where((cijfer) => cijfer.vak.id == id).toList();
     this.vak = cijfers.first.vak;
-
-    avgCijfers = [];
-    doubleCijfers = 0;
-    totalWeging = 0;
-
-    cijfers.reversed.forEach(
-      (Cijfer cijfer) {
-        if (cijfer.weging == 0 || cijfer.weging == null) return;
-
-        double cijf;
-        try {
-          cijf = double.parse(cijfer.cijfer.replaceFirst(",", "."));
-        } catch (e) {}
-
-        if (cijf != null) {
-          doubleCijfers += cijf * cijfer.weging;
-          totalWeging += cijfer.weging;
-          avgCijfers.add(doubleCijfers / totalWeging);
-        }
-      },
-    );
   }
 
   Widget _buildPeriode(Periode periode) {
+    List<Cijfer> periodecijfers = cijfers.where((cijf) => cijf.periode.id == periode.id).toList();
+
+    if (periodecijfers.isEmpty) return Container();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: () {
-        List<Cijfer> periodecijfers = cijfers.where((cijf) => cijf.periode.id == periode.id).toList();
-        if (periodecijfers.isEmpty)
-          return <Widget>[];
-        else
-          return [
-            ContentHeader(periode.naam),
-            MaterialCard(
-              children: divideListTiles([
-                for (Cijfer cijfer in periodecijfers)
-                  Futuristic(
-                    autoStart: true,
-                    futureBuilder: () => account().magister.cijfers.getExtraInfo(cijfer, jaar),
-                    busyBuilder: (context) => ListTile(
-                      title: PlaceholderLines(
-                        count: 1,
-                        animate: true,
-                      ),
-                      subtitle: PlaceholderLines(
-                        count: 1,
-                        animate: true,
-                      ),
-                      trailing: CircularProgressIndicator(),
-                    ),
-                    errorBuilder: (context, error, retry) {
-                      return Text("Error $error");
-                    },
-                    dataBuilder: (context, data) => CijferTile(
-                      cijfer,
-                    ),
+      children: [
+        ContentHeader(periode.naam),
+        MaterialCard(
+          children: divideListTiles([
+            for (Cijfer cijfer in periodecijfers)
+              Futuristic(
+                autoStart: true,
+                futureBuilder: () => account().magister.cijfers.getExtraInfo(cijfer, jaar),
+                busyBuilder: (context) => ListTile(
+                  title: PlaceholderLines(
+                    count: 1,
+                    animate: true,
                   ),
-              ]),
-            ),
-          ];
-      }(),
+                  subtitle: PlaceholderLines(
+                    count: 1,
+                    animate: true,
+                  ),
+                  trailing: CircularProgressIndicator(),
+                ),
+                errorBuilder: (context, error, retry) {
+                  return Text("Error $error");
+                },
+                dataBuilder: (context, data) => CijferTile(
+                  cijfer,
+                ),
+              ),
+          ]),
+        ),
+      ],
     );
   }
 
@@ -322,18 +305,16 @@ class _CijferPagina extends State<CijferPagina> {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.flag_outlined,
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(
               Icons.calculate_outlined,
             ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => BerekenCijferPagina(vak, cijfers, jaar),
+                  builder: (context) => _BerekenCijferPagina(
+                    vak: vak,
+                    jaar: jaar,
+                    cijfers: cijfers,
+                  ),
                 ),
               );
             },
@@ -342,16 +323,11 @@ class _CijferPagina extends State<CijferPagina> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
-            // if (avgCijfers.isNotEmpty)
-            //   SizedBox(
-            //     height: 200.0,
-            //     child: charts.LineChart(
-            //       _createCijfers(),
-            //     ),
-            //   ),
-            for (Periode periode in jaar.perioden) _buildPeriode(periode),
-          ],
+          children: jaar.perioden
+              .map(
+                (periode) => _buildPeriode(periode),
+              )
+              .toList(),
         ),
       ),
     );
@@ -371,35 +347,93 @@ class _CijferPagina extends State<CijferPagina> {
   // }
 }
 
-class BerekenCijferPagina extends StatefulWidget {
-  final Vak vak;
-  final List<Cijfer> cijfers;
+class _BerekenCijferPagina extends StatelessWidget {
   final CijferJaar jaar;
+  final Vak vak;
 
-  const BerekenCijferPagina(this.vak, this.cijfers, this.jaar);
+  final ValueNotifier<List<Cijfer>> cijfers = ValueNotifier([]);
 
-  @override
-  _BerekenCijferPaginaState createState() => _BerekenCijferPaginaState(vak, cijfers, jaar);
-}
+  _BerekenCijferPagina({this.vak, this.jaar, List<Cijfer> cijfers}) {
+    cijfers ??= [];
+    var included = cijfers.where((cijfer) => cijfer.parse() != null && cijfer.weging != null && cijfer.weging > 1);
+    this.cijfers.value = included.map((oldCijfer) => oldCijfer.lowCopy()).toList();
+  }
 
-class _BerekenCijferPaginaState extends State<BerekenCijferPagina> {
-  List<Cijfer> cijfers;
-  CijferJaar jaar;
-  Vak vak;
+  Widget _buildCijfer(Cijfer cijfer) {
+    ValueNotifier<bool> checked = ValueNotifier(cijfer.selected);
 
-  ValueNotifier<List<Cijfer>> included;
+    void updateChecked(bool value) {
+      checked.value = value;
+      cijfer.selected = value;
 
-  _BerekenCijferPaginaState(Vak vak, List<Cijfer> cijfers, CijferJaar jaar) {
-    this.vak = vak;
-    this.jaar = jaar;
+      // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+      cijfers.notifyListeners();
+    }
 
-    this.cijfers = cijfers.where((cijfer) => cijfer.parse() != null).map((oldCijfer) => oldCijfer.lowCopy()).toList();
-
-    this.included = ValueNotifier(this.cijfers.where((cijfer) => cijfer.weging != null && cijfer.weging > 1).toList());
+    return MaterialCard(
+      child: ValueListenableBuilder(
+        valueListenable: checked,
+        builder: (context, _, _a) => ListTile(
+          onTap: () => updateChecked(!checked.value),
+          leading: Checkbox(
+            value: checked.value,
+            onChanged: updateChecked,
+            activeColor: userdata.get('accentColor'),
+          ),
+          title: Text(cijfer.title),
+          trailing: Container(
+            width: 75,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  child: TextFormField(
+                    onChanged: (changed) {
+                      cijfer.cijfer = changed;
+                      if (cijfer.selected) {
+                        // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+                        cijfers.notifyListeners();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      isDense: true,
+                      // border: InputBorder.none,
+                    ),
+                    keyboardType: TextInputType.number,
+                    initialValue: cijfer.cijfer,
+                  ),
+                  width: 30,
+                ),
+                Text("x"),
+                Container(
+                  child: TextFormField(
+                    onChanged: (changed) {
+                      cijfer.weging = double.tryParse(changed.replaceFirst(",", "."));
+                      if (cijfer.selected) {
+                        // ignore: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member
+                        cijfers.notifyListeners();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      isDense: true,
+                      // border: InputBorder.none,
+                    ),
+                    keyboardType: TextInputType.number,
+                    initialValue: cijfer.weging.toString().replaceFirst(".", ","),
+                  ),
+                  width: 30,
+                ),
+              ],
+              // leading: Checkbox(value: ,),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildPeriode(Periode periode) {
-    List<Cijfer> periodeCijfers = cijfers.where((cijf) => cijf.periode.id == periode.id).toList();
+    List<Cijfer> periodeCijfers = cijfers.value.where((cijf) => cijf.periode?.id == periode.id).toList();
 
     if (periodeCijfers.isEmpty) return Container();
 
@@ -408,82 +442,25 @@ class _BerekenCijferPaginaState extends State<BerekenCijferPagina> {
       children: [
         ContentHeader(periode.naam),
         ...divideListTiles(
-          periodeCijfers.map(
-            (cijfer) {
-              ValueNotifier<bool> checked = ValueNotifier(included.value.contains(cijfer));
-
-              void updateChecked() {
-                checked.value = !checked.value;
-
-                if (checked.value)
-                  included.value = List.from(included.value)..add(cijfer);
-                else
-                  included.value = List.from(included.value)..remove(cijfer);
-              }
-
-              return MaterialCard(
-                child: ValueListenableBuilder(
-                  valueListenable: checked,
-                  builder: (context, _, _a) => ListTile(
-                    onTap: updateChecked,
-                    leading: Checkbox(
-                      value: checked.value,
-                      onChanged: (bool bool) => updateChecked(),
-                      activeColor: userdata.get('accentColor'),
-                    ),
-                    title: Text(cijfer.title),
-                    trailing: Container(
-                      width: 75,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Container(
-                            child: TextFormField(
-                              onChanged: (changed) {
-                                cijfer.cijfer = changed;
-                              },
-                              decoration: InputDecoration(
-                                isDense: true,
-                                // border: InputBorder.none,
-                              ),
-                              keyboardType: TextInputType.number,
-                              initialValue: cijfer.cijfer,
-                            ),
-                            width: 30,
-                          ),
-                          Text("x"),
-                          Container(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                isDense: true,
-                                // border: InputBorder.none,
-                              ),
-                              keyboardType: TextInputType.number,
-                              initialValue: cijfer.weging.toString(),
-                            ),
-                            width: 30,
-                          ),
-                        ],
-                        // leading: Checkbox(value: ,),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ).toList(),
+          periodeCijfers
+              .map(
+                (cijfer) => _buildCijfer(cijfer),
+              )
+              .toList(),
         )
       ],
     );
   }
 
   String _calculateAverage(List<Cijfer> cijfers) {
+    if (cijfers.isEmpty || cijfers.any((cijfer) => cijfer.parse() == null || cijfer.weging == null)) {
+      return 0.toStringAsPrecision(3);
+    }
+
     double sum = cijfers.fold(0, (value, cijfer) => value + cijfer.parse() * cijfer.weging);
     double weight = cijfers.fold(0, (value, cijfer) => value + cijfer.weging);
 
     double average = sum / weight;
-
-    print(cijfers.map((cijfer) => "${cijfer.cijfer}x${cijfer.weging}"));
 
     return average.toStringAsPrecision(3);
   }
@@ -491,38 +468,66 @@ class _BerekenCijferPaginaState extends State<BerekenCijferPagina> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Gemiddelde berekenen'),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: defaultBorderSide(context),
-          ),
+        appBar: AppBar(
+          title: Text('Gemiddelde berekenen'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add_outlined),
+              onPressed: () {
+                Cijfer newCijfer = Cijfer();
+                newCijfer.title = "Cijfer ${cijfers.value.length}";
+                newCijfer.weging = 1;
+                newCijfer.cijfer = "10";
+                newCijfer.selected = true;
+                newCijfer.id = cijfers.value.length;
+                cijfers.value = List.from(cijfers.value)..add(newCijfer);
+              },
+            ),
+          ],
         ),
-        child: ListTile(
-          tileColor: Colors.grey[800],
-          // leading: Icon(Icons.ac_unit),
-          title: Text("Gemiddelde:"),
-          trailing: ValueListenableBuilder(
-            valueListenable: this.included,
-            builder: (context, _, _a) => Text(
-              _calculateAverage(this.included.value),
-              style: TextStyle(fontSize: 20),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: defaultBorderSide(context),
+            ),
+          ),
+          child: ListTile(
+            tileColor: Colors.grey[800],
+            title: Text("Gemiddelde:"),
+            trailing: ValueListenableBuilder<List<Cijfer>>(
+              valueListenable: cijfers,
+              builder: (context, cijfers, _a) => Text(
+                _calculateAverage(cijfers.where((cijfer) => cijfer.selected != null && cijfer.selected).toList()),
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
         ),
-      ),
-      body: cijfers.isEmpty
-          ? EmptyPage(
-              icon: Icons.calculate_outlined,
-              text: 'Ha ha sukkel',
-            )
-          : ListView(
+        body: ValueListenableBuilder<List<Cijfer>>(
+          valueListenable: cijfers,
+          child: EmptyPage(
+            icon: Icons.calculate_outlined,
+            text: 'Geen geschikte cijfers',
+          ),
+          builder: (context, cijfers, empty) {
+            var noPeriodeCijfers = cijfers.where((cijfer) => cijfer.periode == null).toList().reversed;
+            var periodeCijfers = jaar == null ? [] : jaar.perioden.map((periode) => _buildPeriode(periode)).toList();
+
+            if (noPeriodeCijfers.isEmpty && periodeCijfers.isEmpty) {
+              return empty;
+            }
+
+            return ListView(
               children: [
-                for (Periode periode in jaar.perioden) _buildPeriode(periode),
+                ...divideListTiles(noPeriodeCijfers
+                    .map(
+                      (cijfer) => _buildCijfer(cijfer),
+                    )
+                    .toList()),
+                ...periodeCijfers
               ],
-            ),
-    );
+            );
+          },
+        ));
   }
 }

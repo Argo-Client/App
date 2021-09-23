@@ -6,12 +6,20 @@ addons:
     packages:
       - lib32stdc++6
 
+branches:
+  only:
+    - master
+
 install:
   - git clone https://github.com/flutter/flutter.git -b stable
+  - ./flutter/bin/flutter config --no-analytics
   - ./flutter/bin/flutter doctor
+  - ./flutter/bin/flutter pub get
 
 script:
   - ./flutter/bin/flutter test
+  - ./flutter/bin/flutter format --set-exit-if-changed -l 9999 --dry-run .
+  - ./flutter/bin/flutter analyze .
 
 cache:
   directories:

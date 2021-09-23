@@ -1,0 +1,6 @@
+{
+    "dart.lineLength": 2000,
+    "[dart]": {
+        "editor.rulers": [2000]
+    }
+}

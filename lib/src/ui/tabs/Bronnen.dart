@@ -148,13 +148,3 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
     );
   }
 }
-// Widget ewa = RefreshIndicator(
-//           child: ValueListenableBuilder(
-//             valueListenable: updateNotifier,
-//             builder: ,
-//           ),
-//           onRefresh: () async {
-            
-//             await handleError(refresh, "Kon bronnen niet verversen", context);
-//           },
-//         );

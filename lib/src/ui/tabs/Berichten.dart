@@ -1,5 +1,7 @@
 import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:argo/src/utils/magister/Berichten.dart';
+import 'package:dio/dio.dart';
+import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -352,12 +354,12 @@ class BerichtPagina extends StatelessWidget {
                     left: 0,
                     right: 0,
                   ),
-                  children: [
+                  children: divideListTiles([
                     if (ber.afzender.naam != null) _afzender(ber.afzender.naam),
                     if (ber.dag != null) _dag(ber.dag),
-                    if (ber.ontvangers != null) _ontvangers(context, ber),
+                    if (ber.ontvangers != null && ber.ontvangers.isNotEmpty) _ontvangers(context, ber),
                     if (ber.cc != null) _cc(context, ber.cc),
-                  ],
+                  ]),
                 ),
                 if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
                   MaterialCard(
@@ -384,13 +386,27 @@ class BerichtPagina extends StatelessWidget {
   }
 }
 
-class NieuwBerichtPagina extends StatelessWidget {
+class NieuwBerichtPagina extends StatefulWidget {
+  final Bericht ber;
+
+  const NieuwBerichtPagina([this.ber]);
+
+  @override
+  _NieuwBerichtPaginaState createState() => _NieuwBerichtPaginaState(ber);
+}
+
+class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
   final Bericht ber;
   final ValueNotifier<List<Contact>> to = ValueNotifier([]);
 
-  NieuwBerichtPagina([this.ber]) {
+  final subjectController = TextEditingController();
+  final contentController = TextEditingController();
+
+  _NieuwBerichtPaginaState([this.ber]) {
+    print(this.ber);
     if (this.ber != null) {
       to.value = [ber.afzender];
+      subjectController.text = "RE: " + ber.onderwerp;
     }
   }
 
@@ -445,32 +461,32 @@ class NieuwBerichtPagina extends StatelessWidget {
                       },
                     ),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.people_outlined),
-                    title: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: 'CC',
-                      ),
-                      initialValue: ber?.cc?.join(', '),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people_outlined),
-                    title: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: 'BCC',
-                      ),
-                      initialValue: ber?.cc?.join(', '),
-                    ),
-                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.people_outlined),
+                  //   title: TextFormField(
+                  //     decoration: InputDecoration(
+                  //       border: InputBorder.none,
+                  //       focusedBorder: InputBorder.none,
+                  //       enabledBorder: InputBorder.none,
+                  //       disabledBorder: InputBorder.none,
+                  //       hintText: 'CC',
+                  //     ),
+                  //     initialValue: ber?.cc?.join(', '),
+                  //   ),
+                  // ),
+                  // ListTile(
+                  //   leading: Icon(Icons.people_outlined),
+                  //   title: TextFormField(
+                  //     decoration: InputDecoration(
+                  //       border: InputBorder.none,
+                  //       focusedBorder: InputBorder.none,
+                  //       enabledBorder: InputBorder.none,
+                  //       disabledBorder: InputBorder.none,
+                  //       hintText: 'BCC',
+                  //     ),
+                  //     initialValue: ber?.cc?.join(', '),
+                  //   ),
+                  // ),
                   ListTile(
                     leading: Icon(Icons.subject),
                     title: TextFormField(
@@ -481,7 +497,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                         disabledBorder: InputBorder.none,
                         hintText: 'Onderwerp',
                       ),
-                      initialValue: ber != null ? "RE: " + ber.onderwerp : null,
+                      controller: subjectController,
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Veld verplicht';
@@ -503,6 +519,7 @@ class NieuwBerichtPagina extends StatelessWidget {
                         disabledBorder: InputBorder.none,
                         hintText: 'Inhoud',
                       ),
+                      controller: contentController,
                       // validator: validator,
                     ),
                   ),
@@ -512,44 +529,48 @@ class NieuwBerichtPagina extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: Column(
-        children: [
-          Spacer(
-            flex: 1,
-          ),
-          Padding(
-            child: FloatingActionButton(
-              onPressed: () async {
-                // FilePickerResult result = await FilePicker.platform.pickFiles(
-                //   allowMultiple: true,
-                // );
-
-                // if (result != null) {
-                //   List<File> files = result.paths.map((path) => File(path)).toList();
-                // } else {
-                //   // User canceled the picker
-                // }
-              },
-              child: Icon(
-                Icons.attach_file,
-                color: Colors.white,
-              ),
+      floatingActionButton: Futuristic<void>(
+        futureBuilder: () => account().magister.berichten.send(
+              to: to.value,
+              subject: subjectController.text,
+              content: contentController.text,
             ),
-            padding: EdgeInsets.only(
-              bottom: 10,
-            ),
+        initialBuilder: (context, send) => FloatingActionButton(
+          heroTag: "VerzendBericht",
+          onPressed: () {
+            if (to.value.isNotEmpty) {
+              send();
+            }
+          },
+          child: Icon(
+            Icons.send,
+            color: Colors.white,
           ),
-          FloatingActionButton(
-            heroTag: "VerzendBericht",
-            onPressed: () {
-              /// [SAM] fix dit
-            },
-            child: Icon(
-              Icons.send,
-              color: Colors.white,
-            ),
+        ),
+        busyBuilder: (context) => FloatingActionButton(
+          onPressed: () {},
+          child: CircularProgressIndicator(),
+        ),
+        dataBuilder: (context, data) => FloatingActionButton(
+          onPressed: () => Navigator.of(context).pop(),
+          backgroundColor: Colors.green,
+          child: Icon(
+            Icons.done,
           ),
-        ],
+        ),
+        onData: (data) => Navigator.of(context).pop(),
+        onError: (error, retry) {
+          String message = error.toString();
+          if (error is DioError) {
+            message = error.response.data.toString();
+          }
+          FlushbarHelper.createError(message: "Kon het bericht niet versturen:\n$message")..show(context);
+        },
+        errorBuilder: (context, error, retry) => FloatingActionButton(
+          backgroundColor: Colors.red,
+          child: Icon(Icons.refresh),
+          onPressed: retry,
+        ),
       ),
     );
   }

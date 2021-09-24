@@ -105,4 +105,13 @@ class Berichten extends MagisterApi {
     queryCache[query] = raw.map((e) => QueryResponse(e)).toList();
     return queryCache[query];
   }
+
+  Future<void> send({List<Contact> to, String subject, String content, bool priority = false}) async {
+    await api.dio.post("/api/berichten/berichten", data: {
+      "ontvangers": to.map((e) => {"id": e.id, "type": "persoon"}).toList(),
+      "onderwerp": subject,
+      "inhoud": content,
+      "heeftPrioriteit": priority
+    });
+  }
 }

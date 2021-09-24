@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:argo/src/utils/boxes.dart';
 
 // ignore: must_be_immutable
 class MaterialCard extends StatelessWidget {

@@ -46,8 +46,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   final int infinityPageCount = 1000;
   int initialPage;
 
-  Animation<double> _dagBalkOffset;
-
   InfinityPageController infinityPageController;
   InfinityPageController appBarPageController;
 

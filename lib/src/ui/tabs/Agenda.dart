@@ -41,8 +41,12 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
     handleError(account().magister.agenda.refresh, "Fout tijdens verversen van agenda", context);
   }
 
+  final List<String> weekDagen = ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"];
+
   final int infinityPageCount = 1000;
   int initialPage;
+
+  Animation<double> _dagBalkOffset;
 
   InfinityPageController infinityPageController;
   InfinityPageController appBarPageController;
@@ -58,12 +62,15 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   void initVariables() {
     initialPage = (infinityPageCount / 2).floor();
     currentDay = ValueNotifier(startDay);
+
     infinityPageController = InfinityPageController(
       initialPage: initialPage,
     );
+
     appBarPageController = InfinityPageController(
       initialPage: initialPage,
     );
+
     startMonday = currentDay.value.subtract(
       Duration(
         days: currentDay.value.weekday - 1,
@@ -74,6 +81,10 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       int days = currentDay.value.difference(startMonday).inDays;
       jumpOrAnimate(appBarPageController, (days / 7).floor() + initialPage, fast: true);
     });
+
+    // infinityPageController.pageController.addListener(() {
+    // print(infinityPageController.pageController.position);
+    // });
   }
 
   @override
@@ -117,7 +128,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   }
 
   void jumpOrAnimate(InfinityPageController controller, int page, {bool fast}) {
-    if ((controller.page - page).abs() > 7) {
+    if ((controller.page - page).abs() > 6) {
       return controller.jumpToPage(page);
     }
     try {
@@ -139,7 +150,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       ).then((value) {
         if (value != null) {
           startDay = value;
+
           initVariables();
+
           setState(() {});
         }
       });
@@ -370,6 +383,25 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
     );
   }
 
+  Widget _buildDagBalk() {
+    // print(infinityPageController.pageController.position);
+    return Positioned(
+      left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
+      bottom: 0,
+      child: Container(
+        width: MediaQuery.of(context).size.width / 7,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: userdata.get("accentColor"),
+              width: 3,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildAppbarBottom() {
     return PreferredSize(
       preferredSize: Size.fromHeight(_tabBarHeight),
@@ -383,21 +415,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               valueListenable: currentDay,
               builder: (c, _, _a) => Stack(
                 children: [
-                  Positioned(
-                    left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
-                    bottom: 0,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width / 7,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: userdata.get("accentColor"),
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildDagBalk(),
                   Row(
                     children: [
                       for (int dag = 0; dag < 7; dag++)
@@ -405,7 +423,9 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                           DateTime tabDag = startMonday.add(
                             Duration(days: relative(index) * 7 + dag),
                           );
+
                           DateFormat numFormatter = DateFormat('dd');
+
                           return Expanded(
                             child: InkWell(
                               onTap: () {
@@ -417,7 +437,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                   return [
                                     Padding(
                                       child: Text(
-                                        ["MA", "DI", "WO", "DO", "VR", "ZA", "ZO"][dag],
+                                        weekDagen[dag],
                                         overflow: TextOverflow.visible,
                                         softWrap: false,
                                         style: TextStyle(
@@ -1095,11 +1115,6 @@ class _AddLesPagina extends State<AddLesPagina> {
                                       left: 10,
                                     ),
                                     child: ElevatedButton(
-                                      style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(
-                                          userdata.get("primaryColor"),
-                                        ),
-                                      ),
                                       child: Text("Datum: " + formatDate.format(date)),
                                       onPressed: () async {
                                         DateTime newDate = await showDatePicker(

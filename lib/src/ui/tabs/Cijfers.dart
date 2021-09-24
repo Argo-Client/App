@@ -492,7 +492,6 @@ class _BerekenCijferPagina extends StatelessWidget {
             ),
           ),
           child: ListTile(
-            tileColor: Colors.grey[800],
             title: Text("Gemiddelde:"),
             trailing: ValueListenableBuilder<List<Cijfer>>(
               valueListenable: cijfers,

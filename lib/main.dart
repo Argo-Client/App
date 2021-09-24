@@ -80,16 +80,22 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   Box userdata = Hive.box("userdata");
+
   @override
   Widget build(BuildContext context) {
+    final Color blackForOLED = userdata.get("theme") == "OLED" ? Colors.black : null;
+
     return MaterialApp(
       title: 'Argo',
       theme: ThemeData(
         brightness: getBrightness(),
-        scaffoldBackgroundColor: userdata.get("theme") == "OLED" ? Colors.black : null,
-        primaryColor: userdata.get("primaryColor"),
+        scaffoldBackgroundColor: blackForOLED,
+        primaryColor: blackForOLED ?? userdata.get("primaryColor"),
         accentColor: userdata.get("accentColor"),
         dividerColor: grayBorderColor(),
+        backgroundColor: blackForOLED,
+        dialogBackgroundColor: blackForOLED,
+        cardColor: blackForOLED,
       ),
       home: Home(),
       debugShowCheckedModeBanner: false,

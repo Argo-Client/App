@@ -29,10 +29,6 @@ class MaterialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (color == null && userdata.get("theme") == "OLED") {
-      color = Colors.black;
-    }
-
     return Container(
       width: width,
       height: height,

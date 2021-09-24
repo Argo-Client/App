@@ -295,22 +295,23 @@ class _Instellingen extends State<Instellingen> {
                     trailing: Icon(Icons.brightness_2_outlined),
                     subtitle: capitalize(userdata.get("theme").toString()),
                   ),
-                  CustomInstelling(
-                    title: 'Primaire kleur',
-                    onTap: () => showColorPicker("primaryColor"),
-                    subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
-                    trailing: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: userdata.get("primaryColor"),
-                        border: Border.all(
-                          color: Colors.black,
+                  if (userdata.get("theme") != "OLED")
+                    CustomInstelling(
+                      title: 'Primaire kleur',
+                      onTap: () => showColorPicker("primaryColor"),
+                      subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      trailing: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: userdata.get("primaryColor"),
+                          border: Border.all(
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   CustomInstelling(
                     title: 'Secundaire kleur',
                     onTap: () => showColorPicker("accentColor"),

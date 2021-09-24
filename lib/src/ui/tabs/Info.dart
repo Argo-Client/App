@@ -54,6 +54,80 @@ class _Info extends State<Info> {
     super.dispose();
   }
 
+  Widget _showVersionDownloader(BuildContext context, List<ArgoUpdateApi> versions) {
+    var latestVersion = versions.isEmpty ? null : versions.last;
+
+    var commitMessage = latestVersion.commitMessage.split("\n");
+
+    var title = commitMessage.removeAt(0);
+
+    if (latestVersion.commitHash.substring(0, 7) != commitSha) {
+      return AlertDialog(
+        title: Text("Nieuwste versie downloaden"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Text(
+                  "Nieuw in deze versie:",
+                ),
+              ),
+              Text(title),
+              if (commitMessage.isNotEmpty)
+                Padding(
+                  child: Text(
+                    commitMessage.join("\n"),
+                  ),
+                  padding: EdgeInsets.only(left: 10),
+                )
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Sluit"),
+          ),
+          ElevatedButton(
+            onPressed: () => launch("https://download.argo-magister.nl/${latestVersion.downloadURL}"),
+            child: Text("Download"),
+          )
+        ],
+      );
+    }
+
+    _controllerCenter.play();
+
+    return AlertDialog(
+      title: Text("Je hebt de nieuwste versie al!"),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ConfettiWidget(
+              shouldLoop: true,
+              confettiController: _controllerCenter,
+              numberOfParticles: 50,
+              blastDirectionality: BlastDirectionality.explosive,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Oke"),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -110,79 +184,35 @@ class _Info extends State<Info> {
                                       )
                                       .toList(),
                                 ),
-                            dataBuilder: (context, versions) {
-                              var latestVersion = versions.isEmpty ? null : versions.last;
-
-                              var commitMessage = latestVersion.commitMessage.split("\n");
-
-                              var title = commitMessage.removeAt(0);
-
-                              if (latestVersion.commitHash.substring(0, 7) != commitSha) {
-                                return AlertDialog(
-                                  title: Text("Nieuwste versie downloaden"),
-                                  content: SingleChildScrollView(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(bottom: 10),
-                                          child: Text(
-                                            "Nieuw in deze versie:",
-                                          ),
-                                        ),
-                                        Text(title),
-                                        if (commitMessage.isNotEmpty)
-                                          Padding(
-                                            child: Text(
-                                              commitMessage.join("\n"),
-                                            ),
-                                            padding: EdgeInsets.only(left: 10),
-                                          )
-                                      ],
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text("Sluit"),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => launch("https://download.argo-magister.nl/${latestVersion.downloadURL}"),
-                                      child: Text("Download"),
-                                    )
-                                  ],
-                                );
-                              }
-
-                              _controllerCenter.play();
+                            errorBuilder: (context, error, retry) {
+                              DioError dioError = error;
 
                               return AlertDialog(
-                                title: Text("Je hebt de nieuwste versie al!"),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      ConfettiWidget(
-                                        shouldLoop: true,
-                                        confettiController: _controllerCenter,
-                                        numberOfParticles: 50,
-                                        blastDirectionality: BlastDirectionality.explosive,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                title: Text("Fout tijdens het ophalen van de nieuwste versie:"),
+                                content: Text(dioError.message),
                                 actions: [
-                                  ElevatedButton(
+                                  TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: Text("Oke"),
+                                    child: Text("Sluit"),
                                   ),
+                                  ElevatedButton(
+                                    child: Text("Opnieuw proberen"),
+                                    onPressed: retry,
+                                  )
                                 ],
                               );
                             },
+                            dataBuilder: _showVersionDownloader,
+                            busyBuilder: (context) => AlertDialog(
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: [CircularProgressIndicator()],
+                                ),
+                              ),
+                              title: Text("Nieuwste versie aan het ophalen..."),
+                            ),
                           ),
                         ),
                         trailing: IconButton(
@@ -191,74 +221,6 @@ class _Info extends State<Info> {
                             launch("https://github.com/Argo-Client/App/commit/$commitSha");
                           },
                         ),
-                        // children: [
-                        //   Futuristic<List<ArgoUpdateApi>>(
-                        //     futureBuilder: () => Dio().get<Map<String, dynamic>>("https://download.argo-magister.nl/register.json").then((value) => (value.data["files"] as List)
-                        //         .map(
-                        //           (e) => ArgoUpdateApi(e),
-                        //         )
-                        //         .toList()),
-                        //     initialBuilder: (context, start) => ElevatedButton.icon(
-                        //       icon: Icon(Icons.refresh),
-                        //       onPressed: start,
-                        //       label: Text("Check Versie"),
-                        //     ),
-                        //     onError: (err, _) => print(err),
-                        //     dataBuilder: (context, versions) {
-                        //       var currentVersion = versions.firstWhere((element) => element.commitHash.startsWith(commitSha), orElse: () => null);
-                        //       var latestVersion = versions.isEmpty ? null : versions.last;
-                        //       var isLatest = currentVersion == latestVersion;
-
-                        //       var formatter = DateFormat("dd-MM-y HH:mm");
-
-                        //       return Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.start,
-                        //         children: [
-                        //           if (currentVersion != null)
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Text(
-                        //                   "Huidige versie: ${isLatest ? "latest" : ""}",
-                        //                   textScaleFactor: 1.2,
-                        //                 ),
-                        //                 Text("Versie: ${currentVersion.commitHash.substring(0, 7)}"),
-                        //                 Text(currentVersion.commitMessage.split("\n").first),
-                        //                 Text(formatter.format(currentVersion.timestamp)),
-                        //               ],
-                        //             ),
-                        //           if (currentVersion != null && !isLatest)
-                        //             Padding(
-                        //               padding: EdgeInsets.only(top: 10),
-                        //             ),
-                        //           if (!isLatest)
-                        //             Column(
-                        //               crossAxisAlignment: CrossAxisAlignment.start,
-                        //               children: [
-                        //                 Text(
-                        //                   "Nieuwste versie:",
-                        //                   textScaleFactor: 1.2,
-                        //                 ),
-                        //                 Text("Versie: ${latestVersion.commitHash.substring(0, 7)}"),
-                        //                 Text(
-                        //                   latestVersion.commitMessage.split("\n").first,
-                        //                   overflow: TextOverflow.fade,
-                        //                 ),
-                        //                 Text(formatter.format(latestVersion.timestamp)),
-                        //                 ElevatedButton.icon(
-                        //                   icon: Icon(Icons.download),
-                        //                   onPressed: () {
-                        //                     launch("https://download.argo-magister.nl/${latestVersion.downloadURL}");
-                        //                   },
-                        //                   label: Text("Update"),
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //         ],
-                        //       );
-                        //     },
-                        //   )
-                        // ],
                       ),
                     ListTile(
                       leading: Icon(Icons.device_hub_outlined),

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:after_layout/after_layout.dart';
-import 'package:flushbar/flushbar_helper.dart';
 
 import 'package:argo/main.dart';
 import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/account.dart';
+import 'package:argo/src/utils/flushbar.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'utils/boxes.dart';
@@ -71,7 +71,7 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                       ),
                       body: login.RefreshAccountView(account(), context, (account, context) async {
                         update();
-                        FlushbarHelper.createSuccess(message: "$acc is ververst!")..show(context);
+                        successFlushbar(context, "$acc is ververst!");
                         await acc.magister.downloadProfilePicture();
                         setState(() {});
                       }),

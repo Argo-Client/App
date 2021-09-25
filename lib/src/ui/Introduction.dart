@@ -1,4 +1,3 @@
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:intro_slider/dot_animation_enum.dart';
@@ -14,6 +13,7 @@ import 'package:argo/src/utils/boxes.dart';
 import 'package:argo/src/ui/components/Card.dart';
 
 import 'package:argo/src/utils/login.dart';
+import 'package:argo/src/utils/flushbar.dart';
 
 class Introduction extends StatefulWidget {
   @override
@@ -322,7 +322,7 @@ class _Introduction extends State<Introduction> {
 
   void loginPress() {
     if (!akkoord.value) {
-      FlushbarHelper.createInformation(message: "Je moet eerst akkoord gaan met ons beleid.").show(context);
+      errorFlushbar(context, "Je moet eerst akkoord gaan met ons beleid.");
       showDot.value = true;
       return;
     }

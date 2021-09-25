@@ -14,7 +14,7 @@ class Refreshable extends StatelessWidget {
 
   Widget build(BuildContext context) => RefreshIndicator(
         onRefresh: () async {
-          await handleError(onRefresh, "Fout tijdens verversen van $type", context);
+          await handleError(onRefresh, "Kon $type niet ophalen", context);
         },
         child: Container(
           height: bodyHeight(context),

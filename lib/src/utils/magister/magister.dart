@@ -151,8 +151,6 @@ class MagisterApi {
 
   DioError translateHttpError(DioError e) {
     if (e.error.runtimeType == SocketException) {
-      this.dio.clear();
-      this.refreshDio.clear();
       return DioError(error: "Geen Internet", requestOptions: e.requestOptions);
     }
     return e;

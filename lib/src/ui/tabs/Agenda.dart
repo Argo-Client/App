@@ -1,11 +1,9 @@
-import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:futuristic/futuristic.dart';
 import 'package:infinity_page_view/infinity_page_view.dart';
 import 'package:after_layout/after_layout.dart';
 import 'package:timer_builder/timer_builder.dart';
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:intl/intl.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
@@ -15,6 +13,7 @@ import 'package:argo/src/utils/bodyHeight.dart';
 import 'package:argo/src/utils/getBrightness.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
+import 'package:argo/src/utils/flushbar.dart';
 
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/Card.dart';
@@ -22,6 +21,7 @@ import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 
 final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -1007,9 +1007,8 @@ class _LesPagina extends State<LesPagina> with SingleTickerProviderStateMixin {
                       Navigator.of(context).pop();
                       await account().magister.agenda.refresh();
                       update();
-                    }).catchError((e) {
-                      FlushbarHelper.createError(message: "Les verwijderen mislukt: $e")..show(context);
-                      throw (e);
+                    }).catchError((error) {
+                      errorFlushbar(context, "Les verwijderen mislukt:", error);
                     }),
                   )
                 ],
@@ -1208,7 +1207,7 @@ class _AddLesPagina extends State<AddLesPagina> {
         heroTag: "AddAfspraak",
         onPressed: () async {
           if (startTime.hour * 60 + startTime.minute > endTime.hour * 60 + endTime.minute) {
-            FlushbarHelper.createError(message: "Eind tijd kan niet eerder zijn dan start tijd.")..show(context);
+            errorFlushbar(context, "Eind tijd kan niet eerder zijn dan start tijd.");
             return;
           }
           if (_formKey.currentState.validate()) {
@@ -1241,7 +1240,7 @@ class _AddLesPagina extends State<AddLesPagina> {
               context,
               () async {
                 Navigator.of(context).pop();
-                FlushbarHelper.createSuccess(message: "$titel is toegevoegd")..show(context);
+                successFlushbar(context, "$titel is toegevoegd");
                 await account().magister.agenda.refresh();
                 update();
               },

@@ -1,7 +1,3 @@
-import 'package:argo/src/ui/components/ListTileDivider.dart';
-import 'package:argo/src/utils/magister/Berichten.dart';
-import 'package:dio/dio.dart';
-import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:after_layout/after_layout.dart';
@@ -11,6 +7,8 @@ import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/boxes.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
+import 'package:argo/src/utils/flushbar.dart';
+import 'package:argo/src/utils/magister/Berichten.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/PeopleList.dart';
@@ -21,6 +19,7 @@ import 'package:argo/src/ui/components/EmptyPage.dart';
 import 'package:argo/src/ui/components/LiveList.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'package:argo/src/ui/components/Refreshable.dart';
+import 'package:argo/src/ui/components/ListTileDivider.dart';
 
 class Berichten extends StatefulWidget {
   @override
@@ -403,7 +402,6 @@ class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
   final contentController = TextEditingController();
 
   _NieuwBerichtPaginaState([this.ber]) {
-    print(this.ber);
     if (this.ber != null) {
       to.value = [ber.afzender];
       subjectController.text = "RE: " + ber.onderwerp;
@@ -558,13 +556,12 @@ class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
             Icons.done,
           ),
         ),
-        onData: (data) => Navigator.of(context).pop(),
+        onData: (data) {
+          Navigator.of(context).pop();
+          successFlushbar(context, "Bericht verzonden");
+        },
         onError: (error, retry) {
-          String message = error.toString();
-          if (error is DioError) {
-            message = error.response.data.toString();
-          }
-          FlushbarHelper.createError(message: "Kon het bericht niet versturen:\n$message")..show(context);
+          errorFlushbar(context, "Kon het bericht niet versturen:", error);
         },
         errorBuilder: (context, error, retry) => FloatingActionButton(
           backgroundColor: Colors.red,

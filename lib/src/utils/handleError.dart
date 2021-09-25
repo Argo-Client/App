@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flushbar/flushbar_helper.dart';
-
+import 'package:argo/src/utils/flushbar.dart';
 import 'package:argo/src/utils/update.dart';
 import 'package:argo/src/utils/account.dart';
 
@@ -12,13 +11,7 @@ Future handleError(Future Function() fun, String msg, BuildContext context, [Fun
       update();
       if (cb != null) cb();
     } catch (e) {
-      String flush = "$msg:\n$e";
-      try {
-        flush = "$msg:\n${e.error}";
-      } catch (_) {
-        throw (e);
-      }
-      FlushbarHelper.createError(message: flush)..show(context);
+      errorFlushbar(context, "$msg:", e);
     }
   }
 }

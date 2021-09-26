@@ -110,7 +110,7 @@ class Berichten extends MagisterApi {
     await api.dio.post("/api/berichten/berichten", data: {
       "ontvangers": to.map((e) => {"id": e.id, "type": "persoon"}).toList(),
       "onderwerp": subject,
-      "inhoud": content,
+      "inhoud": content.split("\n").map((e) => "<p>$e</p>").join(""),
       "heeftPrioriteit": priority
     });
   }

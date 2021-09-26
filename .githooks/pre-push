@@ -1,0 +1,9 @@
+#!/bin/bash
+
+flutter analyze . || exit 1
+
+if [ -v ${TOKENAPI} ]; then
+    echo Not running login tests, no token
+else
+    flutter test || exit 1
+fi

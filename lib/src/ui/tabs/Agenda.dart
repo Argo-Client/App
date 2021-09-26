@@ -157,158 +157,165 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
 
   Widget _buildLesCard(Les les, int startHour) {
     List<Absentie> afwezig = account().afwezigheid.where((abs) => abs.les.id == les.id).toList();
-
     return Container(
       margin: EdgeInsets.only(
         top: pixelsFromTop(les.start, startHour),
       ),
       width: MediaQuery.of(context).size.width - 30,
       height: les.duration * userdata.get("pixelsPerHour") / 60 + 1,
-      child: MaterialCard(
-        border: userdata.get("theme") == "OLED" || les.uitval
-            ? null
-            : Border.symmetric(
-                horizontal: defaultBorderSide(context),
-              ),
-        color: les.uitval
-            ? getBrightness() == Brightness.dark
-                ? Color.fromRGBO(119, 66, 62, 1)
-                : Color.fromRGBO(255, 205, 210, 1)
-            : null,
-        margin: EdgeInsets.only(
-          top: .75,
-        ),
-        child: InkWell(
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 5,
-                    left: 5,
+      clipBehavior: Clip.hardEdge,
+      decoration: BoxDecoration(),
+      child: Wrap(
+        children: [
+          MaterialCard(
+            border: userdata.get("theme") == "OLED" || les.uitval
+                ? null
+                : Border.symmetric(
+                    horizontal: defaultBorderSide(context),
                   ),
-                  child: Text(
-                    les.hour,
-                    style: TextStyle(
-                      color: getBrightness() == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
+            color: les.uitval
+                ? getBrightness() == Brightness.dark
+                    ? Color.fromRGBO(119, 66, 62, 1)
+                    : Color.fromRGBO(255, 205, 210, 1)
+                : null,
+            margin: EdgeInsets.only(
+              top: .75,
+            ),
+            child: InkWell(
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: 5,
+                        left: 5,
+                      ),
+                      child: Text(
+                        les.hour,
+                        style: TextStyle(
+                          color: getBrightness() == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 5,
-                    right: 7.5,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (afwezig.isNotEmpty)
-                        Container(
-                          margin: les.infoType.isNotEmpty || les.huiswerk != null ? EdgeInsets.only(right: 5) : null,
-                          child: Material(
-                            color: afwezig.first.geoorloofd ? Colors.green : Colors.red,
-                            shape: ContinuousRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(3.0),
-                              child: Icon(
-                                afwezig.first.geoorloofd ? Icons.check : Icons.error_outlined,
-                                color: Colors.white,
-                                size: 17,
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: 5,
+                        right: 7.5,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (afwezig.isNotEmpty)
+                            Container(
+                              margin: les.infoType.isNotEmpty || les.huiswerk != null ? EdgeInsets.only(right: 5) : null,
+                              child: Material(
+                                color: afwezig.first.geoorloofd ? Colors.green : Colors.red,
+                                shape: ContinuousRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(3.0),
+                                  child: Icon(
+                                    afwezig.first.geoorloofd ? Icons.check : Icons.error_outlined,
+                                    color: Colors.white,
+                                    size: 17,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      if (les.infoType.isNotEmpty)
-                        Material(
-                          child: Padding(
-                            child: Text(
-                              les.infoType,
-                              style: TextStyle(
-                                fontSize: 12,
+                          if (les.infoType.isNotEmpty)
+                            Material(
+                              child: Padding(
+                                child: Text(
+                                  les.infoType,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(4.5),
                               ),
-                            ),
-                            padding: EdgeInsets.all(4.5),
-                          ),
-                          shape: ContinuousRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          color: userdata.get("accentColor"),
-                        )
-                      else if (les.huiswerk != null)
-                        if (!les.huiswerkAf)
-                          Icon(
-                            Icons.assignment_outlined,
-                            size: 23,
-                            color: Colors.grey,
-                          )
-                        else
-                          Icon(
-                            Icons.assignment_turned_in_outlined,
-                            size: 23,
-                            color: Colors.green,
-                          )
-                    ],
+                              shape: ContinuousRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              color: userdata.get("accentColor"),
+                            )
+                          else if (les.huiswerk != null)
+                            if (!les.huiswerkAf)
+                              Icon(
+                                Icons.assignment_outlined,
+                                size: 23,
+                                color: Colors.grey,
+                              )
+                            else
+                              Icon(
+                                Icons.assignment_turned_in_outlined,
+                                size: 23,
+                                color: Colors.green,
+                              )
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          les.getName(),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16,
+                  Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                les.getName(),
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              if (les.onlineLes)
+                                Padding(
+                                  child: Icon(
+                                    Icons.videocam,
+                                    color: Colors.grey[400],
+                                    size: 20,
+                                  ),
+                                  padding: EdgeInsets.only(left: 5),
+                                ),
+                            ],
                           ),
-                        ),
-                        if (les.onlineLes)
-                          Padding(
-                            child: Icon(
-                              Icons.videocam,
-                              color: Colors.grey[400],
-                              size: 20,
-                            ),
-                            padding: EdgeInsets.only(left: 5),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  les.information,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    color: getBrightness() == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                      ],
+                        ],
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            les.information,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: TextStyle(
-                              color: getBrightness() == Brightness.dark ? Colors.grey.shade400 : Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => LesPagina(les),
-              ),
-            );
-          },
-        ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => LesPagina(les),
+                  ),
+                );
+              },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -328,8 +335,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               message: les.getName(),
               child: MaterialCard(
                 border: Border(
-                  top: userdata.get("theme") != "OLED" ? null : defaultBorderSide(context),
-                  right: les.heleDag && les == dag.where((les) => les.heleDag).last ? null : defaultBorderSide(context),
+                  top: userdata.get("theme") != "OLED" ? BorderSide.none : defaultBorderSide(context),
+                  right: les == dag.where((les) => les.heleDag).last ? BorderSide.none : defaultBorderSide(context),
                 ),
                 child: InkWell(
                   child: Padding(

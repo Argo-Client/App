@@ -93,9 +93,11 @@ class Account extends HiveObject {
       this.refreshToken = tokenSet["refresh_token"];
       this.expiry = DateTime.now().add(Duration(hours: 1)).millisecondsSinceEpoch;
 
-      String parsed = base64.normalize(tokenSet["id_token"].split(".")[1]);
-      Map data = json.decode(utf8.decode(base64Decode(parsed)));
-      this.username = data["preferred_username"];
+      if (tokenSet["id_token"] != null) {
+        String parsed = base64.normalize(tokenSet["id_token"].split(".")[1]);
+        Map data = json.decode(utf8.decode(base64Decode(parsed)));
+        this.username = data["preferred_username"];
+      }
     }
 
     this.id = 0;

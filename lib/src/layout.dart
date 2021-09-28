@@ -9,6 +9,7 @@ import 'package:argo/src/utils/account.dart';
 import 'package:argo/src/utils/flushbar.dart';
 
 import 'package:argo/src/utils/hive/adapters.dart';
+import 'package:share/share.dart';
 import 'utils/boxes.dart';
 
 import 'ui/Introduction.dart';
@@ -32,6 +33,12 @@ class DrawerTools {
 }
 
 DrawerTools drawer = DrawerTools();
+
+enum accountOptions {
+  delete,
+  refresh,
+  send,
+}
 
 class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   static const defaultIndex = 1; // Agenda
@@ -109,74 +116,108 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
 
   Widget _buildAccountListTile(Account acc) {
     return ListTile(
-      trailing: PopupMenuButton(
+      trailing: PopupMenuButton<accountOptions>(
         onSelected: (result) async {
-          if (result == "herlaad") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Scaffold(
-                  appBar: AppBar(
-                    title: Text("Verversen"),
-                  ),
-                  body: login.RefreshAccountView(acc, context, (account, context) async {
-                    update();
-                    successFlushbar(context, "$acc is ververst!");
-                    await acc.magister.downloadProfilePicture();
-                    setStateAccountList();
-                  }),
+          void deleteAccount() {
+            accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+            if (accounts.isEmpty) {
+              accounts.clear();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Introduction(),
                 ),
-              ),
-            );
-          } else {
-            showDialog(
-              builder: (BuildContext context) => AlertDialog(
-                title: Text("Weet je het zeker?"),
-                content: Text("Als je het account verwijderd, moet je weer opnieuw inloggen om hem te kunnen gebruiken."),
-                actions: [
-                  TextButton(
-                    child: Text("Annuleer"),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  TextButton(
-                    child: Text("Verwijder"),
-                    onPressed: () {
-                      Navigator.pop(context);
+              );
+              return;
+            }
 
-                      accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
-                      if (accounts.isEmpty) {
-                        accounts.clear();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Introduction(),
-                          ),
-                        );
-                        return;
-                      }
+            if (acc.id == currentAccount.value.id) {
+              userdata.put("accountIndex", accounts.keys.first);
+              currentAccount.value = account();
+            }
 
-                      if (acc.id == currentAccount.value.id) {
-                        userdata.put("accountIndex", accounts.keys.first);
-                        currentAccount.value = account();
-                      }
+            setStateAccountList();
+          }
 
+          switch (result) {
+            case accountOptions.refresh:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(
+                      title: Text("Verversen"),
+                    ),
+                    body: login.RefreshAccountView(acc, context, (account, context) async {
+                      update();
+                      successFlushbar(context, "$acc is ververst!");
+                      await acc.magister.downloadProfilePicture();
                       setStateAccountList();
-                    },
-                  )
-                ],
-              ),
-              context: context,
-            );
+                    }),
+                  ),
+                ),
+              );
+              break;
+            case accountOptions.delete:
+              showDialog(
+                builder: (BuildContext context) => AlertDialog(
+                  title: Text("Weet je het zeker?"),
+                  content: Text("Als je het account verwijderd, moet je weer opnieuw inloggen om hem te kunnen gebruiken."),
+                  actions: [
+                    TextButton(
+                      child: Text("Annuleer"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: Text("Verwijder"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        deleteAccount();
+                      },
+                    )
+                  ],
+                ),
+                context: context,
+              );
+              break;
+            case accountOptions.send:
+              showDialog(
+                builder: (BuildContext context) => AlertDialog(
+                  title: Text("Deel $acc"),
+                  content: Text("Als je dit account deelt, word het account hier verwijderd.\nMet deze link kan iemand inloggen op je account.\nDe link kan maar één keer gebruikt worden."),
+                  actions: [
+                    TextButton(
+                      child: Text("Annuleer"),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.share),
+                      label: Text("Verwijder en deel"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Share.share(acc.refreshToken);
+                        deleteAccount();
+                      },
+                    )
+                  ],
+                ),
+                context: context,
+              );
+              break;
           }
         },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-          const PopupMenuItem(
-            value: "verwijder",
+        itemBuilder: (BuildContext context) => [
+          PopupMenuItem(
+            value: accountOptions.delete,
             child: Text('Verwijder'),
           ),
-          const PopupMenuItem(
-            value: "herlaad",
+          PopupMenuItem(
+            value: accountOptions.refresh,
             child: Text('Herlaad'),
+          ),
+          PopupMenuItem(
+            value: accountOptions.send,
+            child: Text("Send"),
           ),
         ],
       ),

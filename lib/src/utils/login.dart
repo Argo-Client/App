@@ -21,6 +21,8 @@ import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 import 'package:argo/src/utils/boxes.dart';
 
+var _tokenRegex = RegExp(r"\d{6}[\w-]{35}");
+
 class _CenteredLoading extends StatelessWidget {
   final String text;
 
@@ -76,7 +78,7 @@ class _Error extends StatelessWidget {
             textScaleFactor: .9,
             softWrap: false,
           ),
-          if (error.runtimeType == DioError && error.response != null)
+          if (error is DioError && error.response != null)
             Text(
               error.response.data.toString(),
               maxLines: 10,
@@ -115,6 +117,12 @@ class _Error extends StatelessWidget {
   }
 }
 
+enum _LoginOptions {
+  refresh,
+  browser,
+  token,
+}
+
 class LoginView extends StatelessWidget {
   final MagisterLogin magisterLogin;
   final String title;
@@ -148,24 +156,71 @@ class LoginView extends StatelessWidget {
                 return Container();
               }
 
-              return PopupMenuButton(
+              return PopupMenuButton<_LoginOptions>(
                 onSelected: (value) {
-                  if (value == "herlaad") {
-                    magisterLogin.url = magisterLogin.createURL();
-                    controller?.loadUrl(magisterLogin.url);
-                  } else {
-                    launch(magisterLogin.url);
-                    linkStream.first.then((link) => redirectUrl.value = link);
+                  switch (value) {
+                    case _LoginOptions.refresh:
+                      magisterLogin.url = magisterLogin.createURL();
+                      controller?.loadUrl(magisterLogin.url);
+
+                      break;
+                    case _LoginOptions.browser:
+                      launch(magisterLogin.url);
+                      linkStream.first.then((link) => redirectUrl.value = link);
+                      break;
+                    case _LoginOptions.token:
+                      showDialog(
+                        builder: (BuildContext context) {
+                          var url = ValueNotifier("");
+                          return AlertDialog(
+                            title: Text("Plak hier de link"),
+                            content: TextField(
+                              onChanged: (str) => url.value = str,
+                              decoration: InputDecoration(
+                                hintText: "Token...",
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text("Annuleer"),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              ValueListenableBuilder<String>(
+                                valueListenable: url,
+                                builder: (context, url, _) {
+                                  RegExpMatch match = _tokenRegex.firstMatch(url);
+
+                                  return TextButton(
+                                    child: Text("Log in"),
+                                    onPressed: match == null
+                                        ? null
+                                        : () {
+                                            redirectUrl.value = "refreshtoken" + match.group(0);
+                                            Navigator.of(context).pop();
+                                          },
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                        context: context,
+                      );
+                      break;
                   }
                 },
                 itemBuilder: (_) => [
                   PopupMenuItem(
-                    value: "herlaad",
+                    value: _LoginOptions.refresh,
                     child: Text("Herlaad"),
                   ),
                   PopupMenuItem(
-                    value: "browser",
+                    value: _LoginOptions.browser,
                     child: Text("Open in browser"),
+                  ),
+                  PopupMenuItem(
+                    value: _LoginOptions.token,
+                    child: Text("Inloggen met url/token"),
                   )
                 ],
               );
@@ -470,15 +525,27 @@ class MagisterLogin {
   }
 
   Future<Map> getTokenSet(String url, BuildContext context) async {
-    String code = url.replaceFirst(RegExp("^m6.*#code="), "").split("&")[0];
+    if (url.startsWith("refreshtoken")) {
+      var tempAccount = Account();
 
-    Response res = await Dio().post(
-      "https://accounts.magister.net/connect/token",
-      options: Options(
-        contentType: "application/x-www-form-urlencoded",
-      ),
-      data: "code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier",
-    );
-    return res.data;
+      tempAccount.refreshToken = url.replaceFirst("refreshtoken", "");
+      await tempAccount.magister.api.refreshToken();
+
+      return {
+        "access_token": tempAccount.accessToken,
+        "refresh_token": tempAccount.refreshToken,
+      };
+    } else {
+      String code = _tokenRegex.firstMatch(url).group(0);
+
+      Response res = await Dio().post(
+        "https://accounts.magister.net/connect/token",
+        options: Options(
+          contentType: "application/x-www-form-urlencoded",
+        ),
+        data: "code=$code&redirect_uri=m6loapp://oauth2redirect/&client_id=M6LOAPP&grant_type=authorization_code&code_verifier=$codeVerifier",
+      );
+      return res.data;
+    }
   }
 }

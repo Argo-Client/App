@@ -62,7 +62,7 @@ void main() async {
   });
 
   if (userdata.get("alwaysPrimary") || !accounts.containsKey(userdata.get("accountIndex"))) {
-    int firstAccIndex = accounts.isEmpty ? 0 : accounts.toMap().entries.first.key;
+    int firstAccIndex = accounts.isEmpty ? 0 : accounts.keys.first;
     userdata.put("accountIndex", firstAccIndex);
   }
 

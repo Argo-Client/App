@@ -15,7 +15,7 @@ class AppPage extends StatelessWidget {
           leading: IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              DrawerStates.layoutKey.currentState.openDrawer();
+              drawer.openDrawer();
             },
           ),
           title: title,

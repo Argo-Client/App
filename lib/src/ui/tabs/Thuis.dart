@@ -210,9 +210,7 @@ class _Thuis extends State<Thuis> {
             SliverAppBar(
               leading: IconButton(
                 icon: Icon(Icons.menu),
-                onPressed: () {
-                  DrawerStates.layoutKey.currentState.openDrawer();
-                },
+                onPressed: drawer.openDrawer,
               ),
               expandedHeight: 200.0,
               floating: false,

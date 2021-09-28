@@ -51,7 +51,9 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   }
 
   HomeState() {
-    currentTab.value = tabs[defaultIndex];
+    if (tabs.isNotEmpty) {
+      currentTab.value = tabs[defaultIndex];
+    }
 
     currentTab.addListener(() {
       drawer.closeDrawer(context);

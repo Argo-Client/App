@@ -294,10 +294,9 @@ class CijferAdapter extends TypeAdapter<Cijfer> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Cijfer(
-      (fields[1] as Map)?.cast<dynamic, dynamic>(),
-    )
+    return Cijfer()
       ..ingevoerd = fields[0] as DateTime
+      ..cijfer = fields[1] as String
       ..vak = fields[2] as Vak
       ..periode = fields[3] as Periode
       ..kolomId = fields[4] as int

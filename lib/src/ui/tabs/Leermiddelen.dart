@@ -29,7 +29,7 @@ class _Leermiddelen extends State<Leermiddelen> {
                   text: "Geen leermiddelen",
                   icon: Icons.language_outlined,
                 )
-              : Column(
+              : ListView(
                   children: divideListTiles([
                     for (Leermiddel leermiddel in account().leermiddelen)
                       MaterialCard(

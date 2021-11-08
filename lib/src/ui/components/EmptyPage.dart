@@ -12,27 +12,31 @@ class EmptyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: bodyHeight(context),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 100,
-            color: Colors.grey[400],
+    return ListView(
+      children: [
+        Container(
+          width: double.infinity,
+          height: bodyHeight(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 100,
+                color: Colors.grey[400],
+              ),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey[400],
+                ),
+              ),
+            ],
           ),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey[400],
-            ),
-          ),
-        ],
-      ),
+        )
+      ],
     );
   }
 }

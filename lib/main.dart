@@ -52,7 +52,6 @@ void main() async {
     "alwaysPrimary": true,
     "preNotificationMinutes": 10,
     "developerMode": false,
-    "liveList": false,
     "disableCijferColor": false,
     "useVakName": false,
   };

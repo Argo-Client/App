@@ -333,12 +333,6 @@ class _Instellingen extends State<Instellingen> {
                     subtitle: "Voegt kleur toe aan de picrogrammen in de zijbalk",
                     setting: "colorsInDrawer",
                     onChange: () => appState.setState(() {}),
-                  ),
-                  SwitchInstelling(
-                    title: "Scrollanimatie",
-                    subtitle: "Tegels verschijnen met een animatie",
-                    setting: "liveList",
-                    onChange: () => appState.setState(() {}),
                   )
                 ]),
               );
@@ -661,22 +655,20 @@ class LogPagina extends StatelessWidget {
       body: ValueListenableBuilder(
         valueListenable: errorLog,
         builder: (BuildContext context, log, _a) => ListView(
-          children: [
+          children: divideListTiles([
             for (FlutterErrorDetails error in errorLog.value.reversed)
-              Column(
-                children: [
-                  ExpansionTile(
-                    title: Text(error.exceptionAsString()),
-                    subtitle: Text(error.context.toString()),
-                    children: [
-                      ListTile(
-                        subtitle: Text(error.stack.toString()),
-                      )
-                    ],
-                  ),
-                ],
+              MaterialCard(
+                child: ExpansionTile(
+                  title: Text(error.exceptionAsString()),
+                  subtitle: Text(error.context.toString()),
+                  children: [
+                    ListTile(
+                      subtitle: Text(error.stack.toString()),
+                    )
+                  ],
+                ),
               ),
-          ],
+          ]),
         ),
       ),
     );
@@ -700,21 +692,18 @@ class DataPagina extends StatelessWidget {
           ),
         ],
       ),
-      body: MaterialCard(
-        child: ListView(
-          children: divideListTiles(
-            userdata
-                .toMap()
-                .entries
-                .map((e) => ListTile(
-                      title: Text(e.key.toString()),
-                      subtitle: Text(
-                        e.value.toString(),
-                      ),
-                    ))
-                .toList(),
-          ),
-        ),
+      body: ListView(
+        children: divideListTiles([
+          for (var setting in userdata.toMap().entries)
+            MaterialCard(
+              child: ListTile(
+                title: Text(setting.key.toString()),
+                subtitle: Text(
+                  setting.value.toString(),
+                ),
+              ),
+            )
+        ]),
       ),
     );
   }

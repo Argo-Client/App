@@ -135,7 +135,7 @@ class _PopoutFloatState extends State<PopoutFloat> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
+      children: [
         if (children != null)
           for (int i = children.length - 1; i >= 0; i--)
             Transform(

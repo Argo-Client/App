@@ -21,15 +21,14 @@ class _MijnGegevens extends State<MijnGegevens> {
       body: Refreshable(
         type: "mijn gegevens",
         onRefresh: account().magister.profileInfo.refresh,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: 20,
               ),
               child: Row(
-                children: <Widget>[
+                children: [
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 20,

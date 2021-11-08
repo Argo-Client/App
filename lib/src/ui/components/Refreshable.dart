@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:argo/src/utils/bodyHeight.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/update.dart';
 
@@ -16,15 +15,9 @@ class Refreshable extends StatelessWidget {
         onRefresh: () async {
           await handleError(onRefresh, "Kon $type niet ophalen", context);
         },
-        child: Container(
-          height: bodyHeight(context),
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: ValueListenableBuilder(
-              valueListenable: updateNotifier,
-              builder: (context, _, _a) => child ?? builder(context),
-            ),
-          ),
+        child: ValueListenableBuilder(
+          valueListenable: updateNotifier,
+          builder: (context, _, _a) => child ?? builder(context),
         ),
       );
 }

@@ -12,6 +12,7 @@ class Cijfers extends MagisterApi {
   Future recentCijfers() async {
     List recent = (await api.dio.get("api/personen/${account.id}/cijfers/laatste?top=50&skip=0")).data["items"];
     account.recenteCijfers = recent.map((cijf) => Cijfer(cijf)).toList();
+    if (account.isInBox) account.save();
   }
 
   Future cijferJaren() async {

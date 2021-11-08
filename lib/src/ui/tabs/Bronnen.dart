@@ -31,31 +31,33 @@ class _Bronnen extends State<Bronnen> with AfterLayoutMixin<Bronnen> {
 
     for (Bron bron in view.last) {
       bronnenPagina.add(
-        BijlageItem(
-          bron,
-          download: bron.isFolder ? null : account().magister.bronnen.downloadFile,
-          onTap: !bron.isFolder
-              ? null
-              : () async {
-                  breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
-                  bronnenView.value = List.from(view)..add(bron.children);
-                  if (bron.children == null) {
-                    await handleError(
-                      () async => await account().magister.bronnen.loadChildren(bron),
-                      "Kon ${bron.naam} niet laden.",
-                      context,
-                      () {
-                        bronnenView.value = view.where((list) => list != null).toList();
-                        bronnenView.value = List.from(view)..add(bron.children);
-                      },
-                    );
-                  }
-                },
+        MaterialCard(
+          child: BijlageItem(
+            bron,
+            download: bron.isFolder ? null : account().magister.bronnen.downloadFile,
+            onTap: !bron.isFolder
+                ? null
+                : () async {
+                    breadcrumbs.value = List.from(breadcrumbs.value)..add(bron.naam);
+                    bronnenView.value = List.from(view)..add(bron.children);
+                    if (bron.children == null) {
+                      await handleError(
+                        () async => await account().magister.bronnen.loadChildren(bron),
+                        "Kon ${bron.naam} niet laden.",
+                        context,
+                        () {
+                          bronnenView.value = view.where((list) => list != null).toList();
+                          bronnenView.value = List.from(view)..add(bron.children);
+                        },
+                      );
+                    }
+                  },
+          ),
         ),
       );
     }
 
-    return MaterialCard(
+    return ListView(
       children: divideListTiles(bronnenPagina),
     );
   }

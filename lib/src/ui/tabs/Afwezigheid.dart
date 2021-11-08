@@ -10,7 +10,6 @@ import 'package:argo/src/utils/account.dart';
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
-import 'package:argo/src/ui/components/LiveList.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'package:argo/src/ui/components/ListTileDivider.dart';
 import 'package:argo/src/ui/components/Refreshable.dart';
@@ -143,7 +142,9 @@ class _Afwezigheid extends State<Afwezigheid> with AfterLayoutMixin<Afwezigheid>
             );
           });
 
-          return buildLiveList(absentiesWidgets, 10);
+          return ListView(
+            children: absentiesWidgets,
+          );
         },
       ),
     );

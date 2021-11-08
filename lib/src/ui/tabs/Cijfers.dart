@@ -104,22 +104,19 @@ class _Cijfers extends State<Cijfers> {
       onRefresh: () async {
         await handleError(account().magister.cijfers.recentCijfers, "Kon cijfers niet verversen", context);
       },
-      child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        child: account().recenteCijfers.isEmpty
-            ? EmptyPage(
-                text: "Nog geen cijfers",
-                icon: Icons.looks_6_outlined,
-              )
-            : MaterialCard(
-                children: divideListTiles([
-                  for (Cijfer cijfer in account().recenteCijfers)
-                    Container(
-                      child: CijferTile(cijfer, isRecent: true),
-                    ),
-                ]),
-              ),
-      ),
+      child: account().recenteCijfers.isEmpty
+          ? EmptyPage(
+              text: "Nog geen cijfers",
+              icon: Icons.looks_6_outlined,
+            )
+          : ListView(
+              children: divideListTiles([
+                for (Cijfer cijfer in account().recenteCijfers)
+                  MaterialCard(
+                    child: CijferTile(cijfer, isRecent: true),
+                  ),
+              ]),
+            ),
     );
   }
 
@@ -204,26 +201,23 @@ class _Cijfers extends State<Cijfers> {
                       "Kon cijfers niet verversen",
                       context,
                     ),
-                    child: SingleChildScrollView(
-                      child: MaterialCard(
-                        children: () {
-                          List cijfersInPeriode = account()
-                              .cijfers[jaar]
-                              .cijfers
-                              .where(
-                                (cijfer) => cijfer.periode.id == periode.id,
-                              )
-                              .toList();
+                    child: ListView(
+                      children: () {
+                        List cijfersInPeriode = account()
+                            .cijfers[jaar]
+                            .cijfers
+                            .where(
+                              (cijfer) => cijfer.periode.id == periode.id,
+                            )
+                            .toList();
 
-                          return divideListTiles(
-                            cijfersInPeriode
-                                .map(
-                                  (cijfer) => _buildCijfer(cijfer, cijfersInPeriode),
-                                )
-                                .toList(),
-                          );
-                        }(),
-                      ),
+                        return divideListTiles([
+                          for (var cijfer in cijfersInPeriode)
+                            MaterialCard(
+                              child: _buildCijfer(cijfer, cijfersInPeriode),
+                            ),
+                        ]);
+                      }(),
                     ),
                   ),
               ],

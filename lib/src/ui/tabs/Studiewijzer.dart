@@ -23,26 +23,6 @@ class Studiewijzers extends StatefulWidget {
 class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewijzers> {
   void afterFirstLayout(BuildContext context) => handleError(account().magister.studiewijzers.refresh, "Fout tijdens verversen van studiewijzers", context);
 
-  List<Widget> _buildStudiewijzers() {
-    return divideListTiles(
-      account()
-          .studiewijzers
-          .map(
-            (studiewijzer) => ListTile(
-              title: Text(studiewijzer.naam),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => StudiewijzerPagina(studiewijzer),
-                  ),
-                );
-              },
-            ),
-          )
-          .toList(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return AppPage(
@@ -55,11 +35,22 @@ class _Studiewijzers extends State<Studiewijzers> with AfterLayoutMixin<Studiewi
                 text: "Geen studiewijzers",
                 icon: Icons.school_outlined,
               )
-            : MaterialCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: _buildStudiewijzers(),
-                ),
+            : ListView(
+                children: divideListTiles([
+                  for (var studiewijzer in account().studiewijzers)
+                    MaterialCard(
+                      child: ListTile(
+                        title: Text(studiewijzer.naam),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => StudiewijzerPagina(studiewijzer),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                ]),
               ),
       ),
     );
@@ -181,12 +172,9 @@ class StudiewijzerPagina extends StatelessWidget {
         errorBuilder: (BuildContext context, dynamic error, retry) {
           return RefreshIndicator(
             onRefresh: () async => retry(),
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: EmptyPage(
-                icon: Icons.wifi_off_outlined,
-                text: "Geen Internet",
-              ),
+            child: EmptyPage(
+              icon: Icons.wifi_off_outlined,
+              text: "Geen Internet",
             ),
           );
         },
@@ -213,13 +201,15 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
   Widget _buildStudiewijzerInfo(BuildContext context, _) {
     String title = wijstab.omschrijving.replaceAll(RegExp("<[^>]*>"), ""); // Hier ga ik echt zo hard van janken dat ik het liefst meteen van een brug afspring, maar het werkt wel.
     bool hasContent = title.isNotEmpty || wijstab.bronnen.isNotEmpty;
+
+    if (!hasContent) {
+      return EmptyPage(
+        icon: Icons.subtitles_off,
+        text: "Geen Data",
+      );
+    }
     return ListView(
-      children: [
-        if (!hasContent)
-          EmptyPage(
-            icon: Icons.subtitles_off,
-            text: "Geen Data",
-          ),
+      children: divideListTiles([
         if (title.isNotEmpty)
           MaterialCard(
             child: Padding(
@@ -231,14 +221,15 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           ),
         if (wijstab.bronnen.isNotEmpty)
           MaterialCard(
-            children: divideListTiles(wijstab.bronnen
-                .map((bron) => BijlageItem(
-                      bron,
-                      download: account().magister.bronnen.downloadFile,
-                    ))
-                .toList()),
+            children: divideListTiles([
+              for (var bron in wijstab.bronnen)
+                BijlageItem(
+                  bron,
+                  download: account().magister.bronnen.downloadFile,
+                )
+            ]),
           ),
-      ],
+      ]),
     );
   }
 
@@ -255,12 +246,9 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
         autoStart: true,
         errorBuilder: (_, dynamic error, retry) => RefreshIndicator(
           onRefresh: () async => retry(),
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: EmptyPage(
-              icon: Icons.wifi_off_outlined,
-              text: error?.error ?? error?.toString(),
-            ),
+          child: EmptyPage(
+            icon: Icons.wifi_off_outlined,
+            text: error?.error ?? error?.toString(),
           ),
         ),
         futureBuilder: () async {

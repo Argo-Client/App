@@ -16,7 +16,6 @@ import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/Bijlage.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
-import 'package:argo/src/ui/components/LiveList.dart';
 import 'package:argo/src/ui/components/ContentHeader.dart';
 import 'package:argo/src/ui/components/Refreshable.dart';
 import 'package:argo/src/ui/components/ListTileDivider.dart';
@@ -117,7 +116,9 @@ class _Berichten extends State<Berichten> with AfterLayoutMixin<Berichten> {
       );
     });
 
-    return buildLiveList(berichtenWidgets, 10);
+    return ListView(
+      children: berichtenWidgets,
+    );
   }
 
   @override
@@ -331,53 +332,48 @@ class BerichtPagina extends StatelessWidget {
         errorBuilder: (context, dynamic error, retry) {
           return RefreshIndicator(
             onRefresh: () async => retry(),
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: EmptyPage(
-                icon: Icons.wifi_off_outlined,
-                text: error?.error ?? error?.toString() ?? error.message ?? error,
-              ),
+            child: EmptyPage(
+              icon: Icons.wifi_off_outlined,
+              text: error?.error ?? error?.toString() ?? error.message ?? error,
             ),
           );
         },
         dataBuilder: (context, data) {
           Bericht ber = data[0];
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                MaterialCard(
-                  margin: EdgeInsets.only(
-                    bottom: 20,
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                  ),
-                  children: divideListTiles([
-                    if (ber.afzender.naam != null) _afzender(ber.afzender.naam),
-                    if (ber.dag != null) _dag(ber.dag),
-                    if (ber.ontvangers != null && ber.ontvangers.isNotEmpty) _ontvangers(context, ber),
-                    if (ber.cc != null) _cc(context, ber.cc),
-                  ]),
+          return ListView(
+            children: [
+              MaterialCard(
+                margin: EdgeInsets.only(
+                  bottom: 20,
+                  top: 0,
+                  left: 0,
+                  right: 0,
                 ),
-                if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
-                  MaterialCard(
-                    child: Container(
-                      padding: EdgeInsets.all(
-                        20,
-                      ),
-                      child: Column(
-                        children: [
-                          WebContent(
-                            ber.inhoud,
-                          ),
-                        ],
-                      ),
+                children: divideListTiles([
+                  if (ber.afzender.naam != null) _afzender(ber.afzender.naam),
+                  if (ber.dag != null) _dag(ber.dag),
+                  if (ber.ontvangers != null && ber.ontvangers.isNotEmpty) _ontvangers(context, ber),
+                  if (ber.cc != null) _cc(context, ber.cc),
+                ]),
+              ),
+              if (ber.inhoud != null && ber.inhoud.replaceAll(RegExp("<[^>]*>"), "").isNotEmpty)
+                MaterialCard(
+                  child: Container(
+                    padding: EdgeInsets.all(
+                      20,
+                    ),
+                    child: Column(
+                      children: [
+                        WebContent(
+                          ber.inhoud,
+                        ),
+                      ],
                     ),
                   ),
-                if (ber.heeftBijlagen) _bijlagen(data[1]),
-              ],
-            ),
+                ),
+              if (ber.heeftBijlagen) _bijlagen(data[1]),
+            ],
           );
         },
       ),
@@ -416,114 +412,110 @@ class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
           "Nieuw bericht",
         ),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          child: Column(
-            children: [
-              MaterialCard(
-                children: divideListTiles([
-                  ValueListenableBuilder<List<Contact>>(
-                    valueListenable: to,
-                    builder: (context, persons, _a) {
-                      return Row(
-                        children: persons
-                            .map(
-                              (person) => ElevatedButton(
-                                onPressed: () {
-                                  to.value = List.from(to.value)..removeWhere((other) => other.id == person.id);
-                                },
-                                child: Text(person.naam),
-                              ),
-                            )
-                            .toList(),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.person_outlined),
-                    title: Autocomplete<QueryResponse>(
-                      onSelected: (person) {
-                        to.value = List.from(to.value)..add(person.toContact());
-                      },
-                      optionsBuilder: (textValues) {
-                        String query = textValues.text.trim().toLowerCase();
-                        account().magister.berichten.search(query);
-
-                        var queryCache = account().magister.berichten.queryCache;
-                        bool hasKey = queryCache.containsKey(query);
-                        var cached = queryCache[hasKey ? query : query.replaceFirst(RegExp(".\$"), "")];
-
-                        return (cached ?? []).where(
-                          (person) => !to.value.any((other) => other.id == person.id),
-                        );
-                      },
-                    ),
-                  ),
-                  // ListTile(
-                  //   leading: Icon(Icons.people_outlined),
-                  //   title: TextFormField(
-                  //     decoration: InputDecoration(
-                  //       border: InputBorder.none,
-                  //       focusedBorder: InputBorder.none,
-                  //       enabledBorder: InputBorder.none,
-                  //       disabledBorder: InputBorder.none,
-                  //       hintText: 'CC',
-                  //     ),
-                  //     initialValue: ber?.cc?.join(', '),
-                  //   ),
-                  // ),
-                  // ListTile(
-                  //   leading: Icon(Icons.people_outlined),
-                  //   title: TextFormField(
-                  //     decoration: InputDecoration(
-                  //       border: InputBorder.none,
-                  //       focusedBorder: InputBorder.none,
-                  //       enabledBorder: InputBorder.none,
-                  //       disabledBorder: InputBorder.none,
-                  //       hintText: 'BCC',
-                  //     ),
-                  //     initialValue: ber?.cc?.join(', '),
-                  //   ),
-                  // ),
-                  ListTile(
-                    leading: Icon(Icons.subject),
-                    title: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: 'Onderwerp',
-                      ),
-                      controller: subjectController,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Veld verplicht';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.edit),
-                    title: TextFormField(
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 25,
-                      scrollPadding: EdgeInsets.all(20.0),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: 'Inhoud',
-                      ),
-                      controller: contentController,
-                      // validator: validator,
-                    ),
-                  ),
-                ]),
+      body: Form(
+        child: MaterialCard(
+          child: ListView(
+            children: divideListTiles([
+              ValueListenableBuilder<List<Contact>>(
+                valueListenable: to,
+                builder: (context, persons, _a) {
+                  return Row(
+                    children: persons
+                        .map(
+                          (person) => ElevatedButton(
+                            onPressed: () {
+                              to.value = List.from(to.value)..removeWhere((other) => other.id == person.id);
+                            },
+                            child: Text(person.naam),
+                          ),
+                        )
+                        .toList(),
+                  );
+                },
               ),
-            ],
+              ListTile(
+                leading: Icon(Icons.person_outlined),
+                title: Autocomplete<QueryResponse>(
+                  onSelected: (person) {
+                    to.value = List.from(to.value)..add(person.toContact());
+                  },
+                  optionsBuilder: (textValues) {
+                    String query = textValues.text.trim().toLowerCase();
+                    account().magister.berichten.search(query);
+
+                    var queryCache = account().magister.berichten.queryCache;
+                    bool hasKey = queryCache.containsKey(query);
+                    var cached = queryCache[hasKey ? query : query.replaceFirst(RegExp(".\$"), "")];
+
+                    return (cached ?? []).where(
+                      (person) => !to.value.any((other) => other.id == person.id),
+                    );
+                  },
+                ),
+              ),
+              // ListTile(
+              //   leading: Icon(Icons.people_outlined),
+              //   title: TextFormField(
+              //     decoration: InputDecoration(
+              //       border: InputBorder.none,
+              //       focusedBorder: InputBorder.none,
+              //       enabledBorder: InputBorder.none,
+              //       disabledBorder: InputBorder.none,
+              //       hintText: 'CC',
+              //     ),
+              //     initialValue: ber?.cc?.join(', '),
+              //   ),
+              // ),
+              // ListTile(
+              //   leading: Icon(Icons.people_outlined),
+              //   title: TextFormField(
+              //     decoration: InputDecoration(
+              //       border: InputBorder.none,
+              //       focusedBorder: InputBorder.none,
+              //       enabledBorder: InputBorder.none,
+              //       disabledBorder: InputBorder.none,
+              //       hintText: 'BCC',
+              //     ),
+              //     initialValue: ber?.cc?.join(', '),
+              //   ),
+              // ),
+              ListTile(
+                leading: Icon(Icons.subject),
+                title: TextFormField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    hintText: 'Onderwerp',
+                  ),
+                  controller: subjectController,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Veld verplicht';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 25,
+                  scrollPadding: EdgeInsets.all(20.0),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                    hintText: 'Inhoud',
+                  ),
+                  controller: contentController,
+                  // validator: validator,
+                ),
+              ),
+            ]),
           ),
         ),
       ),

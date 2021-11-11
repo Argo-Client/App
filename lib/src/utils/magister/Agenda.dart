@@ -31,7 +31,7 @@ class Agenda extends MagisterApi {
     account.lessons[weekslug] = <List<Les>>[[], [], [], [], [], [], []];
     body["Items"].forEach((les) {
       DateTime end = DateTime.parse(les["Start"]).toLocal();
-      account.lessons[weekslug][end.weekday - 1].add(Les(les));
+      if (les["Status"] != 5) account.lessons[weekslug][end.weekday - 1].add(Les(les));
     });
     if (account.isInBox) account.save();
     return account.lessons[weekslug];

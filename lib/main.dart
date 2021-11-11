@@ -1,4 +1,5 @@
 import 'package:argo/src/ui/components/grayBorder.dart';
+import 'package:argo/src/utils/background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
@@ -11,7 +12,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:argo/src/utils/getBrightness.dart';
-import 'package:argo/src/utils/workmanager.dart';
 
 import 'package:argo/src/layout.dart';
 
@@ -25,11 +25,6 @@ void main() async {
 
   log("Userdata: " + userdata.toMap().toString());
   log("Accounts: " + accounts.toMap().toString());
-
-  if (accounts.isNotEmpty) {
-    // Als je de app voor het eerst opent heb je nog geen account
-    enableBackground();
-  }
 
   if (accounts.isEmpty) {
     userdata.delete("introduction");
@@ -50,7 +45,10 @@ void main() async {
     "doubleBackAgenda": true,
     "colorsInDrawer": false,
     "alwaysPrimary": true,
+    "lessonNotifications": true,
     "preNotificationMinutes": 10,
+    "lessonNotificationsExpire": false,
+    "lessonNotificationExpiry": 30,
     "developerMode": false,
     "disableCijferColor": false,
     "useVakName": false,
@@ -63,6 +61,11 @@ void main() async {
   if (userdata.get("alwaysPrimary") || !accounts.containsKey(userdata.get("accountIndex"))) {
     int firstAccIndex = accounts.isEmpty ? 0 : accounts.keys.first;
     userdata.put("accountIndex", firstAccIndex);
+  }
+
+  if (accounts.isNotEmpty) {
+    // Als je de app voor het eerst opent heb je nog geen account
+    Notifications().scheduleBackground();
   }
 
   FlutterError.onError = (FlutterErrorDetails errorDetails) {

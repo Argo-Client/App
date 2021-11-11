@@ -10,7 +10,7 @@ import 'package:argo/src/utils/boxes.dart';
 import 'package:argo/src/utils/capitalize.dart';
 import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
-import 'package:argo/src/utils/notifications.dart';
+import 'package:argo/src/utils/background.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
@@ -90,8 +90,9 @@ class CustomInstelling extends StatelessWidget {
   final String subtitle;
   final Function onTap;
   final Widget trailing;
+  final bool disabled;
 
-  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle});
+  CustomInstelling({this.title, this.onTap, this.trailing, this.subtitle, this.disabled = false});
 
   Widget build(BuildContext context) {
     return MaterialCard(
@@ -99,6 +100,7 @@ class CustomInstelling extends StatelessWidget {
         title: Text(title),
         onTap: onTap,
         trailing: trailing,
+        enabled: !disabled,
         subtitle: subtitle != null
             ? SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -121,12 +123,13 @@ class InstellingPagina extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(instelling),
-        ),
-        body: StatefulBuilder(
-          builder: page,
-        ));
+      appBar: AppBar(
+        title: Text(instelling),
+      ),
+      body: StatefulBuilder(
+        builder: page,
+      ),
+    );
   }
 }
 
@@ -448,9 +451,18 @@ class _Instellingen extends State<Instellingen> {
             builder: (BuildContext context, StateSetter setState) {
               return ListView(
                 children: divideListTiles([
+                  SwitchInstelling(
+                    title: "Notificaties voor lessen",
+                    subtitle: "Ontvang automatisch meldingen voor lessen.",
+                    setting: "lessonNotifications",
+                    onChange: () => setState(() {
+                      Notifications.cancel();
+                    }),
+                  ),
                   CustomInstelling(
-                    title: "Lesmelding",
-                    subtitle: "Hoeveel minuten voor de les je een melding krijgt",
+                    disabled: !userdata.get("lessonNotifications"),
+                    title: "Lesmelding tijd ",
+                    subtitle: "Hoeveel minuten voor de les je een melding krijgt.",
                     trailing: CircleShape(
                       child: Text(userdata.get("preNotificationMinutes").toString()),
                     ),
@@ -468,7 +480,39 @@ class _Instellingen extends State<Instellingen> {
                       if (value != null)
                         setState(() {
                           userdata.put("preNotificationMinutes", value);
-                          notifications.lessonNotifications();
+                          Notifications().scheduleBackground();
+                        });
+                    }),
+                  ),
+                  SwitchInstelling(
+                    disabled: !userdata.get("lessonNotifications"),
+                    title: "Haal oude meldingen weg",
+                    subtitle: "Haalt lesmeldingen automatisch weg na een bepaalde tijd.",
+                    setting: "lessonNotificationsExpire",
+                    onChange: () => setState(() {}),
+                  ),
+                  CustomInstelling(
+                    disabled: !userdata.get("lessonNotificationsExpire") || !userdata.get("lessonNotifications"),
+                    title: "Lesmelding duur",
+                    subtitle: "Hoeveel minuten de notificatie blijft.",
+                    trailing: CircleShape(
+                      child: Text(userdata.get("lessonNotificationExpiry").toString()),
+                    ),
+                    onTap: () => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return NumberPickerDialog.integer(
+                          title: Text("Minuten"),
+                          minValue: 1,
+                          maxValue: 720,
+                          initialIntegerValue: userdata.get("lessonNotificationExpiry"),
+                        );
+                      },
+                    ).then((value) {
+                      if (value != null)
+                        setState(() {
+                          userdata.put("lessonNotificationExpiry", value);
+                          Notifications().scheduleBackground();
                         });
                     }),
                   )

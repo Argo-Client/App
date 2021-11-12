@@ -47,7 +47,7 @@ void main() async {
     "alwaysPrimary": true,
     "lessonNotifications": true,
     "preNotificationMinutes": 10,
-    "lessonNotificationsExpire": false,
+    "lessonNotificationsExpire": true,
     "lessonNotificationExpiry": 30,
     "developerMode": false,
     "disableCijferColor": false,

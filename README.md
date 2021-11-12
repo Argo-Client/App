@@ -1,15 +1,43 @@
-<p align="center"><img src="assets/icons/icon192.png"></p>
-<h1 align="center">Argo</h1>
 <p align="center">
-<a href="https://github.com/Argo-Client/App/actions/workflows/main.yml"><img src="https://github.com/argo-client/app/actions/workflows/main.yml/badge.svg"></a>
-<a href="https://argo-magister.nl"><img src="https://img.shields.io/website-up-down-green-red/https/argo-magister.nl"></a>
-<a href="https://discord.gg/Xc4Xzsm"><img src="https://img.shields.io/discord/750027981623263292.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2"></a>
-<img src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103">
+    <a href="https://argo-magister.nl">
+        <img src="assets/icons/icon192.png" height="128">
+        <h1 align="center">Argo</h1>
+    </a>
+</p>
+
+<p align="center">
+    <a href="https://github.com/Argo-Client/App/actions/workflows/main.yml">
+        <img src="https://github.com/argo-client/app/actions/workflows/main.yml/badge.svg" />
+    </a>
+    <a href="https://argo-magister.nl">
+        <img src="https://img.shields.io/website-up-down-green-red/https/argo-magister.nl" />
+    </a>
+    <a href="https://discord.gg/Xc4Xzsm">
+        <img src="https://img.shields.io/discord/750027981623263292.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" />
+    </a>
+    <img src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103" />
 </p>
 
 <h3 align="center">
 Argo is een Magister 6 applicatie met material design.
 </h3>
+
+<br />
+
+<p align="center">
+    <img width="300" src=".github/images/phone.png">
+</p>
+
+<p>
+
+<p align="center">
+    <a href="https://argo-magister.nl/api/download/playstore">
+        <img src=".github/images/play-store.png" height="50" />
+    </a>
+    <a href="https://argo-magister.nl/api/download/appstore">
+        <img src=".github/images/app-store.png" height="50" />
+    </a>
+</p>
 
 ## Features
 

@@ -21,19 +21,19 @@ class Cijfers extends MagisterApi {
   }
 
   Future cijferPerioden() async {
-    for (var i = 0; i < account.cijfers.length; i++) {
-      List perioden = (await api.dio.get("/api/personen/${account.id}/aanmeldingen/${account.cijfers[i].id}/cijfers/cijferperiodenvooraanmelding")).data["Items"];
-      account.cijfers[i].perioden = perioden.map((per) => Periode(per)).toList();
-      account.cijfers[i].perioden.sort((a, b) => a.id.compareTo(b.id));
+    for (var jaar in account.cijfers) {
+      List perioden = (await api.dio.get("/api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/cijferperiodenvooraanmelding")).data["Items"];
+      jaar.perioden = perioden.map((per) => Periode(per)).toList();
+      jaar.perioden.sort((a, b) => a.id.compareTo(b.id));
     }
   }
 
   Future cijfers() async {
-    for (var i = 0; i < account.cijfers.length; i++) {
-      List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${account.cijfers[i].id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${account.cijfers[i].eind}")).data["Items"];
-      account.cijfers[i].cijfers = cijfers.map((cijfer) => Cijfer(cijfer)).where((cijfer) => cijfer.id != 0).toList();
-      account.cijfers[i].cijfers.sort((a, b) => a.ingevoerd.millisecondsSinceEpoch.compareTo(b.ingevoerd.millisecondsSinceEpoch));
-      account.cijfers[i].cijfers = account.cijfers[i].cijfers.reversed.toList();
+    for (var jaar in account.cijfers) {
+      List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${jaar.eind}")).data["Items"];
+      jaar.cijfers = cijfers.map((cijfer) => Cijfer(cijfer)).where((cijfer) => cijfer.id != 0).toList();
+      jaar.cijfers.sort((a, b) => a.ingevoerd.millisecondsSinceEpoch.compareTo(b.ingevoerd.millisecondsSinceEpoch));
+      jaar.cijfers = jaar.cijfers.reversed.toList();
     }
   }
 

@@ -171,7 +171,7 @@ class Les {
 
     String customName = custom.get("vak${this.vak.id}");
     String vakName = userdata.get("useVakName") ? this.vak.naam : null;
-
+    if (vakName == "Leeg") vakName = null;
     return customName ?? vakName ?? this.title;
   }
 

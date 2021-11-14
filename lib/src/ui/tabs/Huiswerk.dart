@@ -12,7 +12,6 @@ import 'package:argo/src/utils/handleError.dart';
 import 'package:argo/src/utils/account.dart';
 
 import 'package:argo/src/ui/components/Card.dart';
-import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:argo/src/ui/components/AppPage.dart';
 import 'package:argo/src/ui/components/WebContent.dart';
 import 'package:argo/src/ui/components/EmptyPage.dart';
@@ -148,15 +147,8 @@ class _Huiswerk extends State<Huiswerk> with AfterLayoutMixin<Huiswerk>, SingleT
 
             return RefreshIndicator(
               onRefresh: () => _handleError(buildMonday),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.symmetric(
-                    horizontal: defaultBorderSide(context),
-                  ),
-                ),
-                child: ListView(
-                  children: huiswerkWidgets,
-                ),
+              child: ListView(
+                children: huiswerkWidgets,
               ),
             );
           },

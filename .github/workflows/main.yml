@@ -59,6 +59,11 @@ jobs:
               with:
                   name: release-apk
                   path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+            
+            # Upload
+            - name: Upload APK to API
+              run: |
+                curl -X POST -F apk='@build/app/outputs/apk/release/app-armeabi-v7a-release.apk' -F head_sha='$GITHUB_SHA' -H 'Authorization: Bearer ${{secrets.UPLOAD_TOKEN}}' https://api.argo-magister.nl/builder/upload/
 
             - name: Notify Discord
               run: curl $URL

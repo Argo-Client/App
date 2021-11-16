@@ -1,22 +1,10 @@
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:argo/src/utils/account.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
-// import 'package:argo/src/utils/hive/init.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' show initializeTimeZones;
 import 'package:timezone/timezone.dart' show TZDateTime, local;
 import 'package:hive_flutter/hive_flutter.dart';
-
-// void postNotificationForNextLesson() async {
-//   try {
-//     await initHive();
-//     await Notifications().postNotificationForFirstLesson();
-//   } catch (e) {
-//     print("Error in postNotificationForNextLesson");
-//     print(e);
-//   }
-// }
 
 class Notifications {
   Account _account;
@@ -31,36 +19,27 @@ class Notifications {
   }
 
   static void cancel() async {
-    await AndroidAlarmManager.cancel(0);
+    await FlutterLocalNotificationsPlugin().cancelAll();
   }
 
   void scheduleBackground() async {
+    Notifications.cancel();
+
     if (userdata.get("lessonNotifications") == true && lessons.isNotEmpty) {
-      // await AndroidAlarmManager.initialize();
       initializeTimeZones();
 
       await notifications.initialize(
         InitializationSettings(
           android: AndroidInitializationSettings("splash"),
+          linux: LinuxInitializationSettings(
+            defaultActionName: "afspraken",
+          ),
         ),
       );
 
       await Future.wait(
         lessons.map((lesson) async {
           await _scheduleNotificationFor(lesson);
-          // AndroidAlarmManager.oneShotAt(
-          //   lesson.startDateTime.subtract(
-          //     Duration(
-          //       minutes: userdata.get("preNotificationMinutes") as int,
-          //     ),
-          //   ),
-          //   // DateTime.now().add(Duration(seconds: 10)),
-          //   0,
-          //   postNotificationForNextLesson,
-          //   rescheduleOnReboot: true,
-          //   wakeup: true,
-          //   allowWhileIdle: true,
-          // );
         }),
       );
     } else {
@@ -104,34 +83,8 @@ class Notifications {
       ),
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: true,
-    ); // await notifications.show(
-    //   lesson.id,
-    //   _lesString(lesson),
-    //   futureDay.isEmpty ? null : _lesString(futureDay.first),
-    //   NotificationDetails(
-    //     android: AndroidNotificationDetails(
-    //       lesson.id.toString(),
-    //       "Afspraken",
-    //       'Meldingen voor lessen',
-    //       importance: Importance.max,
-    //       priority: Priority.defaultPriority,
-    //       ticker: 'ticker',
-    //       styleInformation: InboxStyleInformation(
-    //         futureDay.map(_lesString).toList(),
-    //         contentTitle: _lesString(lesson),
-    //       ),
-    //       when: lesson.startDateTime.millisecondsSinceEpoch,
-    //     ),
-    //   ),
-    // );
+    );
   }
-
-  // Future<void> postNotificationForFirstLesson() async {
-  //   if (lessons.isEmpty) {
-  //     return print("Geen geschikte lessen voor notificatie");
-  //   }
-  //   await _postNotificationFor(lessons.first);
-  // }
 
   Iterable<Les> notifiableLessons(Map<String, List<List<Les>>> lessons) {
     List<Les> lessen = lessons.values.expand((x) => x).expand((x) => x).toList();

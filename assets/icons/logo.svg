@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+	<defs>
+		<filter id="shadow">
+			<feDropShadow
+				dx="0.2"
+				dy="0.4"
+				stdDeviation="0.9"
+				flood-color="#000"
+				flood-opacity=".5"
+			/>
+		</filter>
+	</defs>
+	<circle fill="#0096db" cx="18" cy="18" r="18" />
+	<path
+		filter="url(#shadow)"
+		fill="#fff"
+		d="M11 19.18v4L18 27l7-3.82v-4L18 23l-7-3.82zM18 9 7 15l11 6 9-4.91V23h2V15L18 9z"
+	/>
+</svg>

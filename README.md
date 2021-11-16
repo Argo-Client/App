@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://argo-magister.nl">
-        <img src="assets/icons/icon192.png" height="128">
+        <img src="assets/icons/logo.svg" height="128">
         <h1 align="center">Argo</h1>
     </a>
 </p>
@@ -19,7 +19,7 @@
 </p>
 
 <h3 align="center">
-Argo is een Magister 6 applicatie met material design.
+Argo is een alternatieve Magister applicatie met material design.
 </h3>
 
 <br />
@@ -31,12 +31,12 @@ Argo is een Magister 6 applicatie met material design.
 <p>
 
 <p align="center">
-    <a href="https://argo-magister.nl/api/download/playstore">
+    <a href="https://play.google.com/store/apps/details?id=nl.noxus.argo">
         <img src=".github/images/play-store.png" height="50" />
     </a>
-    <a href="https://argo-magister.nl/api/download/appstore">
+    <!-- <a href="https://argo-magister.nl/api/download/appstore">
         <img src=".github/images/app-store.png" height="50" />
-    </a>
+    </a> -->
 </p>
 
 ## Features
@@ -46,6 +46,7 @@ Argo is een Magister 6 applicatie met material design.
 -   Een handige manier om te berekenen welke cijfer je moet halen voor je volgende toets om nog voldoende te staan.
 -   Het pinnen van bronnen, studiewijzers of leermiddelen zodat je ze makkelijk terug kan vinden in je thuispagina.
 -   Een uitgebreid assortiment aan instellingen zodat je Argo precies zo hebt zoals jij het wilt.
+-   Notificaties voor volgende lessen
 
 ## Socials
 
@@ -66,8 +67,10 @@ Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/gra
 
 ## Belangrijk
 
-Dit project is open source, maar pull requests worden genegeerd (voor nu).
+Dit project is opensource, maar we willen liever feedback dan pull requests, gebruik hier voor de Discord of maak een issue.
 
 ## Licentie
 
 Dit project is beschermd onder de Apache 2.0 license - Bekijk het [LICENSE](LICENSE) bestand voor details.
+
+Argo is geen onderdeel van of gerelateerd aan SchoolMaster B.V.

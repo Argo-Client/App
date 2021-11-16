@@ -36,8 +36,19 @@ class Magister {
   }
 
   Future downloadProfilePicture() async {
-    var img = (await api.dio.get("api/leerlingen/${account.id}/foto", options: Options(responseType: ResponseType.bytes)));
-    String image = base64Encode(img.data);
+    var img = (await api.dio.get(
+      "api/leerlingen/${account.id}/foto",
+      options: Options(
+        responseType: ResponseType.bytes,
+        validateStatus: (status) => [200, 404].contains(status),
+      ),
+    ));
+
+    String image;
+    if (img.statusCode == 200) {
+      image = base64Encode(img.data);
+    }
+
     account.profilePicture = image;
     if (account.isInBox) account.save();
   }

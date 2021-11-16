@@ -223,8 +223,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       ),
       leading: CircleAvatar(
         backgroundColor: Theme.of(context).backgroundColor,
-        backgroundImage: !userdata.get("useIcon") && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
-        child: userdata.get("useIcon")
+        backgroundImage: !useUserIcon(acc) ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+        child: useUserIcon(acc)
             ? Icon(
                 Icons.person,
                 size: 25,
@@ -239,6 +239,10 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
       ),
       onTap: () => changeAccount(acc.id),
     );
+  }
+
+  bool useUserIcon(Account account) {
+    return userdata.get("useIcon") || account.profilePicture == null;
   }
 
   @override
@@ -287,8 +291,8 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                                   onTap: () => changeAccount(acc.id),
                                   child: CircleAvatar(
                                     backgroundColor: Theme.of(context).backgroundColor,
-                                    backgroundImage: !userdata.get("useIcon") && acc.profilePicture != null ? Image.memory(base64Decode(acc.profilePicture)).image : null,
-                                    child: userdata.get("useIcon")
+                                    backgroundImage: !useUserIcon(acc) ? Image.memory(base64Decode(acc.profilePicture)).image : null,
+                                    child: useUserIcon(acc)
                                         ? Icon(
                                             Icons.person,
                                             size: 25,
@@ -304,12 +308,12 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
                           children: [
                             CircleAvatar(
                               backgroundColor: Theme.of(context).backgroundColor,
-                              backgroundImage: !userdata.get("useIcon")
+                              backgroundImage: !useUserIcon(account)
                                   ? Image.memory(
                                       base64Decode(account.profilePicture),
                                     ).image
                                   : null,
-                              child: userdata.get("useIcon")
+                              child: useUserIcon(account)
                                   ? Icon(
                                       Icons.person_outline,
                                       size: 50,

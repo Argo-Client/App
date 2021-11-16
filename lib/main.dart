@@ -52,6 +52,7 @@ void main() async {
     "developerMode": false,
     "disableCijferColor": false,
     "useVakName": false,
+    "showStatus5": false,
   };
 
   standardSettings.entries.forEach((setting) {

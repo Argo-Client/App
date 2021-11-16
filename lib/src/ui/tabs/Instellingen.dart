@@ -441,6 +441,11 @@ class _Instellingen extends State<Instellingen> {
                     subtitle: "Gebruik de naam van het vak",
                     setting: "useVakName",
                   ),
+                  SwitchInstelling(
+                    title: "Laat uitval altijd zien",
+                    subtitle: "Bij uren die verwijderd zijn geeft Magister een andere code, laat dit ook zien.",
+                    setting: "showStatus5",
+                  )
                 ]),
               );
             },

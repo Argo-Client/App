@@ -164,6 +164,8 @@ class Les {
   bool heeftBijlagen;
   @HiveField(23)
   List<Bron> bijlagen;
+  @HiveField(24)
+  bool status5;
 
   String getName() {
     Box custom = Hive.box("custom");
@@ -207,6 +209,7 @@ class Les {
     this.startDateTime = start;
     this.heleDag = les["DuurtHeleDag"];
     this.uitval = [4, 5].contains(les["Status"]);
+    this.status5 = les["Status"] == 5;
     this.information = (!["", null].contains(les["Lokatie"]) ? les["Lokatie"] + " • " : "") + formatHour.format(start) + " - " + formatHour.format(end) + (les["Inhoud"] != null ? " • " + les["Inhoud"].replaceAll(RegExp("<[^>]*>"), "") : "");
     this.editable = les["Type"] == 1;
     this.id = les["Id"];

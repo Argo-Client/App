@@ -623,7 +623,14 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                           /// [Container van alle lessen]
                           Stack(
                             children: () {
-                              List<Les> lessen = dag.where((les) => pixelsFromTop(les.start, startHour) > 0).toList();
+                              List<Les> lessen = dag
+                                  .where(
+                                    (les) => pixelsFromTop(les.start, startHour) > 0,
+                                  )
+                                  .where(
+                                    (les) => les.status5 == null || !les.status5 || userdata.get("showStatus5"),
+                                  )
+                                  .toList();
 
                               if (lessen.isEmpty) {
                                 return <Widget>[Container()];

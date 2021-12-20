@@ -74,15 +74,13 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
         days: currentDay.value.weekday - 1,
       ),
     );
+  }
 
-    currentDay.addListener(() {
-      int days = currentDay.value.difference(startMonday).inDays;
-      jumpOrAnimate(appBarPageController, (days / 7).floor() + initialPage, fast: true);
-    });
-
-    // infinityPageController.pageController.addListener(() {
-    // print(infinityPageController.pageController.position);
-    // });
+  void changeCurrentDay(value) {
+    int days = value.difference(startMonday).inDays;
+    int appBarPage = (days / 7).floor() + initialPage;
+    jumpOrAnimate(appBarPageController, appBarPage, fast: true);
+    _movePage(appBarPage, value.weekday);
   }
 
   @override
@@ -95,6 +93,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   void dispose() {
     appBarPageController.dispose();
     infinityPageController.dispose();
+    currentDay.dispose();
     super.dispose();
   }
 
@@ -140,6 +139,11 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
     } catch (e) {}
   }
 
+  void _movePage(index, dag) {
+    int page = relative(index) * 7 + dag + initialPage - startDay.weekday;
+    jumpOrAnimate(infinityPageController, page);
+  }
+
   void datePicker() => showDatePicker(
         context: context,
         initialDate: currentDay.value,
@@ -147,11 +151,8 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
         lastDate: DateTime(DateTime.now().year + 100),
       ).then((value) {
         if (value != null) {
-          startDay = value;
-
-          initVariables();
-
-          setState(() {});
+          currentDay.value = value;
+          changeCurrentDay(value);
         }
       });
 
@@ -388,7 +389,6 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   }
 
   Widget _buildDagBalk() {
-    // print(infinityPageController.pageController.position);
     return Positioned(
       left: (currentDay.value.weekday - 1) * MediaQuery.of(context).size.width / 7,
       bottom: 0,
@@ -415,37 +415,40 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
           itemCount: infinityPageCount,
           controller: appBarPageController,
           itemBuilder: (BuildContext context, int index) {
+            DateTime tabWeek = startMonday.add(
+              Duration(days: relative(index) * 7),
+            );
             return ValueListenableBuilder(
               valueListenable: currentDay,
-              builder: (c, _, _a) => Stack(
-                children: [
-                  _buildDagBalk(),
-                  Row(
-                    children: [
-                      for (int dag = 0; dag < 7; dag++)
-                        () {
-                          DateTime tabDag = startMonday.add(
-                            Duration(days: relative(index) * 7 + dag),
-                          );
+              builder: (c, _, _a) {
+                int daysDiff = currentDay.value.difference(tabWeek).inDays;
+                return Stack(
+                  children: [
+                    if (daysDiff >= 0 && daysDiff <= 6) _buildDagBalk(),
+                    Row(
+                      children: [
+                        for (int dag = 0; dag < 7; dag++)
+                          () {
+                            DateTime tabDag = tabWeek.add(
+                              Duration(days: dag),
+                            );
 
-                          DateFormat numFormatter = DateFormat('dd');
-
-                          return Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                int page = relative(index) * 7 + dag + initialPage - startDay.weekday + 1;
-                                jumpOrAnimate(infinityPageController, page);
-                              },
-                              child: Column(
-                                children: (() {
-                                  return [
+                            DateFormat numFormatter = DateFormat('dd');
+                            Color textColor = formatDate.format(tabDag) != formatDate.format(currentDay.value) ? Colors.grey[300] : Colors.white;
+                            return Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  _movePage(index, dag + 1);
+                                },
+                                child: Column(
+                                  children: [
                                     Padding(
                                       child: Text(
                                         weekDagen[dag],
                                         overflow: TextOverflow.visible,
                                         softWrap: false,
                                         style: TextStyle(
-                                          color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                          color: textColor,
                                         ),
                                       ),
                                       padding: EdgeInsets.symmetric(
@@ -455,19 +458,19 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                                     Text(
                                       numFormatter.format(tabDag),
                                       style: TextStyle(
-                                        color: currentDay.value.weekday - 1 != dag ? Colors.grey[300] : Colors.white,
+                                        color: textColor,
                                       ),
                                     ),
-                                  ];
-                                })(),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }()
-                    ],
-                  ),
-                ],
-              ),
+                            );
+                          }()
+                      ],
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),
@@ -658,14 +661,46 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
   @override
   Widget build(BuildContext context) {
     return AppPage(
-      title: Text("Agenda"),
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Agenda"),
+          ValueListenableBuilder(
+              valueListenable: currentDay,
+              builder: (context, date, _) {
+                String formatted = formatDatum.format(date);
+                if (formatted == formatDatum.format(DateTime.now())) formatted = "Vandaag";
+                return Text(
+                  formatted,
+                  style: TextStyle(fontSize: 14),
+                );
+              })
+        ],
+      ),
       actions: [
+        ValueListenableBuilder<DateTime>(
+            valueListenable: currentDay,
+            builder: (context, current, _) {
+              if (formatDate.format(current) == formatDate.format(DateTime.now())) {
+                return Container();
+              }
+              return IconButton(
+                icon: Icon(Icons.home),
+                tooltip: "Vandaag",
+                onPressed: () {
+                  changeCurrentDay(DateTime.now());
+                },
+              );
+            }),
         IconButton(
-          icon: Icon(Icons.calendar_today),
+          icon: Icon(Icons.date_range_outlined),
+          tooltip: "Datum kiezer",
           onPressed: datePicker,
         ),
         IconButton(
           icon: Icon(Icons.add),
+          tooltip: "Toevoegen",
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -687,6 +722,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
               days: relative(index),
             ),
           );
+          changeCurrentDay(currentDay.value);
         },
         itemBuilder: _buildAgendaPages,
       ),

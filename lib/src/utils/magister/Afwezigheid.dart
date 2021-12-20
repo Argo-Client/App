@@ -6,7 +6,7 @@ class Afwezigheid extends MagisterApi {
   MagisterApi api;
   Afwezigheid(this.api) : super(api.account);
   DateFormat formatDate = DateFormat("yyyy-MM-dd");
-  DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+  DateFormat formatDatum = DateFormat("EEEE d MMMM");
   Future refresh() async {
     return await api.wait([getAfwezigheid()]);
   }

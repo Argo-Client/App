@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:argo/src/utils/capitalize.dart';
 part 'adapters.g.dart';
 
-DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+DateFormat formatDatum = DateFormat("EEEE d MMMM");
 DateFormat formatDate = DateFormat("yyyy-MM-dd");
 
 @HiveType(typeId: 1)
@@ -185,7 +185,7 @@ class Les {
     int endHour = les["LesuurTotMet"];
 
     DateFormat formatHour = DateFormat("HH:mm");
-    DateFormat formatDatum = DateFormat("EEEE dd MMMM");
+    DateFormat formatDatum = DateFormat("EEEE d MMMM");
     int minFromMidnight = start.difference(DateTime(start.year, start.month, start.day)).inMinutes;
     var hour = (startHour == endHour ? startHour.toString() : '$startHour - $endHour');
     this.start = minFromMidnight ?? "";

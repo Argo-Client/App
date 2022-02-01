@@ -5,6 +5,10 @@ import 'package:argo/src/utils/boxes.dart';
 Color grayBorderColor() {
   Color color;
 
+  if (userdata.get("useBorderColor")) {
+    return userdata.get("borderColor");
+  }
+
   String theme = userdata.get("theme");
 
   if (theme == "systeem") {

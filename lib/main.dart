@@ -34,6 +34,8 @@ void main() async {
     "theme": "systeem",
     "primaryColor": Colors.blue,
     "accentColor": Colors.orange,
+    "borderColor": Colors.black,
+    "useBorderColor": false,
     "useIcon": false,
     "accountIndex": 0,
     "pixelsPerHour": 75,

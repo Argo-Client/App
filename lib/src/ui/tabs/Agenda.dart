@@ -170,7 +170,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
       decoration: BoxDecoration(),
       child: MaterialCard(
         height: height,
-        border: userdata.get("theme") == "OLED" || les.uitval
+        border: les.uitval
             ? null
             : Border.symmetric(
                 horizontal: defaultBorderSide(context),

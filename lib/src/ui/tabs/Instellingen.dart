@@ -1,3 +1,4 @@
+import 'package:argo/src/ui/components/grayBorder.dart';
 import 'package:flutter/material.dart';
 
 import 'package:share/share.dart';
@@ -223,7 +224,7 @@ class _Instellingen extends State<Instellingen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               BlockPicker(
-                pickerColor: userdata.get(pick),
+                pickerColor: userdata.get(pick) ?? Colors.black,
                 onColorChanged: (color) {
                   appState.setState(() {
                     userdata.put(pick, color);
@@ -247,7 +248,7 @@ class _Instellingen extends State<Instellingen> {
     );
   }
 
-  Future showColorAdvanced(pick) {
+  Future advancedColorPicker(pick) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -256,7 +257,7 @@ class _Instellingen extends State<Instellingen> {
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             ColorPicker(
               enableAlpha: false,
-              pickerColor: userdata.get(pick),
+              pickerColor: userdata.get(pick) ?? Colors.black,
               onColorChanged: (color) {
                 appState.setState(() {
                   userdata.put(pick, color);
@@ -302,7 +303,7 @@ class _Instellingen extends State<Instellingen> {
                     CustomInstelling(
                       title: 'Primaire kleur',
                       onTap: () => showColorPicker("primaryColor"),
-                      subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      subtitle: "#" + userdata.get("primaryColor").value.toRadixString(16).substring(2, 8).toUpperCase(),
                       trailing: Container(
                         width: 40,
                         height: 40,
@@ -318,13 +319,36 @@ class _Instellingen extends State<Instellingen> {
                   CustomInstelling(
                     title: 'Secundaire kleur',
                     onTap: () => showColorPicker("accentColor"),
-                    subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                    subtitle: "#" + userdata.get("accentColor").value.toRadixString(16).substring(2, 8).toUpperCase(),
                     trailing: Container(
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: userdata.get("accentColor"),
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SwitchInstelling(
+                    title: "Custom Border kleur",
+                    setting: "useBorderColor",
+                    subtitle: "Gebruik de kleur die je hier beneden instelt.",
+                    onChange: () => setState(() => {appState.setState(() {})}),
+                  ),
+                  CustomInstelling(
+                    disabled: !userdata.get("useBorderColor"),
+                    title: 'Border kleur',
+                    onTap: () => advancedColorPicker("borderColor"),
+                    subtitle: "#" + grayBorderColor().value.toRadixString(16).substring(2, 8).toUpperCase(),
+                    trailing: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: grayBorderColor(),
                         border: Border.all(
                           color: Colors.black,
                         ),
@@ -614,8 +638,8 @@ class _Instellingen extends State<Instellingen> {
                     ),
                     CustomInstelling(
                       title: 'Aangepaste primaire kleur',
-                      onTap: () => showColorAdvanced("primaryColor"),
-                      subtitle: '#${Theme.of(context).primaryColor.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      onTap: () => advancedColorPicker("primaryColor"),
+                      subtitle: "#" + userdata.get("primaryColor").value.toRadixString(16).substring(2, 8).toUpperCase(),
                       trailing: Container(
                         width: 40,
                         height: 40,
@@ -630,8 +654,8 @@ class _Instellingen extends State<Instellingen> {
                     ),
                     CustomInstelling(
                       title: 'Aangepaste secundaire kleur',
-                      onTap: () => showColorAdvanced("accentColor"),
-                      subtitle: '#${Theme.of(context).colorScheme.secondary.value.toRadixString(16).substring(2, 8).toUpperCase()}',
+                      onTap: () => advancedColorPicker("accentColor"),
+                      subtitle: "#" + userdata.get("accentColor").value.toRadixString(16).substring(2, 8).toUpperCase(),
                       trailing: Container(
                         width: 40,
                         height: 40,

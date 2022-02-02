@@ -115,30 +115,30 @@ class HomeState extends State<Home> with AfterLayoutMixin<Home> {
   }
 
   Widget _buildAccountListTile(Account acc) {
+    void deleteAccount() {
+      accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
+      if (accounts.isEmpty) {
+        accounts.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Introduction(),
+          ),
+        );
+        return;
+      }
+
+      if (acc.id == currentAccount.value.id) {
+        userdata.put("accountIndex", accounts.keys.first);
+        currentAccount.value = account();
+      }
+
+      setStateAccountList();
+    }
+
     return ListTile(
       trailing: PopupMenuButton<accountOptions>(
         onSelected: (result) async {
-          void deleteAccount() {
-            accounts.delete(accounts.toMap().entries.firstWhere((a) => a.value.id == acc.id).key);
-            if (accounts.isEmpty) {
-              accounts.clear();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Introduction(),
-                ),
-              );
-              return;
-            }
-
-            if (acc.id == currentAccount.value.id) {
-              userdata.put("accountIndex", accounts.keys.first);
-              currentAccount.value = account();
-            }
-
-            setStateAccountList();
-          }
-
           switch (result) {
             case accountOptions.refresh:
               Navigator.push(

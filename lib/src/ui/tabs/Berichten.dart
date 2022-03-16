@@ -404,6 +404,58 @@ class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
     }
   }
 
+  Widget _buildAutoComplete({
+    void Function(QueryResponse item) onSelected,
+  }) {
+    final ValueNotifier<Iterable<QueryResponse>> results = ValueNotifier(Iterable.empty());
+
+    return Stack(
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: "Zoek een leerling of personeel",
+          ),
+          onChanged: (updated) async {
+            results.value = await account().magister.berichten.search(updated);
+          },
+        ),
+        Stack(
+          children: [
+            ValueListenableBuilder(
+              valueListenable: results,
+              builder: (context, _, _a) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 50),
+                  child: Column(
+                    children: [
+                      for (var result in results.value)
+                        MaterialCard(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Text(
+                                result.initials.replaceAll(".", "") ?? '',
+                              ),
+                              backgroundColor: userdata.get("accentColor"),
+                            ),
+                            onTap: () {
+                              onSelected(result);
+                            },
+                            title: Text("${result.firstname ?? result.initials} ${result.tussenvoegsel != null ? result.tussenvoegsel + " " : ""}${result.lastname}"),
+                            subtitle: Text(result.klas ?? ""),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            )
+          ],
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -435,23 +487,26 @@ class _NieuwBerichtPaginaState extends State<NieuwBerichtPagina> {
               ),
               ListTile(
                 leading: Icon(Icons.person_outlined),
-                title: Autocomplete<QueryResponse>(
-                  onSelected: (person) {
-                    to.value = List.from(to.value)..add(person.toContact());
-                  },
-                  optionsBuilder: (textValues) {
-                    String query = textValues.text.trim().toLowerCase();
-                    account().magister.berichten.search(query);
+                title: _buildAutoComplete(onSelected: (person) {
+                  to.value = List.from(to.value)..add(person.toContact());
+                }),
+                // title: Autocomplete<QueryResponse>(
+                //   onSelected: (person) {
+                //     to.value = List.from(to.value)..add(person.toContact());
+                //   },
+                //   optionsBuilder: (textValues) {
+                //     String query = textValues.text.trim().toLowerCase();
+                //     account().magister.berichten.search(query);
 
-                    var queryCache = account().magister.berichten.queryCache;
-                    bool hasKey = queryCache.containsKey(query);
-                    var cached = queryCache[hasKey ? query : query.replaceFirst(RegExp(".\$"), "")];
+                //     var queryCache = account().magister.berichten.queryCache;
+                //     bool hasKey = queryCache.containsKey(query);
+                //     var cached = queryCache[hasKey ? query : query.replaceFirst(RegExp(".\$"), "")];
 
-                    return (cached ?? []).where(
-                      (person) => !to.value.any((other) => other.id == person.id),
-                    );
-                  },
-                ),
+                //     return (cached ?? []).where(
+                //       (person) => !to.value.any((other) => other.id == person.id),
+                //     );
+                //   },
+                // ),
               ),
               // ListTile(
               //   leading: Icon(Icons.people_outlined),

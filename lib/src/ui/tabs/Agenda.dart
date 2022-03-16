@@ -686,7 +686,7 @@ class _Agenda extends State<Agenda> with AfterLayoutMixin<Agenda>, TickerProvide
                 return Container();
               }
               return IconButton(
-                icon: Icon(Icons.home),
+                icon: Icon(Icons.home_outlined),
                 tooltip: "Vandaag",
                 onPressed: () {
                   changeCurrentDay(DateTime.now());

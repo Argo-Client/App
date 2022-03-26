@@ -30,7 +30,7 @@ class Cijfers extends MagisterApi {
 
   Future cijfers() async {
     for (var jaar in account.cijfers) {
-      List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${jaar.eind}")).data["Items"];
+      List cijfers = (await api.dio.get("api/personen/${account.id}/aanmeldingen/${jaar.id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=false&alleenBerekendeKolommen=false&alleenPTAKolommen=false&peildatum=${jaar.eind}")).data["Items"];
       jaar.cijfers = cijfers.map((cijfer) => Cijfer(cijfer)).where((cijfer) => cijfer.id != 0).toList();
       jaar.cijfers.sort((a, b) => a.ingevoerd.millisecondsSinceEpoch.compareTo(b.ingevoerd.millisecondsSinceEpoch));
       jaar.cijfers = jaar.cijfers.reversed.toList();

@@ -13,6 +13,7 @@ class BijlageItem extends StatelessWidget {
   final Border border;
   final ValueNotifier<DownloadState> downloadState = ValueNotifier(DownloadState.none);
   final Future Function(Bron, Function(int, int)) download;
+  final ValueNotifier<int> downloadCount = ValueNotifier(0);
 
   BijlageItem(
     this.bijlage, {
@@ -20,17 +21,22 @@ class BijlageItem extends StatelessWidget {
     this.download,
     this.border,
   });
+
   Widget build(BuildContext context) {
     List<String> splittedNaam = bijlage.naam.split(".");
     return Tooltip(
+      message: bijlage.naam,
       child: ListTile(
         onTap: () {
           if (onTap != null) onTap();
           if (download != null) {
+            downloadState.value = DownloadState.loading;
+
             download(
               bijlage,
               (count, total) {
                 bijlage.downloadCount = count;
+                downloadCount.value = count;
                 if (count >= total) {
                   downloadState.value = DownloadState.done;
                 }
@@ -66,8 +72,13 @@ class BijlageItem extends StatelessWidget {
         subtitle: bijlage.isFolder
             ? null
             : Padding(
-                child: Text(
-                  filesize(bijlage.size),
+                child: ValueListenableBuilder(
+                  valueListenable: downloadCount,
+                  builder: (context, value, child) => downloadState.value == DownloadState.loading
+                      ? Text(filesize(downloadCount.value) + "/" + filesize(bijlage.size))
+                      : Text(
+                          filesize(bijlage.size),
+                        ),
                 ),
                 padding: EdgeInsets.only(
                   bottom: 5,
@@ -87,25 +98,30 @@ class BijlageItem extends StatelessWidget {
                 Icons.arrow_forward_ios,
                 size: 14,
               )
-            : ValueListenableBuilder(
+            : ValueListenableBuilder<DownloadState>(
                 valueListenable: downloadState,
                 builder: (c, state, _) {
-                  if (state == DownloadState.done) {
-                    return Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                    );
+                  switch (state) {
+                    case DownloadState.done:
+                      return Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                      );
+
+                      break;
+                    case DownloadState.none:
+                      return Icon(
+                        Icons.cloud_download,
+                        size: 22,
+                      );
+                      break;
+                    case DownloadState.loading:
+                      return CircularProgressIndicator();
+                      break;
                   }
-                  if (state == DownloadState.none) {
-                    return Icon(
-                      Icons.cloud_download,
-                      size: 22,
-                    );
-                  }
-                  return CircularProgressIndicator();
+                  return Container();
                 }),
       ),
-      message: bijlage.naam,
     );
   }
 }

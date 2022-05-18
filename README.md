@@ -65,9 +65,6 @@ Argo is een alternatieve Magister applicatie met material design.
 
 Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/graphs/contributors) die mee hebben gewerkt aan dit project.
 
-## Dankjewel
-Paul, voor het maken van de grote inspiratie bron en Magister app 'Studeo'.
-
 ## Belangrijk
 
 Dit project is opensource, maar we willen liever feedback dan pull requests, gebruik hier voor de Discord of maak een issue.

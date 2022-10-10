@@ -69,7 +69,7 @@ class Agenda extends MagisterApi {
     try {
       var res = await api.dio.put(
         "api/personen/${account.id}/afspraken/${les.id}",
-        data: json.encode({"Id": les.id, "Afgerond": !les.huiswerkAf}),
+        data: json.encode({"Id": les.id, "Afgerond": !les.huiswerkAf, "Aantekening": les.aantekening}),
       );
       if (res.statusCode == 200) {
         return true;

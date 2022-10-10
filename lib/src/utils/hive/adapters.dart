@@ -166,6 +166,8 @@ class Les {
   List<Bron> bijlagen;
   @HiveField(24)
   bool status5;
+  @HiveField(25)
+  String aantekening;
 
   String getName() {
     Box custom = Hive.box("custom");
@@ -194,6 +196,7 @@ class Les {
     this.startTime = formatHour.format(start);
     this.endTime = formatHour.format(end);
     this.description = les["Inhoud"] ?? "";
+    this.aantekening = les["Aantekening"] ?? "";
     this.title = les["Omschrijving"] ?? "";
     this.location = les["Lokatie"];
     this.date = formatDatum.format(start);

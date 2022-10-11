@@ -5,6 +5,7 @@ on:
     push:
         branches:
             - master
+            - fix-ndk-version
 env:
     flutter_version: 2.2.1
 

@@ -357,7 +357,7 @@ class _Instellingen extends State<Instellingen> {
                   ),
                   SwitchInstelling(
                     title: "Gekleurde menupictogrammen",
-                    subtitle: "Voegt kleur toe aan de picrogrammen in de zijbalk",
+                    subtitle: "Voegt kleur toe aan de pictogrammen in de zijbalk",
                     setting: "colorsInDrawer",
                     onChange: () => appState.setState(() {}),
                   )

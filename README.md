@@ -67,7 +67,7 @@ Bekijk verder de lijst met [contributors](https://github.com/Argo-Client/App/gra
 
 ## Belangrijk
 
-Dit project is opensource, maar we willen liever feedback dan pull requests, gebruik hier voor de Discord of maak een issue.
+De auteurs zitten inmiddels niet meer op de middelbare school en daarom kunnen we iets moeilijker verder werken aan Argo. Daarom ontvangen we graag pull requests voor nieuwe features.
 
 ## Licentie
 

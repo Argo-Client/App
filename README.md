@@ -51,7 +51,7 @@ Argo is een alternatieve Magister applicatie met material design.
 ## Socials
 
 -   [Website](https://argo-magister.nl)
--   [Discord server](https:discord.gg/Xc4Xzsm)
+-   [Discord server](https://discord.gg/Xc4Xzsm)
 
 ## Gemaakt met
 

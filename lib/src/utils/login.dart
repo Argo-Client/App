@@ -579,7 +579,7 @@ class MagisterLogin {
         "refresh_token": tempAccount.refreshToken,
       };
     } else {
-      String code = _tokenRegex.firstMatch(url).group(0);
+      String code = Uri.parse(url.replaceFirst("#", "?")).queryParameters["code"];
 
       Response res = await Dio().post(
         "https://accounts.magister.net/connect/token",

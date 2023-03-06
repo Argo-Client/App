@@ -38,6 +38,8 @@ def keystoreProperties = new Properties()
 
 
 android {
+	ndkVersion "23.2.8568313"
+
     compileSdkVersion 29
 
     sourceSets {

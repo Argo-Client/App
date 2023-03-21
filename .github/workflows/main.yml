@@ -54,6 +54,10 @@ jobs:
             - name: Build
               run: flutter build apk --split-per-abi --dart-define=GITHUB_SHA=$GITHUB_SHA
 
+            - name: LS
+              run: ls build/app/outputs/flutter-apk/
+            - name: tree
+              run: tree build/app/outputs
             # Add File
             - name: Export APK
               uses: actions/upload-artifact@v1
@@ -62,10 +66,6 @@ jobs:
                   path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
 
             # Upload
-            - name: LS
-              run: ls build/app/outputs/flutter-apk/
-            - name: tree
-              run: tree build/app/outputs
 
             - name: Upload APK to API
               run: |

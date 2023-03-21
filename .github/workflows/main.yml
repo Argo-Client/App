@@ -56,10 +56,10 @@ jobs:
 
             # Add File
             - name: Export APK
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v3
               with:
                   name: release-apk
-                  path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+                  path: build/app/outputs/flutter-apk
 
             # Upload
 

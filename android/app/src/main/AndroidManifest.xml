@@ -48,8 +48,8 @@
         </intent-filter>
     </receiver>
 	<receiver android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" /> 
-        <receiver android:exported="true" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" /> 
-        <receiver android:exported="true" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"> 
+        <receiver tools:replace="android:exported" android:exported="true" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" /> 
+        <receiver tools:replace="android:exported" android:exported="true" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"> 
             <intent-filter> 
                 <action android:name="android.intent.action.BOOT_COMPLETED"/> 
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/> 

@@ -59,15 +59,10 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                   name: release-apk
-                  path: build/app/outputs/flutter-apk
+                  path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
 
             # Upload
 
             - name: Upload APK to API
               run: |
-                  curl -X POST -F apk='@build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk' -F head_sha=$GITHUB_SHA -H 'Authorization: Bearer ${{secrets.UPLOAD_TOKEN}}' https://api.argo-magister.nl/builder/upload/
-
-            - name: Notify Discord
-              run: curl $URL
-              env:
-                  URL: ${{secrets.URL}}
+                  curl -X POST -F apk='@build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk' -F head_sha=$GITHUB_SHA -H 'Authorization: Bearer ${{secrets.UPLOAD_TOKEN}}' https://api.argo-magister.nl/v1/builder/upload/

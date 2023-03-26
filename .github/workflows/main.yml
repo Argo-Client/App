@@ -65,4 +65,4 @@ jobs:
 
             - name: Upload APK to API
               run: |
-                  curl -X POST -F apk='@build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk' -F head_sha=$GITHUB_SHA -H 'Authorization: Bearer ${{secrets.UPLOAD_TOKEN}}' https://api.argo-magister.nl/v1/builder/upload/
+                  curl -X POST -F file='@build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk' -F head_sha=$GITHUB_SHA -H 'Authorization: Bearer ${{secrets.UPLOAD_TOKEN}}' https://api.argo-magister.nl/v1/builder/upload/

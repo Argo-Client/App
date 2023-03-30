@@ -59,7 +59,7 @@ Argo is een alternatieve Magister applicatie met material design.
 
 ## Auteurs
 
--   **Guus van Meerveld** - _Lead Developer_ - [Github](https://github.com/Guusvanmeerveld) - [Website](https://g-vm.nl)
+-   **Guus van Meerveld** - _Lead Developer_ - [Github](https://github.com/Guusvanmeerveld) - [Website](https://guusvanmeerveld.dev)
 -   **Sam Taen** - _Lead Developer_ - [Github](https://github.com/Netfloex) - [Website](https://samtaen.nl)
 -   **Martijn Oosterhuis** - _Developer_ - [Github](https://github.com/Devostex) - [Website](https://mb-o.nl)
 

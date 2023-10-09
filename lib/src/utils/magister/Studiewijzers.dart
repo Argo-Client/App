@@ -20,12 +20,13 @@ class Studiewijzers extends MagisterApi {
         .cast<Wijzer>();
   }
 
-  Future<Map> loadWijzer([id = ""]) async {
-    return (await api.dio.get("api/leerlingen/${account.id}/studiewijzers/$id?peildatum=${dateFormatter.format(DateTime.now())}")).data;
+  Future<Map> loadWijzer() async {
+    var wijzers = await Future.wait([api.dio.get("api/leerlingen/${account.id}/studiewijzers/?peildatum=${dateFormatter.format(DateTime.now())}"), api.dio.get("api/leerlingen/${account.id}/projecten/?peildatum=${dateFormatter.format(DateTime.now())}")]);
+    return {...wijzers.first.data}..["Items"].addAll(wijzers.last.data["Items"]);
   }
 
   Future loadChildren(Wijzer wijs) async {
-    Map wijzer = (await loadWijzer(wijs.id));
+    Map wijzer = (await api.dio.get(wijs.tabUrl)).data;
     wijs.children = wijzer["Onderdelen"]["Items"]
         .map(
           (wijs) => Wijzer(wijs),

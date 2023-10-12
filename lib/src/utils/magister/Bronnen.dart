@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import 'magister.dart';
 import 'package:argo/src/utils/hive/adapters.dart';
 
@@ -35,8 +37,8 @@ class Bronnen extends MagisterApi {
       onReceiveProgress(bron.size, 0);
       return;
     }
-    await api.dio.download(
-      bron.downloadUrl,
+    await Dio().download(
+      (await api.dio.get(bron.downloadUrl + "?redirect_type=body")).data["location"],
       savePath,
       onReceiveProgress: onReceiveProgress,
     );

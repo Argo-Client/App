@@ -222,7 +222,7 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
         if (wijstab.bronnen.isNotEmpty)
           MaterialCard(
             children: divideListTiles([
-              for (var bron in wijstab.bronnen)
+              for (var bron in wijstab.bronnen.where((b) => !b.isFolder)) //Folders are not yet supported
                 BijlageItem(
                   bron,
                   download: account().magister.bronnen.downloadFile,
@@ -248,14 +248,10 @@ class _StudiewijzerTab extends State<StudiewijzerTab> {
           onRefresh: () async => retry(),
           child: EmptyPage(
             icon: Icons.wifi_off_outlined,
-            text: error?.error ?? error?.toString(),
+            text: error?.toString(),
           ),
         ),
-        futureBuilder: () async {
-          await account().magister.studiewijzers.loadTab(
-                wijstab,
-              );
-        },
+        futureBuilder: () async => await account().magister.studiewijzers.loadTab(wijstab),
         busyBuilder: (BuildContext context) => Center(
           child: CircularProgressIndicator(),
         ),

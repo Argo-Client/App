@@ -501,7 +501,7 @@ class Wijzer {
       if (pinned == null) {
         pinned = false;
       }
-      if (wijzer["Links"] != null) {
+      if (wijzer["Links"] != null && wijzer["Links"].isNotEmpty) {
         this.tabUrl = wijzer["Links"].where((a) => a["Rel"] == "Self").first["Href"];
       }
       if (wijzer["Bronnen"] != null) {

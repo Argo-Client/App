@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:filesize/filesize.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum DownloadState { done, loading, none }
 
@@ -28,48 +29,54 @@ class BijlageItem extends StatelessWidget {
       message: bijlage.naam,
       child: ListTile(
         onTap: () {
-          if (onTap != null) onTap();
-          if (download != null) {
-            downloadState.value = DownloadState.loading;
+          if (bijlage.contentType == "application/octet-stream") {
+            launch(bijlage.downloadUrl);
+          } else {
+            if (onTap != null) onTap();
+            if (download != null) {
+              downloadState.value = DownloadState.loading;
 
-            download(
-              bijlage,
-              (count, total) {
-                bijlage.downloadCount = count;
-                downloadCount.value = count;
-                if (count >= total) {
-                  downloadState.value = DownloadState.done;
-                }
-              },
-            );
+              download(
+                bijlage,
+                (count, total) {
+                  bijlage.downloadCount = count;
+                  downloadCount.value = count;
+                  if (count >= total) {
+                    downloadState.value = DownloadState.done;
+                  }
+                },
+              );
+            }
           }
         },
         leading: bijlage.isFolder
             ? Icon(Icons.folder_outlined)
-            : Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 5,
-                    ),
-                    child: Icon(
-                      Icons.insert_drive_file_outlined,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                      top: 7.5,
-                    ),
-                    child: Text(
-                      splittedNaam.length > 1 ? splittedNaam.last.toUpperCase() : bijlage.naam,
-                      style: TextStyle(
-                        fontSize: 12.5,
+            : bijlage.contentType == "application/octet-stream"
+                ? Icon(Icons.link)
+                : Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: 5,
+                        ),
+                        child: Icon(
+                          Icons.insert_drive_file_outlined,
+                        ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-        subtitle: bijlage.isFolder
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: 7.5,
+                        ),
+                        child: Text(
+                          splittedNaam.length > 1 ? splittedNaam.last.toUpperCase() : bijlage.naam,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+        subtitle: bijlage.isFolder || bijlage.contentType == "application/octet-stream"
             ? null
             : Padding(
                 child: ValueListenableBuilder(
@@ -93,7 +100,7 @@ class BijlageItem extends StatelessWidget {
             vertical: 10,
           ),
         ),
-        trailing: bijlage.isFolder
+        trailing: bijlage.isFolder || bijlage.contentType == "application/octet-stream"
             ? Icon(
                 Icons.arrow_forward_ios,
                 size: 14,

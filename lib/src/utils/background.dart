@@ -47,7 +47,7 @@ class Notifications {
     }
   }
 
-  String _lesString(Les les) => "${les.startTime} - ${les.endTime}: ${les.getName()}" + (les.location == null ? "" : " - ${les.location}");
+  String _lesString(Les les) => "${les.startTime} - ${les.endTime}: " + (les.location == null ? "" : "${les.location} - ") + "${les.getName()}";
 
   Future<void> _scheduleNotificationFor(Les lesson) async {
     Iterable<Les> day = lessons.where((les) => les.date == lesson.date);

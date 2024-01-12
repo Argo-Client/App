@@ -73,4 +73,4 @@ De auteurs zitten inmiddels niet meer op de middelbare school en daarom kunnen w
 
 Dit project is beschermd onder de Apache 2.0 license - Bekijk het [LICENSE](LICENSE) bestand voor details.
 
-Argo is geen onderdeel van of gerelateerd aan SchoolMaster B.V.
+Argo is geen onderdeel van of gerelateerd aan SchoolMaster B.V. 
